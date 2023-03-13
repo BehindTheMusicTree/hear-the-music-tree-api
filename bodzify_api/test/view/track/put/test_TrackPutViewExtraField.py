@@ -5,10 +5,11 @@ from bodzify_api.test.view.track.TrackViewTestCase import TrackViewTestCase
 
 class TrackPutViewTestCaseExtraField(TrackViewTestCase):
 
-    fixtures = ['initial_data', 'TestUserData']
+    fixtures = ['initial_data', 'TestUserData', 'TestViewTrackPutDataExtraField']
+
 
     """
-    Trying to post a track with extra fields should fail with a 400 error code.
+    Trying to update a track with extra fields should fail with a 400 error code.
     """
     def test_trackPutExtraField(self):
 
@@ -16,6 +17,5 @@ class TrackPutViewTestCaseExtraField(TrackViewTestCase):
             "title": "Somewhere I Belong",
             "nonExistingField": "oifjqoif",
         }
-        response = self._loginAndPutSampleTrack(trackUuid="36nS4LVDssLh4BvTARbJEK", data=data)
-        print(response.status_code)
+        response = self._loginAndPutSampleTrack(trackUuid="36nS4LVDoihoihvTARbJEK", data=data)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
