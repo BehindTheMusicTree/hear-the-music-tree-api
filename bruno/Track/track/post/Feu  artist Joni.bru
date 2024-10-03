@@ -1,7 +1,7 @@
 meta {
-  name: sample mp3
+  name: Feu  artist Joni
   type: http
-  seq: 4
+  seq: 12
 }
 
 post {
@@ -16,9 +16,11 @@ headers {
 
 body:multipart-form {
   file: @file(/Users/mignot/git/bodzify-api-django/bodzify_api/test/utils/generic_file_sample/tags none.mp3)
-  album_name: Jo
+  artistName: Joni
+  title: Feu
 }
 
 vars:post-response {
-  albumJoUuid: res.body.album.uuid
+  artistJoniUuid: res.body.artist.uuid
+  trackFeuUuid: res.body.uuid
 }
