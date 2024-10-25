@@ -1,11 +1,11 @@
 meta {
-  name: get *
+  name: get foot
   type: http
-  seq: 4
+  seq: 3
 }
 
 get {
-  url: {{BASE_URL}}simple-playlists/
+  url: {{BASE_URL}}manual-playlists/{{ManualPlaylistFootUuid}}/
   body: none
   auth: inherit
 }

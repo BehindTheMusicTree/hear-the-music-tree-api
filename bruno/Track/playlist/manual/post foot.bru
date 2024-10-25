@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{BASE_URL}}simple-playlists/
+  url: {{BASE_URL}}manual-playlists/
   body: json
   auth: inherit
 }
@@ -21,5 +21,5 @@ body:json {
 }
 
 vars:post-response {
-  simplePlaylistFootUuid: res.body.uuid
+  ManualPlaylistFootUuid: res.body.uuid
 }
