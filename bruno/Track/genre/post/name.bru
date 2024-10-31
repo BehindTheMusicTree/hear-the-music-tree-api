@@ -1,7 +1,7 @@
 meta {
-  name: Cowboy country parent Country
+  name: name
   type: http
-  seq: 3
+  seq: 6
 }
 
 post {
@@ -16,11 +16,10 @@ headers {
 
 body:json {
   {
-    "name": "Cowboy countxrydy",
-    "parent": "{{genreCountryUuid}}"
+    "name": "Rock"
   }
 }
 
 vars:post-response {
-  genreCowboyCountryUuid: res.body.uuid
+  genreRockUuid: res.body.uuid
 }
