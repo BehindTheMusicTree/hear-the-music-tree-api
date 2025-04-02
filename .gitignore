@@ -8,3 +8,4 @@ tmp-uploaded-files/
 .DS_Store
 bodzify_api/fixtures/*
 !bodzify_api/fixtures/*/
+bodzify_api/fixtures/genres/complete_genre_tree.json
