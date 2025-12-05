@@ -1,12 +1,12 @@
 from rest_framework import status
 
 from bodzify_api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
-from bodzify_api.model.track.lib.LibraryTrack import LibraryTrack
+from bodzify_api.model.uploaded_track.UploadedTrack import UploadedTrack
 from bodzify_api.serializer.model.criteria.input.put import Fields as PutFields
 from bodzify_api.test.utils.field.body_data.method.PutBodyDataTestCase import PutBodyDataTestCase
 from bodzify_api.test.view.criteria.GenreTestCase import GenreTestCase
-from bodzify_api.utils import audio_metadata
-from bodzify_api.utils.audio_metadata.utils.AppMetadataKey import AppMetadataKey
+from bodzify_api.utils import audio_file_metadata
+from bodzify_api.utils.audio_file_metadata.AppMetadataKey import AppMetadataKey
 
 
 class TestCase(GenreTestCase, PutBodyDataTestCase):
@@ -52,16 +52,16 @@ class TestCase(GenreTestCase, PutBodyDataTestCase):
         assert response.status_code == status.HTTP_200_OK
         assert self.saved_object.name == genre_name
 
-    def test_ok_then_update_linked_lib_track(self):
+    def test_ok_then_update_linked_uploaded_track(self):
         genre_rock = self.model_fixture_factory.create_genre(name="Rock")
-        track = self.model_fixture_factory.create_lib_track_with_file(title="Track", genre=genre_rock)
+        track = self.model_fixture_factory.create_uploaded_track_with_file(title="Track", genre=genre_rock)
 
         genre_new_name = "Punk"
         response = self._put_genre(uuid=genre_rock.uuid, **{PutFields.NAME_PUBLIC: genre_new_name})
 
         assert response.status_code == status.HTTP_200_OK
-        updated_track: LibraryTrack = LibraryTrack.objects.get(uuid=track.uuid)
+        updated_track: UploadedTrack = UploadedTrack.objects.get(uuid=track.uuid)
 
-        metadata = audio_metadata.get_merged_app_metadata(file=updated_track.track_file.file)
+        metadata = audio_file_metadata.get_merged_app_metadata(file=updated_track.track_file.file)
         assert AppMetadataKey.GENRE_NAME in metadata
         assert metadata[AppMetadataKey.GENRE_NAME] == genre_new_name

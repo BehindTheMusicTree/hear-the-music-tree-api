@@ -9,7 +9,7 @@
         "activityBar.background": "#1d5737",
         "statusBar.background": "#1d5737"
     },
-    "python.languageServer": "Pylance",
+    "python.languageServer": "None",
 	"python.analysis.typeCheckingMode": "basic",
 	"editor.rulers": [
 		120
@@ -29,5 +29,7 @@
 	},
 	"files.autoSave": "onFocusChange",
 	"python.testing.unittestEnabled": false,
-	"python.pythonPath": "/Users/mignot/git/bodzify-api-django/.venv/bin/python",
+	"python.pythonPath": "/Users/mignot/git/bodzify-api-django-upgrade-djaango-5-2-8/.venv/bin/python",
+	"cursorpyright.analysis.autoImportCompletions": true,
+	"cursorpyright.analysis.typeCheckingMode": "basic",
 }

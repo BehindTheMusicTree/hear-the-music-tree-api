@@ -8,4 +8,19 @@ tmp-uploaded-files/
 .DS_Store
 bodzify_api/fixtures/*
 !bodzify_api/fixtures/*/
+<<<<<<< HEAD
 bodzify_api/fixtures/genres/complete_genre_tree.json
+=======
+
+bodzify_api/fixtures/genres/complete_genre_tree.json
+
+# Draft documents (internal planning, not version controlled)
+.github/descriptions/
+.github/pr-descriptions/
+
+# Node modules
+node_modules/
+
+# Cache files (may contain sensitive tokens)
+.cache
+>>>>>>> origin/develop

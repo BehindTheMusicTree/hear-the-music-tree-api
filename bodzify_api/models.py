@@ -1,6 +1,3 @@
-
 from bodzify_api.model.user.User import User
-
-
-# Helps Django to import the User model from the bodzify_api app in order to use it in the admin panel
-__all__ = ['User']
+from bodzify_api.model.spotify_resource.children.artist.SpotifyArtist import SpotifyArtist
+from bodzify_api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
