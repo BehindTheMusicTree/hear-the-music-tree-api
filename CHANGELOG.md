@@ -5,12 +5,6 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-<<<<<<< HEAD
-## [v0.1.4] - 2025-04-02
-
-### Added
-- Add complete genre tree JSON fixture
-=======
 ## Changelog Best Practices
 
 ### General Principles
@@ -72,6 +66,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
     - Copies `env/.venv` Python virtual environment
     - Copies fixture files from `bodzify_api/fixtures/*.json`
   - Integrated filesystem setup into `setup-worktree.sh` for automatic directory and log file creation
+  - Add complete genre tree JSON fixture
 
 ### CI
 
@@ -158,10 +153,9 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### CI
 
-<<<<<<< HEAD
 - **Branch Protection**: Added automated enforcement of Git Flow branching rules
   - PRs to `main` must come from `hotfix/*` or `release/*` branches only
-  - PRs to `develop` must come from `feature/*`, `chore/*`, or `dependabot/*` branches only
+  - PRs to `develop` must come from `feature/*`, `chore/*`, `hotfix/*`, `release/*`, and `dependabot/*` branches only
   - Provides clear error messages when branch rules are violated
 
 - **CI/CD**: Updated GitHub Actions workflow to use `develop` branch instead of `dev`
@@ -177,20 +171,6 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
   - Pull request template with comprehensive checklist
   - GitHub Discussions setup with category templates
 
-=======
->>>>>>> origin/develop
-## [v0.2.0] - 2025-04-03
-
-### Added
-- Enable Spotify integration with comprehensive API support:
-  - Track search and lookup by ID/ISRC
-  - Artist information retrieval
-  - Audio features analysis (tempo, key, energy, danceability)
-  - Spotify OAuth authentication for user accounts
-  - Track preview URL support
-  - Album information integration
-  - Artist popularity and genre data
->>>>>>> origin/develop
 
 ## [v0.1.3] - 2025-04-02
 
