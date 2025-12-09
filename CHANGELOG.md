@@ -58,6 +58,26 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Changed
+
+- **Test Organization**: Reorganized test structure to align with DRF conventions
+  - Moved all tests to `api/test/tests/` directory for cleaner organization
+  - Unit tests organized by component type (filtering, middleware, serializer, utils, validator)
+  - Integration tests organized by endpoint/resource (album, artist, auth, criteria, playlist, uploaded_track, etc.)
+  - E2E tests organized by workflow (track_upload, genre_hierarchy, spotify, etc.)
+  - Moved middleware and FilterSet tests from integration to unit tests
+  - Removed redundant `view/` and `common/` directories from integration tests
+  - Updated test documentation to reflect new structure
+
+### Documentation
+
+- **Test Documentation**: Updated test README and contributing guide
+  - Added comprehensive test structure documentation in `api/test/README.md`
+  - Added table of contents to test README
+  - Updated CONTRIBUTING.md to reference test README
+  - Added unit test suggestions document with detailed test scenarios
+  - Clarified distinction between unit, integration, and E2E tests
+
 ### Added
 
 - **Git Worktree Scripts**: Added npm `git-worktree-scripts` package (v1.4.0) for managing git worktrees
