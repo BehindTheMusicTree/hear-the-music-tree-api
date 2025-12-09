@@ -24,10 +24,10 @@ Unit tests test individual functions, classes, or modules in isolation with mock
 **Location:** `api/test/tests/unit/`
 
 **Organization:** Unit tests are organized by component type to mirror the codebase structure:
-- `tests/unit/model/` - Model tests (business logic, methods, properties)
+- `tests/unit/filtering/` - FilterSet and filtering component tests
+- `tests/unit/middleware/` - Middleware component tests
 - `tests/unit/serializer/` - Serializer tests (validation, field behavior)
 - `tests/unit/utils/` - Utility function tests
-- `tests/unit/middleware/` - Middleware component tests
 - `tests/unit/validator/` - Validator tests
 
 **Examples:**
@@ -36,6 +36,7 @@ Unit tests test individual functions, classes, or modules in isolation with mock
 - `tests/unit/validator/` - Tests for validators
 - `tests/unit/serializer/field/` - Tests for serializer field classes
 - `tests/unit/middleware/` - Tests for middleware components
+- `tests/unit/filtering/filterset/` - Tests for FilterSet classes
 
 **Characteristics:**
 - Fast execution
@@ -50,18 +51,25 @@ Integration tests test how multiple components work together through API endpoin
 **Location:** `api/test/tests/integration/`
 
 **Organization:** Integration tests are organized by API endpoint/resource:
-- `tests/integration/` - API endpoint tests organized by resource
-  - `uploaded_track/` - Uploaded track endpoints
-  - `playlist/` - Playlist endpoints
-  - `criteria/` - Criteria/genre endpoints
-  - `artist/` - Artist endpoints
-  - `common/` - Cross-cutting concerns tested through endpoints (e.g., security, duplicate fields)
-  - etc.
+- `tests/integration/album/` - Album endpoints
+- `tests/integration/artist/` - Artist endpoints
+- `tests/integration/auth/` - Authentication endpoints
+- `tests/integration/common/` - Cross-cutting concerns tested through endpoints (e.g., security, duplicate fields)
+- `tests/integration/criteria/` - Criteria/genre endpoints
+- `tests/integration/play/` - Play history endpoints
+- `tests/integration/playlist/` - Playlist endpoints
+- `tests/integration/search/` - Search endpoints
+- `tests/integration/spotify/` - Spotify integration endpoints
+- `tests/integration/uploaded_track/` - Uploaded track endpoints
+- `tests/integration/user/` - User management endpoints
+- etc.
 
 **Examples:**
 - `tests/integration/uploaded_track/` - Tests for uploaded track API endpoints
 - `tests/integration/playlist/` - Tests for playlist API endpoints
 - `tests/integration/criteria/` - Tests for criteria/genre API endpoints
+- `tests/integration/common/duplicate_fields/` - Tests for duplicate field detection through endpoints
+- `tests/integration/auth/` - Tests for authentication endpoints
 - Tests that verify the full API stack (middleware → serializer → view → database)
 
 **Characteristics:**
