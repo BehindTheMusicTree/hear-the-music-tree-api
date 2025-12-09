@@ -4,6 +4,17 @@ This directory contains tests organized into three categories: **unit**, **integ
 
 All test files are located in the `tests/` subdirectory to keep the test directory structure clean.
 
+## Table of Contents
+
+- [Test Categories](#test-categories)
+  - [Unit Tests](#unit-tests-testsunit)
+  - [Integration Tests](#integration-tests-testsintegration)
+  - [E2E Tests](#e2e-tests-testse2e)
+- [Running Tests](#running-tests)
+- [Test Naming Convention](#test-naming-convention)
+- [Test Configuration](#test-configuration)
+  - [Warning Filters](#warning-filters)
+
 ## Test Categories
 
 ### Unit Tests (`tests/unit/`)
