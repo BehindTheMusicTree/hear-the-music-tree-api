@@ -24,7 +24,7 @@ from api.model.uploaded_track_playlist_rel.Fields import Fields as UploadedTrack
 from api.model.musicbrainz_resource.children.artist.Fields import Fields as MusicbrainzArtistFields
 from api.model.musicbrainz_resource.children.artist.MbArtist import MbArtist
 from api.model.musicbrainz_resource.children.recording.MbRecording import Fields as MusicbrainzRecordingFields
-from api.model.musicbrainz_resource.children.recording.MbRecording import MusicbrainzRecording
+from api.model.musicbrainz_resource.children.recording.MbRecording import MbRecording
 from api.model.play.Fields import Fields as PlayFields
 from api.model.play.Play import Play
 from api.model.playlist.Playlist import Playlist
@@ -230,7 +230,7 @@ class ModelFixtureFactory:
             manual_playlist = ManualPlaylist.objects.create(**model_fields)
             return manual_playlist
 
-    def create_musicbrainz_recording(self, musicbrainz_id: str, title: str, **kwargs) -> MusicbrainzRecording:
+    def create_musicbrainz_recording(self, musicbrainz_id: str, title: str, **kwargs) -> MbRecording:
         model_fields = {
             MusicbrainzRecordingFields.CREATED_ON: timezone.make_aware(datetime.now()),
             MusicbrainzRecordingFields.UPDATED_ON: timezone.make_aware(datetime.now()),
@@ -242,7 +242,7 @@ class ModelFixtureFactory:
             MusicbrainzRecordingFields.TITLE: title
         }
         model_fields.update(kwargs)
-        return G(MusicbrainzRecording, **model_fields)
+        return G(MbRecording, **model_fields)
 
     def create_musicbrainz_artist(self, musicbrainz_id: str, name: str, **kwargs) -> MbArtist:
         model_fields = {
