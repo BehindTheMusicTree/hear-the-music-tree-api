@@ -64,20 +64,20 @@ def _get_test_directory_order(item) -> int:
 
     Returns:
         int: Order priority (lower = earlier execution)
-        - 0: critical/
-        - 1: unit/
-        - 2: integration/
-        - 3: e2e/
+        - 0: tests/critical/
+        - 1: tests/unit/
+        - 2: tests/integration/
+        - 3: tests/e2e/
         - 4: other directories
     """
     test_path = str(item.fspath)
-    if '/critical/' in test_path:
+    if '/tests/critical/' in test_path:
         return 0
-    elif '/unit/' in test_path:
+    elif '/tests/unit/' in test_path:
         return 1
-    elif '/integration/' in test_path:
+    elif '/tests/integration/' in test_path:
         return 2
-    elif '/e2e/' in test_path:
+    elif '/tests/e2e/' in test_path:
         return 3
     else:
         return 4
@@ -89,7 +89,7 @@ def pytest_collection_modifyitems(config, items):
     normal_tests = []
     slow_tests = []
 
-    print("Ordering tests: critical marker first, then by directory (critical → unit → integration → e2e), slow marker last")
+    print("Ordering tests: critical marker first, then by directory (tests/critical → tests/unit → tests/integration → tests/e2e), slow marker last")
     for item in items:
         critical_marker = item.get_closest_marker("critical")
         slow_marker = item.get_closest_marker("slow")

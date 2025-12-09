@@ -6,7 +6,7 @@ from api.model.album.Album import Album
 from api.model.artist.Artist import Artist
 from api.model.criteria.Criteria import Criteria
 from api.model.criteria.type.CriteriaTypePks import CriteriaTypePks
-from api.model.musicbrainz_resource.children.recording.MbRecording import MusicbrainzRecording
+from api.model.musicbrainz_resource.children.recording.MbRecording import MbRecording
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.model.user.User import User
@@ -120,10 +120,10 @@ class TestCase(UserTestCase):
         track.track_file.musicbrainz_recording = mb_recording
         track.track_file.save()
 
-        assert MusicbrainzRecording.objects.filter(title=mb_recording_title).exists()
+        assert MbRecording.objects.filter(title=mb_recording_title).exists()
 
         self._login_as_test_admin()
         response = self._delete_user(user.pk)
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
-        assert MusicbrainzRecording.objects.filter(musicbrainz_id="4a45b00b-273d-40ed-9ecd-42f387f59c22").count() == 1
+        assert MbRecording.objects.filter(musicbrainz_id="4a45b00b-273d-40ed-9ecd-42f387f59c22").count() == 1
