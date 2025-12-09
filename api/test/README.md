@@ -54,7 +54,7 @@ Integration tests test how multiple components work together through API endpoin
 - `tests/integration/album/` - Album endpoints
 - `tests/integration/artist/` - Artist endpoints
 - `tests/integration/auth/` - Authentication endpoints
-- `tests/integration/common/` - Cross-cutting concerns tested through endpoints (e.g., security, duplicate fields)
+- `tests/integration/common/` - Cross-cutting concerns tested through any endpoint (e.g., security)
 - `tests/integration/criteria/` - Criteria/genre endpoints
 - `tests/integration/play/` - Play history endpoints
 - `tests/integration/playlist/` - Playlist endpoints
@@ -68,7 +68,6 @@ Integration tests test how multiple components work together through API endpoin
 - `tests/integration/uploaded_track/` - Tests for uploaded track API endpoints
 - `tests/integration/playlist/` - Tests for playlist API endpoints
 - `tests/integration/criteria/` - Tests for criteria/genre API endpoints
-- `tests/integration/common/duplicate_fields/` - Tests for duplicate field detection through endpoints
 - `tests/integration/auth/` - Tests for authentication endpoints
 - Tests that verify the full API stack (middleware → serializer → view → database)
 
