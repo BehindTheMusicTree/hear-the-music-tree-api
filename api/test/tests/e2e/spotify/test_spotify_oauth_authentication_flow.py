@@ -1,0 +1,89 @@
+import pytest
+from unittest import mock
+from django.urls import reverse
+from rest_framework import status
+
+from api.model.user.spotify.SpotifyUser import SpotifyUser
+from api.model.user.spotify.Fields import Fields as SpotifyUserFields
+from api.test.utils.AppTestCase import AppTestCase
+from api.utils.spotify_api.oauth import SpotifyOAuthService
+from api.serializer.token.Fields import Fields as TokenFields
+
+
+@pytest.mark.e2e
+class TestCase(AppTestCase):
+    """
+    E2E test for complete Spotify OAuth authentication flow.
+
+    This test verifies the complete workflow:
+    1. User initiates Spotify OAuth flow
+    2. User authorizes application on Spotify
+    3. System receives authorization code
+    4. System exchanges code for Spotify access/refresh tokens
+    5. System creates/updates Spotify user account
+    6. System returns JWT tokens for API authentication
+    7. User uses JWT token to access API
+
+    Note: This test uses mocks for Spotify OAuth. For real E2E testing,
+    configure actual Spotify OAuth credentials.
+    """
+
+    @mock.patch('api.utils.spotify_api.oauth.spotipy.Spotify')
+    @mock.patch('api.utils.spotify_api.oauth.SpotifyOAuth')
+    def test_spotify_oauth_authentication_flow_then_ok(self, mock_oauth_class, mock_spotify_class):
+        authorization_code = "test_authorization_code"
+        spotify_id = "test_spotify_user_id"
+        email = "test@example.com"
+        display_name = "Test User"
+
+        mock_oauth = mock_oauth_class.return_value
+        mock_oauth.get_access_token.return_value = {
+            TokenFields.ACCESS_TOKEN: "test_access_token",
+            TokenFields.REFRESH_TOKEN: "test_refresh_token",
+            TokenFields.EXPIRES_IN: 3600
+        }
+
+        mock_spotify = mock_spotify_class.return_value
+        mock_spotify.current_user.return_value = {
+            SpotifyUserFields.ID: spotify_id,
+            SpotifyUserFields.EMAIL: email,
+            SpotifyUserFields.DISPLAY_NAME: display_name,
+            SpotifyUserFields.FOLLOWERS: {"total": 100},
+            SpotifyUserFields.IMAGES: [{"url": "https://example.com/image.jpg"}],
+            SpotifyUserFields.URI: f"spotify:user:{spotify_id}",
+            SpotifyUserFields.HREF: f"https://api.spotify.com/v1/users/{spotify_id}",
+            SpotifyUserFields.TYPE: "user"
+        }
+
+        response = self.api_client.post(
+            reverse('api-auth-spotify'),
+            data={'code': authorization_code},
+            content_type='application/json'
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        response_data = response.json()
+
+        assert TokenFields.ACCESS_TOKEN in response_data
+        assert TokenFields.REFRESH_TOKEN in response_data
+        assert 'expires_at' in response_data
+        assert 'spotifyUser' in response_data
+
+        spotify_user_data = response_data['spotifyUser']
+        assert spotify_user_data[SpotifyUserFields.ID] is not None
+        assert spotify_user_data[SpotifyUserFields.EMAIL] == email
+        assert spotify_user_data[SpotifyUserFields.DISPLAY_NAME] == display_name
+
+        spotify_user = SpotifyUser.objects.get(spotify_id=spotify_id)
+        assert spotify_user is not None
+        assert spotify_user.email == email
+        assert spotify_user.spotify_id == spotify_id
+        assert spotify_user.spotify_access_token == "test_access_token"
+        assert spotify_user.spotify_refresh_token == "test_refresh_token"
+
+        access_token = response_data[TokenFields.ACCESS_TOKEN]
+        self.api_client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
+
+        response = self.api_client.get(reverse('user-list'))
+        assert response.status_code == status.HTTP_200_OK
+

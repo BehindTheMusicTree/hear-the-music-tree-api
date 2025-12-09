@@ -4,7 +4,7 @@ from calendar import monthrange
 from api.model.musicbrainz_resource.children.artist.Fields import Fields as MusicbrainzArtistFields
 from api.model.musicbrainz_resource.children.artist.MbArtist import MbArtist
 from api.model.musicbrainz_resource.children.recording.Fields import Fields as MusicbrainzRecordingFields
-from api.model.musicbrainz_resource.children.recording.MbRecording import MusicbrainzRecording
+from api.model.musicbrainz_resource.children.recording.MbRecording import MbRecording
 
 from .ApiFields import ApiFields
 
@@ -72,21 +72,21 @@ def _prepare_musicbrainz_recording_data(musicbrainz_recording_dict: dict) -> tup
 
 
 def create_musicbrainz_recording_instance_from_dict(musicbrainz_recording_id: str,
-                                                    musicbrainz_recording_dict: dict) -> MusicbrainzRecording:
+                                                    musicbrainz_recording_dict: dict) -> MbRecording:
     musicbrainz_artists, defaults = _prepare_musicbrainz_recording_data(musicbrainz_recording_dict)
-    musicbrainz_recording: MusicbrainzRecording
-    musicbrainz_recording, _ = MusicbrainzRecording.objects.get_or_create(musicbrainz_id=musicbrainz_recording_id,
-                                                                          defaults=defaults)
+    musicbrainz_recording: MbRecording
+    musicbrainz_recording, _ = MbRecording.objects.get_or_create(musicbrainz_id=musicbrainz_recording_id,
+                                                                 defaults=defaults)
     musicbrainz_recording.musicbrainz_artists.set(musicbrainz_artists)
     return musicbrainz_recording
 
 
 def create_or_update_musicbrainz_recording_instance_from_dict(musicbrainz_recording_id: str,
-                                                              musicbrainz_recording_dict: dict) -> MusicbrainzRecording:
+                                                              musicbrainz_recording_dict: dict) -> MbRecording:
     musicbrainz_artists, update_fields = _prepare_musicbrainz_recording_data(musicbrainz_recording_dict)
-    musicbrainz_recording: MusicbrainzRecording
-    musicbrainz_recording, created = MusicbrainzRecording.objects.get_or_create(musicbrainz_id=musicbrainz_recording_id,
-                                                                                defaults=update_fields)
+    musicbrainz_recording: MbRecording
+    musicbrainz_recording, created = MbRecording.objects.get_or_create(musicbrainz_id=musicbrainz_recording_id,
+                                                                       defaults=update_fields)
     if not created:
         for field, value in update_fields.items():
             setattr(musicbrainz_recording, field, value)

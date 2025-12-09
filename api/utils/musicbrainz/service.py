@@ -6,7 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from api import settings
 from api.exception import musicbrainz as musicbrainz_exception
-from api.model.musicbrainz_resource.children.recording.MbRecording import MusicbrainzRecording
+from api.model.musicbrainz_resource.children.recording.MbRecording import MbRecording
 from api.model.musicbrainz_resource.children.recording.MbRecordingLookupResult import (
     MusicbrainzRecordingLookupResult
 )

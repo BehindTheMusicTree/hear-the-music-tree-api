@@ -1,7 +1,7 @@
 
 from dataclasses import dataclass
 
-from api.model.musicbrainz_resource.children.recording.MbRecording import MusicbrainzRecording
+from api.model.musicbrainz_resource.children.recording.MbRecording import MbRecording
 from api.model.musicbrainz_resource.children.recording.missing_cause.MbRecordingMissingCause import (
     MbRecordingMissingCause
 )
@@ -9,14 +9,14 @@ from api.model.musicbrainz_resource.children.recording.missing_cause.MbRecording
 
 @dataclass
 class MusicbrainzRecordingLookupResult:
-    _recording: MusicbrainzRecording | None = None
+    _recording: MbRecording | None = None
     _missing_cause: MbRecordingMissingCause | None = None
 
     class Meta:
         verbose_name = 'MusicBrainz Recording Lookup Result'
         verbose_name_plural = 'MusicBrainz Recording Lookup Results'
 
-    def __init__(self, recording: MusicbrainzRecording | None,
+    def __init__(self, recording: MbRecording | None,
                  missing_cause: MbRecordingMissingCause | None):
         self._recording = recording
         self._missing_cause = missing_cause
@@ -26,7 +26,7 @@ class MusicbrainzRecordingLookupResult:
         return self._recording is not None
 
     @property
-    def recording(self) -> MusicbrainzRecording:
+    def recording(self) -> MbRecording:
         if self._recording is None:
             raise ValueError(f"{self.__class__} is not successful")
         return self._recording

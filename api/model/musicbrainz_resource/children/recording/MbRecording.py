@@ -13,7 +13,7 @@ from ..artist.MbArtist import MbArtist
 from .Fields import Fields
 
 
-class MusicbrainzRecording(MusicbrainzResource):
+class MbRecording(MusicbrainzResource):
     musicbrainz_link = models.GeneratedField(  # type: ignore
         expression=ConcatOp(Value(settings.MB_RECORDING_URL), F(Fields.MUSICBRAINZ_ID)),
         output_field=AppCharField(max_length=len(settings.MB_RECORDING_URL) + settings.UUID_LEN),
