@@ -6,6 +6,31 @@
 
 Bodzify API is an online platform similar to iTunes, designed for managing and interacting with music tracks. It offers a range of features to help you organize, tag, and rate your music, as well as create automatic hierarchical genre playlists.
 
+> **⚠️ Note**: The API is currently undergoing server migration and is not available online. Please set up a local development environment to use the API. See [Getting Started](#getting-started) for setup instructions.
+
+<details>
+<summary><strong>Table of Contents</strong></summary>
+
+- [Features](#features)
+- [Getting Started](#getting-started)
+  - [Developer environment (recommended)](#developer-environment-recommended)
+- [API Documentation](#api-documentation)
+  - [Base URL](#base-url)
+  - [Interactive Documentation](#interactive-documentation)
+  - [Authentication](#authentication)
+- [API Endpoints](#api-endpoints)
+- [Usage](#usage)
+  - [Basic Workflow](#basic-workflow)
+  - [Advanced Features](#advanced-features)
+  - [Error Handling](#error-handling)
+- [Audio Metadata Handling](#audio-metadata-handling)
+- [MusicBrainz Integration](#musicbrainz-integration)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
+
+</details>
+
 ## Features
 
 - **Upload Tracks**: Easily upload your music tracks to the platform.
@@ -18,10 +43,38 @@ Bodzify API is an online platform similar to iTunes, designed for managing and i
 For detailed setup and installation instructions, please see the [Contributing Guidelines](CONTRIBUTING.md#1-environment-setup).
 
 **Quick Start:**
-- Python 3.14
-- Docker and Docker Compose
-- PostgreSQL database
-- See [CONTRIBUTING.md](CONTRIBUTING.md) for full setup instructions
+
+<!-- Use an HTML table so we can set column widths on GitHub render -->
+<table>
+  <colgroup>
+    <col style="width: 25%;" />
+    <col style="width: 75%;" />
+  </colgroup>
+  <thead>
+    <tr>
+      <th style="text-align: left;">Requirement</th>
+      <th style="text-align: left;">Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Python</strong></td>
+      <td>3.14</td>
+    </tr>
+    <tr>
+      <td><strong>Containerization</strong></td>
+      <td>Docker &amp; Docker Compose</td>
+    </tr>
+    <tr>
+      <td><strong>Database</strong></td>
+      <td>PostgreSQL</td>
+    </tr>
+    <tr>
+      <td><strong>Setup Guide</strong></td>
+      <td>See <a href="CONTRIBUTING.md">CONTRIBUTING.md</a> for full setup instructions</td>
+    </tr>
+  </tbody>
+</table>
 
 ### Developer environment (recommended)
 
@@ -61,11 +114,333 @@ The Bodzify API uses [`audiometa-python`](https://github.com/your-username/audio
 ## MusicBrainz Integration
 The Bodzify API integrates with MusicBrainz through the AcoustID fingerprinting service to automatically identify audio tracks and retrieve metadata such as title, artist, and release date. Audio files are fingerprinted using Chromaprint and matched against the MusicBrainz database. For more details, see the [MusicBrainz Integration documentation](api/utils/musicbrainz/README.md).
 
-## Usage
-TODO
+## API Documentation
+
+### Base URL
+
+The API base URL follows the pattern: `api/{version}/`
+
+For example: `api/v1/`
+
+The API version is configured via the `APP_VERSION` environment variable.
+
+> **Note**: Since the API is currently undergoing server migration and is not available online, all examples in this documentation use `http://localhost:8000` as the base URL. When running locally, replace this with your local server address if different.
+
+### Interactive Documentation
+
+The API provides interactive documentation using OpenAPI/Swagger:
+
+- **Swagger UI**: `/api/docs/` - Interactive API explorer
+- **ReDoc**: `/api/schema/redoc/` - Alternative API documentation
+- **OpenAPI Schema**: `/api/schema/` - Raw OpenAPI schema (JSON/YAML)
+
+### Authentication
+
+The API uses JWT (JSON Web Tokens) for authentication. Most endpoints require authentication.
+
+#### Obtaining Tokens
+
+**Endpoint**: `POST /api/{version}/auth/token/`
+
+**Request Body**:
+```json
+{
+  "username": "your_username",
+  "password": "your_password"
+}
+```
+
+**Response**:
+```json
+{
+  "access": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+  "refresh": "eyJ0eXAiOiJKV1QiLCJhbGc..."
+}
+```
+
+#### Refreshing Tokens
+
+**Endpoint**: `POST /api/{version}/auth/token/refresh/`
+
+**Request Body**:
+```json
+{
+  "refresh": "your_refresh_token"
+}
+```
+
+**Response**:
+```json
+{
+  "access": "eyJ0eXAiOiJKV1QiLCJhbGc..."
+}
+```
+
+#### Using Tokens
+
+Include the access token in the `Authorization` header:
+
+```
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc...
+```
+
+**Token Lifetime**:
+- Access tokens: 100 minutes
+- Refresh tokens: 1 day
+
+#### Spotify Authentication
+
+**Endpoint**: `POST /api/{version}/auth/spotify/`
+
+Authenticate using Spotify OAuth. See [Spotify Integration documentation](api/utils/spotify_api/README.md) for details.
 
 ## API Endpoints
-TODO
+Legend: 🔒 = Requires authentication | 🔓 = No authentication required
+
+All endpoints are prefixed with the API base URL (`api/{version}/`). Most endpoints require authentication via JWT Bearer token.
+
+### Authentication
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `POST` | `/auth/token/` | Obtain JWT access and refresh tokens | 🔓 |
+| `POST` | `/auth/token/refresh/` | Refresh access token | 🔓 |
+| `POST` | `/auth/spotify/` | Authenticate with Spotify | 🔓 |
+
+### Library Management
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/library/uploaded/` | List uploaded tracks | 🔒 |
+| `POST` | `/library/uploaded/` | Upload a new track | 🔒 |
+| `GET` | `/library/uploaded/{id}/` | Retrieve a specific uploaded track | 🔒 |
+| `PUT` | `/library/uploaded/{id}/` | Update an uploaded track | 🔒 |
+| `DELETE` | `/library/uploaded/{id}/` | Delete an uploaded track | 🔒 |
+| `GET` | `/library/spotify/` | List Spotify library tracks | 🔒 |
+| `GET` | `/library/spotify/{id}/` | Retrieve a specific Spotify track | 🔒 |
+| `GET` | `/all-tracks/` | Get all tracks (uploaded and Spotify) | 🔒 |
+
+### Music Metadata
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/artists/` | List artists | 🔒 |
+| `POST` | `/artists/` | Create an artist | 🔒 |
+| `GET` | `/artists/{id}/` | Retrieve a specific artist | 🔒 |
+| `PUT` | `/artists/{id}/` | Update an artist | 🔒 |
+| `DELETE` | `/artists/{id}/` | Delete an artist | 🔒 |
+| `GET` | `/albums/` | List albums | 🔒 |
+| `POST` | `/albums/` | Create an album | 🔒 |
+| `GET` | `/albums/{id}/` | Retrieve a specific album | 🔒 |
+| `PUT` | `/albums/{id}/` | Update an album | 🔒 |
+| `DELETE` | `/albums/{id}/` | Delete an album | 🔒 |
+| `GET` | `/spotify-artists/` | List Spotify artists | 🔒 |
+| `GET` | `/spotify-artists/{id}/` | Retrieve a specific Spotify artist | 🔒 |
+
+### Organization & Classification
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/genres/` | List genres | 🔒 |
+| `POST` | `/genres/` | Create a genre | 🔒 |
+| `GET` | `/genres/{id}/` | Retrieve a specific genre | 🔒 |
+| `PUT` | `/genres/{id}/` | Update a genre | 🔒 |
+| `DELETE` | `/genres/{id}/` | Delete a genre | 🔒 |
+| `GET` | `/tags/` | List tags | 🔒 |
+| `POST` | `/tags/` | Create a tag | 🔒 |
+| `GET` | `/tags/{id}/` | Retrieve a specific tag | 🔒 |
+| `PUT` | `/tags/{id}/` | Update a tag | 🔒 |
+| `DELETE` | `/tags/{id}/` | Delete a tag | 🔒 |
+
+### Playlists
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/playlists/` | List all playlists | 🔒 |
+| `GET` | `/playlists/{id}/` | Retrieve a specific playlist | 🔒 |
+| `GET` | `/manual-playlists/` | List manual playlists | 🔒 |
+| `POST` | `/manual-playlists/` | Create a manual playlist | 🔒 |
+| `GET` | `/manual-playlists/{id}/` | Retrieve a manual playlist | 🔒 |
+| `PUT` | `/manual-playlists/{id}/` | Update a manual playlist | 🔒 |
+| `DELETE` | `/manual-playlists/{id}/` | Delete a manual playlist | 🔒 |
+| `GET` | `/genre-playlists/` | List genre-based playlists | 🔒 |
+| `GET` | `/genre-playlists/{id}/` | Retrieve a genre playlist | 🔒 |
+| `GET` | `/tag-playlists/` | List tag-based playlists | 🔒 |
+| `GET` | `/tag-playlists/{id}/` | Retrieve a tag playlist | 🔒 |
+
+### Play History
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/plays/` | List play history | 🔒 |
+| `POST` | `/plays/` | Record a play | 🔒 |
+| `GET` | `/plays/{id}/` | Retrieve a specific play record | 🔒 |
+
+### Search
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/search/` | Search across tracks, albums, artists, and playlists | 🔒 |
+
+**Query Parameters**:
+- `query`: Search query string
+- `type`: Filter by type (track, album, artist, playlist)
+
+### User Management
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/users/` | List users | 🔒 |
+| `POST` | `/users/` | Create a user | 🔒 |
+| `GET` | `/users/{id}/` | Retrieve a specific user | 🔒 |
+| `PUT` | `/users/{id}/` | Update a user | 🔒 |
+| `DELETE` | `/users/{id}/` | Delete a user | 🔒 |
+| `GET` | `/users/spotify/` | List Spotify users | 🔒 |
+| `GET` | `/users/spotify/{id}/` | Retrieve a specific Spotify user | 🔒 |
+
+## Usage
+
+### Basic Workflow
+
+#### 1. Authenticate
+
+```bash
+curl -X POST http://localhost:8000/api/v1/auth/token/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "your_username",
+    "password": "your_password"
+  }'
+```
+
+Response:
+```json
+{
+  "access": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+  "refresh": "eyJ0eXAiOiJKV1QiLCJhbGc..."
+}
+```
+
+#### 2. Upload a Track
+
+```bash
+curl -X POST http://localhost:8000/api/v1/library/uploaded/ \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -F "file=@/path/to/your/track.mp3"
+```
+
+The API will automatically:
+- Extract metadata from the audio file
+- Fingerprint the audio using AcoustID
+- Match against MusicBrainz to retrieve additional metadata
+- Create associated artist and album records if needed
+
+#### 3. Create a Genre Hierarchy
+
+```bash
+# Create parent genre
+curl -X POST http://localhost:8000/api/v1/genres/ \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Electronic Music"
+  }'
+
+# Create child genre
+curl -X POST http://localhost:8000/api/v1/genres/ \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Techno",
+    "parent": "Electronic Music"
+  }'
+```
+
+When a track is tagged with "Techno", it will automatically appear in both the "Techno" and "Electronic Music" playlists.
+
+#### 4. Tag a Track
+
+```bash
+curl -X PUT http://localhost:8000/api/v1/library/uploaded/{track_id}/ \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "genre": "Techno",
+    "tags": ["dance", "electronic"]
+  }'
+```
+
+#### 5. Search for Tracks
+
+```bash
+curl -X GET "http://localhost:8000/api/v1/search/?query=techno&type=track" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+#### 6. Record a Play
+
+```bash
+curl -X POST http://localhost:8000/api/v1/plays/ \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "track": "{track_uuid}"
+  }'
+```
+
+### Advanced Features
+
+#### Genre Tree Import
+
+Import a complete genre hierarchy from a JSON tree structure. See the [genre tree format](data/genre_reference_tree.json) for an example.
+
+#### Automatic Playlist Generation
+
+Genre and tag playlists are automatically generated based on your track classifications. When you tag a track with a genre or tag, it automatically appears in the corresponding playlist.
+
+#### MusicBrainz Integration
+
+When uploading tracks, the API automatically:
+1. Fingerprints the audio using Chromaprint
+2. Matches against AcoustID database
+3. Retrieves metadata from MusicBrainz
+4. Populates track, artist, and album information
+
+For more details, see the [MusicBrainz Integration documentation](api/utils/musicbrainz/README.md).
+
+### Error Handling
+
+The API uses standard HTTP status codes:
+
+- `200 OK`: Successful request
+- `201 Created`: Resource created successfully
+- `400 Bad Request`: Invalid request data
+- `401 Unauthorized`: Authentication required or invalid token
+- `403 Forbidden`: Insufficient permissions
+- `404 Not Found`: Resource not found
+- `500 Internal Server Error`: Server error
+
+Error responses follow this format:
+
+```json
+{
+  "detail": "Error message",
+  "code": "error_code"
+}
+```
+
+For validation errors:
+
+```json
+{
+  "field_name": [
+    {
+      "message": "Error message",
+      "code": "error_code"
+    }
+  ]
+}
+```
 
 ## Contributing
 
