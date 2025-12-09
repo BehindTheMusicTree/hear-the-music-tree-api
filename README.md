@@ -14,19 +14,22 @@ Bodzify API is an online platform similar to iTunes, designed for managing and i
 - [Features](#features)
 - [Getting Started](#getting-started)
   - [Developer environment (recommended)](#developer-environment-recommended)
-- [API Documentation](#api-documentation)
-  - [Base URL](#base-url)
-  - [Interactive Documentation](#interactive-documentation)
+- [API](#api)
+  - [Base URL & Interactive Documentation](#base-url--interactive-documentation)
   - [Authentication](#authentication)
-- [API Endpoints](#api-endpoints)
-  - [Authentication](#authentication-1)
-  - [Library Management](#library-management)
-  - [Music Metadata](#music-metadata)
-  - [Organization & Classification](#organization--classification)
-  - [Playlists](#playlists)
-  - [Play History](#play-history)
-  - [Search](#search)
-  - [User Management](#user-management)
+    - [Obtaining Tokens](#obtaining-tokens)
+    - [Refreshing Tokens](#refreshing-tokens)
+    - [Using Tokens](#using-tokens)
+    - [Spotify Authentication](#spotify-authentication)
+  - [Endpoints Reference](#endpoints-reference)
+    - [Authentication](#authentication-1)
+    - [Library Management](#library-management)
+    - [Music Metadata](#music-metadata)
+    - [Organization & Classification](#organization--classification)
+    - [Playlists](#playlists)
+    - [Play History](#play-history)
+    - [Search](#search)
+    - [User Management](#user-management)
 - [Usage](#usage)
   - [Basic Workflow](#basic-workflow)
   - [Advanced Features](#advanced-features)
@@ -115,9 +118,11 @@ pip install -r requirements.txt
 
 If you prefer a different venv name or layout, adjust your local VS Code interpreter selection. The repository stores a workspace-relative default to keep experience consistent for new contributors.
 
-## API Documentation
+## API
 
-### Base URL
+### Base URL & Interactive Documentation
+
+#### Base URL
 
 The API base URL follows the pattern: `api/{version}/`
 
@@ -127,7 +132,7 @@ The API version is configured via the `APP_VERSION` environment variable.
 
 > **Note**: Since the API is currently undergoing server migration and is not available online, all examples in this documentation use `http://localhost:8000` as the base URL. When running locally, replace this with your local server address if different.
 
-### Interactive Documentation
+#### Interactive Documentation
 
 The API provides interactive documentation using OpenAPI/Swagger:
 
@@ -191,11 +196,73 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc...
 
 #### Spotify Authentication
 
+The API supports authentication via Spotify OAuth, allowing users to sign in with their Spotify account.
+
+**OAuth Flow**:
+
+1. **Redirect to Spotify Authorization**: Your frontend should redirect users to Spotify's authorization URL to obtain an authorization code. The authorization URL should include:
+   - `client_id`: Your Spotify app client ID
+   - `redirect_uri`: Your registered redirect URI
+   - `scope`: Required scopes (e.g., `user-read-email user-read-private user-library-read`)
+   - `response_type`: `code`
+   - `state`: Optional state parameter for CSRF protection
+
+2. **Exchange Code for Tokens**: After the user authorizes, Spotify redirects back with an authorization `code`. Send this code to the API:
+
 **Endpoint**: `POST /api/{version}/auth/spotify/`
 
-Authenticate using Spotify OAuth. See [Spotify Integration documentation](api/utils/spotify_api/README.md) for details.
+**Request Body**:
+```json
+{
+  "code": "spotify_authorization_code"
+}
+```
 
-## API Endpoints
+**Response**:
+```json
+{
+  "accessToken": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+  "refreshToken": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+  "expires_at": "2024-01-15T12:00:00Z",
+  "spotifyUser": {
+    "spotify_profile": {
+      "id": "spotify_user_id",
+      "display_name": "User Name",
+      "email": "user@example.com",
+      "followers": {...},
+      "images": [...],
+      "uri": "spotify:user:..."
+    },
+    "id": 123,
+    "email": "user@example.com",
+    "spotify_id": "spotify_user_id",
+    "display_name": "User Name",
+    "followers": {...},
+    "href": "https://api.spotify.com/v1/users/...",
+    "images": [...],
+    "type": "user",
+    "uri": "spotify:user:..."
+  }
+}
+```
+
+**What Happens**:
+- The API exchanges the authorization code for Spotify access and refresh tokens
+- Creates or updates a Spotify user account in the system
+- Returns JWT tokens (access and refresh) for API authentication
+- Returns Spotify user profile information
+
+**Using the JWT Token**:
+After Spotify authentication, use the returned `accessToken` as a JWT Bearer token for subsequent API requests, just like with regular JWT authentication:
+
+```
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc...
+```
+
+**Note**: For detailed setup instructions and Spotify API configuration, see the [Spotify Integration documentation](api/utils/spotify_api/README.md).
+
+### Endpoints Reference
+
 Legend: 🔒 = Requires authentication | 🔓 = No authentication required
 
 All endpoints are prefixed with the API base URL (`api/{version}/`). Most endpoints require authentication via JWT Bearer token.
