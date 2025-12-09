@@ -18,7 +18,7 @@ from api.exception.validation.app.AppValidationException import AppValidationExc
 from api.model.field.foreign_key.AppForeignKey import AppForeignKey
 from api.model.field.foreign_key.AppOneToOneField import AppOneToOneField
 from api.model.field.foreign_key.PrivateOneToOneField import PrivateOneToOneField
-from api.model.musicbrainz_resource.children.recording.MbRecording import MusicbrainzRecording
+from api.model.musicbrainz_resource.children.recording.MbRecording import MbRecording
 from api.model.musicbrainz_resource.children.recording.MbRecordingLookupResult import (
     MusicbrainzRecordingLookupResult
 )
@@ -64,7 +64,7 @@ class TrackFile(PrivateStandardResource):
                                        output_field=models.DecimalField(max_digits=5, decimal_places=2),
                                        db_persist=True)
     bitrate_in_kbps = models.IntegerField()
-    musicbrainz_recording = AppForeignKey(MusicbrainzRecording, on_delete=models.DO_NOTHING, default=None, null=True)
+    musicbrainz_recording = AppForeignKey(MbRecording, on_delete=models.DO_NOTHING, default=None, null=True)
     musicbrainz_recording_missing_cause = AppOneToOneField(
         MbRecordingMissingCause, on_delete=models.DO_NOTHING, null=True)
 

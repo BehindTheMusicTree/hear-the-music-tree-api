@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from api.model.musicbrainz_resource.children.recording.MbRecording import Fields as ModelFields
-from api.model.musicbrainz_resource.children.recording.MbRecording import MusicbrainzRecording
+from api.model.musicbrainz_resource.children.recording.MbRecording import MbRecording
 from api.serializer.model.musicbrainz.artist.detailed import MusicbrainzArtistDetailedSerializer
 
 
@@ -20,7 +20,7 @@ class MusicbrainzRecordingDetailedSerializer(serializers.ModelSerializer):
     musicbrainz_artists = MusicbrainzArtistDetailedSerializer(many=True)
 
     class Meta:
-        model = MusicbrainzRecording
+        model = MbRecording
         fields = [
             Fields.MUSICBRAINZ_ID,
             Fields.TITLE,
