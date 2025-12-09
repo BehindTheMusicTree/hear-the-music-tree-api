@@ -8,8 +8,8 @@ Bodzify API is an online platform similar to iTunes, designed for managing and i
 
 > **⚠️ Note**: The API is currently undergoing server migration and is not available online. Please set up a local development environment to use the API. See [Getting Started](#getting-started) for setup instructions.
 
-<details>
-<summary><strong>Table of Contents</strong></summary>
+
+## Table of Contents
 
 - [Features](#features)
 - [Getting Started](#getting-started)
@@ -28,8 +28,6 @@ Bodzify API is an online platform similar to iTunes, designed for managing and i
 - [Contributing](#contributing)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
-
-</details>
 
 ## Features
 
