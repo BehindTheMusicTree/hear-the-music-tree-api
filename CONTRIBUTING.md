@@ -397,8 +397,13 @@ We use pytest for all automated testing with Django.
 # Run all tests
 pytest
 
+# Run tests for a specific category
+pytest api/test/tests/unit/
+pytest api/test/tests/integration/
+pytest api/test/tests/e2e/
+
 # Run tests for a specific module
-pytest api/test/view/track/
+pytest api/test/tests/integration/view/uploaded_track/
 
 # Run tests with coverage
 pytest --cov=app --cov-report=html --cov-report=term-missing
@@ -407,15 +412,20 @@ pytest --cov=app --cov-report=html --cov-report=term-missing
 pytest -v
 
 # Run a specific test file
-pytest api/test/view/track/test_specific.py
+pytest api/test/tests/integration/view/uploaded_track/test_specific.py
 ```
 
 **Test Structure:**
 
-- Tests are located in `api/test/`
+- Tests are located in `api/test/tests/` directory, organized by category:
+  - `tests/unit/` - Unit tests
+  - `tests/integration/` - Integration tests
+  - `tests/e2e/` - End-to-end tests
 - Follow the naming convention: `test_{scenario}_then_{expected_result}`
 - Use `assert` instead of `assertEqual`
 - Each test should focus on a single scenario
+
+For detailed information about test structure, organization, and conventions, see [Test README](api/test/README.md).
 
 **CI Testing:**
 

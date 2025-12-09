@@ -24,16 +24,16 @@ For information about development standards, see [Development Guidelines](DEVELO
 
 Tests are organized into three categories: **unit**, **integration**, and **e2e**.
 
-#### Unit Tests (`unit/`)
+#### Unit Tests (`tests/unit/`)
 
 Unit tests test individual functions, classes, or modules in isolation with mocked dependencies.
 
-**Location:** `api/test/unit/`
+**Location:** `api/test/tests/unit/`
 
 **Examples:**
-- `unit/utils/audiometa_adapter/` - Tests for audiometa adapter functions
-- `unit/utils/file_path_utils/` - Tests for file path utility functions
-- `unit/validator/` - Tests for validators
+- `tests/unit/utils/audiometa_adapter/` - Tests for audiometa adapter functions
+- `tests/unit/utils/file_path_utils/` - Tests for file path utility functions
+- `tests/unit/validator/` - Tests for validators
 
 **Characteristics:**
 - Fast execution
@@ -41,14 +41,16 @@ Unit tests test individual functions, classes, or modules in isolation with mock
 - Mocked external dependencies
 - Test single functions/methods
 
-#### Integration Tests (`integration/`)
+#### Integration Tests (`tests/integration/`)
 
 Integration tests test how multiple components work together, typically through API endpoints.
 
-**Location:** `api/test/integration/`
+**Location:** `api/test/tests/integration/`
 
 **Examples:**
-- `integration/view/uploaded_track/` - Tests for uploaded track API endpoints
+- `tests/integration/view/uploaded_track/` - Tests for uploaded track API endpoints
+- `tests/integration/middleware/` - Tests for middleware components
+- `tests/integration/private_resource/` - Tests for private resource filtering
 - Tests that verify metadata reading/writing through the full API stack
 
 **Characteristics:**
@@ -57,13 +59,16 @@ Integration tests test how multiple components work together, typically through 
 - Test component interactions
 - May use real file operations
 
-#### E2E Tests (`e2e/`)
+#### E2E Tests (`tests/e2e/`)
 
 End-to-end tests test complete user workflows and critical paths.
 
-**Location:** `api/test/e2e/`
+**Location:** `api/test/tests/e2e/`
 
 **Examples:**
+- `tests/e2e/track_upload/` - Complete track upload workflows
+- `tests/e2e/genre_hierarchy/` - Genre hierarchy and playlist generation
+- `tests/e2e/spotify/` - Spotify OAuth and library sync
 - Full user workflows (upload → process → retrieve)
 - Critical system integrations (audio fingerprinting, Spotify integration)
 
@@ -75,7 +80,7 @@ End-to-end tests test complete user workflows and critical paths.
 
 ### Test Location
 
-All tests are located in `api/test/` directory, organized by category.
+All tests are located in `api/test/tests/` directory, organized by category. This keeps the test directory structure clean with only test files in the `tests/` subdirectory.
 
 ## Test Naming Convention
 
@@ -195,20 +200,22 @@ pytest
 
 Run specific category:
 ```bash
-pytest api/test/unit/
-pytest api/test/integration/
-pytest api/test/e2e/
+pytest api/test/tests/unit/
+pytest api/test/tests/integration/
+pytest api/test/tests/e2e/
 ```
 
 Run specific test file:
 ```bash
-pytest api/test/unit/utils/audiometa_adapter/test_audiometa_adapter.py
+pytest api/test/tests/unit/utils/audiometa_adapter/test_audiometa_adapter.py
 ```
 
 Run specific test:
 ```bash
-pytest api/test/view/track/test_specific.py::TestCase::test_specific_scenario
+pytest api/test/tests/integration/view/uploaded_track/test_specific.py::TestCase::test_specific_scenario
 ```
+
+For more detailed information about test structure and organization, see [Test README](api/test/README.md).
 
 ## External Service Dependencies
 
