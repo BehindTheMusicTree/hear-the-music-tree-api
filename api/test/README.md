@@ -23,34 +23,53 @@ Unit tests test individual functions, classes, or modules in isolation with mock
 
 **Location:** `api/test/tests/unit/`
 
+**Organization:** Unit tests are organized by component type to mirror the codebase structure:
+- `tests/unit/model/` - Model tests (business logic, methods, properties)
+- `tests/unit/serializer/` - Serializer tests (validation, field behavior)
+- `tests/unit/utils/` - Utility function tests
+- `tests/unit/middleware/` - Middleware component tests
+- `tests/unit/validator/` - Validator tests
+
 **Examples:**
 - `tests/unit/utils/audiometa_adapter/` - Tests for audiometa adapter functions
 - `tests/unit/utils/file_path_utils/` - Tests for file path utility functions
 - `tests/unit/validator/` - Tests for validators
+- `tests/unit/serializer/field/` - Tests for serializer field classes
+- `tests/unit/middleware/` - Tests for middleware components
 
 **Characteristics:**
 - Fast execution
-- No database access
+- No database access (or minimal, isolated database usage)
 - Mocked external dependencies
-- Test single functions/methods
+- Test single functions/methods/classes in isolation
 
 ### Integration Tests (`tests/integration/`)
 
-Integration tests test how multiple components work together, typically through API endpoints.
+Integration tests test how multiple components work together through API endpoints. These tests verify that the full request/response cycle works correctly, including middleware, serializers, views, and database interactions.
 
 **Location:** `api/test/tests/integration/`
 
+**Organization:** Integration tests are organized by API endpoint/resource:
+- `tests/integration/view/` - API endpoint tests organized by resource
+  - `view/uploaded_track/` - Uploaded track endpoints
+  - `view/playlist/` - Playlist endpoints
+  - `view/criteria/` - Criteria/genre endpoints
+  - `view/artist/` - Artist endpoints
+  - etc.
+
 **Examples:**
 - `tests/integration/view/uploaded_track/` - Tests for uploaded track API endpoints
-- `tests/integration/middleware/` - Tests for middleware components
-- `tests/integration/private_resource/` - Tests for private resource filtering
-- Tests that verify metadata reading/writing through the full API stack
+- `tests/integration/view/playlist/` - Tests for playlist API endpoints
+- `tests/integration/view/criteria/` - Tests for criteria/genre API endpoints
+- Tests that verify the full API stack (middleware → serializer → view → database)
 
 **Characteristics:**
-- Use database
-- Test API endpoints
-- Test component interactions
+- Use database (real or test database)
+- Test complete API endpoints (HTTP methods: GET, POST, PUT, DELETE)
+- Test component interactions (middleware, serializers, views working together)
 - May use real file operations
+- Test authentication and authorization
+- Test error handling through the full stack
 
 ### E2E Tests (`tests/e2e/`)
 
@@ -88,6 +107,14 @@ pytest api/test/tests/e2e/
 Run specific test file:
 ```bash
 pytest api/test/tests/unit/utils/audiometa_adapter/test_audiometa_adapter.py
+pytest api/test/tests/integration/view/uploaded_track/test_post.py
+```
+
+Run tests for a specific component:
+```bash
+pytest api/test/tests/unit/serializer/
+pytest api/test/tests/unit/utils/
+pytest api/test/tests/integration/view/uploaded_track/
 ```
 
 ## Test Naming Convention
