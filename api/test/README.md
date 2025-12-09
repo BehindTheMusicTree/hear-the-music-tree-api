@@ -50,18 +50,18 @@ Integration tests test how multiple components work together through API endpoin
 **Location:** `api/test/tests/integration/`
 
 **Organization:** Integration tests are organized by API endpoint/resource:
-- `tests/integration/view/` - API endpoint tests organized by resource
-  - `view/uploaded_track/` - Uploaded track endpoints
-  - `view/playlist/` - Playlist endpoints
-  - `view/criteria/` - Criteria/genre endpoints
-  - `view/artist/` - Artist endpoints
-  - `view/common/` - Cross-cutting concerns tested through endpoints (e.g., security, duplicate fields)
+- `tests/integration/` - API endpoint tests organized by resource
+  - `uploaded_track/` - Uploaded track endpoints
+  - `playlist/` - Playlist endpoints
+  - `criteria/` - Criteria/genre endpoints
+  - `artist/` - Artist endpoints
+  - `common/` - Cross-cutting concerns tested through endpoints (e.g., security, duplicate fields)
   - etc.
 
 **Examples:**
-- `tests/integration/view/uploaded_track/` - Tests for uploaded track API endpoints
-- `tests/integration/view/playlist/` - Tests for playlist API endpoints
-- `tests/integration/view/criteria/` - Tests for criteria/genre API endpoints
+- `tests/integration/uploaded_track/` - Tests for uploaded track API endpoints
+- `tests/integration/playlist/` - Tests for playlist API endpoints
+- `tests/integration/criteria/` - Tests for criteria/genre API endpoints
 - Tests that verify the full API stack (middleware → serializer → view → database)
 
 **Characteristics:**
@@ -108,14 +108,14 @@ pytest api/test/tests/e2e/
 Run specific test file:
 ```bash
 pytest api/test/tests/unit/utils/audiometa_adapter/test_audiometa_adapter.py
-pytest api/test/tests/integration/view/uploaded_track/test_post.py
+pytest api/test/tests/integration/uploaded_track/test_post.py
 ```
 
 Run tests for a specific component:
 ```bash
 pytest api/test/tests/unit/serializer/
 pytest api/test/tests/unit/utils/
-pytest api/test/tests/integration/view/uploaded_track/
+pytest api/test/tests/integration/uploaded_track/
 ```
 
 ## Test Naming Convention
