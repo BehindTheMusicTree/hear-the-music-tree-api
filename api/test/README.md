@@ -55,6 +55,7 @@ Integration tests test how multiple components work together through API endpoin
   - `view/playlist/` - Playlist endpoints
   - `view/criteria/` - Criteria/genre endpoints
   - `view/artist/` - Artist endpoints
+  - `view/common/` - Cross-cutting concerns tested through endpoints (e.g., security, duplicate fields)
   - etc.
 
 **Examples:**
