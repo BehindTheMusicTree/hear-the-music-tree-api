@@ -1,6 +1,6 @@
-# Welcome to Bodzify API Discussions! 🎵
+# Welcome to HearTheMusicTree API Discussions! 🎵
 
-Welcome to the Bodzify API community discussions! This is the place to ask questions, share ideas, discuss music-related topics, and connect with other users and contributors.
+Welcome to the HearTheMusicTree API community discussions! This is the place to ask questions, share ideas, discuss music-related topics, and connect with other users and contributors.
 
 ## What are Discussions?
 
@@ -16,13 +16,13 @@ Discussions are a great place for:
 We have several categories to help organize conversations:
 
 ### 📋 General (Q&A)
-Ask questions and get answers about using Bodzify API. Whether you're troubleshooting, looking for examples, or need clarification on how something works, this is the place to ask!
+Ask questions and get answers about using HearTheMusicTree API. Whether you're troubleshooting, looking for examples, or need clarification on how something works, this is the place to ask!
 
 ### 💡 Ideas
 Share your ideas and suggestions for new features or improvements. This is perfect for brainstorming and gathering community feedback before creating a formal feature request.
 
 ### 🎨 Show and Tell
-Share your projects, integrations, or experiences with Bodzify API! We'd love to see what you've built and learn from your experiences.
+Share your projects, integrations, or experiences with HearTheMusicTree API! We'd love to see what you've built and learn from your experiences.
 
 ### 📢 Announcements
 Important announcements and updates from maintainers. This includes release announcements, breaking changes, and other important news.

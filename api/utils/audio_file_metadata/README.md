@@ -1,6 +1,6 @@
 # Audio Metadata Handling
 
-This module provides audio metadata handling capabilities for the Bodzify API using [`audiometa-python`](https://pypi.org/project/audiometa-python/) version 0.4.1.
+This module provides audio metadata handling capabilities for the HearTheMusicTree API using [`audiometa-python`](https://pypi.org/project/audiometa-python/) version 0.4.1.
 
 ## Table of Contents
 
