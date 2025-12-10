@@ -58,6 +58,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v0.3.0] - 2025-12-10
+
 ### Changed
 
 - **Test Organization**: Reorganized test structure to align with DRF conventions
@@ -69,6 +71,16 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
   - Removed redundant `view/` and `common/` directories from integration tests
   - Updated test documentation to reflect new structure
 
+- **Audio Metadata**: Replaced audio metadata management module with `audiometa-python` (bumped to `0.8.1` in `requirements.txt`)
+- **Dependencies**: 
+  - Updated `Django` from 5.0.3 to 5.2.8
+  - Updated `asgiref` from 3.7.2 to 3.8.1 for Django 5.2.8 compatibility
+  - Updated `psycopg2-binary` from 2.9.5 to 2.9.11 for Python 3.14 compatibility
+  - Updated `django-stubs` from 5.1.1 to 5.2.1 for Django 5.2.8 compatibility
+  - Updated `django-filter` from 22.1 to 25.2 for Python 3.14 compatibility (fixes `pkgutil.find_loader` removal)
+  - Updated `django-polymorphic` from 3.1.0 to 4.1.0 to resolve pkg_resources deprecation warning and ensure Django 5.2 compatibility
+  - Removed `mutagen` from direct dependencies. No longer needed as direct dependency since all audio operations now use `audiometa-python`
+
 ### Documentation
 
 - **Test Documentation**: Updated test README and contributing guide
@@ -77,6 +89,46 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
   - Updated CONTRIBUTING.md to reference test README
   - Added unit test suggestions document with detailed test scenarios
   - Clarified distinction between unit, integration, and E2E tests
+
+- **Project Management**: Added `TODO.md` for tracking future work and improvements
+  - Categorized by priority (high, medium, low)
+  - Organized by features, testing, and infrastructure
+
+- **Contributing Documentation**: Comprehensive contributing guide with strict Git Flow workflow
+  - Detailed branch naming and merging rules for `main`, `develop`, `feature/*`, `release/*`, `hotfix/*`, and `chore/*` branches
+  - Installation and setup instructions
+  - Code style guidelines and development best practices
+  - Pre-PR checklist and review process
+  - Release process documentation
+
+- **Development Guidelines**: Added `DEVELOPMENT.md` with comprehensive coding standards
+  - Code quality practices and conventions
+  - Django best practices for models, serializers, views, and filtering
+  - Type checking and error handling guidelines
+  - Documentation standards
+
+- **Cursor Rules**: Added AI assistant rules to enforce project standards
+  - Git Flow workflow enforcement
+  - Commit message convention (Conventional Commits)
+  - Pull request title convention
+  - Issue template usage guidelines
+  - Pre-PR checklist enforcement
+  - Issue descriptions in separate version-controlled files
+  - PR descriptions in git-ignored directory for local drafting
+  - Test naming convention and structure guidelines
+  - Changelog best practices
+
+- **README**: Simplified `README.md` to provide high-level overview with links to detailed documentation
+  - Moved detailed setup instructions to `CONTRIBUTING.md`
+  - Added badges for license, Python version, and Django version
+
+- **Contributing Guide**: Reorganized installation steps in `CONTRIBUTING.md` for logical flow
+  - Environment variables setup before scripts that use them
+  - Improved step-by-step instructions clarity
+
+- **License**: Added Apache License 2.0
+
+- **Code of Conduct**: Added Contributor Covenant 2.1
 
 ### Added
 
@@ -96,10 +148,11 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
   - Updated `ErrorResponse`, `AppValidationException`, `AppSerializer`, `ExceptionLoggingMiddleware`, and `RequestLoggingMiddleware` to safely handle DRF exceptions in Python 3.14
   - Prevents middleware crashes when exception stringification fails
 
-- **Filesystem Setup**: 
-Fixed `setup-filesystem.sh` to check for `DJANGO_LOG_DIR` instead of `DJANGO_LOGS_DIR` to properly create log directories
-Update app name to 'api'
+- **Filesystem Setup**: Fixed `setup-filesystem.sh` to check for `DJANGO_LOG_DIR` instead of `DJANGO_LOGS_DIR` to properly create log directories
+  - Updated app name to 'api'
+
 - **Filter Backend**: Added `get_schema_operation_parameters` method to `ConsistentParametersFilterBackend` for drf-spectacular compatibility with django-filter 25.2
+
 - **Django 6.0 Compatibility**: Replaced deprecated `CheckConstraint.check` with `condition` parameter in all model constraints
   - Updated 6 model files: `CriteriaType`, `Criteria`, `Artist`, `Album`, `FingerprintMissingCauseCode`, `ManualPlaylist`
   - Updated migration file `0001_initial.py` to use new syntax
@@ -146,61 +199,6 @@ Update app name to 'api'
 - **CI/CD**: Updated GitHub Actions workflow to use `develop` branch instead of `dev`
   - Updated Python version to 3.14 in CI workflows
   - Added branch protection checks for Git Flow enforcement
-
-### Changed
-
-- **Audio Metadata**: Replaced audio metadata management module with `audiometa-python` (bumped to `0.8.1` in `requirements.txt`)
-- **Dependencies**: 
-  - Updated `Django` from 5.0.3 to 5.2.8
-  - Updated `asgiref` from 3.7.2 to 3.8.1 for Django 5.2.8 compatibility
-  - Updated `psycopg2-binary` from 2.9.5 to 2.9.11 for Python 3.14 compatibility
-  - Updated `django-stubs` from 5.1.1 to 5.2.1 for Django 5.2.8 compatibility
-  - Updated `django-filter` from 22.1 to 25.2 for Python 3.14 compatibility (fixes `pkgutil.find_loader` removal)
-  - Updated `django-polymorphic` from 3.1.0 to 4.1.0 to resolve pkg_resources deprecation warning and ensure Django 5.2 compatibility
-  - **Audio Metadata**: Replace audio metadata management module with audiometa-python 0.8.0
-  - Removed `mutagen` from direct dependencies. No longer needed as direct dependency since all audio operations now use `audiometa-python`
-
-### Documentation
-
-- **Project Management**: Added `TODO.md` for tracking future work and improvements
-  - Categorized by priority (high, medium, low)
-  - Organized by features, testing, and infrastructure
-
-- **Contributing Documentation**: Comprehensive contributing guide with strict Git Flow workflow
-  - Detailed branch naming and merging rules for `main`, `develop`, `feature/*`, `release/*`, `hotfix/*`, and `chore/*` branches
-  - Installation and setup instructions
-  - Code style guidelines and development best practices
-  - Pre-PR checklist and review process
-  - Release process documentation
-
-- **Development Guidelines**: Added `DEVELOPMENT.md` with comprehensive coding standards
-  - Code quality practices and conventions
-  - Django best practices for models, serializers, views, and filtering
-  - Type checking and error handling guidelines
-  - Documentation standards
-
-- **Cursor Rules**: Added AI assistant rules to enforce project standards
-  - Git Flow workflow enforcement
-  - Commit message convention (Conventional Commits)
-  - Pull request title convention
-  - Issue template usage guidelines
-  - Pre-PR checklist enforcement
-  - Issue descriptions in separate version-controlled files
-  - PR descriptions in git-ignored directory for local drafting
-  - Test naming convention and structure guidelines
-  - Changelog best practices
-
-- **README**: Simplified `README.md` to provide high-level overview with links to detailed documentation
-  - Moved detailed setup instructions to `CONTRIBUTING.md`
-  - Added badges for license, Python version, and Django version
-
-- **Contributing Guide**: Reorganized installation steps in `CONTRIBUTING.md` for logical flow
-  - Environment variables setup before scripts that use them
-  - Improved step-by-step instructions clarity
-
-- **License**: Added Apache License 2.0
-
-- **Code of Conduct**: Added Contributor Covenant 2.1
 
 ## [v0.2.0] - 2025-04-03
 
