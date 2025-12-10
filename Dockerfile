@@ -2,7 +2,7 @@
 # Base Image: Debian Buster (a full Debian distribution).
 # Size: Larger, as it includes more tools and libraries by default.
 # Use Case: Suitable when you need a full Debian environment with more pre-installed tools and libraries.
-FROM python:3.11-buster
+FROM python:3.14-buster
 
 ARG PROJECT_DIR
 ARG APP_NAME
@@ -108,7 +108,7 @@ RUN apt update && \
     bash scripts/setup-filesystem.sh && \
     chmod +x ${PROJECT_DIR}scripts/entrypoint.sh && \
     FIXTURES_DIR=${APP_DIR}fixtures/ && \
-    cp ${FIXTURES_DIR}app/* ${FIXTURES_DIR} && \
+    cp ${FIXTURES_DIR}api/* ${FIXTURES_DIR} && \
     cp ${FIXTURES_DIR}users/test/* ${FIXTURES_DIR} && \
     cp ${FIXTURES_DIR}users/umg/* ${FIXTURES_DIR}
 

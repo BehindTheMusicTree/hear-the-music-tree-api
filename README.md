@@ -1,6 +1,45 @@
 # Bodzify API
 
+[![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/python-3.14-blue.svg)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/django-5.2-green.svg)](https://www.djangoproject.com/)
+
 Bodzify API is an online platform similar to iTunes, designed for managing and interacting with music tracks. It offers a range of features to help you organize, tag, and rate your music, as well as create automatic hierarchical genre playlists.
+
+> **⚠️ Note**: The API is currently undergoing server migration and is not available online. Please set up a local development environment to use the API. See [Getting Started](#getting-started) for setup instructions.
+
+
+## Table of Contents
+
+- [Features](#features)
+- [Getting Started](#getting-started)
+  - [Developer environment (recommended)](#developer-environment-recommended)
+- [API](#api)
+  - [Base URL & Interactive Documentation](#base-url--interactive-documentation)
+  - [Authentication](#authentication)
+    - [Obtaining Tokens](#obtaining-tokens)
+    - [Refreshing Tokens](#refreshing-tokens)
+    - [Using Tokens](#using-tokens)
+    - [Spotify Authentication](#spotify-authentication)
+  - [Endpoints Reference](#endpoints-reference)
+    - [Authentication](#authentication-1)
+    - [Library Management](#library-management)
+    - [Music Metadata](#music-metadata)
+    - [Organization & Classification](#organization--classification)
+    - [Playlists](#playlists)
+    - [Play History](#play-history)
+    - [Search](#search)
+    - [User Management](#user-management)
+- [Usage](#usage)
+  - [Basic Workflow](#basic-workflow)
+  - [Advanced Features](#advanced-features)
+  - [Error Handling](#error-handling)
+- [Technical Details](#technical-details)
+  - [Audio Metadata Handling](#audio-metadata-handling)
+  - [MusicBrainz Integration](#musicbrainz-integration)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
 
 ## Features
 
@@ -11,75 +50,482 @@ Bodzify API is an online platform similar to iTunes, designed for managing and i
 
 ## Getting Started
 
-### Prerequisites
+For detailed setup and installation instructions, please see the [Contributing Guidelines](CONTRIBUTING.md#1-environment-setup).
 
-- Docker
-- Docker Compose
+**Quick Start:**
 
-### Installation
+<!-- Use an HTML table so we can set column widths on GitHub render -->
+<table>
+  <colgroup>
+    <col style="width: 25%;" />
+    <col style="width: 75%;" />
+  </colgroup>
+  <thead>
+    <tr>
+      <th style="text-align: left;">Requirement</th>
+      <th style="text-align: left;">Details</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Python</strong></td>
+      <td>3.14</td>
+    </tr>
+    <tr>
+      <td><strong>Containerization</strong></td>
+      <td>Docker &amp; Docker Compose</td>
+    </tr>
+    <tr>
+      <td><strong>Database</strong></td>
+      <td>PostgreSQL</td>
+    </tr>
+    <tr>
+      <td><strong>Setup Guide</strong></td>
+      <td>See <a href="CONTRIBUTING.md">CONTRIBUTING.md</a> for full setup instructions</td>
+    </tr>
+  </tbody>
+</table>
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/mignot/bodzify-api-django.git
-   cd bodzify-api
+### Developer environment (recommended)
 
-### Environment Variables
-You need to set up several environment variables for development, build, and run. Below are the required variables and 
-examples of how to set them.
+To keep a consistent, reproducible development environment across contributors, we recommend creating a workspace-local virtual environment named `.venv` in the project root and pointing Visual Studio Code to use that interpreter.
 
-#### Development
-Create a copy of the file env/dev/.env.dev.template here: env/.env and set the values.
+1) Create a `.venv` in the project root:
 
-#### Build
-The docker build requires the following environment variables:
-- `APP_NAME`
-- `APP_VERSION`
-- `TMP_UPLOADED_FILES_EXTERNAL`
-- `MEDIA_DIR_EXTERNAL`
-- `LIBRARIES_DIR_NAME`
-- `STATIC_FILES_EXTERNAL`
-- `STATIC_FILES_INTERNAL`
-- `DJANGO_LOG_DIR_EXTERNAL`
-- `DJANGO_LOG_GENERAL_FILENAME`
-- `DJANGO_LOG_INFO_FILENAME`
-- `DJANGO_LOG_REQUESTS_FILENAME`
-- `DJANGO_LOG_REQUESTS_DEBUG_FILENAME`
-- `DJANGO_LOG_EXCEPTIONS_FILENAME`
-- `DJANGO_LOG_DJANGO_FILENAME`
-- `DJANGO_LOG_APP_FILENAME`
-- `GUNICORN_LOG_DIR`
-- `GUNICORN_LOG_ERROR_FILENAME`
-- `GUNICORN_LOG_ACCESS_FILENAME`
+```bash
+python3 -m venv .venv
+```
 
-#### Running the container
-Running the container requires the following environment variables:
-- `DJANGO_SECRET_KEY`
-- `ACOUSTID_API_KEY`
-- `CSRF_TRUSTED_ORIGINS`
-- `ALLOWED_HOSTS`
-- `DB_CONTAINER_NAME`
-- `DB_PORT=5432`
-- `DB_BODZIFY_API_DB_NAME`
-- `DB_BODZIFY_API_USERNAME`
-- `DB_BODZIFY_API_USER_PASSWORD`
-- `AFP_CONTAINER_NAME` (AFP meaning Audio FingerPrinter)
-- `AFP_PORT`
-- `AFP_POST_ENDPOINT`
+2) Activate the virtualenv:
 
-## Database Requirement
-The Bodzify API requires a database to function. It has been tested with PostgreSQL, and it is recommended to use PostgreSQL for the best compatibility and performance.
+- macOS / Linux:
+	```bash
+	source .venv/bin/activate
+	```
+- Windows (PowerShell):
+	```powershell
+	.\.venv\Scripts\Activate.ps1
+	```
 
-## Audio Meta Analyse Requirement
-For audio meta analysis, the Bodzify API requires an app called Audio Fingerprinter. You can find the Audio Fingerprinter app on GitHub at the following link: [Audio Fingerprinter](https://github.com/Bodzify/bodzify-audio-fingerprinter-flask)
+3) Install dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+4) VS Code setup
+- The repository workspace settings now reference `${workspaceFolder}/.venv/bin/python` (instead of a machine-local absolute path) so VS Code will automatically pick the correct interpreter if your `.venv` is in the project root.
+- Alternatively, run the VS Code command `Python: Select Interpreter` and choose `.venv/bin/python`.
+
+If you prefer a different venv name or layout, adjust your local VS Code interpreter selection. The repository stores a workspace-relative default to keep experience consistent for new contributors.
+
+## API
+
+### Base URL & Interactive Documentation
+
+#### Base URL
+
+The API base URL follows the pattern: `api/{version}/`
+
+For example: `api/v1/`
+
+The API version is configured via the `APP_VERSION` environment variable.
+
+> **Note**: Since the API is currently undergoing server migration and is not available online, all examples in this documentation use `http://localhost:8000` as the base URL. When running locally, replace this with your local server address if different.
+
+#### Interactive Documentation
+
+The API provides interactive documentation using OpenAPI/Swagger:
+
+- **Swagger UI**: `/api/docs/` - Interactive API explorer
+- **ReDoc**: `/api/schema/redoc/` - Alternative API documentation
+- **OpenAPI Schema**: `/api/schema/` - Raw OpenAPI schema (JSON/YAML)
+
+### Authentication
+
+The API uses JWT (JSON Web Tokens) for authentication. Most endpoints require authentication.
+
+#### Obtaining Tokens
+
+**Endpoint**: `POST /api/{version}/auth/token/`
+
+**Request Body**:
+```json
+{
+  "username": "your_username",
+  "password": "your_password"
+}
+```
+
+**Response**:
+```json
+{
+  "access": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+  "refresh": "eyJ0eXAiOiJKV1QiLCJhbGc..."
+}
+```
+
+#### Refreshing Tokens
+
+**Endpoint**: `POST /api/{version}/auth/token/refresh/`
+
+**Request Body**:
+```json
+{
+  "refresh": "your_refresh_token"
+}
+```
+
+**Response**:
+```json
+{
+  "access": "eyJ0eXAiOiJKV1QiLCJhbGc..."
+}
+```
+
+#### Using Tokens
+
+Include the access token in the `Authorization` header:
+
+```
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc...
+```
+
+**Token Lifetime**:
+- Access tokens: 100 minutes
+- Refresh tokens: 1 day
+
+#### Spotify Authentication
+
+The API supports authentication via Spotify OAuth, allowing users to sign in with their Spotify account.
+
+**OAuth Flow**:
+
+1. **Redirect to Spotify Authorization**: Your frontend should redirect users to Spotify's authorization URL to obtain an authorization code. The authorization URL should include:
+   - `client_id`: Your Spotify app client ID
+   - `redirect_uri`: Your registered redirect URI
+   - `scope`: Required scopes (e.g., `user-read-email user-read-private user-library-read`)
+   - `response_type`: `code`
+   - `state`: Optional state parameter for CSRF protection
+
+2. **Exchange Code for Tokens**: After the user authorizes, Spotify redirects back with an authorization `code`. Send this code to the API:
+
+**Endpoint**: `POST /api/{version}/auth/spotify/`
+
+**Request Body**:
+```json
+{
+  "code": "spotify_authorization_code"
+}
+```
+
+**Response**:
+```json
+{
+  "accessToken": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+  "refreshToken": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+  "expires_at": "2024-01-15T12:00:00Z",
+  "spotifyUser": {
+    "spotify_profile": {
+      "id": "spotify_user_id",
+      "display_name": "User Name",
+      "email": "user@example.com",
+      "followers": {...},
+      "images": [...],
+      "uri": "spotify:user:..."
+    },
+    "id": 123,
+    "email": "user@example.com",
+    "spotify_id": "spotify_user_id",
+    "display_name": "User Name",
+    "followers": {...},
+    "href": "https://api.spotify.com/v1/users/...",
+    "images": [...],
+    "type": "user",
+    "uri": "spotify:user:..."
+  }
+}
+```
+
+**What Happens**:
+- The API exchanges the authorization code for Spotify access and refresh tokens
+- Creates or updates a Spotify user account in the system
+- Returns JWT tokens (access and refresh) for API authentication
+- Returns Spotify user profile information
+
+**Using the JWT Token**:
+After Spotify authentication, use the returned `accessToken` as a JWT Bearer token for subsequent API requests, just like with regular JWT authentication:
+
+```
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc...
+```
+
+**Note**: For detailed setup instructions and Spotify API configuration, see the [Spotify Integration documentation](api/utils/spotify_api/README.md).
+
+### Endpoints Reference
+
+Legend: 🔒 = Requires authentication | 🔓 = No authentication required
+
+All endpoints are prefixed with the API base URL (`api/{version}/`). Most endpoints require authentication via JWT Bearer token.
+
+### Authentication
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `POST` | `/auth/token/` | Obtain JWT access and refresh tokens | 🔓 |
+| `POST` | `/auth/token/refresh/` | Refresh access token | 🔓 |
+| `POST` | `/auth/spotify/` | Authenticate with Spotify | 🔓 |
+
+### Library Management
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/library/uploaded/` | List uploaded tracks | 🔒 |
+| `POST` | `/library/uploaded/` | Upload a new track | 🔒 |
+| `GET` | `/library/uploaded/{id}/` | Retrieve a specific uploaded track | 🔒 |
+| `PUT` | `/library/uploaded/{id}/` | Update an uploaded track | 🔒 |
+| `DELETE` | `/library/uploaded/{id}/` | Delete an uploaded track | 🔒 |
+| `GET` | `/library/spotify/` | List Spotify library tracks | 🔒 |
+| `GET` | `/library/spotify/{id}/` | Retrieve a specific Spotify track | 🔒 |
+| `GET` | `/all-tracks/` | Get all tracks (uploaded and Spotify) | 🔒 |
+
+### Music Metadata
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/artists/` | List artists | 🔒 |
+| `POST` | `/artists/` | Create an artist | 🔒 |
+| `GET` | `/artists/{id}/` | Retrieve a specific artist | 🔒 |
+| `PUT` | `/artists/{id}/` | Update an artist | 🔒 |
+| `DELETE` | `/artists/{id}/` | Delete an artist | 🔒 |
+| `GET` | `/albums/` | List albums | 🔒 |
+| `POST` | `/albums/` | Create an album | 🔒 |
+| `GET` | `/albums/{id}/` | Retrieve a specific album | 🔒 |
+| `PUT` | `/albums/{id}/` | Update an album | 🔒 |
+| `DELETE` | `/albums/{id}/` | Delete an album | 🔒 |
+| `GET` | `/spotify-artists/` | List Spotify artists | 🔒 |
+| `GET` | `/spotify-artists/{id}/` | Retrieve a specific Spotify artist | 🔒 |
+
+### Organization & Classification
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/genres/` | List genres | 🔒 |
+| `POST` | `/genres/` | Create a genre | 🔒 |
+| `GET` | `/genres/{id}/` | Retrieve a specific genre | 🔒 |
+| `PUT` | `/genres/{id}/` | Update a genre | 🔒 |
+| `DELETE` | `/genres/{id}/` | Delete a genre | 🔒 |
+| `GET` | `/tags/` | List tags | 🔒 |
+| `POST` | `/tags/` | Create a tag | 🔒 |
+| `GET` | `/tags/{id}/` | Retrieve a specific tag | 🔒 |
+| `PUT` | `/tags/{id}/` | Update a tag | 🔒 |
+| `DELETE` | `/tags/{id}/` | Delete a tag | 🔒 |
+
+### Playlists
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/playlists/` | List all playlists | 🔒 |
+| `GET` | `/playlists/{id}/` | Retrieve a specific playlist | 🔒 |
+| `GET` | `/manual-playlists/` | List manual playlists | 🔒 |
+| `POST` | `/manual-playlists/` | Create a manual playlist | 🔒 |
+| `GET` | `/manual-playlists/{id}/` | Retrieve a manual playlist | 🔒 |
+| `PUT` | `/manual-playlists/{id}/` | Update a manual playlist | 🔒 |
+| `DELETE` | `/manual-playlists/{id}/` | Delete a manual playlist | 🔒 |
+| `GET` | `/genre-playlists/` | List genre-based playlists | 🔒 |
+| `GET` | `/genre-playlists/{id}/` | Retrieve a genre playlist | 🔒 |
+| `GET` | `/tag-playlists/` | List tag-based playlists | 🔒 |
+| `GET` | `/tag-playlists/{id}/` | Retrieve a tag playlist | 🔒 |
+
+### Play History
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/plays/` | List play history | 🔒 |
+| `POST` | `/plays/` | Record a play | 🔒 |
+| `GET` | `/plays/{id}/` | Retrieve a specific play record | 🔒 |
+
+### Search
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/search/` | Search across tracks, albums, artists, and playlists | 🔒 |
+
+**Query Parameters**:
+- `query`: Search query string
+- `type`: Filter by type (track, album, artist, playlist)
+
+### User Management
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/users/` | List users | 🔒 |
+| `POST` | `/users/` | Create a user | 🔒 |
+| `GET` | `/users/{id}/` | Retrieve a specific user | 🔒 |
+| `PUT` | `/users/{id}/` | Update a user | 🔒 |
+| `DELETE` | `/users/{id}/` | Delete a user | 🔒 |
+| `GET` | `/users/spotify/` | List Spotify users | 🔒 |
+| `GET` | `/users/spotify/{id}/` | Retrieve a specific Spotify user | 🔒 |
 
 ## Usage
-TODO
 
-## API Endpoints
-TODO
+### Basic Workflow
+
+#### 1. Authenticate
+
+```bash
+curl -X POST http://localhost:8000/api/v1/auth/token/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "your_username",
+    "password": "your_password"
+  }'
+```
+
+Response:
+```json
+{
+  "access": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+  "refresh": "eyJ0eXAiOiJKV1QiLCJhbGc..."
+}
+```
+
+#### 2. Upload a Track
+
+```bash
+curl -X POST http://localhost:8000/api/v1/library/uploaded/ \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -F "file=@/path/to/your/track.mp3"
+```
+
+The API will automatically:
+- Extract metadata from the audio file
+- Fingerprint the audio using AcoustID
+- Match against MusicBrainz to retrieve additional metadata
+- Create associated artist and album records if needed
+
+#### 3. Create a Genre Hierarchy
+
+```bash
+# Create parent genre
+curl -X POST http://localhost:8000/api/v1/genres/ \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Electronic Music"
+  }'
+
+# Create child genre
+curl -X POST http://localhost:8000/api/v1/genres/ \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Techno",
+    "parent": "Electronic Music"
+  }'
+```
+
+When a track is tagged with "Techno", it will automatically appear in both the "Techno" and "Electronic Music" playlists.
+
+#### 4. Tag a Track
+
+```bash
+curl -X PUT http://localhost:8000/api/v1/library/uploaded/{track_id}/ \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "genre": "Techno",
+    "tags": ["dance", "electronic"]
+  }'
+```
+
+#### 5. Search for Tracks
+
+```bash
+curl -X GET "http://localhost:8000/api/v1/search/?query=techno&type=track" \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+#### 6. Record a Play
+
+```bash
+curl -X POST http://localhost:8000/api/v1/plays/ \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "track": "{track_uuid}"
+  }'
+```
+
+### Advanced Features
+
+#### Genre Tree Import
+
+Import a complete genre hierarchy from a JSON tree structure. See the [genre tree format](data/genre_reference_tree.json) for an example.
+
+#### Automatic Playlist Generation
+
+Genre and tag playlists are automatically generated based on your track classifications. When you tag a track with a genre or tag, it automatically appears in the corresponding playlist.
+
+#### MusicBrainz Integration
+
+When uploading tracks, the API automatically:
+1. Fingerprints the audio using Chromaprint
+2. Matches against AcoustID database
+3. Retrieves metadata from MusicBrainz
+4. Populates track, artist, and album information
+
+For more details, see the [MusicBrainz Integration documentation](api/utils/musicbrainz/README.md).
+
+### Error Handling
+
+The API uses standard HTTP status codes:
+
+- `200 OK`: Successful request
+- `201 Created`: Resource created successfully
+- `400 Bad Request`: Invalid request data
+- `401 Unauthorized`: Authentication required or invalid token
+- `403 Forbidden`: Insufficient permissions
+- `404 Not Found`: Resource not found
+- `500 Internal Server Error`: Server error
+
+Error responses follow this format:
+
+```json
+{
+  "detail": "Error message",
+  "code": "error_code"
+}
+```
+
+For validation errors:
+
+```json
+{
+  "field_name": [
+    {
+      "message": "Error message",
+      "code": "error_code"
+    }
+  ]
+}
+```
+
+## Technical Details
+
+### Audio Metadata Handling
+
+The Bodzify API uses [`audiometa-python`](https://github.com/your-username/audiometa-python) for reading and writing audio metadata. The implementation is format-agnostic and handles multiple metadata formats (ID3v1, ID3v2, Vorbis, RIFF) automatically. For more details, see the [Audio Metadata Handling documentation](api/utils/audiometa_adapter/README.md).
+
+### MusicBrainz Integration
+
+The Bodzify API integrates with MusicBrainz through the AcoustID fingerprinting service to automatically identify audio tracks and retrieve metadata such as title, artist, and release date. Audio files are fingerprinted using Chromaprint and matched against the MusicBrainz database. For more details, see the [MusicBrainz Integration documentation](api/utils/musicbrainz/README.md).
+
+## Contributing
+
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
 
 ## License
-This project is licensed under the MIT License.
+This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgements
 This project use acoustid to fingerprint the audio files in order to identify each track.
