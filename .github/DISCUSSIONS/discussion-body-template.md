@@ -65,7 +65,7 @@ This is a template you can copy when creating new discussions. Choose the approp
 [Name of your project/integration]
 
 **Description:**
-[What you've built or how you're using Bodzify API]
+[What you've built or how you're using HearTheMusicTree API]
 
 **Key Features:**
 - Feature 1
