@@ -1,6 +1,6 @@
 # VISION — HearTheMusicTree
 
-Welcome to the HearTheMusicTree project — part of the BehindTheMusicTree ecosystem. This document summarizes our vision, mission, goals, and how contributors can help us build a modern, open, and community-driven audio file manager backed by genre intelligence.
+Welcome to the HearTheMusicTree project — part of the BehindTheMusicTree ecosystem. This document summarizes our vision, mission, goals, and how contributors can help us build a modern, personal audio file manager backed by genre intelligence.
 
 ---
 
@@ -10,11 +10,11 @@ HearTheMusicTree aims to empower music collectors, DJs, curators, and listeners 
 
 ## 🌍 Vision
 
-Our vision is to build a user-first, extensible, and authoritative platform for organizing and discovering music that integrates seamlessly with the wider BehindTheMusicTree ecosystem. HearTheMusicTree leverages the GrowTheMusicTree project for genre intelligence and AudioMeta Python for robust metadata handling. Together we want to transform music libraries into living, contextualized experiences.
+Our vision is to build a user-first, extensible, and authoritative platform for organizing and discovering music that integrates seamlessly with the wider BehindTheMusicTree ecosystem. HearTheMusicTree leverages TheMusicTreeAPI for authoritative genre references, the GrowTheMusicTree project for community-driven taxonomy curation, and AudioMeta Python for robust metadata handling. Together we want to transform music libraries into living, contextualized experiences.
 
 ## 💡 Key Principles
 
-- Open & Community-Driven: Build in the open with welcoming contribution practices.
+- Personal-First: Focus on single-user library management, privacy and local ownership while remaining open-source.
 - Metadata-First: Treat metadata as first-class data — accurate, normalized, and machine-readable.
 - Genre Intelligence: Use the GrowTheMusicTree taxonomy to improve categorization and discovery.
 - Privacy & Security: Provide secure storage and respect user privacy and data ownership.
@@ -26,8 +26,8 @@ Our vision is to build a user-first, extensible, and authoritative platform for 
 HearTheMusicTree is designed to integrate with other projects in the ecosystem:
 
 - AudioMeta Python — provides reliable metadata reading and updating across formats (ID3v1, ID3v2, Vorbis, RIFF) so clients can read, edit, and save metadata consistently.
-- GrowTheMusicTree — provides the authoritative, community-driven genre tree used for classification and playlist generation.
-- TheMusicTreeAPI — provides RESTful endpoints for genre hierarchies, detection, and cross-project data exchange.
+- GrowTheMusicTree — provides community-driven taxonomy curation used for classification and playlist generation.
+- TheMusicTreeAPI — provides authoritative RESTful endpoints for genre references, hierarchies, detection, and cross-project data exchange.
 
 These integrations ensure HearTheMusicTree benefits from community-maintained standards and shared data models.
 
@@ -42,7 +42,7 @@ These integrations ensure HearTheMusicTree benefits from community-maintained st
 
 3. Intelligent genre detection
    - Integrate GrowTheMusicTree and automated detection to improve tagging and classification.
-   - Allow user feedback to refine and evolve classification (community-driven).
+   - Allow user feedback to refine and evolve classification.
 
 4. Personalization & Profiles
    - Personalized listening history and recommendations.
@@ -53,7 +53,7 @@ These integrations ensure HearTheMusicTree benefits from community-maintained st
    - Sync across devices and clients with a clear privacy model.
 
 6. API-first approach
-   - Provide a RESTful API for all core functionality (the current repo, HearTheMusicTree API, is the API layer of this product).
+   - Provide a RESTful API for all core functionality (the current repo, HearTheMusicTree API, is the API of the HearTheMusicTree project).
    - Encourage integrations, client apps, and research use.
 
 7. Community & Cultural Awareness
@@ -110,6 +110,6 @@ Please follow the repository's `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, and lice
 
 ---
 
-The HearTheMusicTree project is about improving how people collect, understand, and enjoy music. We believe in open tools, shared community-driven data, and creating respectful, high-quality experiences for all users.
+The HearTheMusicTree project is about improving how people collect, understand, and enjoy music. We believe in open tools, shared data models, and creating respectful, high-quality experiences for all users while respecting user privacy and personal library ownership.
 
 _Building the ultimate music genre reference and making music collections meaningful—one contribution at a time._
