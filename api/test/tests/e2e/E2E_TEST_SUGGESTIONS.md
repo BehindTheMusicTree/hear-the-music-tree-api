@@ -1,6 +1,6 @@
 # E2E Test Suggestions
 
-This document outlines suggested end-to-end tests for the Bodzify API. E2E tests should test complete user workflows from start to finish, including external service integrations where applicable.
+This document outlines suggested end-to-end tests for the HearTheMusicTree API. E2E tests should test complete user workflows from start to finish, including external service integrations where applicable.
 
 ## Test Organization
 

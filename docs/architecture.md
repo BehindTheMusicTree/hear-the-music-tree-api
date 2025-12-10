@@ -1,6 +1,6 @@
 # Architecture Overview
 
-This document describes the architectural patterns, design decisions, and system structure of the Bodzify API Django application.
+This document describes the architectural patterns, design decisions, and system structure of the HearTheMusicTree API Django application.
 
 ## Table of Contents
 
@@ -18,7 +18,7 @@ This document describes the architectural patterns, design decisions, and system
 
 ## Overview
 
-The Bodzify API is built on Django REST Framework and follows a layered architecture with clear separation of concerns:
+The HearTheMusicTree API is built on Django REST Framework and follows a layered architecture with clear separation of concerns:
 
 1. **Request Layer**: Middleware handles request preprocessing and validation
 2. **View Layer**: ViewSets handle HTTP methods and orchestrate business logic

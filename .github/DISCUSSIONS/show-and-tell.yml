@@ -4,14 +4,14 @@ body:
   - type: markdown
     attributes:
       value: |
-        Share your project, integration, or experience with Bodzify API! We'd love to see what you've built.
+        Share your project, integration, or experience with HearTheMusicTree API! We'd love to see what you've built.
 
   - type: textarea
     id: project-description
     attributes:
       label: Project Description
       description: Tell us about your project or integration
-      placeholder: Describe what you've built or how you're using Bodzify API...
+      placeholder: Describe what you've built or how you're using HearTheMusicTree API...
     validations:
       required: true
 

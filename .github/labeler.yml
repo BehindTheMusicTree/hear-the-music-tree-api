@@ -1,4 +1,4 @@
-# Auto-labeler configuration for Bodzify API
+# Auto-labeler configuration for HearTheMusicTree API
 # Labels are automatically applied based on file paths changed in PRs
 
 # Component labels - based on main features/modules
