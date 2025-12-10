@@ -5,6 +5,201 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Changelog Best Practices
+
+### General Principles
+
+- Changelogs are for humans, not machines.
+- Include an entry for every version, with the latest first.
+- Group similar changes under: Added, Changed, Improved, Deprecated, Removed, Fixed, Documentation, Performance, CI.
+- **"Test" is NOT a valid changelog category** - tests should be mentioned within the related feature or fix entry, not as standalone entries.
+- Use an "Unreleased" section for upcoming changes.
+- Follow Semantic Versioning where possible.
+- Use ISO 8601 date format: YYYY-MM-DD.
+- Avoid dumping raw git logs; summarize notable changes clearly.
+
+### Guidelines for Contributors
+
+All contributors (including maintainers) should update `CHANGELOG.md` when creating PRs:
+
+1. **Add entries to the `[Unreleased]` section** - Add your changes under the appropriate category (Added, Changed, Improved, Deprecated, Removed, Fixed, Documentation, Performance, CI)
+2. **Follow the changelog format** - See examples below and `.cursor/rules/changelog-best-practices.mdc` for detailed guidelines
+3. **Group related changes** - Similar changes should be grouped together
+4. **Be descriptive** - Write clear, user-focused descriptions of what changed
+5. **Mention tests when relevant** - Tests should be mentioned within the related feature or fix entry, not as standalone entries
+
+**Example:**
+
+```markdown
+## [Unreleased]
+
+### Added
+
+- **Track API**: Added batch upload endpoint for multiple tracks
+  - Includes comprehensive unit tests covering various file formats and error scenarios
+  - Supports parallel upload processing for improved performance
+
+- **Genre Hierarchy**: Added support for custom genre tree import via JSON
+  - Includes validation tests for tree structure and circular reference detection
+
+### Fixed
+
+- **Track Upload**: Fixed issue with handling large audio files exceeding size limits
+  - Includes regression tests to prevent future occurrences
+  - Improved error messages for better user feedback
+
+### CI
+
+- **Branch Protection**: Added automated enforcement of Git Flow branching rules
+  - Blocks invalid PRs to main and develop branches
+```
+
+**Note:** During releases, maintainers will move entries from `[Unreleased]` to a versioned section (e.g., `## [0.2.8] - 2025-01-XX`).
+
+## [Unreleased]
+
+## [v0.3.0] - 2025-12-10
+
+### Changed
+
+- **Test Organization**: Reorganized test structure to align with DRF conventions
+  - Moved all tests to `api/test/tests/` directory for cleaner organization
+  - Unit tests organized by component type (filtering, middleware, serializer, utils, validator)
+  - Integration tests organized by endpoint/resource (album, artist, auth, criteria, playlist, uploaded_track, etc.)
+  - E2E tests organized by workflow (track_upload, genre_hierarchy, spotify, etc.)
+  - Moved middleware and FilterSet tests from integration to unit tests
+  - Removed redundant `view/` and `common/` directories from integration tests
+  - Updated test documentation to reflect new structure
+
+- **Audio Metadata**: Replaced audio metadata management module with `audiometa-python` (bumped to `0.8.1` in `requirements.txt`)
+- **Dependencies**: 
+  - Updated `Django` from 5.0.3 to 5.2.8
+  - Updated `asgiref` from 3.7.2 to 3.8.1 for Django 5.2.8 compatibility
+  - Updated `psycopg2-binary` from 2.9.5 to 2.9.11 for Python 3.14 compatibility
+  - Updated `django-stubs` from 5.1.1 to 5.2.1 for Django 5.2.8 compatibility
+  - Updated `django-filter` from 22.1 to 25.2 for Python 3.14 compatibility (fixes `pkgutil.find_loader` removal)
+  - Updated `django-polymorphic` from 3.1.0 to 4.1.0 to resolve pkg_resources deprecation warning and ensure Django 5.2 compatibility
+  - Removed `mutagen` from direct dependencies. No longer needed as direct dependency since all audio operations now use `audiometa-python`
+
+### Documentation
+
+- **Test Documentation**: Updated test README and contributing guide
+  - Added comprehensive test structure documentation in `api/test/README.md`
+  - Added table of contents to test README
+  - Updated CONTRIBUTING.md to reference test README
+  - Added unit test suggestions document with detailed test scenarios
+  - Clarified distinction between unit, integration, and E2E tests
+
+- **Project Management**: Added `TODO.md` for tracking future work and improvements
+  - Categorized by priority (high, medium, low)
+  - Organized by features, testing, and infrastructure
+
+- **Contributing Documentation**: Comprehensive contributing guide with strict Git Flow workflow
+  - Detailed branch naming and merging rules for `main`, `develop`, `feature/*`, `release/*`, `hotfix/*`, and `chore/*` branches
+  - Installation and setup instructions
+  - Code style guidelines and development best practices
+  - Pre-PR checklist and review process
+  - Release process documentation
+
+- **Development Guidelines**: Added `DEVELOPMENT.md` with comprehensive coding standards
+  - Code quality practices and conventions
+  - Django best practices for models, serializers, views, and filtering
+  - Type checking and error handling guidelines
+  - Documentation standards
+
+- **Cursor Rules**: Added AI assistant rules to enforce project standards
+  - Git Flow workflow enforcement
+  - Commit message convention (Conventional Commits)
+  - Pull request title convention
+  - Issue template usage guidelines
+  - Pre-PR checklist enforcement
+  - Issue descriptions in separate version-controlled files
+  - PR descriptions in git-ignored directory for local drafting
+  - Test naming convention and structure guidelines
+  - Changelog best practices
+
+- **README**: Simplified `README.md` to provide high-level overview with links to detailed documentation
+  - Moved detailed setup instructions to `CONTRIBUTING.md`
+  - Added badges for license, Python version, and Django version
+
+- **Contributing Guide**: Reorganized installation steps in `CONTRIBUTING.md` for logical flow
+  - Environment variables setup before scripts that use them
+  - Improved step-by-step instructions clarity
+
+- **License**: Added Apache License 2.0
+
+- **Code of Conduct**: Added Contributor Covenant 2.1
+
+### Added
+
+- **Git Worktree Scripts**: Added npm `git-worktree-scripts` package (v1.4.0) for managing git worktrees
+  - Includes `setup-worktree.sh` script for automated worktree setup with virtual environment and dependencies
+  - Added `.git-worktree-copy` configuration for copying gitignored files to new worktrees
+    - Copies `env/.venv` Python virtual environment
+    - Copies fixture files from `api/fixtures/*.json`
+  - Integrated filesystem setup into `setup-worktree.sh` for automatic directory and log file creation
+
+### Fixed
+
+- **Error Handling**: Fixed Python 3.14 compatibility issues with exception attribute access
+  - Wrapped all `exception.detail` accesses in try-except blocks to handle `AttributeError` and `TypeError`
+  - Added safe stringification fallbacks for all `str(exception)` calls
+  - Fixed `TypeError: 'super' object has no attribute 'dicts'` error in exception logging middleware
+  - Updated `ErrorResponse`, `AppValidationException`, `AppSerializer`, `ExceptionLoggingMiddleware`, and `RequestLoggingMiddleware` to safely handle DRF exceptions in Python 3.14
+  - Prevents middleware crashes when exception stringification fails
+
+- **Filesystem Setup**: Fixed `setup-filesystem.sh` to check for `DJANGO_LOG_DIR` instead of `DJANGO_LOGS_DIR` to properly create log directories
+  - Updated app name to 'api'
+
+- **Filter Backend**: Added `get_schema_operation_parameters` method to `ConsistentParametersFilterBackend` for drf-spectacular compatibility with django-filter 25.2
+
+- **Django 6.0 Compatibility**: Replaced deprecated `CheckConstraint.check` with `condition` parameter in all model constraints
+  - Updated 6 model files: `CriteriaType`, `Criteria`, `Artist`, `Album`, `FingerprintMissingCauseCode`, `ManualPlaylist`
+  - Updated migration file `0001_initial.py` to use new syntax
+  - Resolves Django 6.0 deprecation warnings for `CheckConstraint.check`
+
+- **Criteria Tree Import**: Removed debug print statements from `import_criteria_tree` method that were causing test hangs
+  - Eliminated excessive I/O overhead when processing large tree imports (30,000+ nodes)
+  - Fixed test hangs and significantly improved performance for large tree import operations
+
+### CI
+
+- **Test Configuration**: Filtered ResourceWarnings about unclosed files from Django's ORM in pytest configuration
+  - Added `ignore:unclosed file:ResourceWarning` filter to `pytest.ini`
+  - These warnings are non-actionable as they originate from Django's internal FileField handling
+  - Improves test output clarity by reducing noise from Django ORM file handle management
+  - Django automatically manages these file handles through garbage collection
+
+- **GitHub Automation**:
+  - Auto-labeler workflow (`.github/workflows/labeler.yml`) for automatic PR labeling based on file paths
+  - Branch protection workflow (`.github/workflows/branch-protection.yml`) to enforce Git Flow rules
+    - Blocks PRs to `main` from non-hotfix/release branches
+    - Blocks PRs to `develop` from invalid branch types
+  - Issue templates for bug reports and feature requests
+  - Pull request template with comprehensive checklist
+  - GitHub Discussions setup with category templates
+
+- **Branch Protection**: Added automated enforcement of Git Flow branching rules
+  - PRs to `main` must come from `hotfix/*` or `release/*` branches only
+  - PRs to `develop` must come from `feature/*`, `chore/*`, or `dependabot/*` branches only
+  - Provides clear error messages when branch rules are violated
+
+- **CI Workflow**: Split monolithic CI workflow into focused, reusable workflows
+  - Updated `test.yml` workflow to run tests on pushes and pull requests (removed redundant `ci.yml` wrapper)
+  - Added fail-fast flag (`-x`) to pytest for faster CI feedback on test failures
+  - Created `static-files.yml` workflow for collecting and pushing static files
+  - Created `build.yml` workflow for Docker image building and pushing
+  - Created `deploy.yml` workflow for server deployment tasks
+  - Created `publish.yml` workflow for releases (triggers on version tags `v*`)
+  - Publishing workflow handles static files collection, Docker build, and deployment
+  - Improved workflow maintainability and reusability
+  - Each workflow can now be triggered independently via workflow_dispatch
+  - Separation of concerns: tests run on every change, publishing only on releases
+
+- **CI/CD**: Updated GitHub Actions workflow to use `develop` branch instead of `dev`
+  - Updated Python version to 3.14 in CI workflows
+  - Added branch protection checks for Git Flow enforcement
+
 ## [v0.2.0] - 2025-04-03
 
 ### Added
@@ -22,7 +217,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Enable genre tree JSON import
 - Enable genre tree JSON export
-- Enavle delete criteria
+- Enable delete criteria
 
 ### Changed
 - Arrays in JSON must be without [] and in multipart with []
@@ -42,5 +237,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v0.1.1] - 2024-09-06
 
 ### Added
-
 - Fingerprint check
