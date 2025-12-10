@@ -4,6 +4,9 @@
 # Copy Python virtual environment from env directory
 env/.venv
 
+# Copy env file
+env/.env
+
 # Copy fixture files directly in api/fixtures
 api/fixtures/*.json
 
