@@ -1,17 +1,46 @@
-# Bodzify API
+# HearTheMusicTree API
 
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![Python](https://img.shields.io/badge/python-3.14-blue.svg)](https://www.python.org/)
 [![Django](https://img.shields.io/badge/django-5.2-green.svg)](https://www.djangoproject.com/)
 
-Bodzify API is an online platform similar to iTunes, designed for managing and interacting with music tracks. It offers a range of features to help you organize, tag, and rate your music, as well as create automatic hierarchical genre playlists.
+
+
+## Introduction
+
+HearTheMusicTree API is a cloud-based audio file manager that empowers music collectors, DJs, curators, and listeners to organize and discover music through powerful metadata handling, genre intelligence, and cross-platform synchronization. This project is part of the [BehindTheMusicTree ecosystem](https://github.com/behindthemusictree) — a collection of open-source tools designed to transform music libraries into living, contextualized experiences.
+
+### Mission
+
+HearTheMusicTree aims to provide a user-first, extensible platform for organizing and discovering music that respects cultural diversity and provides meaningful musical context. We focus on personal library management, privacy, and local ownership while remaining open-source and interoperable.
+
+### Key Features
+
+- **Metadata-First Approach**: Treat metadata as first-class data — accurate, normalized, and machine-readable
+- **Genre Intelligence**: Leverage community-driven taxonomy from GrowTheMusicTree for improved categorization and discovery
+- **Smart Playlists**: Automatically generate playlists from genre hierarchies and user preferences
+- **Universal Format Support**: Handle common audio containers and tags with consistent metadata operations
+- **API-First Design**: RESTful API for all core functionality, enabling integrations with clients, DJ tools, and research applications
+- **Privacy & Security**: Secure storage with respect for user privacy and data ownership
+
+### Ecosystem Integration
+
+HearTheMusicTree integrates seamlessly with other projects in the BehindTheMusicTree ecosystem:
+
+- **[AudioMeta Python](https://github.com/BehindTheMusicTree/audiometa)**: Reliable metadata reading and updating across formats (ID3v1, ID3v2, Vorbis, RIFF)
+- **[GrowTheMusicTree](https://github.com/BehindTheMusicTree/grow-the-music-tree)**: Community-driven taxonomy curation for classification and playlist generation
+- **[TheMusicTreeAPI](https://github.com/BehindTheMusicTree/the-music-tree-api)**: Authoritative RESTful endpoints for genre references, hierarchies, and detection
 
 > **⚠️ Note**: The API is currently undergoing server migration and is not available online. Please set up a local development environment to use the API. See [Getting Started](#getting-started) for setup instructions.
+
+For more details about our vision, goals, and roadmap, see [VISION.md](VISION.md).
 
 
 ## Table of Contents
 
 - [Features](#features)
+- [Introduction](#introduction)
+- [Vision](VISION.md)
 - [Getting Started](#getting-started)
   - [Developer environment (recommended)](#developer-environment-recommended)
 - [API](#api)
@@ -46,7 +75,7 @@ Bodzify API is an online platform similar to iTunes, designed for managing and i
 - **Upload Tracks**: Easily upload your music tracks to the platform.
 - **Tag Tracks**: Tag your tracks with metadata such as artist names, album titles, and more. This tagging process helps organize your music files.
 - **Rate Tracks**: Users can rate tracks, providing a way to highlight popular or preferred songs.
-- **Create Genre Hierarchies**: The most important feature of Bodzify API is the ability to create a hierarchy of music genres. For example, if a track is tagged as "techno," it will automatically be included in both the "techno" playlist and the broader "electronic music" playlist.
+- **Create Genre Hierarchies**: The most important feature of HearTheMusicTree API is the ability to create a hierarchy of music genres. For example, if a track is tagged as "techno," it will automatically be included in both the "techno" playlist and the broader "electronic music" playlist.
 
 ## Getting Started
 
@@ -514,11 +543,11 @@ For validation errors:
 
 ### Audio Metadata Handling
 
-The Bodzify API uses [`audiometa-python`](https://github.com/your-username/audiometa-python) for reading and writing audio metadata. The implementation is format-agnostic and handles multiple metadata formats (ID3v1, ID3v2, Vorbis, RIFF) automatically. For more details, see the [Audio Metadata Handling documentation](api/utils/audiometa_adapter/README.md).
+The HearTheMusicTree API uses [`audiometa-python`](https://github.com/your-username/audiometa-python) for reading and writing audio metadata. The implementation is format-agnostic and handles multiple metadata formats (ID3v1, ID3v2, Vorbis, RIFF) automatically. For more details, see the [Audio Metadata Handling documentation](api/utils/audiometa_adapter/README.md).
 
 ### MusicBrainz Integration
 
-The Bodzify API integrates with MusicBrainz through the AcoustID fingerprinting service to automatically identify audio tracks and retrieve metadata such as title, artist, and release date. Audio files are fingerprinted using Chromaprint and matched against the MusicBrainz database. For more details, see the [MusicBrainz Integration documentation](api/utils/musicbrainz/README.md).
+The HearTheMusicTree API integrates with MusicBrainz through the AcoustID fingerprinting service to automatically identify audio tracks and retrieve metadata such as title, artist, and release date. Audio files are fingerprinted using Chromaprint and matched against the MusicBrainz database. For more details, see the [MusicBrainz Integration documentation](api/utils/musicbrainz/README.md).
 
 ## Contributing
 

@@ -1,6 +1,6 @@
 # TODO
 
-This file tracks future work, improvements, and testing tasks for Bodzify API.
+This file tracks future work, improvements, and testing tasks for HearTheMusicTree API.
 
 **Note for Contributors**: 
 - **Do NOT modify this file directly** - Contributors should not edit the TODO list

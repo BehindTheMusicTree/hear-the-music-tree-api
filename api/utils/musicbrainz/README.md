@@ -1,4 +1,4 @@
-# MusicBrainz Integration for Bodzify API
+# MusicBrainz Integration for HearTheMusicTree API
 
 This module provides integration with MusicBrainz through the AcoustID fingerprinting service, allowing the application to identify audio tracks and retrieve metadata such as title, artist, release date, and more.
 
