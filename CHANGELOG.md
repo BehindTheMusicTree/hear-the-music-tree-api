@@ -58,6 +58,43 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v0.3.1] - 2025-12-10
+
+### Changed
+
+- **Project Branding**: Updated references from Bodzify API to HearTheMusicTree API across documentation and configuration files
+  - Updated README, VISION document, and various documentation files
+  - Clarified project goals and mission statement
+
+### Documentation
+
+- **VISION Document**: Added comprehensive VISION.md document outlining project mission, goals, and principles
+  - Describes integration with BehindTheMusicTree ecosystem
+  - Outlines key principles: Personal-First, Metadata-First, Genre Intelligence, Privacy & Security, Interoperability, Accessibility
+  - Documents ecosystem integration with AudioMeta Python, GrowTheMusicTree, and TheMusicTreeAPI
+
+- **Project Presentation**: Improved project presentation across documentation
+  - Updated README to better reflect HearTheMusicTree branding
+  - Enhanced clarity of project goals and vision
+
+### CI
+
+- **Branch Protection**: Updated branch protection rules to allow `release/*` branches to target `develop`
+  - Aligns with standard Git Flow workflow where release branches merge into both `main` and `develop`
+  - Fixes issue where release branches couldn't merge back into `develop` due to branch protection rules
+
+- **VS Code Settings**: Fixed JSON syntax errors in `.vscode/settings.json` and removed deprecated `python.pythonPath` setting
+  - Removed trailing commas causing JSON parsing issues
+  - Removed deprecated `python.pythonPath` in favor of `python.defaultInterpreterPath`
+  - Improves VS Code configuration maintainability
+
+### Changed
+
+- **Test Files Cleanup**: Removed outdated test files from `bodzify_api/test/utils/uploaded_track/files/` directory
+  - Deleted 7 duplicate test files from old directory structure
+  - All test files now properly located in `api/test/utils/uploaded_track/files/` after test reorganization
+  - Reduces repository size and eliminates confusion from duplicate files
+
 ## [v0.3.0] - 2025-12-10
 
 ### Changed
