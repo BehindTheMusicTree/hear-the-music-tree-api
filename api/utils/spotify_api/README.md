@@ -1,4 +1,4 @@
-# Spotify Integration for Bodzify API
+# Spotify Integration for HearTheMusicTree API
 
 This module provides integration with Spotify's Web API, allowing the application to search for tracks, retrieve track details, get artist information, and more.
 
@@ -17,7 +17,7 @@ pip install -r requirements.txt
 1. Go to the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/) and log in with your Spotify account
 2. Click "Create an App"
 3. Fill in the application details:
-   - App name: "Bodzify API" (or your preferred name)
+   - App name: "HearTheMusicTree API" (or your preferred name)
    - App description: Brief description of your application
    - Website: Your website URL (can be localhost for development)
    - Redirect URI: For the client credentials flow used in this integration, you can use:
