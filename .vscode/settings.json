@@ -25,10 +25,10 @@
         "source.unusedImports"
       ],
     "editor.codeActionsOnSave": {
-		"source.fixAll": "explicit",
+		"source.fixAll": "explicit"
 	},
 	"files.autoSave": "onFocusChange",
 	"python.testing.unittestEnabled": false,
 	// Use a workspace-relative path for the project venv: this is portable across developer machines
-	"python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+	"python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python"
 }
