@@ -58,6 +58,12 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Changed
+
+- **Git Worktree Configuration**: Added environment file (`env/.env`) to worktree copy configuration
+  - Environment files are now automatically copied when creating new git worktrees
+  - Improves developer experience by eliminating manual environment file setup
+
 ## [v0.3.1] - 2025-12-10
 
 ### Changed
