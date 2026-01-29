@@ -11,7 +11,7 @@ env:
 
 jobs:
   set-env-variables-on-server:
-    name: Set environment variables on server
+    name: Set env vars
     runs-on: ubuntu-latest
     environment:
       name: TEST
@@ -91,7 +91,7 @@ jobs:
           "
 
   set-partial-docker-compose-on-server:
-    name: Set partial docker-compose on server
+    name: Set compose files
     runs-on: ubuntu-latest
     environment:
       name: TEST
@@ -149,7 +149,7 @@ jobs:
           scp scripts/*${{ vars.DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE }} ${{ env.SSH_DESTINATION }}:${{ env.SERVER_DOCKER_COMPOSE_DIR }}
 
   redeploy-webhook-call:
-    name: Redeploy webhook call
+    name: Redeploy webhook
     needs: [set-env-variables-on-server, set-partial-docker-compose-on-server]
     uses: BehindTheMusicTree/bodzify-server-management/.github/workflows/call-redeployment-webhook.yml@main
     with:
