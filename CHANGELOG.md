@@ -60,6 +60,9 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Fixed
 
+- **Docker**: Correct fixture copy paths in Dockerfile to match repository layout
+  - Copy from `app/` and `genres/` instead of non-existent `api/`; fixes build failure during image build
+
 - **Docker**: Use python:3.14-bookworm base image instead of python:3.14-buster
   - python:3.14-buster is not published on Docker Hub; Python 3.14 images use Bookworm or Trixie
 
