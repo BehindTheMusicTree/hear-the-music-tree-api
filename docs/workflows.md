@@ -48,7 +48,7 @@ Orchestrates release: collect static files, build Docker image, deploy to the te
 
 **Jobs (sequential):**
 
-1. **collect-static-files** – calls `static-files.yml`, commits and pushes collected static files
+1. **static** – calls `static-files.yml`, commits and pushes collected static files
 2. **build** – calls `build.yml` with the commit hash from step 1
 3. **deploy** – calls `deploy.yml` to deploy to the test server
 

@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1
-# Base Image: Debian Buster (a full Debian distribution).
+# Base Image: Debian Bookworm (a full Debian distribution).
 # Size: Larger, as it includes more tools and libraries by default.
 # Use Case: Suitable when you need a full Debian environment with more pre-installed tools and libraries.
-FROM python:3.14-buster
+FROM python:3.14-bookworm
 
 ARG PROJECT_DIR
 ARG APP_NAME
