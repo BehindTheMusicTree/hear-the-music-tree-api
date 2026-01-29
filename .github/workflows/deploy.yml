@@ -3,8 +3,6 @@ name: Deploy
 on:
   workflow_call:
   workflow_dispatch:
-  push:
-    branches: chore/fix-cicd-to-o2switch-server
 
 env:
   SSH_DESTINATION: ${{ secrets.TEST_SERVER_BODZIFY_USERNAME }}@${{ vars.DOMAIN_NAME }}
