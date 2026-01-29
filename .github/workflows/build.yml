@@ -22,7 +22,7 @@ env:
 
 jobs:
   build-and-push-to-dockerhub:
-    name: Build / Push to Dockerhub
+    name: Push to Docker Hub
     runs-on: ubuntu-latest
     environment:
       name: TEST

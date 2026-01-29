@@ -9,7 +9,7 @@ env:
 
 jobs:
   collect-and-push-static-files:
-    name: Collect and push static files
+    name: Static files
     runs-on: ubuntu-latest
     environment:
       name: COLLECT_STATIC
