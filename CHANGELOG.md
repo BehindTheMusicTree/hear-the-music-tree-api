@@ -68,6 +68,9 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Changed
 
+- **Docker**: Split image build into separate RUN steps for maintainability
+  - System deps, Python deps, filesystem setup, and fixture copy each in their own step; easier to debug and reuse layers
+
 - **Git Worktree Configuration**: Added environment file (`env/.env`) to worktree copy configuration
   - Environment files are now automatically copied when creating new git worktrees
   - Improves developer experience by eliminating manual environment file setup
