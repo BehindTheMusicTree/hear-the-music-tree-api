@@ -64,6 +64,24 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
   - Environment files are now automatically copied when creating new git worktrees
   - Improves developer experience by eliminating manual environment file setup
 
+- **Repository References**: Updated deploy workflow and package.json to use BehindTheMusicTree org
+  - Deploy workflow redeployment webhook now calls BehindTheMusicTree/bodzify-server-management
+  - package.json repository, bugs, and homepage URLs point to BehindTheMusicTree/the-music-tree-api
+
+### CI
+
+- **Test Workflow**: Run test workflow on push to main, develop, release/*, hotfix/*, chore/*
+  - Ensures tests run on protected and chore branches without requiring a PR
+
+- **Deploy Workflow**: Redeployment webhook uses BehindTheMusicTree server-management repo
+  - Aligns CI/CD with BehindTheMusicTree organization
+
+### Documentation
+
+- **GitHub Actions Workflows**: Added docs/workflows.md documenting all workflows with table of contents
+  - Describes triggers, steps, and environments for test, publish, build, deploy, static-files, branch-protection, labeler
+  - CONTRIBUTING.md links to workflows doc in TOC and in Pull Request Process section
+
 ## [v0.3.1] - 2025-12-10
 
 ### Changed
