@@ -30,7 +30,7 @@ Runs the full test suite with pytest.
 - **Manual** via `workflow_dispatch` (optional `test_path` input)
 - **Callable** by other workflows via `workflow_call` (optional `test_path` input)
 
-**Steps:** Checkout → setup Python 3.14 → install system deps → install pip deps → setup filesystem → run DB and AFP containers → wait for DB → copy fixtures → init Django data → run pytest → publish test results (JUnit XML).
+**Jobs:** **pytest** (Pytest) – Checkout → set up Python 3.14 → install system deps → install pip deps → setup filesystem → run DB and AFP containers → wait for DB → copy fixtures → init Django data → run pytest → publish test results (JUnit XML).
 
 **Environment:** `CI_TEST` (uses repo vars and secrets for DB, AFP, AcousticID, etc.).
 
@@ -48,9 +48,9 @@ Orchestrates release: collect static files, build Docker image, deploy to the te
 
 **Jobs (sequential):**
 
-1. **static** – calls `static-files.yml`, commits and pushes collected static files
-2. **build** – calls `build.yml` with the commit hash from step 1
-3. **deploy** – calls `deploy.yml` to deploy to the test server
+1. **static** (Static files) – calls `static-files.yml`, commits and pushes collected static files
+2. **build** (Docker image) – calls `build.yml` with the commit hash from step 1
+3. **deploy** (Deploy) – calls `deploy.yml` to deploy to the test server
 
 **Environment:** Uses `TEST` environment vars and secrets.
 
@@ -65,7 +65,7 @@ Builds the app Docker image and pushes it to Docker Hub.
 - **Manual** via `workflow_dispatch` (optional `commit_hash` input)
 - **Callable** via `workflow_call` (optional `commit_hash` input; used by Publish)
 
-**Steps:** Checkout (at given ref) → login to Docker Hub → build and push image with build-args from repo vars.
+**Jobs:** **build-and-push-to-dockerhub** (Push to Docker Hub) – checkout at ref → login to Docker Hub → build and push image with build-args from repo vars.
 
 **Environment:** `TEST`. Image tag: `$DOCKERHUB_USERNAME/$APP_IMAGE_REPO:$APP_VERSION`.
 
@@ -82,9 +82,9 @@ Deploys the application to the test server via SSH and redeployment webhook.
 
 **Jobs:**
 
-1. **set-env-variables-on-server** – SSH to server, write API, DB, and AFP `.env` files from GitHub vars/secrets
-2. **set-partial-docker-compose-on-server** – generate partial Docker Compose files with `generate-docker-compose-parts.sh`, SCP them to the server
-3. **redeploy-webhook-call** – call Bodzify server-management redeployment webhook (depends on jobs 1 and 2)
+1. **set-env-variables-on-server** (Set env vars) – SSH to server, write API, DB, and AFP `.env` files from GitHub vars/secrets
+2. **set-partial-docker-compose-on-server** (Set compose files) – generate partial Docker Compose files with `generate-docker-compose-parts.sh`, SCP them to the server
+3. **redeploy-webhook-call** (Redeploy webhook) – call BehindTheMusicTree server-management redeployment webhook (depends on jobs 1 and 2)
 
 **Environment:** `TEST`. Uses `TEST_SERVER_SSH_BODZIFY_PRIVATE_KEY`, `DOMAIN_NAME`, `WEBHOOK_DIR`, etc.
 
@@ -99,7 +99,7 @@ Collects Django static files and commits/pushes them back to the repo.
 - **Manual** via `workflow_dispatch`
 - **Callable** via `workflow_call` (used by Publish)
 
-**Steps:** Checkout → setup Python 3.14 → install deps → setup filesystem → `manage.py collectstatic --noinput` → git config → commit and push changes → output `collect_static_files_commit_hash` for downstream workflows.
+**Jobs:** **collect-and-push-static-files** (Static files) – Checkout → set up Python 3.14 → install deps → setup filesystem → `manage.py collectstatic --noinput` → git config → commit and push changes → output `collect_static_files_commit_hash` for downstream workflows.
 
 **Environment:** `COLLECT_STATIC`. Output is used by Publish so Build uses the commit that includes collected static files.
 
@@ -112,6 +112,8 @@ Enforces Git Flow: only allows certain source branches for PRs to `main` and `de
 **Triggers:**
 
 - **Pull request** targeting `main` or `develop`
+
+**Jobs:** **check-branch-name** (Verify PR source branch) – validates source branch against target per Git Flow.
 
 **Logic:**
 
@@ -130,6 +132,6 @@ Adds labels to pull requests based on changed files using `.github/labeler.yml`.
 
 - **Pull request** events: `opened`, `synchronize`, `reopened`, `labeled`, `unlabeled`
 
-**Steps:** Checkout (full depth) → run `actions/labeler@v5` with `sync-labels: true`.
+**Jobs:** **label** (Auto Label PR) – Checkout (full depth) → run `actions/labeler@v5` with `sync-labels: true`.
 
 **Permissions:** `contents: read`, `pull-requests: write`.
