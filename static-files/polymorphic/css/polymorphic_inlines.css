@@ -11,10 +11,10 @@
   position: absolute;
   top: 2.2em;
   left: 0.5em;
-  border: 1px solid #ccc;
+  border: 1px solid var(--border-color, #ccc);
   border-radius: 4px;
   padding: 2px;
-  background-color: #fff;
+  background-color: var(--body-bg, #fff);
   z-index: 1000;
 }
 
@@ -31,4 +31,11 @@
 .inline-related.empty-form {
   /* needed for grapelli, which uses grp-empty-form */
   display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .polymorphic-type-menu {
+    border: 1px solid var(--border-color, #121212);
+    background-color: var(--body-bg, #212121);
+  }
 }
