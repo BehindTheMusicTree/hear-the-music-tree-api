@@ -81,6 +81,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **Deploy Workflow**: Redeployment webhook uses BehindTheMusicTree server-management repo
   - Aligns CI/CD with BehindTheMusicTree organization
 
+- **Workflow job names**: Shortened job names and publish job ids (static, build, deploy; Set env vars, Set compose files, Redeploy webhook; Static files, Push to Docker Hub) to reduce truncation in GitHub Actions UI
+  - Aligned step name "Set up Python" in test workflow with static-files
+  - docs/workflows.md documents job id and display name for each workflow
+
 ### Documentation
 
 - **GitHub Actions Workflows**: Added docs/workflows.md documenting all workflows with table of contents
