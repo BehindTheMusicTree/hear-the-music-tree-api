@@ -23,6 +23,21 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.TEST_SERVER_DEPLOY_SSH_PRIVATE_KEY }}
 
+      - name: Get runner public IP
+        id: ip
+        if: vars.SSH_WHITELIST_ENABLED == 'true'
+        uses: haythem/public-ip@v1.3
+
+      - name: Whitelist runner IP for SSH
+        if: vars.SSH_WHITELIST_ENABLED == 'true'
+        env:
+          RUNNER_IP: ${{ steps.ip.outputs.ipv4 }}
+          SSH_WHITELIST_PROVIDER: ${{ vars.SSH_WHITELIST_PROVIDER }}
+          CPANEL_SERVER: ${{ secrets.CPANEL_SERVER }}
+          CPANEL_USERNAME: ${{ secrets.CPANEL_USERNAME }}
+          CPANEL_API_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
+        run: bash scripts/whitelist-runner-ssh.sh add
+
       - name: Add host to known_hosts
         run: |
           mkdir -p ~/.ssh &&
@@ -90,6 +105,16 @@ jobs:
             chmod 600 ${{ env.AFP_ENV_FILE }}
           "
 
+      - name: Remove runner IP from SSH whitelist
+        if: always() && vars.SSH_WHITELIST_ENABLED == 'true'
+        env:
+          RUNNER_IP: ${{ steps.ip.outputs.ipv4 }}
+          SSH_WHITELIST_PROVIDER: ${{ vars.SSH_WHITELIST_PROVIDER }}
+          CPANEL_SERVER: ${{ secrets.CPANEL_SERVER }}
+          CPANEL_USERNAME: ${{ secrets.CPANEL_USERNAME }}
+          CPANEL_API_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
+        run: bash scripts/whitelist-runner-ssh.sh remove
+
   set-partial-docker-compose-on-server:
     name: Set compose files
     runs-on: ubuntu-latest
@@ -103,6 +128,21 @@ jobs:
       - uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.TEST_SERVER_DEPLOY_SSH_PRIVATE_KEY }}
+
+      - name: Get runner public IP
+        id: ip
+        if: vars.SSH_WHITELIST_ENABLED == 'true'
+        uses: haythem/public-ip@v1.3
+
+      - name: Whitelist runner IP for SSH
+        if: vars.SSH_WHITELIST_ENABLED == 'true'
+        env:
+          RUNNER_IP: ${{ steps.ip.outputs.ipv4 }}
+          SSH_WHITELIST_PROVIDER: ${{ vars.SSH_WHITELIST_PROVIDER }}
+          CPANEL_SERVER: ${{ secrets.CPANEL_SERVER }}
+          CPANEL_USERNAME: ${{ secrets.CPANEL_USERNAME }}
+          CPANEL_API_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
+        run: bash scripts/whitelist-runner-ssh.sh add
 
       - name: Add host to known_hosts
         run: |
@@ -147,6 +187,16 @@ jobs:
       - name: SSH Transfer partial docker-compose files to server
         run: |
           scp scripts/*${{ vars.DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE }} ${{ env.SSH_DESTINATION }}:${{ env.SERVER_DOCKER_COMPOSE_DIR }}
+
+      - name: Remove runner IP from SSH whitelist
+        if: always() && vars.SSH_WHITELIST_ENABLED == 'true'
+        env:
+          RUNNER_IP: ${{ steps.ip.outputs.ipv4 }}
+          SSH_WHITELIST_PROVIDER: ${{ vars.SSH_WHITELIST_PROVIDER }}
+          CPANEL_SERVER: ${{ secrets.CPANEL_SERVER }}
+          CPANEL_USERNAME: ${{ secrets.CPANEL_USERNAME }}
+          CPANEL_API_TOKEN: ${{ secrets.CPANEL_API_TOKEN }}
+        run: bash scripts/whitelist-runner-ssh.sh remove
 
   redeploy-webhook-call:
     name: Redeploy webhook
