@@ -81,6 +81,11 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### CI
 
+- **Deploy Workflow**: Optional SSH whitelist handling for o2switch/cPanel
+  - When `SSH_WHITELIST_ENABLED` is true, get runner public IP, add to cPHulk whitelist before SSH steps, remove after (including on failure)
+  - `scripts/whitelist-runner-ssh.sh` supports cPanel provider via WHM API (create_cphulk_record / delete_cphulk_record)
+  - Requires vars: `SSH_WHITELIST_ENABLED`, `SSH_WHITELIST_PROVIDER`; secrets for cPanel: `CPANEL_SERVER`, `CPANEL_USERNAME`, `CPANEL_API_TOKEN`
+
 - **Test Workflow**: Run test workflow on push to main, develop, release/*, hotfix/*, chore/*
   - Ensures tests run on protected and chore branches without requiring a PR
 
