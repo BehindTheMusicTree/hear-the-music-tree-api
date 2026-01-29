@@ -86,7 +86,7 @@ Deploys the application to the test server via SSH and redeployment webhook.
 2. **set-partial-docker-compose-on-server** (Set compose files) – generate partial Docker Compose files with `generate-docker-compose-parts.sh`, SCP them to the server
 3. **redeploy-webhook-call** (Redeploy webhook) – call BehindTheMusicTree server-management redeployment webhook (depends on jobs 1 and 2)
 
-**Environment:** `TEST`. Uses `TEST_SERVER_SSH_BODZIFY_PRIVATE_KEY`, `DOMAIN_NAME`, `WEBHOOK_DIR`, etc.
+**Environment:** `TEST`. Uses `TEST_SERVER_DEPLOY_SSH_PRIVATE_KEY`, `DOMAIN_NAME`, `WEBHOOK_DIR`, etc.
 
 ## Static Files
 
