@@ -82,7 +82,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ### CI
 
 - **Workflows**: Add check-vars-and-secrets job to deploy, build, test, and static-files
-  - Fails fast if required environment vars or secrets are missing; uses scripts/check-workflow-env.sh
+  - Fails fast if required environment vars or secrets are missing; reports all missing ones (scripts/check-workflow-env.sh)
 
 - **Publish Workflow**: Run only on version tags (v*) and manual/workflow_call dispatch; removed push-to-branch trigger
 
