@@ -4,8 +4,6 @@ on:
   workflow_call:
   workflow_dispatch:
   push:
-    branches:
-      - chore/fix-cicd-to-o2switch-server
     tags:
       - 'v*'
 
