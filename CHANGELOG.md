@@ -86,6 +86,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Publish Workflow**: Run only on version tags (v*) and manual/workflow_call dispatch; removed push-to-branch trigger
 
+- **Deploy Workflow**: Use SERVER_DEPLOY_USERNAME secret instead of TEST_SERVER_BODZIFY_USERNAME for SSH destination
+
 - **Deploy Workflow**: Remove SSH whitelist handling and scripts/whitelist-runner-ssh.sh
 
 - **Test Workflow**: Run test workflow on push to main, develop, release/*, hotfix/*, chore/*
