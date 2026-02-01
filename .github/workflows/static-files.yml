@@ -8,8 +8,26 @@ env:
   CONTAINER_ROOT_DIR: /home/api/
 
 jobs:
+  check-vars-and-secrets:
+    name: Check vars and secrets
+    runs-on: ubuntu-latest
+    environment:
+      name: COLLECT_STATIC
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check required vars and secrets
+        env:
+          ENV: ${{ vars.ENV }}
+          APP_NAME: ${{ vars.APP_NAME }}
+          STATIC_FILES_INTERNAL: ${{ vars.STATIC_FILES_INTERNAL }}
+          APP_VERSION: ${{ vars.APP_VERSION }}
+          API_STATIC_FILES_URL: ${{ vars.API_STATIC_FILES_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/check-workflow-env.sh ENV APP_NAME STATIC_FILES_INTERNAL APP_VERSION API_STATIC_FILES_URL GITHUB_TOKEN
+
   collect-and-push-static-files:
     name: Static files
+    needs: [check-vars-and-secrets]
     runs-on: ubuntu-latest
     environment:
       name: COLLECT_STATIC

@@ -15,7 +15,7 @@ This document describes each GitHub Actions workflow in `.github/workflows/`.
 
 ## Overview
 
-Workflows are split by responsibility: tests run on every change; publishing (static files, build, deploy) runs on version tags; branch protection and labeler run on pull requests. Reusable workflows (`test`, `build`, `static-files`, `deploy`) can be called by others or triggered manually.
+Workflows are split by responsibility: tests run on every change; publishing (static files, build, deploy) runs on version tags; branch protection and labeler run on pull requests. Reusable workflows (`test`, `build`, `static-files`, `deploy`) can be called by others or triggered manually. Workflows that use environment vars or secrets run a **check-vars-and-secrets** job first (script: `scripts/check-workflow-env.sh`); it fails if any required var or secret is missing.
 
 ## Test
 
@@ -30,7 +30,7 @@ Runs the full test suite with pytest.
 - **Manual** via `workflow_dispatch` (optional `test_path` input)
 - **Callable** by other workflows via `workflow_call` (optional `test_path` input)
 
-**Jobs:** **pytest** (Pytest) – Checkout → set up Python 3.14 → install system deps → install pip deps → setup filesystem → run DB and AFP containers → wait for DB → copy fixtures → init Django data → run pytest → publish test results (JUnit XML).
+**Jobs:** **check-vars-and-secrets** (Check vars and secrets) – validates required env vars and secrets; **pytest** (Pytest) – Checkout → set up Python 3.14 → install system deps → install pip deps → setup filesystem → run DB and AFP containers → wait for DB → copy fixtures → init Django data → run pytest → publish test results (JUnit XML).
 
 **Environment:** `CI_TEST` (uses repo vars and secrets for DB, AFP, AcousticID, etc.).
 
@@ -65,7 +65,7 @@ Builds the app Docker image and pushes it to Docker Hub.
 - **Manual** via `workflow_dispatch` (optional `commit_hash` input)
 - **Callable** via `workflow_call` (optional `commit_hash` input; used by Publish)
 
-**Jobs:** **build-and-push-to-dockerhub** (Push to Docker Hub) – checkout at ref → login to Docker Hub → build and push image with build-args from repo vars.
+**Jobs:** **check-vars-and-secrets** (Check vars and secrets) – validates required env vars and secrets; **build-and-push-to-dockerhub** (Push to Docker Hub) – checkout at ref → login to Docker Hub → build and push image with build-args from repo vars.
 
 **Environment:** `TEST`. Image tag: `$DOCKERHUB_USERNAME/$APP_IMAGE_REPO:$APP_VERSION`.
 
@@ -82,9 +82,10 @@ Deploys the application to the test server via SSH and redeployment webhook.
 
 **Jobs:**
 
-1. **set-env-variables-on-server** (Set env vars) – SSH to server, write API, DB, and AFP `.env` files from GitHub vars/secrets
-2. **set-partial-docker-compose-on-server** (Set compose files) – generate partial Docker Compose files with `generate-docker-compose-parts.sh`, SCP them to the server
-3. **redeploy-webhook-call** (Redeploy webhook) – call BehindTheMusicTree server-management redeployment webhook (depends on jobs 1 and 2)
+1. **check-vars-and-secrets** (Check vars and secrets) – validates required env vars and secrets
+2. **set-env-variables-on-server** (Set env vars) – SSH to server, write API, DB, and AFP `.env` files from GitHub vars/secrets
+3. **set-partial-docker-compose-on-server** (Set compose files) – generate partial Docker Compose files with `generate-docker-compose-parts.sh`, SCP them to the server
+4. **redeploy-webhook-call** (Redeploy webhook) – call BehindTheMusicTree server-management redeployment webhook (depends on jobs 2 and 3)
 
 **Environment:** `TEST`. Uses `TEST_SERVER_DEPLOY_SSH_PRIVATE_KEY`, `DOMAIN_NAME`, `WEBHOOK_DIR`, etc.
 
@@ -99,7 +100,7 @@ Collects Django static files and commits/pushes them back to the repo.
 - **Manual** via `workflow_dispatch`
 - **Callable** via `workflow_call` (used by Publish)
 
-**Jobs:** **collect-and-push-static-files** (Static files) – Checkout → set up Python 3.14 → install deps → setup filesystem → `manage.py collectstatic --noinput` → git config → commit and push changes → output `collect_static_files_commit_hash` for downstream workflows.
+**Jobs:** **check-vars-and-secrets** (Check vars and secrets) – validates required env vars and secrets; **collect-and-push-static-files** (Static files) – Checkout → set up Python 3.14 → install deps → setup filesystem → `manage.py collectstatic --noinput` → git config → commit and push changes → output `collect_static_files_commit_hash` for downstream workflows.
 
 **Environment:** `COLLECT_STATIC`. Output is used by Publish so Build uses the commit that includes collected static files.
 
