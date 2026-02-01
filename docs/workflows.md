@@ -88,8 +88,6 @@ Deploys the application to the test server via SSH and redeployment webhook.
 
 **Environment:** `TEST`. Uses `TEST_SERVER_DEPLOY_SSH_PRIVATE_KEY`, `DOMAIN_NAME`, `WEBHOOK_DIR`, etc.
 
-**SSH whitelist (optional):** When repo/environment variable `SSH_WHITELIST_ENABLED` is `true`, the workflow gets the runner’s public IP, adds it to the server’s SSH whitelist before SSH steps, and removes it in a final step (even on failure). Requires `SSH_WHITELIST_PROVIDER` (e.g. `cpanel`) and, for cPanel, `CPANEL_SERVER`, `CPANEL_USERNAME`, and `CPANEL_API_TOKEN` (secrets). Script: `scripts/whitelist-runner-ssh.sh`.
-
 ## Static Files
 
 **File:** `.github/workflows/static-files.yml`
