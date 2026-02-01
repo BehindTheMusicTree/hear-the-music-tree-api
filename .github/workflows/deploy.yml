@@ -3,6 +3,8 @@ name: Deploy
 on:
   workflow_call:
   workflow_dispatch:
+  push:
+    branches: chore/improve-cicd
 
 env:
   SSH_DESTINATION: ${{ secrets.TEST_SERVER_BODZIFY_USERNAME }}@${{ vars.DOMAIN_NAME }}
@@ -151,7 +153,7 @@ jobs:
   redeploy-webhook-call:
     name: Redeploy webhook
     needs: [set-env-variables-on-server, set-partial-docker-compose-on-server]
-    uses: BehindTheMusicTree/bodzify-server-management/.github/workflows/call-redeployment-webhook.yml@main
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/call-redeployment-webhook.yml@main
     with:
       env: TEST
     secrets: inherit
