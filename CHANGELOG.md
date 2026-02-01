@@ -81,6 +81,9 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### CI
 
+- **Publish Workflow**: Run only on version tags (v*) and manual/workflow_call dispatch; removed push-to-branch trigger
+
+- **Deploy Workflow**: Remove SSH whitelist handling and scripts/whitelist-runner-ssh.sh
 
 - **Test Workflow**: Run test workflow on push to main, develop, release/*, hotfix/*, chore/*
   - Ensures tests run on protected and chore branches without requiring a PR
