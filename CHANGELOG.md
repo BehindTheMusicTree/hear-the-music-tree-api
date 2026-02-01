@@ -76,10 +76,13 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
   - Improves developer experience by eliminating manual environment file setup
 
 - **Repository References**: Updated deploy workflow and package.json to use BehindTheMusicTree org
-  - Deploy workflow redeployment webhook now calls BehindTheMusicTree/bodzify-server-management
+  - Deploy workflow redeployment webhook calls BehindTheMusicTree/github-workflows
   - package.json repository, bugs, and homepage URLs point to BehindTheMusicTree/the-music-tree-api
 
 ### CI
+
+- **Workflows**: Add check-vars-and-secrets job to deploy, build, test, and static-files
+  - Fails fast if required environment vars or secrets are missing; uses scripts/check-workflow-env.sh
 
 - **Publish Workflow**: Run only on version tags (v*) and manual/workflow_call dispatch; removed push-to-branch trigger
 
@@ -88,7 +91,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **Test Workflow**: Run test workflow on push to main, develop, release/*, hotfix/*, chore/*
   - Ensures tests run on protected and chore branches without requiring a PR
 
-- **Deploy Workflow**: Redeployment webhook uses BehindTheMusicTree server-management repo
+- **Deploy Workflow**: Redeployment webhook calls BehindTheMusicTree/github-workflows; optional push trigger for chore/improve-cicd
   - Aligns CI/CD with BehindTheMusicTree organization
 
 - **Workflow job names**: Shortened job names and publish job ids (static, build, deploy; Set env vars, Set compose files, Redeploy webhook; Static files, Push to Docker Hub) to reduce truncation in GitHub Actions UI
