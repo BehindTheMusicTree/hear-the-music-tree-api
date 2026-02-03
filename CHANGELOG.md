@@ -68,6 +68,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Changed
 
+- **Docker Compose generation**: AFP container working_dir set to /app/ in generate-docker-compose-parts.sh (was /api/)
+
 - **Docker**: Split image build into separate RUN steps for maintainability
   - System deps, Python deps, filesystem setup, and fixture copy each in their own step; easier to debug and reuse layers
 
