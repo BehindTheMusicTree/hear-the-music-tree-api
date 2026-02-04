@@ -10,12 +10,10 @@ This document describes how application versioning is handled in CI/CD workflows
 - [How Versioning Works](#how-versioning-works)
   - [Release Workflow (`publish.yml`)](#release-workflow-publishyml)
   - [Version Extraction Logic](#version-extraction-logic)
-- [Workflow Inputs](#workflow-inputs)
 - [Benefits](#benefits)
 - [Usage Examples](#usage-examples)
   - [Creating a Release](#creating-a-release)
   - [Pre-Release Testing](#pre-release-testing)
-  - [Manual Workflow Execution](#manual-workflow-execution)
 - [Workflows Using Versioning](#workflows-using-versioning)
 - [Backward Compatibility](#backward-compatibility)
 
@@ -147,20 +145,6 @@ git push origin v0.3.5-dev
 ```
 
 All pre-release tags automatically trigger the `publish.yml` workflow, which builds the Docker image and deploys it to the test server.
-
-### Manual Workflow Execution
-
-When manually triggering workflows, you can optionally provide the version:
-
-```yaml
-# In GitHub Actions UI, provide:
-app_version: 0.3.4
-# or for pre-release testing:
-app_version: 0.3.5-rc1
-app_version: 0.3.5-test-20240204  # Custom test version
-```
-
-If not provided, the workflow will attempt to fetch the latest git tag.
 
 ## Workflows Using Versioning
 
