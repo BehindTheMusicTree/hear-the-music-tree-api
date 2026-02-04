@@ -58,6 +58,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v0.3.2] - 2026-02-04
+
 ### Fixed
 
 - **Docker**: Correct fixture copy paths in Dockerfile to match repository layout
