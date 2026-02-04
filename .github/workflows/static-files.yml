@@ -99,8 +99,11 @@ jobs:
             echo "Error: Could not determine current branch"
             exit 1
           fi
+          git fetch origin "$BRANCH"
+          git pull origin "$BRANCH" --rebase --no-edit || git reset --hard "origin/$BRANCH"
           git add -A
           git diff --staged --exit-code || git commit -am "chore: add collected static files"
+          git pull origin "$BRANCH" --rebase --no-edit || true
           git push origin "$BRANCH"
 
           echo "collect_static_files_commit_hash=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
