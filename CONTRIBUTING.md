@@ -444,12 +444,12 @@ You can test your Docker image on the test server while working on a feature bra
 ```bash
 # On your feature branch, create a development tag
 # Use a version based on the next planned release with -dev suffix
-git tag v0.3.5-dev-feature-xyz  # or v0.3.5-dev-<branch-name>
-git push origin v0.3.5-dev-feature-xyz
+git tag v0.3.6-dev-feature-xyz  # or v0.3.6-dev-<branch-name>
+git push origin v0.3.6-dev-feature-xyz
 ```
 
 This automatically triggers the `publish.yml` workflow which will:
-- Build Docker image: `username/repo:0.3.5-dev-feature-xyz`
+- Build Docker image: `username/repo:0.3.6-dev-feature-xyz`
 - Deploy to the test server
 - Allow you to validate your changes before creating a PR
 
@@ -458,13 +458,13 @@ This automatically triggers the `publish.yml` workflow which will:
 You can also manually trigger the `publish.yml` workflow from GitHub Actions UI:
 1. Go to Actions → Publish workflow
 2. Click "Run workflow"
-3. Provide `app_version` input: `0.3.5-dev-feature-xyz` (or any custom version)
+3. Provide `app_version` input: `0.3.6-dev-feature-xyz` (or any custom version)
 4. The workflow will build and deploy with that version
 
 **Note:** Development tags are for testing purposes only and should not be used for releases. Delete them after testing if desired:
 ```bash
-git tag -d v0.3.5-dev-feature-xyz
-git push origin --delete v0.3.5-dev-feature-xyz
+git tag -d v0.3.6-dev-feature-xyz
+git push origin --delete v0.3.6-dev-feature-xyz
 ```
 
 ### 5. Committing
