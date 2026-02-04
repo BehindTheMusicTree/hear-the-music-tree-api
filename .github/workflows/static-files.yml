@@ -70,7 +70,8 @@ jobs:
 
       - name: Checkout branch for pushing
         run: |
-          if ! git branch --show-current 2>/dev/null; then
+          BRANCH=$(git branch --show-current 2>/dev/null || echo "")
+          if [ -z "$BRANCH" ]; then
             BRANCH=$(git branch -r --contains HEAD | grep -E 'origin/(main|develop)' | head -1 | sed 's|origin/||' | xargs)
             if [ -z "$BRANCH" ]; then
               BRANCH="main"
@@ -86,9 +87,13 @@ jobs:
         run: |
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
           BRANCH=$(git branch --show-current)
+          if [ -z "$BRANCH" ]; then
+            echo "Error: Could not determine current branch"
+            exit 1
+          fi
           git add -A
           git diff --staged --exit-code || git commit -am "chore: add collected static files"
-          git push origin HEAD:"$BRANCH"
+          git push origin "$BRANCH"
 
           echo "collect_static_files_commit_hash=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
