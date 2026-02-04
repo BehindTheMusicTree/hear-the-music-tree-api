@@ -13,7 +13,6 @@ from api.model.base.BaseModel import BaseModel
 from api.model.field.AppCharField import AppCharField
 from api.model.utils.ConcatOp import ConcatOp
 from api.model.utils.ConditionalExpression import ConditionalExpression
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 from .Fields import Fields
 from .UserManager import UserManager
@@ -21,6 +20,7 @@ from .UserManager import UserManager
 
 if TYPE_CHECKING:
     from api.model.all_uploaded_tracks_mixin.AllUploadedTracksMixin import AllUploadedTracksMixin
+    from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
 class User(AbstractUser, BaseModel):
@@ -54,7 +54,8 @@ class User(AbstractUser, BaseModel):
         all_uploaded_tracks_mixin, _ = AllUploadedTracksMixin.objects.get_or_create(user=self)
         return all_uploaded_tracks_mixin
 
-    def does_track_filename_exist_in_lib(self, test_uploaded_track_filename: UploadedTrackTestFilename):
+    def does_track_filename_exist_in_lib(self, test_uploaded_track_filename: 'UploadedTrackTestFilename'):
+        from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
         return os.path.isfile(Path(self.lib_abs_path) / test_uploaded_track_filename.value)
 
     def delete(self, *args, **kwargs):
