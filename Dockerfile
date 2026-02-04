@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1
-# Base Image: Debian Buster (a full Debian distribution).
+# Base Image: Debian Bookworm (a full Debian distribution).
 # Size: Larger, as it includes more tools and libraries by default.
 # Use Case: Suitable when you need a full Debian environment with more pre-installed tools and libraries.
-FROM python:3.14-buster
+FROM python:3.14-bookworm
 
 ARG PROJECT_DIR
 ARG APP_NAME
@@ -101,16 +101,18 @@ WORKDIR $PROJECT_DIR
 RUN apt update && \
     bash scripts/install-dependencies.sh && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
-    pip install --upgrade pip && \
-    # The env packages could have been simply copied but the executables wouldn't have been added to the PATH.
-    pip install -r requirements.txt && \
-    bash scripts/setup-filesystem.sh && \
-    chmod +x ${PROJECT_DIR}scripts/entrypoint.sh && \
-    FIXTURES_DIR=${APP_DIR}fixtures/ && \
-    cp ${FIXTURES_DIR}api/* ${FIXTURES_DIR} && \
-    cp ${FIXTURES_DIR}users/test/* ${FIXTURES_DIR} && \
-    cp ${FIXTURES_DIR}users/umg/* ${FIXTURES_DIR}
+    rm -rf /var/lib/apt/lists/*
+
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
+
+RUN chmod +x ${PROJECT_DIR}scripts/entrypoint.sh && \
+    FIXTURES_DIR=$${APP_DIR}fixtures/ && \
+    for subdir in app genres users/test users/umg; do \
+        if [ -d "$${FIXTURES_DIR}$${subdir}" ] && [ -n "$$(ls -A "$${FIXTURES_DIR}$${subdir}" 2>/dev/null)" ]; then \
+            cp "$${FIXTURES_DIR}$${subdir}"/* "$${FIXTURES_DIR}"; \
+        fi; \
+    done
 
 # Set the entrypoint using shell form to allow environment variable expansion
 ENTRYPOINT ["bash", "-c", "${PROJECT_DIR}scripts/entrypoint.sh"]

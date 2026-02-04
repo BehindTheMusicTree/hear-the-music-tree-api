@@ -4,12 +4,33 @@ on:
   workflow_call:
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 env:
   CONTAINER_ROOT_DIR: /home/api/
 
 jobs:
+  check-vars-and-secrets:
+    name: Check vars and secrets
+    runs-on: ubuntu-latest
+    environment:
+      name: COLLECT_STATIC
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check required vars and secrets
+        env:
+          ENV: ${{ vars.ENV }}
+          APP_NAME: ${{ vars.APP_NAME }}
+          STATIC_FILES_INTERNAL: ${{ vars.STATIC_FILES_INTERNAL }}
+          APP_VERSION: ${{ vars.APP_VERSION }}
+          API_STATIC_FILES_URL: ${{ vars.API_STATIC_FILES_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/check-workflow-env.sh ENV APP_NAME STATIC_FILES_INTERNAL APP_VERSION API_STATIC_FILES_URL GITHUB_TOKEN
+
   collect-and-push-static-files:
-    name: Collect and push static files
+    name: Static files
+    needs: [check-vars-and-secrets]
     runs-on: ubuntu-latest
     environment:
       name: COLLECT_STATIC
@@ -25,6 +46,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -50,14 +74,34 @@ jobs:
           git config --global user.name 'GitHub Actions'
           git config --global user.email 'actions@github.com'
 
+      - name: Checkout branch for pushing
+        run: |
+          BRANCH=$(git branch --show-current 2>/dev/null || echo "")
+          if [ -z "$BRANCH" ]; then
+            BRANCH=$(git branch -r --contains HEAD | grep -E 'origin/(main|develop)' | head -1 | sed 's|origin/||' | xargs)
+            if [ -z "$BRANCH" ]; then
+              BRANCH="main"
+            fi
+            git fetch origin "$BRANCH"
+            git checkout "$BRANCH"
+          fi
+
       - name: Commit and push static files
         id: commit-and-push-static-files
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PAT_TOKEN: ${{ secrets.STATIC_FILES_PAT }}
         run: |
+          TOKEN="${PAT_TOKEN:-${GITHUB_TOKEN}}"
+          git remote set-url origin https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          BRANCH=$(git branch --show-current)
+          if [ -z "$BRANCH" ]; then
+            echo "Error: Could not determine current branch"
+            exit 1
+          fi
           git add -A
           git diff --staged --exit-code || git commit -am "chore: add collected static files"
-          git push
+          git push origin "$BRANCH"
 
           echo "collect_static_files_commit_hash=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
