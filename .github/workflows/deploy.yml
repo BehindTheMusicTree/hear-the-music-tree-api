@@ -2,7 +2,17 @@ name: Deploy
 
 on:
   workflow_call:
+    inputs:
+      app_version:
+        description: 'App version (optional, defaults to git tag)'
+        required: false
+        type: string
   workflow_dispatch:
+    inputs:
+      app_version:
+        description: 'App version (optional, defaults to git tag)'
+        required: false
+        type: string
   push:
     branches: chore/improve-cicd
 
@@ -17,8 +27,45 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: TEST
+    outputs:
+      app_version: ${{ steps.determine-version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine APP_VERSION
+        id: determine-version
+        run: |
+          if [ -n "${{ inputs.app_version }}" ]; then
+            # Use provided input
+            VERSION="${{ inputs.app_version }}"
+            echo "Using provided version: $VERSION"
+          elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            # Extract from tag ref (e.g., refs/tags/v0.3.4 -> 0.3.4)
+            VERSION="${GITHUB_REF#refs/tags/v}"
+            echo "Using version from tag ref: $VERSION"
+          else
+            # Fallback: fetch tags and get the latest one
+            git fetch --tags --force
+            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+            if [ -z "$LATEST_TAG" ]; then
+              # Final fallback: use GitHub variable if available
+              if [ -n "${{ vars.APP_VERSION }}" ]; then
+                VERSION="${{ vars.APP_VERSION }}"
+                echo "Using GitHub variable version: $VERSION"
+              else
+                echo "Error: Cannot determine version. No tag, input, or variable provided."
+                exit 1
+              fi
+            else
+              # Remove 'v' prefix if present
+              VERSION="${LATEST_TAG#v}"
+              echo "Using latest tag version: $VERSION (from tag: $LATEST_TAG)"
+            fi
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
       - name: Check required vars and secrets
         env:
           DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
@@ -50,7 +97,7 @@ jobs:
           AFP_GUNICORN_LOG_DIR_EXTERNAL: ${{ vars.AFP_GUNICORN_LOG_DIR_EXTERNAL }}
           API_SERVICE_NAME: ${{ vars.API_SERVICE_NAME }}
           APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
-          APP_VERSION: ${{ vars.APP_VERSION }}
+          APP_VERSION: ${{ steps.determine-version.outputs.version }}
           APP_CONTAINER_NAME: ${{ vars.APP_CONTAINER_NAME }}
           GUNICORN_LOG_DIR: ${{ vars.GUNICORN_LOG_DIR }}
           GUNICORN_LOG_ERROR_FILENAME: ${{ vars.GUNICORN_LOG_ERROR_FILENAME }}
@@ -195,7 +242,7 @@ jobs:
           APP_ROOT_DIR: ${{ env.CONTAINER_ROOT_DIR }}
           APP_SERVICE_NAME: ${{ vars.API_SERVICE_NAME }}
           APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
-          APP_VERSION: ${{ vars.APP_VERSION }}
+          APP_VERSION: ${{ needs.check-vars-and-secrets.outputs.app_version }}
           APP_CONTAINER_NAME: ${{ vars.APP_CONTAINER_NAME }}
           APP_PORT: ${{ vars.API_PORT }}
           APP_ENV_FILENAME: ${{ env.DOCKERIZED_APP_ENV_FILENAME }}

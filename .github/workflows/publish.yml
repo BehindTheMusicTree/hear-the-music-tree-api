@@ -2,28 +2,80 @@ name: Publish
 
 on:
   workflow_call:
+    inputs:
+      app_version:
+        description: 'App version (optional, defaults to git tag)'
+        required: false
+        type: string
   workflow_dispatch:
+    inputs:
+      app_version:
+        description: 'App version (optional, defaults to git tag)'
+        required: false
+        type: string
   push:
     tags:
       - 'v*'
 
 jobs:
+  determine-version:
+    name: Determine version
+    runs-on: ubuntu-latest
+    outputs:
+      app_version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from tag or input
+        id: version
+        run: |
+          if [ -n "${{ inputs.app_version }}" ]; then
+            # Use provided input
+            VERSION="${{ inputs.app_version }}"
+            echo "Using provided version: $VERSION"
+          elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            # Extract from tag ref (e.g., refs/tags/v0.3.4 -> 0.3.4)
+            VERSION="${GITHUB_REF#refs/tags/v}"
+            echo "Using version from tag ref: $VERSION"
+          else
+            # Fallback: fetch tags and get the latest one
+            git fetch --tags --force
+            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+            if [ -z "$LATEST_TAG" ]; then
+              echo "Error: Cannot determine version. No tag or input provided."
+              exit 1
+            fi
+            # Remove 'v' prefix if present
+            VERSION="${LATEST_TAG#v}"
+            echo "Using latest tag version: $VERSION (from tag: $LATEST_TAG)"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
   static:
     name: Static files
+    needs: [determine-version]
     uses: ./.github/workflows/static-files.yml
+    with:
+      app_version: ${{ needs.determine-version.outputs.app_version }}
     secrets: inherit
 
   build:
     name: Docker image
-    needs: [static]
+    needs: [static, determine-version]
     uses: ./.github/workflows/build.yml
     with:
       commit_hash: ${{ needs.static.outputs.collect_static_files_commit_hash }}
+      app_version: ${{ needs.determine-version.outputs.app_version }}
     secrets: inherit
 
   deploy:
     name: Deploy
-    needs: [build]
+    needs: [build, determine-version]
     uses: ./.github/workflows/deploy.yml
+    with:
+      app_version: ${{ needs.determine-version.outputs.app_version }}
     secrets: inherit
 
