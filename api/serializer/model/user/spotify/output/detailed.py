@@ -5,6 +5,13 @@ from .Fields import Fields
 
 
 class SpotifyUserDetailedSerializer(serializers.ModelSerializer):
+    display_name = serializers.SerializerMethodField()
+    followers = serializers.SerializerMethodField()
+    href = serializers.SerializerMethodField()
+    images = serializers.SerializerMethodField()
+    type = serializers.SerializerMethodField()
+    uri = serializers.SerializerMethodField()
+
     class Meta:
         model = SpotifyUser
         fields = [
@@ -19,3 +26,21 @@ class SpotifyUserDetailedSerializer(serializers.ModelSerializer):
             Fields.URI,
             Fields.SPOTIFY_LIBRARY_LAST_SYNCED_AT,
         ]
+
+    def get_display_name(self, obj: SpotifyUser):
+        return obj.spotify_profile.get('display_name') if obj.spotify_profile else None
+
+    def get_followers(self, obj: SpotifyUser):
+        return obj.spotify_profile.get('followers') if obj.spotify_profile else None
+
+    def get_href(self, obj: SpotifyUser):
+        return obj.spotify_profile.get('href') if obj.spotify_profile else None
+
+    def get_images(self, obj: SpotifyUser):
+        return obj.spotify_profile.get('images') if obj.spotify_profile else None
+
+    def get_type(self, obj: SpotifyUser):
+        return obj.spotify_profile.get('type') if obj.spotify_profile else None
+
+    def get_uri(self, obj: SpotifyUser):
+        return obj.spotify_profile.get('uri') if obj.spotify_profile else None
