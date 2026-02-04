@@ -15,6 +15,7 @@ This project is currently maintained by a solo developer, but contributions, sug
   - [2. Branching](#2-branching)
   - [3. Developing](#3-developing)
   - [4. Testing](#4-testing)
+    - [4.1. Testing Docker Images During Development](#41-testing-docker-images-during-development)
   - [5. Committing](#5-committing)
   - [6. Pull Request Process](#6-pull-request-process)
     - [6.1. Pre-PR Checklist](#61-pre-pr-checklist)
@@ -433,6 +434,38 @@ For detailed information about test structure, organization, and conventions, se
 - CI runs tests with fail-fast flag (`-x`) - stops on first failure for faster feedback
 - Test results are published to GitHub Actions UI
 - Tests run automatically on pushes to `main`, `develop`, `release/*`, `hotfix/*` branches and pull requests
+
+#### 4.1. Testing Docker Images During Development
+
+You can test your Docker image on the test server while working on a feature branch by creating a development tag. This is useful for validating changes before merging to `develop`.
+
+**Process:**
+
+```bash
+# On your feature branch, create a development tag
+# Use a version based on the next planned release with -dev suffix
+git tag v0.3.5-dev-feature-xyz  # or v0.3.5-dev-<branch-name>
+git push origin v0.3.5-dev-feature-xyz
+```
+
+This automatically triggers the `publish.yml` workflow which will:
+- Build Docker image: `username/repo:0.3.5-dev-feature-xyz`
+- Deploy to the test server
+- Allow you to validate your changes before creating a PR
+
+**Alternative: Manual workflow trigger**
+
+You can also manually trigger the `publish.yml` workflow from GitHub Actions UI:
+1. Go to Actions → Publish workflow
+2. Click "Run workflow"
+3. Provide `app_version` input: `0.3.5-dev-feature-xyz` (or any custom version)
+4. The workflow will build and deploy with that version
+
+**Note:** Development tags are for testing purposes only and should not be used for releases. Delete them after testing if desired:
+```bash
+git tag -d v0.3.5-dev-feature-xyz
+git push origin --delete v0.3.5-dev-feature-xyz
+```
 
 ### 5. Committing
 

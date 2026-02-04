@@ -67,6 +67,13 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
   - Remove dependency on APP_VERSION GitHub repository variable
   - Enables testing Docker images on test server using pre-release tags (e.g., v0.3.5-rc1)
 
+- **Static Files Workflow**: Improve branch detection and conflict handling
+  - Pull latest changes before collecting static files to prevent overwriting newer commits
+  - Fail workflow if branch has newer commits on remote (prevents conflicts and data loss)
+  - Improved branch detection for release branches and tag-triggered workflows
+  - Better error handling with clear messages when branch is out of sync
+  - Reorder workflow steps: checkout and pull before collecting static files
+
 ### Documentation
 
 - **Versioning Strategy**: Add comprehensive versioning.md documentation
