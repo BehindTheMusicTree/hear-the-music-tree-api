@@ -46,8 +46,51 @@ For testing Docker images on the test server before final release, you can use p
   - Example: `v0.3.5-alpha1` → Docker image: `username/repo:0.3.5-alpha1`
 
 - **`dev`** (Development Build): A development build, typically used for feature branch testing.
-  - Format: `v0.3.5-dev`
-  - Example: `v0.3.5-dev` → Docker image: `username/repo:0.3.5-dev`
+  - Format: `v0.3.6-dev-<branch-name>` (e.g., `v0.3.6-dev-improve-cicd`)
+  - Use branch name **without** the type prefix (`feature/`, `hotfix/`, etc.)
+  - Example: Branch `feature/improve-cicd` → Tag `v0.3.6-dev-improve-cicd` → Docker image: `username/repo:0.3.6-dev-improve-cicd`
+
+### Dev Tag Naming Convention
+
+Dev tags should include the branch name (without type prefix) to identify what's being tested:
+
+- **Feature branches**: `feature/improve-cicd` → `v0.3.6-dev-improve-cicd`
+- **Hotfix branches**: `hotfix/critical-bug` → `v0.3.6-dev-critical-bug`
+
+**Version Selection:**
+
+Since the actual release version isn't known until the release branch is created, use these guidelines:
+
+- **Feature branches**: Typically minor version updates (e.g., `v0.3.6-dev-*` or `v0.4.0-dev-*`)
+- **Hotfix branches**: Typically patch version updates (e.g., `v0.3.6-dev-*`)
+- **Breaking changes**: Major version (e.g., `v1.0.0-dev-*`)
+
+The version number is a placeholder - the actual release version is determined when creating the release branch.
+
+**Republishing Dev Tags:**
+
+Git tags are immutable once pushed. If you need to republish after making changes:
+
+1. **Delete and recreate** (recommended for dev tags):
+   ```bash
+   git tag -d v0.3.6-dev-improve-cicd
+   git push origin --delete v0.3.6-dev-improve-cicd
+   git tag v0.3.6-dev-improve-cicd
+   git push origin v0.3.6-dev-improve-cicd
+   ```
+
+2. **Or use incrementing suffix** (if you want to keep history):
+   ```bash
+   git tag v0.3.6-dev-improve-cicd-1  # First iteration
+   git push origin v0.3.6-dev-improve-cicd-1
+   # After changes:
+   git tag v0.3.6-dev-improve-cicd-2  # Second iteration
+   git push origin v0.3.6-dev-improve-cicd-2
+   ```
+
+**Cleanup:**
+
+All pre-release tags (dev, rc, beta, alpha) should be deleted during the release process to keep the repository clean. See [Creating a Release](#creating-a-release) for cleanup steps.
 
 ### Usage for Testing
 
@@ -121,6 +164,10 @@ git merge release/v0.3.4
 # 3. Tag the release
 git tag v0.3.4
 git push origin v0.3.4  # Triggers publish.yml workflow
+
+# 4. Clean up pre-release tags (dev, rc, beta, alpha)
+git tag -l "v0.3.4-dev-*" "v0.3.4-rc*" "v0.3.4-beta*" "v0.3.4-alpha*" | xargs -n 1 git tag -d
+git tag -l "v0.3.4-dev-*" "v0.3.4-rc*" "v0.3.4-beta*" "v0.3.4-alpha*" | xargs -n 1 git push origin --delete
 ```
 
 ### Pre-Release Testing
@@ -138,10 +185,11 @@ git tag v0.3.5-beta1
 git push origin v0.3.5-beta1
 # Automatically builds and deploys: username/repo:0.3.5-beta1
 
-# Option 3: Create a development build
-git tag v0.3.5-dev
-git push origin v0.3.5-dev
-# Automatically builds and deploys: username/repo:0.3.5-dev
+# Option 3: Create a development build for feature branch testing
+git tag v0.3.6-dev-improve-cicd  # branch: feature/improve-cicd
+git push origin v0.3.6-dev-improve-cicd
+# Automatically builds and deploys: username/repo:0.3.6-dev-improve-cicd
+# Static files are committed to the feature branch
 ```
 
 All pre-release tags automatically trigger the `publish.yml` workflow, which builds the Docker image and deploys it to the test server.
