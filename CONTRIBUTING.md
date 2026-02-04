@@ -799,24 +799,20 @@ Quick release process:
 
    **Important:** The tag version must match the version in `CHANGELOG.md` (with the `v` prefix).
 
-6. **Clean up development tags** (optional but recommended)
+6. **Clean up pre-release tags**
 
-   Delete any dev tags that were used for testing this release:
+   Delete all pre-release tags (dev, rc, beta, alpha) that were used for testing this release:
 
    ```bash
-   # List dev tags for this version (e.g., v0.2.1-dev-*)
-   git tag -l "v0.2.1-dev-*"
+   # List all pre-release tags for this version
+   git tag -l "v0.2.1-dev-*" "v0.2.1-rc*" "v0.2.1-beta*" "v0.2.1-alpha*"
    
-   # Delete dev tags locally and remotely
-   git tag -d v0.2.1-dev-feature-xyz v0.2.1-dev-another-feature
-   git push origin --delete v0.2.1-dev-feature-xyz v0.2.1-dev-another-feature
-   
-   # Or delete all dev tags for this version at once
-   git tag -l "v0.2.1-dev-*" | xargs -n 1 git tag -d
-   git tag -l "v0.2.1-dev-*" | xargs -n 1 git push origin --delete
+   # Delete all pre-release tags locally and remotely
+   git tag -l "v0.2.1-dev-*" "v0.2.1-rc*" "v0.2.1-beta*" "v0.2.1-alpha*" | xargs -n 1 git tag -d
+   git tag -l "v0.2.1-dev-*" "v0.2.1-rc*" "v0.2.1-beta*" "v0.2.1-alpha*" | xargs -n 1 git push origin --delete
    ```
 
-   **Note:** This step is optional but helps keep the repository clean. Dev tags are temporary and no longer needed once the release is published.
+   **Note:** Pre-release tags (dev, rc, beta, alpha) are temporary and should be cleaned up after the release is published to keep the repository clean.
 
 7. **Merge release branch back into `develop`** (to keep develop up to date)
 

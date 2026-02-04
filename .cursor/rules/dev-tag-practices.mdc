@@ -50,25 +50,25 @@ git push origin v0.3.6-dev-improve-cicd-2
 
 ## Cleanup During Release
 
-When creating a release, clean up dev tags that were used for testing:
+When creating a release, clean up all pre-release tags (dev, rc, beta, alpha) that were used for testing:
 
 ```bash
-# List dev tags for the release version
-git tag -l "v0.2.1-dev-*"
+# List all pre-release tags for the release version
+git tag -l "v0.2.1-dev-*" "v0.2.1-rc*" "v0.2.1-beta*" "v0.2.1-alpha*"
 
-# Delete dev tags locally and remotely
-git tag -l "v0.2.1-dev-*" | xargs -n 1 git tag -d
-git tag -l "v0.2.1-dev-*" | xargs -n 1 git push origin --delete
+# Delete all pre-release tags locally and remotely
+git tag -l "v0.2.1-dev-*" "v0.2.1-rc*" "v0.2.1-beta*" "v0.2.1-alpha*" | xargs -n 1 git tag -d
+git tag -l "v0.2.1-dev-*" "v0.2.1-rc*" "v0.2.1-beta*" "v0.2.1-alpha*" | xargs -n 1 git push origin --delete
 ```
 
-This should be done after tagging the release (step 6 in the release process).
+This should be done after tagging the release (step 6 in the release process). **This step is mandatory** - all pre-release tags should be cleaned up to keep the repository clean.
 
 ## Guidelines
 
-1. **Dev tags are temporary**: They're for testing only and should be cleaned up after release
+1. **Pre-release tags are temporary**: Dev, rc, beta, and alpha tags are for testing only and should be cleaned up after release
 2. **Use descriptive names**: Include the branch name (without type prefix) to identify what's being tested
 3. **Version is a placeholder**: The actual release version is determined when creating the release branch
-4. **Clean up after release**: Delete dev tags during the release process to keep the repository clean
+4. **Clean up after release**: Delete all pre-release tags during the release process to keep the repository clean
 
 ## Benefits
 
