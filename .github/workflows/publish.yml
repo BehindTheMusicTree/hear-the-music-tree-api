@@ -11,6 +11,7 @@ jobs:
   static:
     name: Static files
     uses: ./.github/workflows/static-files.yml
+    secrets: inherit
 
   build:
     name: Docker image
