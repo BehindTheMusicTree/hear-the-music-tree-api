@@ -183,7 +183,9 @@ class AppModelViewSet(viewsets.ModelViewSet, Generic[T]):
         raise NotImplementedError(f"Action {self.action} not defined in viewset")
 
     def get_serializer_class(self) -> Type[Serializer]:
-        if self.action == 'retrieve':
+        if self.action == 'list':
+            return self._require_serializer(SerializerType.SIMPLE)
+        elif self.action == 'retrieve':
             return self._require_serializer(SerializerType.DETAILED)
         elif self.action == 'create':
             return self._require_serializer(SerializerType.CREATE)
@@ -198,6 +200,8 @@ class AppModelViewSet(viewsets.ModelViewSet, Generic[T]):
             return self.model_class.objects.none()
         request: Request = cast(Request, self.request)
         if self.is_private_resource:
+            if not request.user.is_authenticated:
+                return self.model_class.objects.none()
             queryset = self.model_class.objects.filter(user=request.user)
         else:
             queryset = self.model_class.objects.all()
