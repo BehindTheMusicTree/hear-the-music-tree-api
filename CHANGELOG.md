@@ -58,6 +58,14 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v0.3.5] - 2026-02-04
+
+### Fixed
+
+- **Production Import Error**: Fix ModuleNotFoundError when importing User model in production
+  - Move test utility import (`UploadedTrackTestFilename`) from module level to inside method
+  - Prevents import error when `api.test` module is not available in production environment
+
 ## [v0.3.4] - 2026-02-04
 
 ### Fixed
