@@ -109,7 +109,7 @@ jobs:
 
       - name: Checkout branch for pushing
         run: |
-          git fetch origin --all
+          git fetch origin
           BRANCH=$(git branch --show-current 2>/dev/null || echo "")
           if [ -z "$BRANCH" ]; then
             BRANCH=$(git branch -r --contains HEAD | grep -E 'origin/(main|develop|release/)' | head -1 | sed 's|origin/||' | xargs)
