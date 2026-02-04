@@ -60,20 +60,13 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Fixed
 
-- **Docker**: Correct fixture copy paths in Dockerfile to match repository layout
-  - Copy from `app/` and `genres/` instead of non-existent `api/`; fixes build failure during image build
+- **CI**: Add SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET to deploy workflow
+  - Spotify credentials are now written to API .env file on server deployment
+  - Fixes Django initialization failure when Spotify integration is enabled
 
-- **Docker**: Use python:3.14-bookworm base image instead of python:3.14-buster
-  - python:3.14-buster is not published on Docker Hub; Python 3.14 images use Bookworm or Trixie
-
-### Changed
-
-- **Docker**: Run filesystem setup in entrypoint instead of Dockerfile so volume-mounted paths get correct permissions at container start
-
-- **Docker Compose generation**: AFP container working_dir set to /app/ in generate-docker-compose-parts.sh (was /api/)
-
-- **Docker**: Split image build into separate RUN steps for maintainability
-  - System deps, Python deps, filesystem setup, and fixture copy each in their own step; easier to debug and reuse layers
+- **CI**: Pass secrets to static-files workflow in publish workflow
+  - Added `secrets: inherit` to publish workflow so STATIC_FILES_PAT token is available
+  - Enables static files workflow to bypass branch protection when using PAT token
 
 - **Git Worktree Configuration**: Added environment file (`env/.env`) to worktree copy configuration
   - Environment files are now automatically copied when creating new git worktrees
