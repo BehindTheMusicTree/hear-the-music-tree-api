@@ -445,8 +445,10 @@ Since the actual release version (major/minor/patch) isn't known until the relea
 
 - **Feature branches** (`feature/`): Typically indicate minor version updates (new features, backward compatible)
   - Use the next minor version: if latest is `v0.3.5`, use `v0.3.6-dev-<branch-name>` or `v0.4.0-dev-<branch-name>`
+  - Use the branch name **without** the `feature/` prefix: `feature/improve-cicd` → `v0.3.6-dev-improve-cicd`
 - **Hotfix branches** (`hotfix/`): Typically indicate patch version updates (bug fixes)
   - Use the next patch version: if latest is `v0.3.5`, use `v0.3.6-dev-<branch-name>`
+  - Use the branch name **without** the `hotfix/` prefix: `hotfix/critical-bug` → `v0.3.6-dev-critical-bug`
 - **Breaking changes**: Use the next major version: if latest is `v0.3.5`, use `v1.0.0-dev-<branch-name>`
 
 **Note:** The version number in dev tags is just a placeholder for testing. The actual release version will be determined when creating the release branch based on the changes included. Dev tags are temporary and can use any version number that makes sense for your testing needs.
@@ -454,29 +456,21 @@ Since the actual release version (major/minor/patch) isn't known until the relea
 **Process:**
 
 ```bash
-# On your feature branch, create a development tag
-# Include your branch name to make it clear what's being tested
-git tag v0.3.6-dev-feature-xyz  # or v0.4.0-dev-feature-xyz for minor updates
-git push origin v0.3.6-dev-feature-xyz
+# On your feature branch (e.g., feature/improve-cicd), create a development tag
+# Use the branch name without the type prefix (feature/, hotfix/, etc.)
+git tag v0.3.6-dev-improve-cicd  # branch: feature/improve-cicd
+git push origin v0.3.6-dev-improve-cicd
 ```
 
 This automatically triggers the `publish.yml` workflow which will:
-- Build Docker image: `username/repo:0.3.6-dev-feature-xyz`
+- Build Docker image: `username/repo:0.3.6-dev-improve-cicd`
 - Deploy to the test server
 - Allow you to validate your changes before creating a PR
 
-**Alternative: Manual workflow trigger**
-
-You can also manually trigger the `publish.yml` workflow from GitHub Actions UI:
-1. Go to Actions → Publish workflow
-2. Click "Run workflow"
-3. Provide `app_version` input: `0.3.6-dev-feature-xyz` (or any custom version)
-4. The workflow will build and deploy with that version
-
 **Note:** Development tags are for testing purposes only and should not be used for releases. Delete them after testing if desired:
 ```bash
-git tag -d v0.3.6-dev-feature-xyz
-git push origin --delete v0.3.6-dev-feature-xyz
+git tag -d v0.3.6-dev-improve-cicd
+git push origin --delete v0.3.6-dev-improve-cicd
 ```
 
 ### 5. Committing
