@@ -799,7 +799,26 @@ Quick release process:
 
    **Important:** The tag version must match the version in `CHANGELOG.md` (with the `v` prefix).
 
-6. **Merge release branch back into `develop`** (to keep develop up to date)
+6. **Clean up development tags** (optional but recommended)
+
+   Delete any dev tags that were used for testing this release:
+
+   ```bash
+   # List dev tags for this version (e.g., v0.2.1-dev-*)
+   git tag -l "v0.2.1-dev-*"
+   
+   # Delete dev tags locally and remotely
+   git tag -d v0.2.1-dev-feature-xyz v0.2.1-dev-another-feature
+   git push origin --delete v0.2.1-dev-feature-xyz v0.2.1-dev-another-feature
+   
+   # Or delete all dev tags for this version at once
+   git tag -l "v0.2.1-dev-*" | xargs -n 1 git tag -d
+   git tag -l "v0.2.1-dev-*" | xargs -n 1 git push origin --delete
+   ```
+
+   **Note:** This step is optional but helps keep the repository clean. Dev tags are temporary and no longer needed once the release is published.
+
+7. **Merge release branch back into `develop`** (to keep develop up to date)
 
    ```bash
    git checkout develop
@@ -808,14 +827,14 @@ Quick release process:
    git push origin develop
    ```
 
-7. **Delete the release branch** (locally and remotely)
+8. **Delete the release branch** (locally and remotely)
 
    ```bash
    git branch -d release/v0.2.1
    git push origin --delete release/v0.2.1
    ```
 
-8. **CI/CD will automatically:**
+9. **CI/CD will automatically:**
 
    When you push the version tag (step 5), the `publish.yml` workflow will automatically:
    - Collect and commit static files
