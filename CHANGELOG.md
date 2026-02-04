@@ -58,6 +58,23 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### CI
+
+- **Versioning**: Derive app version from git tags instead of GitHub repository variables
+  - Extract version from git tags in publish.yml workflow (supports pre-release versions: rc, beta, alpha, dev)
+  - Pass app_version as input to reusable workflows (static-files, build, deploy, test)
+  - Add version extraction logic with fallback to latest git tag
+  - Remove dependency on APP_VERSION GitHub repository variable
+  - Enables testing Docker images on test server using pre-release tags (e.g., v0.3.5-rc1)
+
+### Documentation
+
+- **Versioning Strategy**: Add comprehensive versioning.md documentation
+  - Document git tag-based versioning approach
+  - Explain pre-release version identifiers (rc, beta, alpha, dev) and their usage
+  - Document version extraction logic and workflow inputs
+  - Update workflows.md to reference versioning approach
+
 ## [v0.3.5] - 2026-02-04
 
 ### Fixed
