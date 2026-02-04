@@ -20,6 +20,7 @@ This project is currently maintained by a solo developer, but contributions, sug
     - [6.1. Pre-PR Checklist](#61-pre-pr-checklist)
     - [6.2. Opening a Pull Request](#62-opening-a-pull-request)
   - [7. Releasing _(For Maintainers)_](#7-releasing-for-maintainers)
+- [⚙️ GitHub Actions Workflows](docs/workflows.md)
 - [🪪 License & Attribution](#-license--attribution)
 - [📜 Code of Conduct](#-code-of-conduct)
 - [📋 TODO List](#-todo-list)
@@ -254,7 +255,7 @@ The HearTheMusicTree API requires a PostgreSQL database to function. The databas
 
 #### Audio Fingerprinting Requirement
 
-For audio fingerprinting, the HearTheMusicTree API requires an app called Audio Fingerprinter. You can find the Audio Fingerprinter app on GitHub at the following link: [Audio Fingerprinter](https://github.com/Bodzify/bodzify-audio-fingerprinter-flask)
+For audio fingerprinting, the HearTheMusicTree API requires an app called Audio Fingerprinter. You can find the Audio Fingerprinter app on GitHub at the following link: [Audio Fingerprinter](https://github.com/BehindTheMusicTree/bodzify-audio-fingerprinter-flask)
 
 
 ### 2. Branching
@@ -660,7 +661,7 @@ These automations help streamline the review process and ensure consistency acro
 
 ##### GitHub Actions Workflows
 
-The project uses focused, reusable GitHub Actions workflows for CI/CD:
+The project uses focused, reusable GitHub Actions workflows for CI/CD. For a full description of each workflow (triggers, steps, environments), see [GitHub Actions Workflows](docs/workflows.md).
 
 **Test Workflow** (`.github/workflows/test.yml`):
 - Runs automatically on pushes to `main` and `develop` branches

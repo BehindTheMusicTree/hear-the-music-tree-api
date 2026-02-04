@@ -64,6 +64,63 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
   - Environment files are now automatically copied when creating new git worktrees
   - Improves developer experience by eliminating manual environment file setup
 
+## [v0.3.3] - 2026-02-04
+
+### Fixed
+
+- **CI**: Handle detached HEAD when pushing static files from tag-triggered workflow
+  - Static files workflow now detects detached HEAD state and checks out the appropriate branch (main/develop) before committing and pushing
+  - Fixes workflow failure when publish workflow is triggered by version tags
+
+## [v0.3.2] - 2026-02-04
+
+### Fixed
+
+- **Docker**: Correct fixture copy paths in Dockerfile to match repository layout
+  - Copy from `app/` and `genres/` instead of non-existent `api/`; fixes build failure during image build
+
+- **Docker**: Use python:3.14-bookworm base image instead of python:3.14-buster
+  - python:3.14-buster is not published on Docker Hub; Python 3.14 images use Bookworm or Trixie
+
+### Changed
+
+- **Docker**: Run filesystem setup in entrypoint instead of Dockerfile so volume-mounted paths get correct permissions at container start
+
+- **Docker Compose generation**: AFP container working_dir set to /app/ in generate-docker-compose-parts.sh (was /api/)
+
+- **Docker**: Split image build into separate RUN steps for maintainability
+  - System deps, Python deps, filesystem setup, and fixture copy each in their own step; easier to debug and reuse layers
+
+- **Repository References**: Updated deploy workflow and package.json to use BehindTheMusicTree org
+  - Deploy workflow redeployment webhook calls BehindTheMusicTree/github-workflows
+  - package.json repository, bugs, and homepage URLs point to BehindTheMusicTree/the-music-tree-api
+
+### CI
+
+- **Workflows**: Add check-vars-and-secrets job to deploy, build, test, and static-files
+  - Fails fast if required environment vars or secrets are missing; reports all missing ones (scripts/check-workflow-env.sh)
+
+- **Publish Workflow**: Run only on version tags (v*) and manual/workflow_call dispatch; removed push-to-branch trigger
+
+- **Deploy Workflow**: Use SERVER_DEPLOY_USERNAME secret instead of TEST_SERVER_BODZIFY_USERNAME for SSH destination
+
+- **Deploy Workflow**: Remove SSH whitelist handling and scripts/whitelist-runner-ssh.sh
+
+- **Test Workflow**: Run test workflow on push to main, develop, release/*, hotfix/*, chore/*
+  - Ensures tests run on protected and chore branches without requiring a PR
+
+- **Deploy Workflow**: Redeployment webhook calls BehindTheMusicTree/github-workflows; optional push trigger for chore/improve-cicd
+  - Aligns CI/CD with BehindTheMusicTree organization
+
+- **Workflow job names**: Shortened job names and publish job ids (static, build, deploy; Set env vars, Set compose files, Redeploy webhook; Static files, Push to Docker Hub) to reduce truncation in GitHub Actions UI
+  - Aligned step name "Set up Python" in test workflow with static-files
+  - docs/workflows.md documents job id and display name for each workflow
+
+### Documentation
+
+- **GitHub Actions Workflows**: Added docs/workflows.md documenting all workflows with table of contents
+  - Describes triggers, steps, and environments for test, publish, build, deploy, static-files, branch-protection, labeler
+  - CONTRIBUTING.md links to workflows doc in TOC and in Pull Request Process section
 ## [v0.3.1] - 2025-12-10
 
 ### Changed
