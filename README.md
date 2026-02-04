@@ -165,9 +165,11 @@ The API version is configured via the `APP_VERSION` environment variable.
 
 The API provides interactive documentation using OpenAPI/Swagger:
 
-- **Swagger UI**: `/api/docs/` - Interactive API explorer
-- **ReDoc**: `/api/schema/redoc/` - Alternative API documentation
-- **OpenAPI Schema**: `/api/schema/` - Raw OpenAPI schema (JSON/YAML)
+- **Swagger UI**: `http://localhost:8000/api/docs/` - Interactive API explorer with try-it-out functionality
+- **ReDoc**: `http://localhost:8000/api/schema/redoc/` - Alternative API documentation with clean, readable format
+- **OpenAPI Schema**: `http://localhost:8000/api/schema/` - Raw OpenAPI schema (JSON/YAML) for code generation and integration
+
+> **Quick Access**: When running the development server locally, visit [http://localhost:8000/api/docs/](http://localhost:8000/api/docs/) to explore the API interactively.
 
 ### Authentication
 
