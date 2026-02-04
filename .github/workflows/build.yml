@@ -7,10 +7,6 @@ on:
         description: 'Commit hash to build from (optional)'
         required: false
         type: string
-      app_version:
-        description: 'App version (optional, defaults to git tag)'
-        required: false
-        type: string
 
 env:
   CONTAINER_ROOT_DIR: /home/api/
@@ -34,11 +30,7 @@ jobs:
       - name: Determine APP_VERSION
         id: determine-version
         run: |
-          if [ -n "${{ inputs.app_version }}" ]; then
-            # Use provided input
-            VERSION="${{ inputs.app_version }}"
-            echo "Using provided version: $VERSION"
-          elif [[ "${{ github.ref }}" == refs/tags/* ]]; then
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
             # Extract from tag ref (e.g., refs/tags/v0.3.4 -> 0.3.4)
             VERSION="${GITHUB_REF#refs/tags/v}"
             echo "Using version from tag ref: $VERSION"
@@ -47,19 +39,12 @@ jobs:
             git fetch --tags --force
             LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
             if [ -z "$LATEST_TAG" ]; then
-              # Final fallback: use GitHub variable if available
-              if [ -n "${{ vars.APP_VERSION }}" ]; then
-                VERSION="${{ vars.APP_VERSION }}"
-                echo "Using GitHub variable version: $VERSION"
-              else
-                echo "Error: Cannot determine version. No tag, input, or variable provided."
-                exit 1
-              fi
-            else
-              # Remove 'v' prefix if present
-              VERSION="${LATEST_TAG#v}"
-              echo "Using latest tag version: $VERSION (from tag: $LATEST_TAG)"
+              echo "Error: Cannot determine version. No tag provided."
+              exit 1
             fi
+            # Remove 'v' prefix if present
+            VERSION="${LATEST_TAG#v}"
+            echo "Using latest tag version: $VERSION (from tag: $LATEST_TAG)"
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 

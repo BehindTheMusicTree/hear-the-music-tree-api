@@ -44,18 +44,18 @@ Orchestrates release: collect static files, build Docker image, deploy to the te
 **Triggers:**
 
 - **Push** of version tags (`v*`, e.g. `v0.2.1`)
-- **Callable** by other workflows via `workflow_call` (optional `app_version` input)
+- **Callable** by other workflows via `workflow_call`
 
 **Jobs (sequential):**
 
-1. **determine-version** (Determine version) – extracts version from git tag or uses provided input
-2. **static** (Static files) – calls `static-files.yml` with version, commits and pushes collected static files
-3. **build** (Docker image) – calls `build.yml` with commit hash from step 2 and version from step 1
-4. **deploy** (Deploy) – calls `deploy.yml` with version from step 1 to deploy to the test server
+1. **determine-version** (Determine version) – extracts version from git tag
+2. **static** (Static files) – calls `static-files.yml`, commits and pushes collected static files
+3. **build** (Docker image) – calls `build.yml` with commit hash from step 2
+4. **deploy** (Deploy) – calls `deploy.yml` to deploy to the test server
 
 **Environment:** Uses `TEST` environment vars and secrets.
 
-**Versioning:** When triggered by a tag push, version is automatically extracted from the tag (e.g., `refs/tags/v0.3.4` → `0.3.4`). When called manually or by another workflow, version can be provided via `app_version` input, or it will attempt to fetch the latest git tag.
+**Versioning:** Version is automatically extracted from git tags (e.g., `refs/tags/v0.3.4` → `0.3.4`). If not triggered by a tag, it fetches the latest git tag.
 
 ## Build
 
@@ -65,11 +65,11 @@ Builds the app Docker image and pushes it to Docker Hub.
 
 **Triggers:**
 
-- **Callable** via `workflow_call` (optional `commit_hash` and `app_version` inputs; used by Publish)
+- **Callable** via `workflow_call` (optional `commit_hash` input; used by Publish)
 
-**Jobs:** **check-vars-and-secrets** (Check vars and secrets) – determines version from git tags/input and validates required env vars and secrets; **build-and-push-to-dockerhub** (Push to Docker Hub) – checkout at ref → login to Docker Hub → build and push image with build-args from repo vars.
+**Jobs:** **check-vars-and-secrets** (Check vars and secrets) – determines version from git tags and validates required env vars and secrets; **build-and-push-to-dockerhub** (Push to Docker Hub) – checkout at ref → login to Docker Hub → build and push image with build-args from repo vars.
 
-**Environment:** `TEST`. Image tag: `$DOCKERHUB_USERNAME/$APP_IMAGE_REPO:$APP_VERSION` (version determined from git tags or input).
+**Environment:** `TEST`. Image tag: `$DOCKERHUB_USERNAME/$APP_IMAGE_REPO:$APP_VERSION` (version determined from git tags).
 
 ## Deploy
 
@@ -79,11 +79,11 @@ Deploys the application to the test server via SSH and redeployment webhook.
 
 **Triggers:**
 
-- **Callable** via `workflow_call` (optional `app_version` input; used by Publish)
+- **Callable** via `workflow_call` (used by Publish)
 
 **Jobs:**
 
-1. **check-vars-and-secrets** (Check vars and secrets) – determines version from git tags/input and validates required env vars and secrets
+1. **check-vars-and-secrets** (Check vars and secrets) – determines version from git tags and validates required env vars and secrets
 2. **set-env-variables-on-server** (Set env vars) – SSH to server, write API, DB, and AFP `.env` files from GitHub vars/secrets
 3. **set-partial-docker-compose-on-server** (Set compose files) – generate partial Docker Compose files with `generate-docker-compose-parts.sh` using version from job 1, SCP them to the server
 4. **redeploy-webhook-call** (Redeploy webhook) – call BehindTheMusicTree server-management redeployment webhook (depends on jobs 2 and 3)
@@ -98,9 +98,9 @@ Collects Django static files and commits/pushes them back to the repo.
 
 **Triggers:**
 
-- **Callable** via `workflow_call` (optional `app_version` input; used by Publish)
+- **Callable** via `workflow_call` (used by Publish)
 
-**Jobs:** **check-vars-and-secrets** (Check vars and secrets) – determines version from git tags/input and validates required env vars and secrets; **collect-and-push-static-files** (Static files) – Checkout → set up Python 3.14 → install deps → setup filesystem → `manage.py collectstatic --noinput` with version from job 1 → git config → commit and push changes → output `collect_static_files_commit_hash` and `app_version` for downstream workflows.
+**Jobs:** **check-vars-and-secrets** (Check vars and secrets) – determines version from git tags and validates required env vars and secrets; **collect-and-push-static-files** (Static files) – Checkout → set up Python 3.14 → install deps → setup filesystem → `manage.py collectstatic --noinput` with version from job 1 → git config → commit and push changes → output `collect_static_files_commit_hash` and `app_version` for downstream workflows.
 
 **Environment:** `COLLECT_STATIC`. Outputs are used by Publish so Build uses the commit that includes collected static files and the correct version.
 

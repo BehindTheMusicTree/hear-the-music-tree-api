@@ -93,34 +93,12 @@ The version is determined using the following priority:
    ```
    Works with pre-release tags too: `refs/tags/v0.3.5-rc1` → `0.3.5-rc1`
 
-2. **From workflow input** (when called manually or by another workflow):
-   ```yaml
-   # If app_version input is provided
-   VERSION="${{ inputs.app_version }}"
-   ```
-
-3. **From latest git tag** (fallback):
+2. **From latest git tag** (fallback when not triggered by tag):
    ```bash
    git fetch --tags --force
    LATEST_TAG=$(git describe --tags --abbrev=0)
    VERSION="${LATEST_TAG#v}"  # Remove 'v' prefix
    ```
-
-## Workflow Inputs
-
-Reusable workflows accept `app_version` as an optional input:
-
-```yaml
-on:
-  workflow_call:
-    inputs:
-      app_version:
-        description: 'App version (optional, defaults to git tag)'
-        required: false
-        type: string
-```
-
-When `app_version` is provided, it takes precedence over automatic tag detection.
 
 ## Benefits
 
