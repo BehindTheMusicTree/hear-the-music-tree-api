@@ -58,6 +58,14 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v0.3.3] - 2026-02-04
+
+### Fixed
+
+- **CI**: Handle detached HEAD when pushing static files from tag-triggered workflow
+  - Static files workflow now detects detached HEAD state and checks out the appropriate branch (main/develop) before committing and pushing
+  - Fixes workflow failure when publish workflow is triggered by version tags
+
 ## [v0.3.2] - 2026-02-04
 
 ### Fixed
