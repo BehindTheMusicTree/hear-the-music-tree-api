@@ -106,8 +106,6 @@ RUN apt update && \
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
-RUN bash scripts/setup-filesystem.sh
-
 RUN chmod +x ${PROJECT_DIR}scripts/entrypoint.sh && \
     FIXTURES_DIR=$${APP_DIR}fixtures/ && \
     for subdir in app genres users/test users/umg; do \

@@ -45,6 +45,13 @@ main (){
 
     check_script_vars_are_set 2>&1
 
+    log_with_script_prefixe "Setting up filesystem (for volume mounts)..."
+    bash ${SCRIPTS_DIR}setup-filesystem.sh
+    if [ $? -ne 0 ]; then
+        log_with_script_prefixe "ERROR: Filesystem setup failed." >&2
+        exit 1
+    fi
+
     log_with_script_prefixe "Running ${SCRIPTS_DIR}wait-for-postgres-db.sh to wait for the database..."
     bash ${SCRIPTS_DIR}wait-for-postgres-db.sh $DB_CONTAINER_NAME $DB_PORT $DB_CONNECTION_TEST_MAX_ATTEMPTS $DB_CONNECTION_TEST_SLEEP_INTERVAL
     if [ $? -ne 0 ]; then
