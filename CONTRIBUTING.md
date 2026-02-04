@@ -467,6 +467,28 @@ This automatically triggers the `publish.yml` workflow which will:
 - Deploy to the test server
 - Allow you to validate your changes before creating a PR
 
+**Republishing After Changes:**
+
+Git tags are immutable once pushed. If you make changes and need to republish:
+
+1. **Delete the old tag** (recommended for dev tags):
+   ```bash
+   git tag -d v0.3.6-dev-improve-cicd
+   git push origin --delete v0.3.6-dev-improve-cicd
+   # Then create and push a new tag with the same name
+   git tag v0.3.6-dev-improve-cicd
+   git push origin v0.3.6-dev-improve-cicd
+   ```
+
+2. **Or use an incrementing suffix** (if you want to keep history):
+   ```bash
+   git tag v0.3.6-dev-improve-cicd-1  # First iteration
+   git push origin v0.3.6-dev-improve-cicd-1
+   # After changes:
+   git tag v0.3.6-dev-improve-cicd-2  # Second iteration
+   git push origin v0.3.6-dev-improve-cicd-2
+   ```
+
 **Note:** Development tags are for testing purposes only and should not be used for releases. Delete them after testing if desired:
 ```bash
 git tag -d v0.3.6-dev-improve-cicd
