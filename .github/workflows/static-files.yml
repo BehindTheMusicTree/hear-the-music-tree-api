@@ -83,7 +83,7 @@ jobs:
       APP_IS_EXPOSED: false
       STATIC_FILES_INTERNAL: ${{ vars.STATIC_FILES_INTERNAL }}
     outputs:
-      collect_static_files_commit_hash: ${{ steps.commit-and-push-static-files.outputs.collect_static_files_commit_hash }}
+      collect_static_files_commit_hash: ${{ steps.set-commit-hash.outputs.collect_static_files_commit_hash }}
       app_version: ${{ needs.check-vars-and-secrets.outputs.app_version }}
     steps:
       - name: Checkout code
@@ -112,35 +112,61 @@ jobs:
         run: |
           git fetch origin
           
-          # Check if this is a dev/pre-release tag
-          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            TAG_NAME="${GITHUB_REF#refs/tags/}"
-            if [[ "$TAG_NAME" =~ -dev-|-rc|-beta|-alpha ]]; then
-              echo "Dev/pre-release tag detected: $TAG_NAME"
-              echo "Skipping static files commit for dev/pre-release tags"
-              echo "skip_static_files=true" >> "$GITHUB_OUTPUT"
-              echo "collect_static_files_commit_hash=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-              exit 0
-            fi
-          fi
-          
           BRANCH=$(git branch --show-current 2>/dev/null || echo "")
           if [ -z "$BRANCH" ]; then
-            BRANCH=$(git branch -r --contains HEAD | grep -E 'origin/(main|develop|release/)' | head -1 | sed 's|origin/||' | xargs)
+            # Find which branch contains the current HEAD (tag commit)
+            # This will find feature branches, release branches, main, develop, etc.
+            BRANCH=$(git branch -r --contains HEAD | head -1 | sed 's|origin/||' | xargs)
+            
             if [ -z "$BRANCH" ]; then
+              # Fallback: try to determine from tag name
               if [[ "${{ github.ref }}" == refs/tags/* ]]; then
                 TAG_NAME="${GITHUB_REF#refs/tags/}"
                 VERSION="${TAG_NAME#v}"
-                BRANCH="release/v${VERSION%%-*}"
-                if ! git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
-                  BRANCH="main"
+                
+                # For dev tags, try to find the feature/hotfix branch
+                if [[ "$TAG_NAME" =~ -dev- ]]; then
+                  # Extract branch name from tag (e.g., v0.3.6-dev-improve-cicd -> improve-cicd)
+                  BRANCH_NAME="${TAG_NAME#*-dev-}"
+                  # Try feature branch first
+                  BRANCH="feature/$BRANCH_NAME"
+                  if ! git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+                    # Try hotfix branch
+                    BRANCH="hotfix/$BRANCH_NAME"
+                    if ! git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+                      BRANCH=""
+                    fi
+                  fi
+                fi
+                
+                # For release tags (rc, beta, alpha), try release branch
+                if [ -z "$BRANCH" ] && [[ "$TAG_NAME" =~ -rc|-beta|-alpha ]]; then
+                  BRANCH="release/v${VERSION%%-*}"
+                  if ! git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+                    BRANCH="main"
+                  fi
+                fi
+                
+                # For release tags without suffix, try release branch
+                if [ -z "$BRANCH" ]; then
+                  BRANCH="release/v${VERSION}"
+                  if ! git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+                    BRANCH="main"
+                  fi
                 fi
               else
                 BRANCH="main"
               fi
             fi
+            
+            if [ -z "$BRANCH" ]; then
+              echo "Error: Could not determine branch to push to"
+              exit 1
+            fi
+            
             git checkout "$BRANCH"
           fi
+          
           git fetch origin "$BRANCH"
           if [ "$(git rev-list --count HEAD..origin/"$BRANCH")" -gt 0 ]; then
             LOCAL_COMMIT=$(git rev-parse HEAD)
@@ -149,7 +175,6 @@ jobs:
             echo "Please ensure the branch is up to date before running this workflow."
             exit 1
           fi
-          echo "skip_static_files=false" >> "$GITHUB_OUTPUT"
 
       - name: Set up filesystem
         run: bash scripts/setup-filesystem.sh
@@ -162,7 +187,6 @@ jobs:
 
       - name: Commit and push static files
         id: commit-and-push-static-files
-        if: steps.checkout-branch.outputs.skip_static_files != 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PAT_TOKEN: ${{ secrets.STATIC_FILES_PAT }}
@@ -190,4 +214,9 @@ jobs:
             git push origin "$BRANCH"
           fi
 
+          echo "collect_static_files_commit_hash=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Set commit hash output
+        id: set-commit-hash
+        run: |
           echo "collect_static_files_commit_hash=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
