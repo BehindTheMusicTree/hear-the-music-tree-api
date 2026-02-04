@@ -29,7 +29,6 @@ Runs the full test suite with pytest.
 
 - **Push** to `main`, `develop`, `release/*`, `hotfix/*`, `chore/*`
 - **Pull request** targeting `main` or `develop`
-- **Manual** via `workflow_dispatch` (optional `test_path` input)
 - **Callable** by other workflows via `workflow_call` (optional `test_path` input)
 
 **Jobs:** **check-vars-and-secrets** (Check vars and secrets) – validates required env vars and secrets; **pytest** (Pytest) – Checkout → set up Python 3.14 → install system deps → install pip deps → setup filesystem → run DB and AFP containers → wait for DB → copy fixtures → init Django data → run pytest → publish test results (JUnit XML).
@@ -45,7 +44,6 @@ Orchestrates release: collect static files, build Docker image, deploy to the te
 **Triggers:**
 
 - **Push** of version tags (`v*`, e.g. `v0.2.1`)
-- **Manual** via `workflow_dispatch` (optional `app_version` input)
 - **Callable** by other workflows via `workflow_call` (optional `app_version` input)
 
 **Jobs (sequential):**
@@ -67,7 +65,6 @@ Builds the app Docker image and pushes it to Docker Hub.
 
 **Triggers:**
 
-- **Manual** via `workflow_dispatch` (optional `commit_hash` and `app_version` inputs)
 - **Callable** via `workflow_call` (optional `commit_hash` and `app_version` inputs; used by Publish)
 
 **Jobs:** **check-vars-and-secrets** (Check vars and secrets) – determines version from git tags/input and validates required env vars and secrets; **build-and-push-to-dockerhub** (Push to Docker Hub) – checkout at ref → login to Docker Hub → build and push image with build-args from repo vars.
@@ -82,7 +79,6 @@ Deploys the application to the test server via SSH and redeployment webhook.
 
 **Triggers:**
 
-- **Manual** via `workflow_dispatch` (optional `app_version` input)
 - **Callable** via `workflow_call` (optional `app_version` input; used by Publish)
 
 **Jobs:**
@@ -102,7 +98,6 @@ Collects Django static files and commits/pushes them back to the repo.
 
 **Triggers:**
 
-- **Manual** via `workflow_dispatch` (optional `app_version` input)
 - **Callable** via `workflow_call` (optional `app_version` input; used by Publish)
 
 **Jobs:** **check-vars-and-secrets** (Check vars and secrets) – determines version from git tags/input and validates required env vars and secrets; **collect-and-push-static-files** (Static files) – Checkout → set up Python 3.14 → install deps → setup filesystem → `manage.py collectstatic --noinput` with version from job 1 → git config → commit and push changes → output `collect_static_files_commit_hash` and `app_version` for downstream workflows.
