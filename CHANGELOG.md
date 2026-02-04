@@ -341,7 +341,6 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
   - Created `publish.yml` workflow for releases (triggers on version tags `v*`)
   - Publishing workflow handles static files collection, Docker build, and deployment
   - Improved workflow maintainability and reusability
-  - Each workflow can now be triggered independently via workflow_dispatch
   - Separation of concerns: tests run on every change, publishing only on releases
 
 - **CI/CD**: Updated GitHub Actions workflow to use `develop` branch instead of `dev`

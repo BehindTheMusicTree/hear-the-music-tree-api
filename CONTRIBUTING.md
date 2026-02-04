@@ -711,13 +711,11 @@ The project uses focused, reusable GitHub Actions workflows for CI/CD. For a ful
 **Test Workflow** (`.github/workflows/test.yml`):
 - Runs automatically on pushes to `main` and `develop` branches
 - Runs automatically on pull requests targeting `main` or `develop`
-- Can be triggered manually via `workflow_dispatch`
 - Executes the full test suite with pytest
 - Publishes test results to GitHub Actions UI
 
 **Publish Workflow** (`.github/workflows/publish.yml`):
 - Runs automatically when version tags are pushed (e.g., `v0.2.1`)
-- Can be triggered manually via `workflow_dispatch`
 - Orchestrates the release process:
   1. Collects and commits static files
   2. Builds and pushes Docker image to Docker Hub

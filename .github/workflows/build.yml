@@ -11,16 +11,6 @@ on:
         description: 'App version (optional, defaults to git tag)'
         required: false
         type: string
-  workflow_dispatch:
-    inputs:
-      commit_hash:
-        description: 'Commit hash to build from (optional)'
-        required: false
-        type: string
-      app_version:
-        description: 'App version (optional, defaults to git tag)'
-        required: false
-        type: string
 
 env:
   CONTAINER_ROOT_DIR: /home/api/
