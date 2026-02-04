@@ -74,6 +74,11 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
   - Better error handling with clear messages when branch is out of sync
   - Reorder workflow steps: checkout and verify branch sync before collecting static files
 
+- **Workflows**: Remove workflow_dispatch manual triggers from all workflows
+  - Workflows can only be triggered via workflow_call or automatic triggers (push, pull_request, tags)
+  - Removes manual triggering capability from GitHub Actions UI
+  - Ensures workflows are only triggered through proper channels
+
 ### Documentation
 
 - **Versioning Strategy**: Add comprehensive versioning.md documentation
@@ -81,6 +86,13 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
   - Explain pre-release version identifiers (rc, beta, alpha, dev) and their usage
   - Document version extraction logic and workflow inputs
   - Update workflows.md to reference versioning approach
+
+- **Dev Tag Practices**: Add comprehensive dev tag documentation and cursor rule
+  - Document dev tag naming convention (use branch name without type prefix)
+  - Explain version selection strategy (placeholder based on branch type)
+  - Provide guidance for republishing dev tags after changes
+  - Add cleanup step to release process for removing dev tags
+  - Create cursor rule to ensure consistent dev tag practices
 
 ## [v0.3.5] - 2026-02-04
 
