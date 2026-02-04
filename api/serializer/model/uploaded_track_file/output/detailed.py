@@ -11,6 +11,8 @@ class FileDetailedSerializer(serializers.ModelSerializer):
     fingerprint_missing_cause = serializers.SerializerMethodField()
     musicbrainz_recording = MusicbrainzRecordingDetailedSerializer()
     musicbrainz_recording_missing_cause = serializers.SerializerMethodField()
+    size_in_ko = serializers.DecimalField(max_digits=8, decimal_places=2, read_only=True)
+    size_in_mo = serializers.DecimalField(max_digits=5, decimal_places=2, read_only=True)
 
     class Meta:
         model = TrackFile
