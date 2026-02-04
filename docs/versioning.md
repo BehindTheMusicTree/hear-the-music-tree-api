@@ -202,6 +202,9 @@ All pre-release tags automatically trigger the `publish.yml` workflow, which bui
 - **deploy.yml**: Uses version for Docker Compose configuration
 - **test.yml**: Uses version for test environment (falls back to latest git tag if available)
 
-## Backward Compatibility
+## Workflows Running Outside Tag Contexts
 
-For workflows that may run outside of tag contexts (e.g., `test.yml` on PRs), the workflow will attempt to fetch the latest git tag. If no tags are available, workflows may use a default test version.
+Most workflows require a git tag to determine the version. However, `test.yml` can run on pull requests where no tag is available:
+
+- **test.yml**: Falls back to the latest git tag if available, otherwise uses a default "test" version
+- **Other workflows** (static-files, build, deploy): Require a git tag and will fail if no tag is available
