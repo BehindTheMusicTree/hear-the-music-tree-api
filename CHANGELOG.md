@@ -58,7 +58,15 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v0.3.4] - 2026-02-04
+
 ### Fixed
+
+- **API Schema Generation**: Fix Swagger UI Internal Server Error when accessing `/api/schema/`
+  - Handle `list` action in `AppModelViewSet.get_serializer_class()` for drf-spectacular introspection
+  - Add authentication check in `queryset` property to handle `AnonymousUser` during schema generation
+  - Explicitly define `GeneratedField` as `DecimalField` in `FileDetailedSerializer` to prevent introspection errors
+  - Add `SerializerMethodField` for nested JSON fields in `SpotifyUserDetailedSerializer` (display_name, followers, href, images, type, uri)
 
 - **CI**: Add SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET to deploy workflow
   - Spotify credentials are now written to API .env file on server deployment
