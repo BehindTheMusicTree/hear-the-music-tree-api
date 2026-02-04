@@ -439,12 +439,24 @@ For detailed information about test structure, organization, and conventions, se
 
 You can test your Docker image on the test server while working on a feature branch by creating a development tag. This is useful for validating changes before merging to `develop`.
 
+**Choosing a Version Number:**
+
+Since the actual release version (major/minor/patch) isn't known until the release branch is created, use the following guidelines for dev tags:
+
+- **Feature branches** (`feature/`): Typically indicate minor version updates (new features, backward compatible)
+  - Use the next minor version: if latest is `v0.3.5`, use `v0.3.6-dev-<branch-name>` or `v0.4.0-dev-<branch-name>`
+- **Hotfix branches** (`hotfix/`): Typically indicate patch version updates (bug fixes)
+  - Use the next patch version: if latest is `v0.3.5`, use `v0.3.6-dev-<branch-name>`
+- **Breaking changes**: Use the next major version: if latest is `v0.3.5`, use `v1.0.0-dev-<branch-name>`
+
+**Note:** The version number in dev tags is just a placeholder for testing. The actual release version will be determined when creating the release branch based on the changes included. Dev tags are temporary and can use any version number that makes sense for your testing needs.
+
 **Process:**
 
 ```bash
 # On your feature branch, create a development tag
-# Use a version based on the next planned release with -dev suffix
-git tag v0.3.6-dev-feature-xyz  # or v0.3.6-dev-<branch-name>
+# Include your branch name to make it clear what's being tested
+git tag v0.3.6-dev-feature-xyz  # or v0.4.0-dev-feature-xyz for minor updates
 git push origin v0.3.6-dev-feature-xyz
 ```
 
