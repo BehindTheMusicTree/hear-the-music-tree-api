@@ -29,13 +29,45 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: CI_TEST
+    outputs:
+      app_version: ${{ steps.determine-version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine APP_VERSION
+        id: determine-version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            # Extract from tag ref (e.g., refs/tags/v0.3.4 -> 0.3.4)
+            VERSION="${GITHUB_REF#refs/tags/v}"
+            echo "Using version from tag ref: $VERSION"
+          else
+            # Try to fetch tags and get the latest one
+            git fetch --tags --force 2>/dev/null || true
+            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+            if [ -n "$LATEST_TAG" ]; then
+              # Remove 'v' prefix if present
+              VERSION="${LATEST_TAG#v}"
+              echo "Using latest tag version: $VERSION (from tag: $LATEST_TAG)"
+            elif [ -n "${{ vars.APP_VERSION }}" ]; then
+              # Fallback: use GitHub variable if available
+              VERSION="${{ vars.APP_VERSION }}"
+              echo "Using GitHub variable version: $VERSION"
+            else
+              # Final fallback: use a default version for testing
+              VERSION="test"
+              echo "No tag or variable found, using default test version: $VERSION"
+            fi
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
       - name: Check required vars and secrets
         env:
           ENV: ${{ vars.ENV }}
           APP_NAME: ${{ vars.APP_NAME }}
-          APP_VERSION: ${{ vars.APP_VERSION }}
+          APP_VERSION: ${{ steps.determine-version.outputs.version }}
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
           TMP_UPLOADED_FILES_EXTERNAL: ${{ vars.TMP_UPLOADED_FILES_EXTERNAL }}
           MEDIA_DIR_INTERNAL: ${{ vars.MEDIA_DIR_INTERNAL }}
@@ -70,7 +102,7 @@ jobs:
     env:
       ENV: ${{ vars.ENV }}
       APP_NAME: ${{ vars.APP_NAME }}
-      APP_VERSION: ${{ vars.APP_VERSION }}
+      APP_VERSION: ${{ needs.check-vars-and-secrets.outputs.app_version || 'test' }}
       DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
       DEBUG: true
       DB_IS_NEEDED: true
