@@ -7,57 +7,53 @@ This document describes how application versioning is handled in CI/CD workflows
 - [Overview](#overview)
 - [Version Format](#version-format)
 - [Pre-Release Versions](#pre-release-versions)
+  - [Development Tags (`-dev`)](#development-tags--dev-)
+  - [Release Candidate Tags (`-rc`, `-beta`, `-alpha`)](#release-candidate-tags--rc--beta--alpha-)
 - [How Versioning Works](#how-versioning-works)
-  - [Release Workflow (`publish.yml`)](#release-workflow-publishyml)
+  - [Release Workflow (`publish.yml`)](#release-workflow-deployyml)
   - [Version Extraction Logic](#version-extraction-logic)
 - [Benefits](#benefits)
 - [Usage Examples](#usage-examples)
   - [Creating a Release](#creating-a-release)
-  - [Pre-Release Testing](#pre-release-testing)
+  - [Development Version Tag Testing](#development-version-tag-testing)
+  - [Pre-Release Version Tag Testing](#pre-release-version-tag-testing)
 - [Workflows Using Versioning](#workflows-using-versioning)
-- [Backward Compatibility](#backward-compatibility)
 
 ## Overview
 
-The application version is derived from **git tags**. This follows industry best practices by using git tags as the single source of truth for versioning.
+The application version is derived from **git tags**. Git tags (e.g., `v0.2.0`) serve as the single source of truth for versioning. The workflow extracts the version number (e.g., `0.2.0`) from the tag name.
 
 ## Version Format
 
 Versions follow semantic versioning with a `v` prefix:
-- Format: `v<major>.<minor>.<patch>` (e.g., `v0.3.4`)
-- The `v` prefix is stripped when used in workflows (e.g., `v0.3.4` → `0.3.4`)
+
+- Format: `v<major>.<minor>.<patch>` (e.g., `v0.2.0`)
+- The `v` prefix is stripped when used in workflows (e.g., `v0.2.0` → `0.2.0`)
 
 ## Pre-Release Versions
 
-For testing Docker images on the test server before final release, you can use pre-release version identifiers. These follow semantic versioning conventions and are supported by the workflow system.
+Pre-release version tags are used to test builds and deployments on the test server before final release. They follow semantic versioning conventions and are supported by the workflow system. All pre-release version tags automatically trigger the `publish.yml` workflow, which builds the application, creates a Docker image, and deploys it to the test server.
 
-### Pre-Release Identifiers
+There are two main categories of pre-release versions, distinguished by **when** they're used and **where** they're created:
 
-- **`rc`** (Release Candidate): A version that is feature-complete and ready for final testing before release. **RC** stands for "Release Candidate" - it's a candidate for becoming the final release if testing passes.
-  - Format: `v0.3.5-rc1`, `v0.3.5-rc2`, etc.
-  - Example: `v0.3.5-rc1` → Docker image: `username/repo:0.3.5-rc1`
+### Development Tags (`-dev`)
 
-- **`beta`** (Beta Release): An early release for testing with most features complete but may have known issues.
-  - Format: `v0.3.5-beta1`, `v0.3.5-beta2`, etc.
-  - Example: `v0.3.5-beta1` → Docker image: `username/repo:0.3.5-beta1`
+Development version tags are used to test builds and deployments from **feature and hotfix branches** during active development, before merging to `develop` or creating a release branch.
 
-- **`alpha`** (Alpha Release): An early development release for internal testing.
-  - Format: `v0.3.5-alpha1`, `v0.3.5-alpha2`, etc.
-  - Example: `v0.3.5-alpha1` → Docker image: `username/repo:0.3.5-alpha1`
+#### Format
 
-- **`dev`** (Development Build): A development build, typically used for feature branch testing.
-  - Format: `v0.3.6-dev-<branch-name>` (e.g., `v0.3.6-dev-improve-cicd`)
-  - Use branch name **without** the type prefix (`feature/`, `hotfix/`, etc.)
-  - Example: Branch `feature/improve-cicd` → Tag `v0.3.6-dev-improve-cicd` → Docker image: `username/repo:0.3.6-dev-improve-cicd`
+- Format: `v<version>-dev-<branch-name>` (e.g., `v0.3.6-dev-improve-cicd`)
+- Use the branch name **without** the type prefix (`feature/`, `hotfix/`, etc.)
+- Example: Branch `feature/improve-cicd` → Tag `v0.3.6-dev-improve-cicd` → Docker image: `username/repo:0.3.6-dev-improve-cicd`
 
-### Dev Tag Naming Convention
+#### Naming Convention
 
-Dev tags should include the branch name (without type prefix) to identify what's being tested:
+Development version tags should include the branch name (without type prefix) to identify what's being tested:
 
 - **Feature branches**: `feature/improve-cicd` → `v0.3.6-dev-improve-cicd`
 - **Hotfix branches**: `hotfix/critical-bug` → `v0.3.6-dev-critical-bug`
 
-**Version Selection:**
+#### Version Selection
 
 Since the actual release version isn't known until the release branch is created, use these guidelines:
 
@@ -67,11 +63,22 @@ Since the actual release version isn't known until the release branch is created
 
 The version number is a placeholder - the actual release version is determined when creating the release branch.
 
-**Republishing Dev Tags:**
+#### Workflow Behavior
+
+When you push a development version tag (e.g., `v0.3.6-dev-improve-cicd`), the workflow automatically:
+
+1. **Extracts the version number** from the tag: `v0.3.6-dev-improve-cicd` → `0.3.6-dev-improve-cicd`
+2. **Builds the Next.js application** using `npm run build`
+3. **Builds Docker image** using the version: `username/repo:0.3.6-dev-improve-cicd`
+4. **Deploys to test server** with that version
+5. **Creates Docker Compose configuration** with the versioned image
+
+#### Republishing Development Version Tags
 
 Git tags are immutable once pushed. If you need to republish after making changes:
 
-1. **Delete and recreate** (recommended for dev tags):
+1. **Delete and recreate** (recommended for development version tags):
+
    ```bash
    git tag -d v0.3.6-dev-improve-cicd
    git push origin --delete v0.3.6-dev-improve-cicd
@@ -88,66 +95,57 @@ Git tags are immutable once pushed. If you need to republish after making change
    git push origin v0.3.6-dev-improve-cicd-2
    ```
 
-**Cleanup:**
+### Release Candidate Tags (`-rc`, `-beta`, `-alpha`)
 
-All pre-release tags (dev, rc, beta, alpha) should be deleted during the release process to keep the repository clean. See [Creating a Release](#creating-a-release) for cleanup steps.
+Release candidate version tags are used to test builds and deployments from **release branches** before final release. These are created during the release process when features are complete and ready for final testing.
 
-### Usage for Testing
+#### Pre-Release Identifiers
 
-Pre-release versions are particularly useful for:
+- **`rc`** (Release Candidate): A version that is feature-complete and ready for final testing before release. **RC** stands for "Release Candidate" - it's a candidate for becoming the final release if testing passes.
+  - Format: `v0.2.0-rc1`, `v0.2.0-rc2`, etc.
+  - Example: `v0.2.0-rc1` → Docker image: `username/repo:0.2.0-rc1`
 
-1. **Testing on test server**: Build and deploy Docker images with pre-release tags to validate functionality before final release
-2. **Release candidates**: Use `-rc1`, `-rc2`, etc. for versions that are ready for final testing
-3. **Feature testing**: Use `-dev` or `-beta` for testing new features before they're ready for release
+- **`beta`** (Beta Release): An early release for testing with most features complete but may have known issues.
+  - Format: `v0.2.0-beta1`, `v0.2.0-beta2`, etc.
+  - Example: `v0.2.0-beta1` → Docker image: `username/repo:0.2.0-beta1`
 
-When you push a pre-release tag (e.g., `v0.3.5-rc1`), the workflow automatically:
-- Extracts the version: `v0.3.5-rc1` → `0.3.5-rc1`
-- Builds Docker image: `username/repo:0.3.5-rc1`
-- Deploys to test server with that version
+- **`alpha`** (Alpha Release): An early development release for internal testing.
+  - Format: `v0.2.0-alpha1`, `v0.2.0-alpha2`, etc.
+  - Example: `v0.2.0-alpha1` → Docker image: `username/repo:0.2.0-alpha1`
+
+#### Workflow Behavior
+
+When you push a release candidate version tag (e.g., `v0.2.0-rc1`), the workflow automatically:
+
+1. **Extracts the version number** from the tag: `v0.2.0-rc1` → `0.2.0-rc1`
+2. **Builds the Next.js application** using `npm run build`
+3. **Builds Docker image** using the version: `username/repo:0.2.0-rc1`
+4. **Deploys to test server** with that version
+5. **Creates Docker Compose configuration** with the versioned image
+
+### Cleanup
+
+All pre-release version tags (dev, rc, beta, alpha) should be deleted during the release process to keep the repository clean. See [Creating a Release](#creating-a-release) for cleanup steps.
 
 ## How Versioning Works
 
 ### Release Workflow (`publish.yml`)
 
-When a version tag is pushed (e.g., `git push origin v0.3.4`), the `publish.yml` workflow:
+When a version tag is pushed (e.g., `git push origin v0.2.0`), the `publish.yml` workflow:
 
-1. **Extracts version from tag**: The workflow automatically extracts the version from `github.ref` (e.g., `refs/tags/v0.3.4` → `0.3.4`)
+1. **Extracts version number from tag**: The workflow automatically extracts the version number from the git tag via `github.ref` (e.g., `refs/tags/v0.2.0` → `0.2.0`)
 
-2. **Passes version to child workflows**: The extracted version is passed as an input to reusable workflows:
-   - `static-files.yml` - for collecting static files
-   - `build.yml` - for building Docker images
-   - `deploy.yml` - for deployment
-
-3. **Uses version throughout pipeline**:
-   - Docker image tags: `username/repo:0.3.4`
-   - Django API URL paths: `api/0.3.4/`
+2. **Uses version number throughout pipeline**:
+   - Docker image tags: `username/repo:0.2.0`
    - Docker Compose service configurations
-
-### Version Extraction Logic
-
-The version is determined using the following priority:
-
-1. **From tag ref** (when triggered by tag push):
-   ```yaml
-   # github.ref = refs/tags/v0.3.4
-   VERSION="${GITHUB_REF#refs/tags/v}"  # Result: 0.3.4
-   ```
-   Works with pre-release tags too: `refs/tags/v0.3.5-rc1` → `0.3.5-rc1`
-
-2. **From latest git tag** (fallback when not triggered by tag):
-   ```bash
-   git fetch --tags --force
-   LATEST_TAG=$(git describe --tags --abbrev=0)
-   VERSION="${LATEST_TAG#v}"  # Remove 'v' prefix
-   ```
 
 ## Benefits
 
-1. **Single source of truth**: Version is tied to git history
-2. **No manual updates**: Version is automatically derived from git tags
-3. **Traceability**: Version is directly linked to the git commit/tag
+1. **Single source of truth**: Version number is tied to git history via git tags
+2. **No manual updates**: Version number is automatically derived from git tags
+3. **Traceability**: Version number is directly linked to the git commit/tag
 4. **Industry standard**: Follows common CI/CD best practices
-5. **DRY principle**: Version is extracted once and passed to child workflows
+5. **DRY principle**: Version number is extracted once from the git tag and used consistently
 
 ## Usage Examples
 
@@ -155,56 +153,50 @@ The version is determined using the following priority:
 
 ```bash
 # 1. Create release branch
-git checkout -b release/v0.3.4
+git checkout -b release/v0.2.0
 
 # 2. Merge to main
 git checkout main
-git merge release/v0.3.4
+git merge release/v0.2.0
 
-# 3. Tag the release
-git tag v0.3.4
-git push origin v0.3.4  # Triggers publish.yml workflow
+# 3. Create and push the release version tag
+git tag v0.2.0
+git push origin v0.2.0  # Triggers publish.yml workflow
 
-# 4. Clean up pre-release tags (dev, rc, beta, alpha)
-git tag -l "v0.3.4-dev-*" "v0.3.4-rc*" "v0.3.4-beta*" "v0.3.4-alpha*" | xargs -n 1 git tag -d
-git tag -l "v0.3.4-dev-*" "v0.3.4-rc*" "v0.3.4-beta*" "v0.3.4-alpha*" | xargs -n 1 git push origin --delete
+# 4. Clean up pre-release version tags (dev, rc, beta, alpha)
+git tag -l "v0.2.0-dev-*" "v0.2.0-rc*" "v0.2.0-beta*" "v0.2.0-alpha*" | xargs -n 1 git tag -d
+git tag -l "v0.2.0-dev-*" "v0.2.0-rc*" "v0.2.0-beta*" "v0.2.0-alpha*" | xargs -n 1 git push origin --delete
 ```
 
-### Pre-Release Testing
+### Development Version Tag Testing
 
-For testing Docker images on the test server before final release:
+For testing builds and deployments from feature or hotfix branches:
 
 ```bash
-# Option 1: Create a release candidate tag (recommended)
-git tag v0.3.5-rc1
-git push origin v0.3.5-rc1
-# Automatically builds and deploys: username/repo:0.3.5-rc1
-
-# Option 2: Create a beta release
-git tag v0.3.5-beta1
-git push origin v0.3.5-beta1
-# Automatically builds and deploys: username/repo:0.3.5-beta1
-
-# Option 3: Create a development build for feature branch testing
-git tag v0.3.6-dev-improve-cicd  # branch: feature/improve-cicd
+# On a feature branch
+git checkout feature/improve-cicd
+git tag v0.3.6-dev-improve-cicd
 git push origin v0.3.6-dev-improve-cicd
 # Automatically builds and deploys: username/repo:0.3.6-dev-improve-cicd
-# Static files are committed to the feature branch
 ```
 
-All pre-release tags automatically trigger the `publish.yml` workflow, which builds the Docker image and deploys it to the test server.
+### Pre-Release Version Tag Testing
 
-## Workflows Using Versioning
+For testing builds and deployments on the test server before final release:
 
-- **publish.yml**: Extracts version and orchestrates release
-- **static-files.yml**: Uses version for Django static file collection
-- **build.yml**: Uses version for Docker image tagging
-- **deploy.yml**: Uses version for Docker Compose configuration
-- **test.yml**: Uses version for test environment (falls back to latest git tag if available)
+```bash
+# Option 1: Create a release candidate version tag (recommended)
+git tag v0.2.0-rc1
+git push origin v0.2.0-rc1
+# Automatically builds and deploys: username/repo:0.2.0-rc1
 
-## Workflows Running Outside Tag Contexts
+# Option 2: Create a beta version tag
+git tag v0.2.0-beta1
+git push origin v0.2.0-beta1
+# Automatically builds and deploys: username/repo:0.2.0-beta1
 
-Most workflows require a git tag to determine the version. However, `test.yml` can run on pull requests where no tag is available:
-
-- **test.yml**: Falls back to the latest git tag if available, otherwise uses a default "test" version
-- **Other workflows** (static-files, build, deploy): Require a git tag and will fail if no tag is available
+# Option 3: Create an alpha version tag
+git tag v0.2.0-alpha1
+git push origin v0.2.0-alpha1
+# Automatically builds and deploys: username/repo:0.2.0-alpha1
+```
