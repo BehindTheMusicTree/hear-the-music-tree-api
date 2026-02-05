@@ -80,7 +80,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
   - Ensures workflows are only triggered through proper channels
 
 ### Documentation
-
+- **Dev tags**: remove overlapping document `dev-tag-practices.md`
 - **Versioning Strategy**: Add comprehensive versioning.md documentation
   - Document git tag-based versioning approach
   - Explain pre-release version identifiers (rc, beta, alpha, dev) and their usage
