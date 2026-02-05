@@ -35,6 +35,8 @@ Runs the full test suite with pytest.
 
 **Environment:** `CI_TEST` (uses repo vars and secrets for DB, AFP, AcousticID, etc.).
 
+**Versioning:** Always uses "test" as the version (tests don't require real version numbers).
+
 ## Publish
 
 **File:** `.github/workflows/publish.yml`
