@@ -38,6 +38,7 @@
 - [Technical Details](#technical-details)
   - [Audio Metadata Handling](#audio-metadata-handling)
   - [MusicBrainz Integration](#musicbrainz-integration)
+  - [Shared Reference Data (TMTA System User)](#shared-reference-data-tmta-system-user)
 - [Contributing](#contributing)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
@@ -556,6 +557,12 @@ The HearTheMusicTree API uses [`audiometa-python`](https://github.com/your-usern
 ### MusicBrainz Integration
 
 The HearTheMusicTree API integrates with MusicBrainz through the AcoustID fingerprinting service to automatically identify audio tracks and retrieve metadata such as title, artist, and release date. Audio files are fingerprinted using Chromaprint and matched against the MusicBrainz database. For more details, see the [MusicBrainz Integration documentation](api/utils/musicbrainz/README.md).
+
+### Shared Reference Data (TMTA System User)
+
+HearTheMusicTree uses a dedicated **TMTA system user** (username: `tmta`) to manage shared reference data visible to all users.
+
+> **Note:** TMTA stands for "TheMusicTreeAPI" — the authoritative source for genre hierarchies and metadata in the BehindTheMusicTree ecosystem.
 
 ## Contributing
 
