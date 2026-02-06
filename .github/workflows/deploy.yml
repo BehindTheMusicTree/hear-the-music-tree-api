@@ -124,6 +124,7 @@ jobs:
             touch ${{ env.API_ENV_FILE }} &&
 
             echo 'APP_PORT=${{ vars.HTMT_API_PORT }}' >> ${{ env.API_ENV_FILE }} &&
+            echo 'API_DIR_NAME=api' >> ${{ env.API_ENV_FILE }} &&
             echo 'DJANGO_SECRET_KEY='\''${{ secrets.DJANGO_SECRET_KEY }}'\''' >> ${{ env.API_ENV_FILE }} &&
             echo 'ACOUSTID_API_KEY='\''${{ secrets.ACOUSTID_API_KEY }}'\''' >> ${{ env.API_ENV_FILE }} &&
             echo 'SPOTIFY_CLIENT_ID='\''${{ secrets.SPOTIFY_CLIENT_ID }}'\''' >> ${{ env.API_ENV_FILE }} &&
