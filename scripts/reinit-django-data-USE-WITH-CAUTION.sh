@@ -12,7 +12,7 @@ check_script_vars_are_set () {
   load_project_calculated_paths_env_vars
 
   local REQUIRED_NON_BOOL_VARS=(
-      PROJECT_DIR
+      API_DIR_NAME
       LIBRARIES_DIR
       DB_BODZIFY_API_DB_NAME
       DB_PORT
