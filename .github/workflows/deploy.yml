@@ -171,6 +171,8 @@ jobs:
             echo 'CSRF_TRUSTED_ORIGINS=${{ vars.CSRF_TRUSTED_ORIGINS }}' >> ${{ env.API_ENV_FILE }} &&
             echo 'ALLOWED_HOSTS=${{ vars.ALLOWED_HOSTS }}' >> ${{ env.API_ENV_FILE }} &&
 
+            echo 'TMP_UPLOADED_FILES=${{ vars.TMP_UPLOADED_FILES_EXTERNAL }}' >> ${{ env.API_ENV_FILE }} &&
+
             echo 'GUNICORN_LOG_DIR=${{ vars.GUNICORN_LOG_DIR }}' >> ${{ env.API_ENV_FILE }} &&
             echo 'GUNICORN_LOG_ACCESS_FILENAME=${{ vars.GUNICORN_LOG_ACCESS_FILENAME }}' >> ${{ env.API_ENV_FILE }} &&
             echo 'GUNICORN_LOG_ERROR_FILENAME=${{ vars.GUNICORN_LOG_ERROR_FILENAME }}' >> ${{ env.API_ENV_FILE }} &&
