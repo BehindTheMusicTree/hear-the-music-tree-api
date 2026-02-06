@@ -2,27 +2,60 @@ name: Publish
 
 on:
   workflow_call:
-  workflow_dispatch:
   push:
     tags:
       - 'v*'
 
 jobs:
-  collect-static-files:
-    name: Collect Static Files
+  determine-version:
+    name: Determine version
+    runs-on: ubuntu-latest
+    outputs:
+      app_version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            # Extract from tag ref (e.g., refs/tags/v0.3.4 -> 0.3.4)
+            VERSION="${GITHUB_REF#refs/tags/v}"
+            echo "Using version from tag ref: $VERSION"
+          else
+            # Fallback: fetch tags and get the latest one
+            git fetch --tags --force
+            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+            if [ -z "$LATEST_TAG" ]; then
+              echo "Error: Cannot determine version. No tag provided."
+              exit 1
+            fi
+            # Remove 'v' prefix if present
+            VERSION="${LATEST_TAG#v}"
+            echo "Using latest tag version: $VERSION (from tag: $LATEST_TAG)"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+  static:
+    name: Static files
+    needs: [determine-version]
     uses: ./.github/workflows/static-files.yml
+    secrets: inherit
 
   build:
-    name: Build Docker Image
-    needs: [collect-static-files]
+    name: Docker image
+    needs: [static, determine-version]
     uses: ./.github/workflows/build.yml
     with:
-      commit_hash: ${{ needs.collect-static-files.outputs.collect_static_files_commit_hash }}
+      commit_hash: ${{ needs.static.outputs.collect_static_files_commit_hash }}
     secrets: inherit
 
   deploy:
-    name: Deploy to Server
-    needs: [build]
+    name: Deploy
+    needs: [build, determine-version]
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
 

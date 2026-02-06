@@ -15,11 +15,13 @@ This project is currently maintained by a solo developer, but contributions, sug
   - [2. Branching](#2-branching)
   - [3. Developing](#3-developing)
   - [4. Testing](#4-testing)
+    - [4.1. Testing Docker Images During Development](#41-testing-docker-images-during-development)
   - [5. Committing](#5-committing)
   - [6. Pull Request Process](#6-pull-request-process)
     - [6.1. Pre-PR Checklist](#61-pre-pr-checklist)
     - [6.2. Opening a Pull Request](#62-opening-a-pull-request)
   - [7. Releasing _(For Maintainers)_](#7-releasing-for-maintainers)
+- [⚙️ GitHub Actions Workflows](docs/workflows.md)
 - [🪪 License & Attribution](#-license--attribution)
 - [📜 Code of Conduct](#-code-of-conduct)
 - [📋 TODO List](#-todo-list)
@@ -254,7 +256,7 @@ The HearTheMusicTree API requires a PostgreSQL database to function. The databas
 
 #### Audio Fingerprinting Requirement
 
-For audio fingerprinting, the HearTheMusicTree API requires an app called Audio Fingerprinter. You can find the Audio Fingerprinter app on GitHub at the following link: [Audio Fingerprinter](https://github.com/Bodzify/bodzify-audio-fingerprinter-flask)
+For audio fingerprinting, the HearTheMusicTree API requires an app called Audio Fingerprinter. You can find the Audio Fingerprinter app on GitHub at the following link: [Audio Fingerprinter](https://github.com/BehindTheMusicTree/bodzify-audio-fingerprinter-flask)
 
 
 ### 2. Branching
@@ -432,6 +434,66 @@ For detailed information about test structure, organization, and conventions, se
 - CI runs tests with fail-fast flag (`-x`) - stops on first failure for faster feedback
 - Test results are published to GitHub Actions UI
 - Tests run automatically on pushes to `main`, `develop`, `release/*`, `hotfix/*` branches and pull requests
+
+#### 4.1. Testing Docker Images During Development
+
+You can test your Docker image on the test server while working on a feature branch by creating a development tag. This is useful for validating changes before merging to `develop`.
+
+**Choosing a Version Number:**
+
+Since the actual release version (major/minor/patch) isn't known until the release branch is created, use the following guidelines for dev tags:
+
+- **Feature branches** (`feature/`): Typically indicate minor version updates (new features, backward compatible)
+  - Use the next minor version: if latest is `v0.3.5`, use `v0.3.6-dev-<branch-name>` or `v0.4.0-dev-<branch-name>`
+  - Use the branch name **without** the `feature/` prefix: `feature/improve-cicd` → `v0.3.6-dev-improve-cicd`
+- **Hotfix branches** (`hotfix/`): Typically indicate patch version updates (bug fixes)
+  - Use the next patch version: if latest is `v0.3.5`, use `v0.3.6-dev-<branch-name>`
+  - Use the branch name **without** the `hotfix/` prefix: `hotfix/critical-bug` → `v0.3.6-dev-critical-bug`
+- **Breaking changes**: Use the next major version: if latest is `v0.3.5`, use `v1.0.0-dev-<branch-name>`
+
+**Note:** The version number in dev tags is just a placeholder for testing. The actual release version will be determined when creating the release branch based on the changes included. Dev tags are temporary and can use any version number that makes sense for your testing needs.
+
+**Process:**
+
+```bash
+# On your feature branch (e.g., feature/improve-cicd), create a development tag
+# Use the branch name without the type prefix (feature/, hotfix/, etc.)
+git tag v0.3.6-dev-improve-cicd  # branch: feature/improve-cicd
+git push origin v0.3.6-dev-improve-cicd
+```
+
+This automatically triggers the `publish.yml` workflow which will:
+- Build Docker image: `username/repo:0.3.6-dev-improve-cicd`
+- Deploy to the test server
+- Allow you to validate your changes before creating a PR
+
+**Republishing After Changes:**
+
+Git tags are immutable once pushed. If you make changes and need to republish:
+
+1. **Delete the old tag** (recommended for dev tags):
+   ```bash
+   git tag -d v0.3.6-dev-improve-cicd
+   git push origin --delete v0.3.6-dev-improve-cicd
+   # Then create and push a new tag with the same name
+   git tag v0.3.6-dev-improve-cicd
+   git push origin v0.3.6-dev-improve-cicd
+   ```
+
+2. **Or use an incrementing suffix** (if you want to keep history):
+   ```bash
+   git tag v0.3.6-dev-improve-cicd-1  # First iteration
+   git push origin v0.3.6-dev-improve-cicd-1
+   # After changes:
+   git tag v0.3.6-dev-improve-cicd-2  # Second iteration
+   git push origin v0.3.6-dev-improve-cicd-2
+   ```
+
+**Note:** Development tags are for testing purposes only and should not be used for releases. Delete them after testing if desired:
+```bash
+git tag -d v0.3.6-dev-improve-cicd
+git push origin --delete v0.3.6-dev-improve-cicd
+```
 
 ### 5. Committing
 
@@ -660,18 +722,16 @@ These automations help streamline the review process and ensure consistency acro
 
 ##### GitHub Actions Workflows
 
-The project uses focused, reusable GitHub Actions workflows for CI/CD:
+The project uses focused, reusable GitHub Actions workflows for CI/CD. For a full description of each workflow (triggers, steps, environments), see [GitHub Actions Workflows](docs/workflows.md).
 
 **Test Workflow** (`.github/workflows/test.yml`):
 - Runs automatically on pushes to `main` and `develop` branches
 - Runs automatically on pull requests targeting `main` or `develop`
-- Can be triggered manually via `workflow_dispatch`
 - Executes the full test suite with pytest
 - Publishes test results to GitHub Actions UI
 
 **Publish Workflow** (`.github/workflows/publish.yml`):
 - Runs automatically when version tags are pushed (e.g., `v0.2.1`)
-- Can be triggered manually via `workflow_dispatch`
 - Orchestrates the release process:
   1. Collects and commits static files
   2. Builds and pushes Docker image to Docker Hub
@@ -739,7 +799,22 @@ Quick release process:
 
    **Important:** The tag version must match the version in `CHANGELOG.md` (with the `v` prefix).
 
-6. **Merge release branch back into `develop`** (to keep develop up to date)
+6. **Clean up pre-release tags**
+
+   Delete all pre-release tags (dev, rc, beta, alpha) that were used for testing this release:
+
+   ```bash
+   # List all pre-release tags for this version
+   git tag -l "v0.2.1-dev-*" "v0.2.1-rc*" "v0.2.1-beta*" "v0.2.1-alpha*"
+   
+   # Delete all pre-release tags locally and remotely
+   git tag -l "v0.2.1-dev-*" "v0.2.1-rc*" "v0.2.1-beta*" "v0.2.1-alpha*" | xargs -n 1 git tag -d
+   git tag -l "v0.2.1-dev-*" "v0.2.1-rc*" "v0.2.1-beta*" "v0.2.1-alpha*" | xargs -n 1 git push origin --delete
+   ```
+
+   **Note:** Pre-release tags (dev, rc, beta, alpha) are temporary and should be cleaned up after the release is published to keep the repository clean.
+
+7. **Merge release branch back into `develop`** (to keep develop up to date)
 
    ```bash
    git checkout develop
@@ -748,14 +823,14 @@ Quick release process:
    git push origin develop
    ```
 
-7. **Delete the release branch** (locally and remotely)
+8. **Delete the release branch** (locally and remotely)
 
    ```bash
    git branch -d release/v0.2.1
    git push origin --delete release/v0.2.1
    ```
 
-8. **CI/CD will automatically:**
+9. **CI/CD will automatically:**
 
    When you push the version tag (step 5), the `publish.yml` workflow will automatically:
    - Collect and commit static files
