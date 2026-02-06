@@ -282,7 +282,6 @@ jobs:
           APP_ROOT_DIR: ${{ env.CONTAINER_ROOT_DIR }}
           APP_SERVICE_NAME: ${{ vars.HTMT_API_SERVICE_NAME }}
           APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
-          APP_VERSION: ${{ inputs.app_version }}
           APP_CONTAINER_NAME: ${{ vars.APP_CONTAINER_NAME }}
           APP_PORT: ${{ vars.HTMT_API_PORT }}
           APP_ENV_FILENAME: ${{ env.DOCKERIZED_APP_ENV_FILENAME }}
