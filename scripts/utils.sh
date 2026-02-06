@@ -56,12 +56,19 @@ set_read_write_permissions_and_owner_or_exit() {
 
 check_required_vars_are_set() {
     local missing_vars=()
+
     for var_name in "$@"; do
         if [ -z "${!var_name}" ]; then
-            log_with_utils_prefixe "ERROR: $var_name must be set." >&2
-            exit 1
+            missing_vars+=("$var_name")
         fi
     done
+
+    if [ "${#missing_vars[@]}" -gt 0 ]; then
+        for var_name in "${missing_vars[@]}"; do
+            log_with_utils_prefixe "ERROR: $var_name must be set." >&2
+        done
+        exit 1
+    fi
 }
 
 check_bool_vars_are_set() {
