@@ -6,15 +6,15 @@ FROM python:3.14-bookworm
 
 ARG PROJECT_DIR
 ARG APP_VERSION
+ARG DB_IS_NEEDED
 
-RUN if [ -z "$PROJECT_DIR" ]; then \
-	echo "ERROR: The PROJECT_DIR argument is not provided" >&2; \
-	exit 1; \
-fi
-RUN if [ -z "$APP_VERSION" ]; then \
-	echo "ERROR: The APP_VERSION argument is not provided" >&2; \
-	exit 1; \
-fi
+RUN for var in PROJECT_DIR APP_VERSION DB_IS_NEEDED; do \
+    eval "value=\$$var"; \
+    if [ -z "$value" ]; then \
+        echo "ERROR: The $var argument is not provided" >&2; \
+        exit 1; \
+    fi; \
+done
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
