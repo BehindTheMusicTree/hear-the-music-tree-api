@@ -99,52 +99,11 @@ jobs:
           BRANCH=$(git branch --show-current 2>/dev/null || echo "")
           if [ -z "$BRANCH" ]; then
             # Find which branch contains the current HEAD (tag commit)
-            # This will find feature branches, release branches, main, develop, etc.
-            BRANCH=$(git branch -r --contains HEAD | head -1 | sed 's|origin/||' | xargs)
+            # Prefer non-main branches first, then fall back to any
+            BRANCH=$(git branch -r --contains HEAD | sed 's|origin/||' | grep -v '^main$' | head -1 || git branch -r --contains HEAD | sed 's|origin/||' | head -1)
             
             if [ -z "$BRANCH" ]; then
-              # Fallback: try to determine from tag name
-              if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-                TAG_NAME="${GITHUB_REF#refs/tags/}"
-                VERSION="${TAG_NAME#v}"
-                
-                # For dev tags, try to find the feature/hotfix branch
-                if [[ "$TAG_NAME" =~ -dev- ]]; then
-                  # Extract branch name from tag (e.g., v0.3.6-dev-improve-cicd -> improve-cicd)
-                  BRANCH_NAME="${TAG_NAME#*-dev-}"
-                  # Try feature branch first
-                  BRANCH="feature/$BRANCH_NAME"
-                  if ! git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
-                    # Try hotfix branch
-                    BRANCH="hotfix/$BRANCH_NAME"
-                    if ! git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
-                      BRANCH=""
-                    fi
-                  fi
-                fi
-                
-                # For release tags (rc, beta, alpha), try release branch
-                if [ -z "$BRANCH" ] && [[ "$TAG_NAME" =~ -rc|-beta|-alpha ]]; then
-                  BRANCH="release/v${VERSION%%-*}"
-                  if ! git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
-                    BRANCH="main"
-                  fi
-                fi
-                
-                # For release tags without suffix, try release branch
-                if [ -z "$BRANCH" ]; then
-                  BRANCH="release/v${VERSION}"
-                  if ! git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
-                    BRANCH="main"
-                  fi
-                fi
-              else
-                BRANCH="main"
-              fi
-            fi
-            
-            if [ -z "$BRANCH" ]; then
-              echo "Error: Could not determine branch to push to"
+              echo "Error: Could not determine branch to push static files to. The tag commit must exist on a remote branch (e.g., develop, main, or a release branch). Ensure the branch containing the tagged commit has been pushed to the remote repository."
               exit 1
             fi
             
