@@ -58,6 +58,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Added
+
+- **Health Check**: Add health check endpoint to API for improved service monitoring
+
 ### Improved
 
 - **Deployment**: Apply Django migrations on every container start
