@@ -94,9 +94,9 @@ jobs:
           DB_BODZIFY_API_DB_NAME: ${{ secrets.DB_BODZIFY_API_DB_NAME }}
           DB_BODZIFY_API_USERNAME: ${{ secrets.DB_BODZIFY_API_USERNAME }}
           DB_BODZIFY_API_USER_PASSWORD: ${{ secrets.DB_BODZIFY_API_USER_PASSWORD }}
-          TMTA_USERNAME: ${{ vars.TMTA_USERNAME }}
-          TMTA_USER_PASSWORD: ${{ vars.TMTA_USER_PASSWORD }}
-          TMTA_USER_EMAIL: ${{ vars.TMTA_USER_EMAIL }}
+          TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
+          TMTA_USER_PASSWORD: ${{ secrets.TMTA_USER_PASSWORD }}
+          TMTA_USER_EMAIL: ${{ secrets.TMTA_USER_EMAIL }}
         run: |
           bash scripts/check-workflow-env.sh \
             DOMAIN_NAME \
@@ -199,9 +199,9 @@ jobs:
             echo 'AFP_PORT=${{ vars.AFP_PORT }}' >> ${{ env.API_ENV_FILE }} &&
             echo 'AFP_POST_ENDPOINT=${{ vars.AFP_POST_ENDPOINT }}' >> ${{ env.API_ENV_FILE }} &&
 
-            echo 'TMTA_USERNAME==${{ vars.TMTA_USERNAME }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'TMTA_USER_PASSWORD==${{ vars.TMTA_USER_PASSWORD }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'TMTA_USER_EMAIL==${{ vars.TMTA_USER_EMAIL }}' >> ${{ env.API_ENV_FILE }} &&
+            echo 'TMTA_USERNAME==${{ secrets.TMTA_USERNAME }}' >> ${{ env.API_ENV_FILE }} &&
+            echo 'TMTA_USER_PASSWORD==${{ secrets.TMTA_USER_PASSWORD }}' >> ${{ env.API_ENV_FILE }} &&
+            echo 'TMTA_USER_EMAIL==${{ secrets.TMTA_USER_EMAIL }}' >> ${{ env.API_ENV_FILE }} &&
 
             chmod 600 ${{ env.API_ENV_FILE }}
           EOF
