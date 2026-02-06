@@ -2,6 +2,11 @@ name: Static Files
 
 on:
   workflow_call:
+    inputs:
+      app_version:
+        description: 'App version to use'
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -10,54 +15,8 @@ env:
   CONTAINER_ROOT_DIR: /home/api/
 
 jobs:
-  check-vars-and-secrets:
-    name: Check vars and secrets
-    runs-on: ubuntu-latest
-    environment:
-      name: COLLECT_STATIC
-    outputs:
-      app_version: ${{ steps.determine-version.outputs.version }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Determine APP_VERSION
-        id: determine-version
-        run: |
-          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            # Extract from tag ref (e.g., refs/tags/v0.3.4 -> 0.3.4)
-            VERSION="${GITHUB_REF#refs/tags/v}"
-            VERSION=$(echo "$VERSION" | xargs)
-            echo "Using version from tag ref: $VERSION"
-          else
-            # Fallback: fetch tags and get the latest one
-            git fetch --tags --force
-            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-            if [ -z "$LATEST_TAG" ]; then
-              echo "Error: Cannot determine version. No tag provided."
-              exit 1
-            fi
-            # Remove 'v' prefix if present
-            VERSION="${LATEST_TAG#v}"
-            VERSION=$(echo "$VERSION" | xargs)
-            echo "Using latest tag version: $VERSION (from tag: $LATEST_TAG)"
-          fi
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Check required vars and secrets
-        env:
-          ENV: ${{ vars.ENV }}
-          APP_NAME: ${{ vars.APP_NAME }}
-          STATIC_FILES_INTERNAL: ${{ vars.STATIC_FILES_INTERNAL }}
-          APP_VERSION: ${{ steps.determine-version.outputs.version }}
-          API_STATIC_FILES_URL: ${{ vars.HTMT_API_STATIC_FILES_URL }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bash scripts/check-workflow-env.sh ENV APP_NAME STATIC_FILES_INTERNAL APP_VERSION API_STATIC_FILES_URL GITHUB_TOKEN
-
   collect-and-push-static-files:
     name: Static files
-    needs: [check-vars-and-secrets]
     runs-on: ubuntu-latest
     environment:
       name: COLLECT_STATIC
@@ -70,8 +29,16 @@ jobs:
       STATIC_FILES_INTERNAL: ${{ vars.STATIC_FILES_INTERNAL }}
     outputs:
       collect_static_files_commit_hash: ${{ steps.set-commit-hash.outputs.collect_static_files_commit_hash }}
-      app_version: ${{ needs.check-vars-and-secrets.outputs.app_version }}
     steps:
+      - name: Check required vars and secrets
+        env:
+          ENV: ${{ vars.ENV }}
+          APP_NAME: ${{ vars.APP_NAME }}
+          STATIC_FILES_INTERNAL: ${{ vars.STATIC_FILES_INTERNAL }}
+          API_STATIC_FILES_URL: ${{ vars.HTMT_API_STATIC_FILES_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/check-workflow-env.sh ENV APP_NAME STATIC_FILES_INTERNAL API_STATIC_FILES_URL GITHUB_TOKEN
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -127,7 +94,7 @@ jobs:
 
       - name: Collect static files
         env:
-          APP_VERSION: ${{ needs.check-vars-and-secrets.outputs.app_version }}
+          APP_VERSION: ${{ inputs.app_version }}
           STATIC_FILES_URL: ${{ vars.HTMT_API_STATIC_FILES_URL }}
         run: python manage.py collectstatic --noinput
 
