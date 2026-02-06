@@ -7,6 +7,10 @@ on:
         description: 'Commit hash to build from (optional)'
         required: false
         type: string
+      app_version:
+        description: 'App version to use'
+        required: true
+        type: string
 
 env:
   CONTAINER_ROOT_DIR: /home/api/
@@ -15,74 +19,21 @@ env:
   DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
 
 jobs:
-  check-vars-and-secrets:
-    name: Check vars and secrets
-    runs-on: ubuntu-latest
-    environment:
-      name: TEST
-    outputs:
-      app_version: ${{ steps.determine-version.outputs.version }}
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Determine APP_VERSION
-        id: determine-version
-        run: |
-          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            # Extract from tag ref (e.g., refs/tags/v0.3.4 -> 0.3.4)
-            VERSION="${GITHUB_REF#refs/tags/v}"
-            echo "Using version from tag ref: $VERSION"
-          else
-            # Fallback: fetch tags and get the latest one
-            git fetch --tags --force
-            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-            if [ -z "$LATEST_TAG" ]; then
-              echo "Error: Cannot determine version. No tag provided."
-              exit 1
-            fi
-            # Remove 'v' prefix if present
-            VERSION="${LATEST_TAG#v}"
-            echo "Using latest tag version: $VERSION (from tag: $LATEST_TAG)"
-          fi
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-
-      - name: Check required vars and secrets
-        env:
-          DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
-          APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
-          APP_NAME: ${{ vars.APP_NAME }}
-          TMP_UPLOADED_FILES_EXTERNAL: ${{ vars.TMP_UPLOADED_FILES_EXTERNAL }}
-          MEDIA_DIR_EXTERNAL: ${{ vars.MEDIA_DIR_EXTERNAL }}
-          API_MEDIA_URL: ${{ vars.HTMT_API_MEDIA_URL }}
-          LIBRARIES_DIR_NAME: ${{ vars.LIBRARIES_DIR_NAME }}
-          STATIC_FILES_EXTERNAL: ${{ vars.STATIC_FILES_EXTERNAL }}
-          STATIC_FILES_INTERNAL: ${{ vars.STATIC_FILES_INTERNAL }}
-          API_STATIC_FILES_URL: ${{ vars.HTMT_API_STATIC_FILES_URL }}
-          DJANGO_LOG_DIR_EXTERNAL: ${{ vars.DJANGO_LOG_DIR_EXTERNAL }}
-          DJANGO_LOG_GENERAL_FILENAME: ${{ vars.DJANGO_LOG_GENERAL_FILENAME }}
-          DJANGO_LOG_INFO_FILENAME: ${{ vars.DJANGO_LOG_INFO_FILENAME }}
-          DJANGO_LOG_REQUESTS_FILENAME: ${{ vars.DJANGO_LOG_REQUESTS_FILENAME }}
-          DJANGO_LOG_REQUESTS_DEBUG_FILENAME: ${{ vars.DJANGO_LOG_REQUESTS_DEBUG_FILENAME }}
-          DJANGO_LOG_EXCEPTIONS_FILENAME: ${{ vars.DJANGO_LOG_EXCEPTIONS_FILENAME }}
-          DJANGO_LOG_DJANGO_FILENAME: ${{ vars.DJANGO_LOG_DJANGO_FILENAME }}
-          DJANGO_LOG_APP_FILENAME: ${{ vars.DJANGO_LOG_APP_FILENAME }}
-          GUNICORN_LOG_DIR: ${{ vars.GUNICORN_LOG_DIR }}
-          GUNICORN_LOG_ERROR_FILENAME: ${{ vars.GUNICORN_LOG_ERROR_FILENAME }}
-          GUNICORN_LOG_ACCESS_FILENAME: ${{ vars.GUNICORN_LOG_ACCESS_FILENAME }}
-          DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
-        run: bash scripts/check-workflow-env.sh DOCKERHUB_USERNAME APP_IMAGE_REPO APP_NAME TMP_UPLOADED_FILES_EXTERNAL MEDIA_DIR_EXTERNAL API_MEDIA_URL LIBRARIES_DIR_NAME STATIC_FILES_EXTERNAL STATIC_FILES_INTERNAL API_STATIC_FILES_URL DJANGO_LOG_DIR_EXTERNAL DJANGO_LOG_GENERAL_FILENAME DJANGO_LOG_INFO_FILENAME DJANGO_LOG_REQUESTS_FILENAME DJANGO_LOG_REQUESTS_DEBUG_FILENAME DJANGO_LOG_EXCEPTIONS_FILENAME DJANGO_LOG_DJANGO_FILENAME DJANGO_LOG_APP_FILENAME GUNICORN_LOG_DIR GUNICORN_LOG_ERROR_FILENAME GUNICORN_LOG_ACCESS_FILENAME DOCKERHUB_ACCESS_TOKEN
-
   build-and-push-to-dockerhub:
     name: Push to Docker Hub
-    needs: [check-vars-and-secrets]
     runs-on: ubuntu-latest
     environment:
       name: TEST
     env:
-      APP_VERSION: ${{ needs.check-vars-and-secrets.outputs.app_version }}
+      APP_VERSION: ${{ inputs.app_version }}
     steps:
+      - name: Check required vars and secrets
+        env:
+          DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
+          APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
+          DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+        run: bash scripts/check-workflow-env.sh DOCKERHUB_USERNAME APP_IMAGE_REPO DOCKERHUB_ACCESS_TOKEN
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
