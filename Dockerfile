@@ -6,10 +6,13 @@ FROM python:3.14-bookworm
 
 ARG PROJECT_DIR
 ARG APP_VERSION
-ARG API_DIR_NAME
 
 RUN if [ -z "$PROJECT_DIR" ]; then \
 	echo "ERROR: The PROJECT_DIR argument is not provided" >&2; \
+	exit 1; \
+fi
+RUN if [ -z "$APP_VERSION" ]; then \
+	echo "ERROR: The APP_VERSION argument is not provided" >&2; \
 	exit 1; \
 fi
 
@@ -17,7 +20,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PROJECT_DIR=$PROJECT_DIR \
     APP_VERSION=$APP_VERSION \
-    API_DIR_NAME=$API_DIR_NAME
+    API_DIR_NAME=api
 
 RUN apt-get update && \
     apt-get install -y gosu && \
