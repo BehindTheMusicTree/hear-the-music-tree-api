@@ -30,6 +30,12 @@ jobs:
     outputs:
       collect_static_files_commit_hash: ${{ steps.set-commit-hash.outputs.collect_static_files_commit_hash }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
       - name: Check required vars and secrets
         env:
           ENV: ${{ vars.ENV }}
@@ -37,13 +43,13 @@ jobs:
           STATIC_FILES_INTERNAL: ${{ vars.STATIC_FILES_INTERNAL }}
           API_STATIC_FILES_URL: ${{ vars.HTMT_API_STATIC_FILES_URL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: bash scripts/check-workflow-env.sh ENV APP_NAME STATIC_FILES_INTERNAL API_STATIC_FILES_URL GITHUB_TOKEN
-
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0
+        run: |
+          bash scripts/check-workflow-env.sh \
+            ENV \
+            APP_NAME \
+            STATIC_FILES_INTERNAL \
+            API_STATIC_FILES_URL \
+            GITHUB_TOKEN
 
       - name: Set up Python
         uses: actions/setup-python@v5
