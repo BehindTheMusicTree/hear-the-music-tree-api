@@ -27,18 +27,18 @@ jobs:
     env:
       APP_VERSION: ${{ inputs.app_version }}
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.commit_hash || github.sha }}
+
       - name: Check required vars and secrets
         env:
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
           APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
           DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
         run: bash scripts/check-workflow-env.sh DOCKERHUB_USERNAME APP_IMAGE_REPO DOCKERHUB_ACCESS_TOKEN
-
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ inputs.commit_hash || github.sha }}
 
       - name: Login to Dockerhub
         run: |

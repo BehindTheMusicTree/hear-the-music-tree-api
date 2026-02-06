@@ -47,10 +47,10 @@ jobs:
       app_version: ${{ needs.determine-version.outputs.app_version }}
     secrets: inherit
 
-  build:
+  build-and-push:
     name: Docker image
     needs: [static, determine-version]
-    uses: ./.github/workflows/build.yml
+    uses: ./.github/workflows/build-and-push.yml
     with:
       commit_hash: ${{ needs.static.outputs.collect_static_files_commit_hash }}
       app_version: ${{ needs.determine-version.outputs.app_version }}
@@ -58,7 +58,7 @@ jobs:
 
   deploy:
     name: Deploy
-    needs: [build, determine-version]
+    needs: [build-and-push, determine-version]
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
 
