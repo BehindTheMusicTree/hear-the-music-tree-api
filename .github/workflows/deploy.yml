@@ -184,10 +184,8 @@ jobs:
             echo 'ENV=TEST' >> ${{ env.API_ENV_FILE }} &&
 
             echo 'APP_NAME=${{ vars.APP_NAME }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'APP_VERSION=${{ vars.APP_NAME }}' >> ${{ inputs.app_version }} &&
 
             echo 'APP_PORT=${{ vars.HTMT_API_PORT }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'API_DIR_NAME=api' >> ${{ env.API_ENV_FILE }} &&
 
             echo 'DEBUG=true' >> ${{ env.API_ENV_FILE }} &&
             echo 'APP_IS_EXPOSED=true' >> ${{ env.API_ENV_FILE }} &&
