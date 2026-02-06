@@ -50,7 +50,7 @@ jobs:
           WEBHOOK_DIR: ${{ vars.WEBHOOK_DIR }}
           WEBHOOK_REDEPLOYMENT_DIR_NAME: ${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME }}
           DOCKER_COMPOSE_DIR_NAME: ${{ vars.DOCKER_COMPOSE_DIR_NAME }}
-          API_PORT: ${{ vars.API_PORT }}
+          API_PORT: ${{ vars.HTMT_API_PORT }}
           CSRF_TRUSTED_ORIGINS: ${{ vars.CSRF_TRUSTED_ORIGINS }}
           ALLOWED_HOSTS: ${{ vars.ALLOWED_HOSTS }}
           DB_CONTAINER_NAME: ${{ vars.DB_CONTAINER_NAME }}
@@ -73,7 +73,7 @@ jobs:
           AFP_POOL_DIR_EXTERNAL: ${{ vars.AFP_POOL_DIR_EXTERNAL }}
           AFP_FLASK_LOG_DIR_EXTERNAL: ${{ vars.AFP_FLASK_LOG_DIR_EXTERNAL }}
           AFP_GUNICORN_LOG_DIR_EXTERNAL: ${{ vars.AFP_GUNICORN_LOG_DIR_EXTERNAL }}
-          API_SERVICE_NAME: ${{ vars.API_SERVICE_NAME }}
+          API_SERVICE_NAME: ${{ vars.HTMT_API_SERVICE_NAME }}
           APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
           APP_VERSION: ${{ steps.determine-version.outputs.version }}
           APP_CONTAINER_NAME: ${{ vars.APP_CONTAINER_NAME }}
@@ -123,7 +123,7 @@ jobs:
             rm -f ${{ env.API_ENV_FILE }} &&
             touch ${{ env.API_ENV_FILE }} &&
 
-            echo 'APP_PORT=${{ vars.API_PORT }}' >> ${{ env.API_ENV_FILE }} &&
+            echo 'APP_PORT=${{ vars.HTMT_API_PORT }}' >> ${{ env.API_ENV_FILE }} &&
             echo 'DJANGO_SECRET_KEY='\''${{ secrets.DJANGO_SECRET_KEY }}'\''' >> ${{ env.API_ENV_FILE }} &&
             echo 'ACOUSTID_API_KEY='\''${{ secrets.ACOUSTID_API_KEY }}'\''' >> ${{ env.API_ENV_FILE }} &&
             echo 'SPOTIFY_CLIENT_ID='\''${{ secrets.SPOTIFY_CLIENT_ID }}'\''' >> ${{ env.API_ENV_FILE }} &&
@@ -218,11 +218,11 @@ jobs:
           AFP_FLASK_LOG_DIR_EXTERNAL: ${{ vars.AFP_FLASK_LOG_DIR_EXTERNAL }}
           AFP_GUNICORN_LOG_DIR_EXTERNAL: ${{ vars.AFP_GUNICORN_LOG_DIR_EXTERNAL }}
           APP_ROOT_DIR: ${{ env.CONTAINER_ROOT_DIR }}
-          APP_SERVICE_NAME: ${{ vars.API_SERVICE_NAME }}
+          APP_SERVICE_NAME: ${{ vars.HTMT_API_SERVICE_NAME }}
           APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
           APP_VERSION: ${{ needs.check-vars-and-secrets.outputs.app_version }}
           APP_CONTAINER_NAME: ${{ vars.APP_CONTAINER_NAME }}
-          APP_PORT: ${{ vars.API_PORT }}
+          APP_PORT: ${{ vars.HTMT_API_PORT }}
           APP_ENV_FILENAME: ${{ env.DOCKERIZED_APP_ENV_FILENAME }}
           GUNICORN_LOG_DIR: ${{ vars.GUNICORN_LOG_DIR }}
           GUNICORN_LOG_ERROR_FILENAME: ${{ vars.GUNICORN_LOG_ERROR_FILENAME }}
