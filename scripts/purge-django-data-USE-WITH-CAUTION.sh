@@ -142,28 +142,6 @@ empty_db() {
 	fi
 }
 
-remove_migrations() {
-	MIGRATIONS_DIR="${PROJECT_DIR}api/migrations/"
-	log_with_script_prefixe "Deleting migrations in directory $MIGRATIONS_DIR ..."
-	log_with_script_prefixe "Deleting .py migrations..."
-	find "${MIGRATIONS_DIR}" -name "*.py" -not -name "__init__.py" -exec rm -f {} \;
-	if [ $? -ne 0 ]; then
-		log_with_script_prefixe "ERROR: Failed to delete .py migrations" >&2
-		exit 1
-	fi
-	log_with_script_prefixe ".py migrations deleted successfully."
-
-	log_with_script_prefixe "Deleting .pyc migrations..."
-	find "${MIGRATIONS_DIR}" -name "*.pyc" -exec rm -f {} \;
-	if [ $? -ne 0 ]; then
-		log_with_script_prefixe "ERROR: Failed to delete .pyc migrations" >&2
-		exit 1
-	fi
-	log_with_script_prefixe ".pyc migrations deleted successfully."
-
-	log_with_script_prefixe "Django data purged successfully."
-}
-
 main () {
 	SCRIPTS_DIR=$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)/
 	PROJECT_DIR=$(realpath "${SCRIPTS_DIR}..")/
@@ -199,7 +177,6 @@ main () {
 	determine_db_host_if_not_set
 	empty_libraries
 	empty_db
-	remove_migrations
 }
 
 main "$@"
