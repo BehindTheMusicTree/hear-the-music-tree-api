@@ -2,6 +2,11 @@ name: Deploy
 
 on:
   workflow_call:
+    inputs:
+      app_version:
+        description: 'App version to use'
+        required: true
+        type: string
   push:
     branches: chore/improve-cicd
 
@@ -16,8 +21,6 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: TEST
-    outputs:
-      app_version: ${{ steps.determine-version.outputs.version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -81,7 +84,6 @@ jobs:
           AFP_GUNICORN_LOG_DIR_EXTERNAL: ${{ vars.AFP_GUNICORN_LOG_DIR_EXTERNAL }}
           API_SERVICE_NAME: ${{ vars.HTMT_API_SERVICE_NAME }}
           APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
-          APP_VERSION: ${{ steps.determine-version.outputs.version }}
           APP_CONTAINER_NAME: ${{ vars.APP_CONTAINER_NAME }}
           GUNICORN_LOG_DIR: ${{ vars.GUNICORN_LOG_DIR }}
           GUNICORN_LOG_ERROR_FILENAME: ${{ vars.GUNICORN_LOG_ERROR_FILENAME }}
@@ -134,7 +136,6 @@ jobs:
             AFP_GUNICORN_LOG_DIR_EXTERNAL \
             API_SERVICE_NAME \
             APP_IMAGE_REPO \
-            APP_VERSION \
             APP_CONTAINER_NAME \
             GUNICORN_LOG_DIR \
             GUNICORN_LOG_ERROR_FILENAME \
@@ -183,6 +184,7 @@ jobs:
             echo 'ENV=TEST' >> ${{ env.API_ENV_FILE }} &&
 
             echo 'APP_NAME=${{ vars.APP_NAME }}' >> ${{ env.API_ENV_FILE }} &&
+            echo 'APP_VERSION=${{ vars.APP_NAME }}' >> ${{ inputs.app_version }} &&
 
             echo 'APP_PORT=${{ vars.HTMT_API_PORT }}' >> ${{ env.API_ENV_FILE }} &&
             echo 'API_DIR_NAME=api' >> ${{ env.API_ENV_FILE }} &&
@@ -277,13 +279,6 @@ jobs:
         env:
           DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE: ${{ vars.DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE }}
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
-          DB_IMAGE_REPO: ${{ vars.DB_IMAGE_REPO }}
-          DB_VERSION: ${{ vars.DB_VERSION }}
-          DB_CONTAINER_NAME: ${{ vars.DB_CONTAINER_NAME }}
-          DB_DATA_DIR: ${{ vars.DB_DATA_DIR }}
-          DB_PORT_HOST: ${{ vars.DB_PORT_HOST }}
-          DB_PORT: ${{ vars.DB_PORT }}
-          DB_ENV_FILENAME: ${{ vars.DB_ENV_FILENAME }}
           AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
           AFP_VERSION: ${{ vars.AFP_VERSION }}
           AFP_CONTAINER_NAME: ${{ vars.AFP_CONTAINER_NAME }}
@@ -295,13 +290,20 @@ jobs:
           APP_ROOT_DIR: ${{ env.CONTAINER_ROOT_DIR }}
           APP_SERVICE_NAME: ${{ vars.HTMT_API_SERVICE_NAME }}
           APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
-          APP_VERSION: ${{ needs.check-vars-and-secrets.outputs.app_version }}
+          APP_VERSION: ${{ inputs.app_version }}
           APP_CONTAINER_NAME: ${{ vars.APP_CONTAINER_NAME }}
           APP_PORT: ${{ vars.HTMT_API_PORT }}
           APP_ENV_FILENAME: ${{ env.DOCKERIZED_APP_ENV_FILENAME }}
           GUNICORN_LOG_DIR: ${{ vars.GUNICORN_LOG_DIR }}
           GUNICORN_LOG_ERROR_FILENAME: ${{ vars.GUNICORN_LOG_ERROR_FILENAME }}
           GUNICORN_LOG_ACCESS_FILENAME: ${{ vars.GUNICORN_LOG_ACCESS_FILENAME }}
+          DB_IMAGE_REPO: ${{ vars.DB_IMAGE_REPO }}
+          DB_VERSION: ${{ vars.DB_VERSION }}
+          DB_CONTAINER_NAME: ${{ vars.DB_CONTAINER_NAME }}
+          DB_DATA_DIR: ${{ vars.DB_DATA_DIR }}
+          DB_PORT_HOST: ${{ vars.DB_PORT_HOST }}
+          DB_PORT: ${{ vars.DB_PORT }}
+          DB_ENV_FILENAME: ${{ vars.DB_ENV_FILENAME }}
           DJANGO_LOG_DIR_EXTERNAL: ${{ vars.DJANGO_LOG_DIR_EXTERNAL }}
           MEDIA_DIR_EXTERNAL: ${{ vars.MEDIA_DIR_EXTERNAL }}
           STATIC_FILES_EXTERNAL: ${{ vars.STATIC_FILES_EXTERNAL }}
