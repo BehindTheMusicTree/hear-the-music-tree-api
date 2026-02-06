@@ -65,6 +65,12 @@ cat << EOF > "$DOCKER_COMPOSE_PARTIAL_AFP_FILE"
     working_dir: /app/
     image: $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION
     container_name: $AFP_CONTAINER_NAME
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${APP_PORT}/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
     volumes:
       - api-upload-tmp-files:$AFP_POOL_DIR_EXTERNAL
       - afp-flask-log-dir:$AFP_FLASK_LOG_DIR_EXTERNAL
