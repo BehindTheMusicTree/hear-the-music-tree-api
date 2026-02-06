@@ -43,6 +43,8 @@ jobs:
     name: Static files
     needs: [determine-version]
     uses: ./.github/workflows/static-files.yml
+    with:
+      app_version: ${{ needs.determine-version.outputs.app_version }}
     secrets: inherit
 
   build:
@@ -51,6 +53,7 @@ jobs:
     uses: ./.github/workflows/build.yml
     with:
       commit_hash: ${{ needs.static.outputs.collect_static_files_commit_hash }}
+      app_version: ${{ needs.determine-version.outputs.app_version }}
     secrets: inherit
 
   deploy:
