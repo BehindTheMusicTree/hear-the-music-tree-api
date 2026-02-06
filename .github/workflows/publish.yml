@@ -58,7 +58,7 @@ jobs:
 
   deploy:
     name: Deploy
-    needs: [build-and-push, determine-version]
+    needs: [build-and-push]
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
 
