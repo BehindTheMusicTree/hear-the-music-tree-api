@@ -64,6 +64,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
   - Entrypoint always runs `migrate` after DB is ready (first init and subsequent deploys)
   - Single code path; migrate is idempotent
 
+- **Entrypoint**: Use init-django-data instead of reinit when Django is not initialized
+  - Prevents DROP USER / database purge on deploy when the init check fails or on first run
+  - Reinit (purge + init) remains for manual use only; container only runs init (create DB/role if missing, migrate, fixtures)
+
 ### Documentation
 
 - **CONTRIBUTING.md**: Add Database migrations section (create in dev, never makemigrations in prod, migrations run on deploy, backward-compatibility)
