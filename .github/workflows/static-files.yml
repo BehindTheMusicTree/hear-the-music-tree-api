@@ -103,6 +103,7 @@ jobs:
             # Find which branch contains the current HEAD (tag commit)
             # Prefer non-main branches first, then fall back to any
             BRANCH=$(git branch -r --contains HEAD | sed 's|origin/||' | grep -v '^main$' | head -1 || git branch -r --contains HEAD | sed 's|origin/||' | head -1)
+            BRANCH=$(echo "$BRANCH" | xargs)
             
             if [ -z "$BRANCH" ]; then
               echo "Error: Could not determine branch to push static files to. The tag commit must exist on a remote branch (e.g., develop, main, or a release branch). Ensure the branch containing the tagged commit has been pushed to the remote repository."
