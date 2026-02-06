@@ -188,6 +188,8 @@ jobs:
             echo 'CSRF_TRUSTED_ORIGINS=${{ vars.CSRF_TRUSTED_ORIGINS }}' >> ${{ env.API_ENV_FILE }} &&
             echo 'ALLOWED_HOSTS=${{ vars.ALLOWED_HOSTS }}' >> ${{ env.API_ENV_FILE }} &&
 
+            echo 'GUNICORN_LOG_DIR=${{ vars.GUNICORN_LOG_DIR }}' >> ${{ env.API_ENV_FILE }} &&
+
             echo 'DB_CONTAINER_NAME=${{ vars.DB_CONTAINER_NAME }}' >> ${{ env.API_ENV_FILE }} &&
             echo 'DB_PORT=${{ vars.DB_PORT }}' >> ${{ env.API_ENV_FILE }} &&
             echo 'DB_CONNECTION_TEST_MAX_ATTEMPTS=10' >> ${{ env.API_ENV_FILE }} &&
