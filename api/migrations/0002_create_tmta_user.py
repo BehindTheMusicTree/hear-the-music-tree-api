@@ -1,13 +1,14 @@
-# app_name/migrations/0002_create_tmta_user.py
-from django.db import migrations
+# api/migrations/0002_create_tmta_user.py
 import os
+from django.db import migrations
+from django.core.management.base import CommandError
 
 
 def create_tmta_user(apps, schema_editor):
     User = apps.get_model("api", "User")
     username = os.getenv("TMTA_USERNAME", None)
     password = os.getenv("TMTA_USER_PASSWORD", None)
-    email = os.getenv("TMTA_EMAIL", None)
+    email = os.getenv("TMTA_USER_EMAIL", None)
 
     if not username:
         raise CommandError(
@@ -19,7 +20,7 @@ def create_tmta_user(apps, schema_editor):
         )
     if not email:
         raise CommandError(
-            "⚠️ TMTA_EMAIL must be set in environment variables before running migrations."
+            "⚠️ TMTA_USER_EMAIL must be set in environment variables before running migrations."
         )
 
     tmta_user, created = User.objects.get_or_create(
@@ -40,7 +41,7 @@ def remove_tmta_user(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("app_name", "0001_initial"),
+        ("api", "0001_initial"),
     ]
 
     operations = [
