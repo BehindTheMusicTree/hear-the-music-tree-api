@@ -2,14 +2,60 @@ name: Static Files
 
 on:
   workflow_call:
-  workflow_dispatch:
+
+permissions:
+  contents: write
 
 env:
   CONTAINER_ROOT_DIR: /home/api/
 
 jobs:
+  check-vars-and-secrets:
+    name: Check vars and secrets
+    runs-on: ubuntu-latest
+    environment:
+      name: COLLECT_STATIC
+    outputs:
+      app_version: ${{ steps.determine-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine APP_VERSION
+        id: determine-version
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            # Extract from tag ref (e.g., refs/tags/v0.3.4 -> 0.3.4)
+            VERSION="${GITHUB_REF#refs/tags/v}"
+            echo "Using version from tag ref: $VERSION"
+          else
+            # Fallback: fetch tags and get the latest one
+            git fetch --tags --force
+            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+            if [ -z "$LATEST_TAG" ]; then
+              echo "Error: Cannot determine version. No tag provided."
+              exit 1
+            fi
+            # Remove 'v' prefix if present
+            VERSION="${LATEST_TAG#v}"
+            echo "Using latest tag version: $VERSION (from tag: $LATEST_TAG)"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check required vars and secrets
+        env:
+          ENV: ${{ vars.ENV }}
+          APP_NAME: ${{ vars.APP_NAME }}
+          STATIC_FILES_INTERNAL: ${{ vars.STATIC_FILES_INTERNAL }}
+          APP_VERSION: ${{ steps.determine-version.outputs.version }}
+          API_STATIC_FILES_URL: ${{ vars.API_STATIC_FILES_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash scripts/check-workflow-env.sh ENV APP_NAME STATIC_FILES_INTERNAL APP_VERSION API_STATIC_FILES_URL GITHUB_TOKEN
+
   collect-and-push-static-files:
-    name: Collect and push static files
+    name: Static files
+    needs: [check-vars-and-secrets]
     runs-on: ubuntu-latest
     environment:
       name: COLLECT_STATIC
@@ -21,10 +67,14 @@ jobs:
       APP_IS_EXPOSED: false
       STATIC_FILES_INTERNAL: ${{ vars.STATIC_FILES_INTERNAL }}
     outputs:
-      collect_static_files_commit_hash: ${{ steps.commit-and-push-static-files.outputs.collect_static_files_commit_hash }}
+      collect_static_files_commit_hash: ${{ steps.set-commit-hash.outputs.collect_static_files_commit_hash }}
+      app_version: ${{ needs.check-vars-and-secrets.outputs.app_version }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -36,28 +86,121 @@ jobs:
           pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Set up filesystem
-        run: bash scripts/setup-filesystem.sh
-
-      - name: Collect static files
-        env:
-          APP_VERSION: ${{ vars.APP_VERSION }}
-          STATIC_FILES_URL: ${{ vars.API_STATIC_FILES_URL }}
-        run: python manage.py collectstatic --noinput
-
       - name: Configure Git
         run: |
           git config --global user.name 'GitHub Actions'
           git config --global user.email 'actions@github.com'
 
+      - name: Checkout branch for pushing
+        id: checkout-branch
+        run: |
+          git fetch origin
+          
+          BRANCH=$(git branch --show-current 2>/dev/null || echo "")
+          if [ -z "$BRANCH" ]; then
+            # Find which branch contains the current HEAD (tag commit)
+            # This will find feature branches, release branches, main, develop, etc.
+            BRANCH=$(git branch -r --contains HEAD | head -1 | sed 's|origin/||' | xargs)
+            
+            if [ -z "$BRANCH" ]; then
+              # Fallback: try to determine from tag name
+              if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+                TAG_NAME="${GITHUB_REF#refs/tags/}"
+                VERSION="${TAG_NAME#v}"
+                
+                # For dev tags, try to find the feature/hotfix branch
+                if [[ "$TAG_NAME" =~ -dev- ]]; then
+                  # Extract branch name from tag (e.g., v0.3.6-dev-improve-cicd -> improve-cicd)
+                  BRANCH_NAME="${TAG_NAME#*-dev-}"
+                  # Try feature branch first
+                  BRANCH="feature/$BRANCH_NAME"
+                  if ! git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+                    # Try hotfix branch
+                    BRANCH="hotfix/$BRANCH_NAME"
+                    if ! git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+                      BRANCH=""
+                    fi
+                  fi
+                fi
+                
+                # For release tags (rc, beta, alpha), try release branch
+                if [ -z "$BRANCH" ] && [[ "$TAG_NAME" =~ -rc|-beta|-alpha ]]; then
+                  BRANCH="release/v${VERSION%%-*}"
+                  if ! git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+                    BRANCH="main"
+                  fi
+                fi
+                
+                # For release tags without suffix, try release branch
+                if [ -z "$BRANCH" ]; then
+                  BRANCH="release/v${VERSION}"
+                  if ! git ls-remote --heads origin "$BRANCH" | grep -q "$BRANCH"; then
+                    BRANCH="main"
+                  fi
+                fi
+              else
+                BRANCH="main"
+              fi
+            fi
+            
+            if [ -z "$BRANCH" ]; then
+              echo "Error: Could not determine branch to push to"
+              exit 1
+            fi
+            
+            git checkout "$BRANCH"
+          fi
+          
+          git fetch origin "$BRANCH"
+          if [ "$(git rev-list --count HEAD..origin/"$BRANCH")" -gt 0 ]; then
+            LOCAL_COMMIT=$(git rev-parse HEAD)
+            REMOTE_COMMIT=$(git rev-parse origin/"$BRANCH")
+            echo "Error: The branch has newer commits on remote. Local: $LOCAL_COMMIT, Remote: $REMOTE_COMMIT"
+            echo "Please ensure the branch is up to date before running this workflow."
+            exit 1
+          fi
+
+      - name: Set up filesystem
+        run: bash scripts/setup-filesystem.sh
+
+      - name: Collect static files
+        env:
+          APP_VERSION: ${{ needs.check-vars-and-secrets.outputs.app_version }}
+          STATIC_FILES_URL: ${{ vars.API_STATIC_FILES_URL }}
+        run: python manage.py collectstatic --noinput
+
       - name: Commit and push static files
         id: commit-and-push-static-files
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PAT_TOKEN: ${{ secrets.STATIC_FILES_PAT }}
         run: |
+          TOKEN="${PAT_TOKEN:-${GITHUB_TOKEN}}"
+          git remote set-url origin https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          BRANCH=$(git branch --show-current)
+          if [ -z "$BRANCH" ]; then
+            echo "Error: Could not determine current branch"
+            exit 1
+          fi
+          git fetch origin "$BRANCH"
+          if [ "$(git rev-list --count HEAD..origin/"$BRANCH")" -gt 0 ]; then
+            LOCAL_COMMIT=$(git rev-parse HEAD)
+            REMOTE_COMMIT=$(git rev-parse origin/"$BRANCH")
+            echo "Error: The branch was updated after static files collection. Local: $LOCAL_COMMIT, Remote: $REMOTE_COMMIT"
+            echo "Please re-run the workflow to ensure static files are collected on the latest code."
+            exit 1
+          fi
           git add -A
-          git diff --staged --exit-code || git commit -am "chore: add collected static files"
-          git push
+          if git diff --staged --exit-code; then
+            echo "No changes to commit"
+          else
+            git commit -am "chore: add collected static files"
+            git push origin "$BRANCH"
+          fi
 
           echo "collect_static_files_commit_hash=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
+      - name: Set commit hash output
+        id: set-commit-hash
+        run: |
+          echo "collect_static_files_commit_hash=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"

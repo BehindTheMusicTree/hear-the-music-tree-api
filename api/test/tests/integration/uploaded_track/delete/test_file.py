@@ -11,7 +11,8 @@ class TrackDeleteViewTestCase(UploadedTrackTestCase):
         track = self.model_fixture_factory.create_uploaded_track_with_file(
             title="We're All To Blame",
             test_uploaded_track_filename=UploadedTrackTestFilename.RECORDING_KEMAR_FRANCE_MP3)
-        assert self.test_user1.does_track_filename_exist_in_lib(UploadedTrackTestFilename.RECORDING_KEMAR_FRANCE_MP3)
+        assert self.test_user1.does_track_filename_exist_in_lib(
+            UploadedTrackTestFilename.RECORDING_KEMAR_FRANCE_MP3.value)
         assert track.track_file.file
 
         response = self._delete_uploaded_track(uuid=track.uuid)
@@ -19,4 +20,4 @@ class TrackDeleteViewTestCase(UploadedTrackTestCase):
         assert response.status_code == status.HTTP_204_NO_CONTENT
         assert not UploadedTrack.objects.filter(user=self.test_user1, uuid=track.uuid).exists()
         assert not self.test_user1.does_track_filename_exist_in_lib(
-            UploadedTrackTestFilename.RECORDING_KEMAR_FRANCE_MP3)
+            UploadedTrackTestFilename.RECORDING_KEMAR_FRANCE_MP3.value)

@@ -28,8 +28,9 @@ class TestCase(AlbumTestCase):
             album=black_holes_album)
 
         assert self.test_user1.does_track_filename_exist_in_lib(
-            UploadedTrackTestFilename.RECORDING_ALLUMERLEFEU_2_MATCHES_ONE_WITH_MORE_RELEASE_GROUPS_MP3)
-        assert self.test_user1.does_track_filename_exist_in_lib(UploadedTrackTestFilename.RECORDING_KEMAR_FRANCE_MP3)
+            UploadedTrackTestFilename.RECORDING_ALLUMERLEFEU_2_MATCHES_ONE_WITH_MORE_RELEASE_GROUPS_MP3.value)
+        assert self.test_user1.does_track_filename_exist_in_lib(
+            UploadedTrackTestFilename.RECORDING_KEMAR_FRANCE_MP3.value)
 
         response = self._delete_album(uuid=black_holes_album.uuid)
 
@@ -38,9 +39,9 @@ class TestCase(AlbumTestCase):
         assert not UploadedTrack.objects.filter(title=assassin_track.title).exists()
         assert not UploadedTrack.objects.filter(title=starlight_track.title).exists()
         assert not self.test_user1.does_track_filename_exist_in_lib(
-            UploadedTrackTestFilename.RECORDING_ALLUMERLEFEU_2_MATCHES_ONE_WITH_MORE_RELEASE_GROUPS_MP3)
+            UploadedTrackTestFilename.RECORDING_ALLUMERLEFEU_2_MATCHES_ONE_WITH_MORE_RELEASE_GROUPS_MP3.value)
         assert not self.test_user1.does_track_filename_exist_in_lib(
-            UploadedTrackTestFilename.RECORDING_KEMAR_FRANCE_MP3)
+            UploadedTrackTestFilename.RECORDING_KEMAR_FRANCE_MP3.value)
 
     def test_delete_then_delete_track_artist_as_nothing_linked_to_it_anymore(self):
         muse_artist = self.model_fixture_factory.create_artist(name="Muse")
