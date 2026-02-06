@@ -4,7 +4,43 @@
 [![Python](https://img.shields.io/badge/python-3.14-blue.svg)](https://www.python.org/)
 [![Django](https://img.shields.io/badge/django-5.2-green.svg)](https://www.djangoproject.com/)
 
+## Table of Contents
 
+- [Introduction](#introduction)
+  - [Mission](#mission)
+  - [Key Features](#key-features)
+  - [Ecosystem Integration](#ecosystem-integration)
+- [Features](#features)
+- [Vision](VISION.md)
+- [Getting Started](#getting-started)
+  - [Developer environment (recommended)](#developer-environment-recommended)
+- [API](#api)
+  - [Base URL & Interactive Documentation](#base-url--interactive-documentation)
+  - [Authentication](#authentication)
+    - [Obtaining Tokens](#obtaining-tokens)
+    - [Refreshing Tokens](#refreshing-tokens)
+    - [Using Tokens](#using-tokens)
+    - [Spotify Authentication](#spotify-authentication)
+  - [Endpoints Reference](#endpoints-reference)
+    - [Authentication](#authentication-1)
+    - [Library Management](#library-management)
+    - [Music Metadata](#music-metadata)
+    - [Genres](#genres)
+    - [Tags](#tags)
+    - [Playlists](#playlists)
+    - [Play History](#play-history)
+    - [Search](#search)
+    - [User Management](#user-management)
+- [Usage](#usage)
+  - [Basic Workflow](#basic-workflow)
+  - [Advanced Features](#advanced-features)
+  - [Error Handling](#error-handling)
+- [Technical Details](#technical-details)
+  - [Audio Metadata Handling](#audio-metadata-handling)
+  - [MusicBrainz Integration](#musicbrainz-integration)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgements](#acknowledgements)
 
 ## Introduction
 
@@ -34,41 +70,6 @@ HearTheMusicTree integrates seamlessly with other projects in the BehindTheMusic
 > **⚠️ Note**: The API is currently undergoing server migration and is not available online. Please set up a local development environment to use the API. See [Getting Started](#getting-started) for setup instructions.
 
 For more details about our vision, goals, and roadmap, see [VISION.md](VISION.md).
-
-
-## Table of Contents
-
-- [Features](#features)
-- [Introduction](#introduction)
-- [Vision](VISION.md)
-- [Getting Started](#getting-started)
-  - [Developer environment (recommended)](#developer-environment-recommended)
-- [API](#api)
-  - [Base URL & Interactive Documentation](#base-url--interactive-documentation)
-  - [Authentication](#authentication)
-    - [Obtaining Tokens](#obtaining-tokens)
-    - [Refreshing Tokens](#refreshing-tokens)
-    - [Using Tokens](#using-tokens)
-    - [Spotify Authentication](#spotify-authentication)
-  - [Endpoints Reference](#endpoints-reference)
-    - [Authentication](#authentication-1)
-    - [Library Management](#library-management)
-    - [Music Metadata](#music-metadata)
-    - [Organization & Classification](#organization--classification)
-    - [Playlists](#playlists)
-    - [Play History](#play-history)
-    - [Search](#search)
-    - [User Management](#user-management)
-- [Usage](#usage)
-  - [Basic Workflow](#basic-workflow)
-  - [Advanced Features](#advanced-features)
-  - [Error Handling](#error-handling)
-- [Technical Details](#technical-details)
-  - [Audio Metadata Handling](#audio-metadata-handling)
-  - [MusicBrainz Integration](#musicbrainz-integration)
-- [Contributing](#contributing)
-- [License](#license)
-- [Acknowledgements](#acknowledgements)
 
 ## Features
 
@@ -336,7 +337,7 @@ All endpoints are prefixed with the API base URL (`api/{version}/`). Most endpoi
 | `GET` | `/spotify-artists/` | List Spotify artists | 🔒 |
 | `GET` | `/spotify-artists/{id}/` | Retrieve a specific Spotify artist | 🔒 |
 
-### Organization & Classification
+### Genres
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
@@ -345,6 +346,11 @@ All endpoints are prefixed with the API base URL (`api/{version}/`). Most endpoi
 | `GET` | `/genres/{id}/` | Retrieve a specific genre | 🔒 |
 | `PUT` | `/genres/{id}/` | Update a genre | 🔒 |
 | `DELETE` | `/genres/{id}/` | Delete a genre | 🔒 |
+
+### Tags
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
 | `GET` | `/tags/` | List tags | 🔒 |
 | `POST` | `/tags/` | Create a tag | 🔒 |
 | `GET` | `/tags/{id}/` | Retrieve a specific tag | 🔒 |
