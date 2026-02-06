@@ -12,6 +12,7 @@ from api.view.viewset.model.SpotifyArtistViewSet import SpotifyArtistViewSet
 from api.view.viewset.model.user.SpotifyUserViewSet import SpotifyUserViewSet
 
 from . import settings
+from .view.health import HealthCheckView
 from .view.viewset.model.AlbumViewSet import AlbumViewSet
 from .view.viewset.model.ArtistViewSet import ArtistViewSet
 from .view.viewset.model.criteria.children.GenreViewSet import GenreViewSet
@@ -52,12 +53,14 @@ urlpatterns = [
     path(settings.API_ROOT_BASE, include(router.urls)),
 
     path('admin/', admin.site.urls),
+    path('health/', HealthCheckView.as_view(), name='health-check'),
 
     path(settings.API_ROOT_BASE + 'auth/', include('django.contrib.auth.urls')),
     path(settings.API_ROOT_BASE + 'auth/token/', TokenObtainPairView.as_view(), name='token-obtain-pair'),
     path(settings.API_ROOT_BASE + 'auth/token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
 
     path(settings.API_ROOT_BASE + 'auth/spotify/', spotify_auth, name='api-auth-spotify'),
+
 
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
