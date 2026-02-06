@@ -745,7 +745,7 @@ The project uses focused, reusable GitHub Actions workflows for CI/CD. For a ful
   3. Deploys to the test server
 
 **Other Workflows**:
-- `build.yml` - Builds and pushes Docker images (reusable)
+- `build-and-push.yml` - Builds and pushes Docker images (reusable)
 - `deploy.yml` - Handles server deployment (reusable)
 - `static-files.yml` - Collects and commits static files (reusable)
 - `branch-protection.yml` - Enforces Git Flow branching rules
