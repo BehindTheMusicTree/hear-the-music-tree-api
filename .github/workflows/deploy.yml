@@ -19,7 +19,8 @@ jobs:
     outputs:
       app_version: ${{ steps.determine-version.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
