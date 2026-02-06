@@ -190,6 +190,8 @@ jobs:
 
             echo 'DB_CONTAINER_NAME=${{ vars.DB_CONTAINER_NAME }}' >> ${{ env.API_ENV_FILE }} &&
             echo 'DB_PORT=${{ vars.DB_PORT }}' >> ${{ env.API_ENV_FILE }} &&
+            echo 'DB_CONNECTION_TEST_MAX_ATTEMPTS=10' >> ${{ env.API_ENV_FILE }} &&
+            echo 'DB_CONNECTION_TEST_SLEEP_INTERVAL=5' >> ${{ env.API_ENV_FILE }} &&
             echo 'DB_SUPERUSER_NAME=${{ vars.DB_SUPERUSER_NAME }}' >> ${{ env.API_ENV_FILE }} &&
             echo 'DB_SUPERUSER_PASSWORD='\''${{ secrets.DB_SUPERUSER_PASSWORD }}'\''' >> ${{ env.API_ENV_FILE }} &&
             echo 'DB_BODZIFY_API_DB_NAME=${{ secrets.DB_BODZIFY_API_DB_NAME }}' >> ${{ env.API_ENV_FILE }} &&
