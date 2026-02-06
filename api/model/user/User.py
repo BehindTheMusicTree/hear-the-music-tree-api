@@ -62,7 +62,9 @@ class User(AbstractUser, BaseModel):
 
     def save(self, *args, **kwargs):
         if self.is_system:
-            self.is_active = False
+            self.is_active = True
+            self.is_staff = False
+            self.is_superuser = False
         super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
