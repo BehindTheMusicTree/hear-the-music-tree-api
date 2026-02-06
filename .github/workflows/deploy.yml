@@ -179,6 +179,8 @@ jobs:
             rm -f ${{ env.API_ENV_FILE }} &&
             touch ${{ env.API_ENV_FILE }} &&
 
+            echo 'ENV=TEST' >> ${{ env.API_ENV_FILE }} &&
+            
             echo 'APP_PORT=${{ vars.HTMT_API_PORT }}' >> ${{ env.API_ENV_FILE }} &&
             echo 'API_DIR_NAME=api' >> ${{ env.API_ENV_FILE }} &&
 
