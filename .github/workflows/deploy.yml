@@ -147,9 +147,9 @@ jobs:
             echo 'AFP_PORT=${{ vars.AFP_PORT }}' >> ${{ env.API_ENV_FILE }} &&
             echo 'AFP_POST_ENDPOINT=${{ vars.AFP_POST_ENDPOINT }}' >> ${{ env.API_ENV_FILE }} &&
 
-            echo 'TMTA_USERNAME'==${{ vars.TMTA_USERNAME }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'TMTA_USER_PASSWORD'==${{ vars.TMTA_USER_PASSWORD }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'TMTA_USER_EMAIL'==${{ vars.TMTA_USER_EMAIL }}' >> ${{ env.API_ENV_FILE }} &&
+            echo 'TMTA_USERNAME==${{ vars.TMTA_USERNAME }}' >> ${{ env.API_ENV_FILE }} &&
+            echo 'TMTA_USER_PASSWORD==${{ vars.TMTA_USER_PASSWORD }}' >> ${{ env.API_ENV_FILE }} &&
+            echo 'TMTA_USER_EMAIL==${{ vars.TMTA_USER_EMAIL }}' >> ${{ env.API_ENV_FILE }} &&
 
             chmod 600 ${{ env.API_ENV_FILE }}
           EOF
