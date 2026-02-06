@@ -99,8 +99,6 @@ jobs:
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
           TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
-          TMTA_USER_PASSWORD: ${{ secrets.TMTA_USER_PASSWORD }}
-          TMTA_USER_EMAIL: ${{ secrets.TMTA_USER_EMAIL }}
         run: |
           bash scripts/check-workflow-env.sh \
             DOMAIN_NAME \
@@ -151,8 +149,6 @@ jobs:
             SPOTIFY_CLIENT_ID \
             SPOTIFY_CLIENT_SECRET \
             TMTA_USERNAME \
-            TMTA_USER_PASSWORD \
-            TMTA_USER_EMAIL
             
   set-env-variables-on-server:
     name: Set env vars
@@ -215,8 +211,6 @@ jobs:
             echo 'AFP_POST_ENDPOINT=${{ vars.AFP_POST_ENDPOINT }}' >> ${{ env.API_ENV_FILE }} &&
 
             echo 'TMTA_USERNAME==${{ secrets.TMTA_USERNAME }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'TMTA_USER_PASSWORD==${{ secrets.TMTA_USER_PASSWORD }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'TMTA_USER_EMAIL==${{ secrets.TMTA_USER_EMAIL }}' >> ${{ env.API_ENV_FILE }} &&
 
             chmod 600 ${{ env.API_ENV_FILE }}
           EOF
