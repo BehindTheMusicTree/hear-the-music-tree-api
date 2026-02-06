@@ -6,6 +6,7 @@ FROM python:3.14-bookworm
 
 ARG PROJECT_DIR
 ARG APP_VERSION
+ARG API_DIR_NAME
 
 RUN if [ -z "$PROJECT_DIR" ]; then \
 	echo "ERROR: The PROJECT_DIR argument is not provided" >&2; \
