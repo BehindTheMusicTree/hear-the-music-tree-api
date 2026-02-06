@@ -49,7 +49,7 @@ jobs:
           APP_NAME: ${{ vars.APP_NAME }}
           STATIC_FILES_INTERNAL: ${{ vars.STATIC_FILES_INTERNAL }}
           APP_VERSION: ${{ steps.determine-version.outputs.version }}
-          API_STATIC_FILES_URL: ${{ vars.API_STATIC_FILES_URL }}
+          API_STATIC_FILES_URL: ${{ vars.HTMT_API_STATIC_FILES_URL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bash scripts/check-workflow-env.sh ENV APP_NAME STATIC_FILES_INTERNAL APP_VERSION API_STATIC_FILES_URL GITHUB_TOKEN
 
@@ -166,7 +166,7 @@ jobs:
       - name: Collect static files
         env:
           APP_VERSION: ${{ needs.check-vars-and-secrets.outputs.app_version }}
-          STATIC_FILES_URL: ${{ vars.API_STATIC_FILES_URL }}
+          STATIC_FILES_URL: ${{ vars.HTMT_API_STATIC_FILES_URL }}
         run: python manage.py collectstatic --noinput
 
       - name: Commit and push static files
