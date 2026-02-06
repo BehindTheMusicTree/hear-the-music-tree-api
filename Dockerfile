@@ -35,8 +35,8 @@ RUN apt update && \
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
-RUN chmod +x ${PROJECT_DIR}scripts/entrypoint.sh && \
-    FIXTURES_DIR=${PROJECT_DIR}api/fixtures/ && \
+RUN chmod +x $${PROJECT_DIR}scripts/entrypoint.sh && \
+    FIXTURES_DIR=$${PROJECT_DIR}api/fixtures/ && \
     for subdir in app genres users/test users/umg; do \
         if [ -d "$${FIXTURES_DIR}$${subdir}" ] && [ -n "$$(ls -A "$${FIXTURES_DIR}$${subdir}" 2>/dev/null)" ]; then \
             cp "$${FIXTURES_DIR}$${subdir}"/* "$${FIXTURES_DIR}"; \
