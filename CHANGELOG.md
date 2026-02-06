@@ -58,6 +58,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v0.3.6] - 2026-02-06
+
 ### CI
 
 - **Versioning**: Derive app version from git tags instead of GitHub repository variables
