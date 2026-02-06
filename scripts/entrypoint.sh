@@ -73,6 +73,13 @@ main (){
         log_with_script_prefixe "Django data is already initialized."
     fi
 
+    log_with_script_prefixe "Applying migrations..."
+    python3 ${PROJECT_DIR}manage.py migrate
+    if [ $? -ne 0 ]; then
+        log_with_script_prefixe "ERROR: Failed to apply migrations." >&2
+        exit 1
+    fi
+
     log_with_script_prefixe "Starting Gunicorn..."
     exec gunicorn api.wsgi:application \
         --bind 0.0.0.0:${APP_PORT} \

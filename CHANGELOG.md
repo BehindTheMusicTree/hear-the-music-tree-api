@@ -58,6 +58,17 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Improved
+
+- **Deployment**: Apply Django migrations on every container start
+  - Entrypoint always runs `migrate` after DB is ready (first init and subsequent deploys)
+  - Single code path; migrate is idempotent
+
+### Documentation
+
+- **CONTRIBUTING.md**: Add Database migrations section (create in dev, never makemigrations in prod, migrations run on deploy, backward-compatibility)
+- **workflows.md**: Document that migrations are applied by container entrypoint, not by deploy workflow
+
 ## [v0.3.6] - 2026-02-06
 
 ### CI

@@ -92,6 +92,8 @@ Deploys the application to the test server via SSH and redeployment webhook.
 
 **Environment:** `TEST`. Uses `SERVER_DEPLOY_SSH_PRIVATE_KEY`, `DOMAIN_NAME`, `WEBHOOK_DIR`, etc.
 
+**Migrations:** The workflow does not run Django migrations. Migrations are applied when the container starts: the API container entrypoint (`scripts/entrypoint.sh`) runs `migrate` after the database is ready, so each new deployment applies pending migrations before Gunicorn starts.
+
 ## Static Files
 
 **File:** `.github/workflows/static-files.yml`
