@@ -172,6 +172,7 @@ jobs:
             echo 'ALLOWED_HOSTS=${{ vars.ALLOWED_HOSTS }}' >> ${{ env.API_ENV_FILE }} &&
 
             echo 'TMP_UPLOADED_FILES=${{ vars.TMP_UPLOADED_FILES_EXTERNAL }}' >> ${{ env.API_ENV_FILE }} &&
+            echo 'MEDIA_DIR_EXTERNAL=${{ vars.MEDIA_DIR_EXTERNAL }}' >> ${{ env.API_ENV_FILE }} &&
 
             echo 'GUNICORN_LOG_DIR=${{ vars.GUNICORN_LOG_DIR }}' >> ${{ env.API_ENV_FILE }} &&
             echo 'GUNICORN_LOG_ACCESS_FILENAME=${{ vars.GUNICORN_LOG_ACCESS_FILENAME }}' >> ${{ env.API_ENV_FILE }} &&
@@ -191,7 +192,7 @@ jobs:
             echo 'AFP_PORT=${{ vars.AFP_PORT }}' >> ${{ env.API_ENV_FILE }} &&
             echo 'AFP_POST_ENDPOINT=${{ vars.AFP_POST_ENDPOINT }}' >> ${{ env.API_ENV_FILE }} &&
 
-            echo 'TMTA_USERNAME==${{ secrets.TMTA_USERNAME }}' >> ${{ env.API_ENV_FILE }} &&
+            echo 'TMTA_USERNAME=${{ secrets.TMTA_USERNAME }}' >> ${{ env.API_ENV_FILE }} &&
 
             chmod 600 ${{ env.API_ENV_FILE }}
           EOF
