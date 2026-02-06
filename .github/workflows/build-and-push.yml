@@ -56,4 +56,3 @@ jobs:
           build-args: |
             PROJECT_DIR=${{ env.CONTAINER_ROOT_DIR }}
             APP_VERSION=${{ inputs.app_version }}
-

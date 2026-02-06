@@ -6,9 +6,8 @@ FROM python:3.14-bookworm
 
 ARG PROJECT_DIR
 ARG APP_VERSION
-ARG DB_IS_NEEDED
 
-RUN for var in PROJECT_DIR APP_VERSION DB_IS_NEEDED; do \
+RUN for var in PROJECT_DIR APP_VERSION ; do \
     eval "value=\$$var"; \
     if [ -z "$value" ]; then \
         echo "ERROR: The $var argument is not provided" >&2; \
@@ -20,7 +19,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PROJECT_DIR=$PROJECT_DIR \
     APP_VERSION=$APP_VERSION \
-    API_DIR_NAME=api
+    API_DIR_NAME=api \
+    DB_IS_NEEDED=true
 
 RUN apt-get update && \
     apt-get install -y gosu && \
