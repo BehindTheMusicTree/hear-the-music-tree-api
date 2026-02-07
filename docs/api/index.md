@@ -13,7 +13,7 @@ This index lists all API resources with their base URLs, authentication requirem
 | Albums                    | `/api/{APP_VERSION}/me/albums/`, `/api/{APP_VERSION}/reference/albums/` | Required / Optional | Albums in authenticated user's library or system reference | [albums.md](albums.md) |
 | Tags                      | `/api/{APP_VERSION}/tags/`                        | TODO           | TODO        | [tags.md](tags.md)                      |
 | Genres                 | `/api/{APP_VERSION}/me/genres/`, `/api/{APP_VERSION}/reference/genres/` | Required / Optional | Genres owned by authenticated user or system reference | [genres.md](genres.md) |
-| Plays                     | `/api/{APP_VERSION}/plays/`                       | TODO           | TODO        | [plays.md](plays.md)                    |
+| Plays                     | `/api/{APP_VERSION}/me/plays/`, `/api/{APP_VERSION}/reference/plays/` | Required / Optional | Play history for authenticated user or system reference | [plays.md](plays.md)                    |
 | Playlists                 | `/api/{APP_VERSION}/playlists/`                   | TODO           | TODO        | [playlists.md](playlists.md)            |
 | Manual Playlists          | `/api/{APP_VERSION}/manual-playlists/`            | TODO           | TODO        | [manual_playlists.md](manual_playlists.md) |
 | Genre Playlists        | `/api/{APP_VERSION}/me/genre-playlists/`, `/api/{APP_VERSION}/reference/genre-playlists/` | Required / Optional | Genre playlists owned by authenticated user or system reference | [genre_playlists.md](genre_playlists.md) |
