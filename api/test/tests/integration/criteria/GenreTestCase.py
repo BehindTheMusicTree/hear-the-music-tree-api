@@ -12,8 +12,8 @@ class GenreTestCase(AppTestCase[Genre]):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.detail_endpoint = 'genre-detail'
-        self.list_endpoint = 'genre-list'
+        self.detail_endpoint = 'me-genre-detail'
+        self.list_endpoint = 'me-genre-list'
 
     def _retrieve_genre(self, uuid: UUID):
         return self.api_client.get(
