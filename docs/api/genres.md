@@ -42,7 +42,7 @@ None
 
 **Response**
 Status codes:
-200 OK
+ | 00 OK
 
 Body:
 ```json
@@ -70,17 +70,17 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 None
 
-Business Rules
+### Business Rules
 None
 
-Errors
+### Errors
 Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token
-404	Not Found - Genre not found	
+ | 00	Bad Request - Invalid parameters
+ | 01	Unauthorized - Invalid token
+ | 04	Not Found - Genre not found	
 
 ### POST /
 
@@ -104,7 +104,7 @@ Body:
 
 **Response**
 Status codes:
-201 Created
+ | 01 Created
 
 Body:
 ```json
@@ -125,16 +125,16 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 Name required, max length
 
-Business Rules
+### Business Rules
 None
 
-Errors
+### Errors
 Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token	
+ | 00	Bad Request - Invalid parameters
+ | 01	Unauthorized - Invalid token	
 
 ### GET /{id}/
 
@@ -153,7 +153,7 @@ None
 
 **Response**
 Status codes:
-200 OK
+ | 00 OK
 
 Body:
 ```json
@@ -174,17 +174,17 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 None
 
-Business Rules
+### Business Rules
 None
 
-Errors
+### Errors
 Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token
-404	Not Found - Genre not found	
+ | 00	Bad Request - Invalid parameters
+ | 01	Unauthorized - Invalid token
+ | 04	Not Found - Genre not found	
 
 ### PUT /{id}/
 
@@ -208,7 +208,7 @@ Body:
 
 **Response**
 Status codes:
-200 OK
+ | 00 OK
 
 Body:
 ```json
@@ -229,17 +229,17 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 Name max length
 
-Business Rules
+### Business Rules
 None
 
-Errors
+### Errors
 Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token
-404	Not Found - Genre not found	
+ | 00	Bad Request - Invalid parameters
+ | 01	Unauthorized - Invalid token
+ | 04	Not Found - Genre not found	
 
 ### DELETE /{id}/
 
@@ -258,22 +258,22 @@ None
 
 **Response**
 Status codes:
-204 No Content
+ | 04 No Content
 
 Body:
 None
 
-Validation Rules
+### Validation Rules
 None
 
-Business Rules
+### Business Rules
 Children reassigned to parent
 
-Errors
+### Errors
 Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token
-404	Not Found - Genre not found	
+ | 00	Bad Request - Invalid parameters
+ | 01	Unauthorized - Invalid token
+ | 04	Not Found - Genre not found	
 
 ### GET /tree/
 
@@ -292,7 +292,7 @@ None
 
 **Response**
 Status codes:
-200 OK
+ | 00 OK
 
 Body:
 ```json
@@ -304,15 +304,15 @@ Body:
 ]
 ```
 
-Validation Rules
+### Validation Rules
 None
 
-Business Rules
+### Business Rules
 None
 
-Errors
+### Errors
 Code	Meaning
-401	Unauthorized - Invalid token	
+ | 01	Unauthorized - Invalid token	
 
 ### POST /tree/import/
 
@@ -338,7 +338,7 @@ Body:
 
 **Response**
 Status codes:
-201 Created
+ | 01 Created
 
 Body:
 ```json
@@ -350,20 +350,20 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 None
 
-Business Rules
+### Business Rules
 Replaces all existing genres
 
-Errors
+### Errors
 Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token	
+ | 00	Bad Request - Invalid parameters
+ | 01	Unauthorized - Invalid token	
 
-Versioning
+### Versioning
 
 {APP_VERSION}
 
-Notes
+### Notes
 None

@@ -34,11 +34,13 @@ Query params:
 page, page_size, name
 
 Body:
-None
+```json
+{}
+```
 
 **Response**
 Status codes:
-200 OK
+ | 00 OK
 
 Body:
 ```json
@@ -63,17 +65,24 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 None
 
-Business Rules
+### Business Rules
 None
 
-Errors
-Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token
-404	Not Found - Artist not found	
+### Errors
+| Code | Meaning |
+|------|----------|
+| 400 | Bad Request - Invalid parameters |
+| 401 | Unauthorized - Invalid token |
+| 404 | Not Found - Artist not found |
+
+### Versioning
+TODO
+
+### Notes
+TODO
 
 ### GET /{id}/
 
@@ -88,11 +97,13 @@ Query params:
 None
 
 Body:
-None
+```json
+{}
+```
 
 **Response**
 Status codes:
-200 OK
+ | 00 OK
 
 Body:
 ```json
@@ -110,17 +121,24 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 None
 
-Business Rules
+### Business Rules
 None
 
-Errors
-Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token
-404	Not Found - Artist not found	
+### Errors
+| Code | Meaning |
+|------|----------|
+| 400 | Bad Request - Invalid parameters |
+| 401 | Unauthorized - Invalid token |
+| 404 | Not Found - Artist not found |
+
+### Versioning
+TODO
+
+### Notes
+TODO
 
 ### DELETE /{id}/
 
@@ -135,30 +153,34 @@ Query params:
 None
 
 Body:
-None
+```json
+{}
+```
 
 **Response**
 Status codes:
-204 No Content
+ | 04 No Content
 
 Body:
+```json
+{}
+```
+
+### Validation Rules
 None
 
-Validation Rules
+### Business Rules
 None
 
-Business Rules
-None
+### Errors
+| Code | Meaning |
+|------|----------|
+| 400 | Bad Request - Invalid parameters |
+| 401 | Unauthorized - Invalid token |
+| 404 | Not Found - Artist not found |
 
-Errors
-Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token
-404	Not Found - Artist not found	
-
-Versioning
-
+### Versioning
 {APP_VERSION}
 
-Notes
+### Notes
 None
