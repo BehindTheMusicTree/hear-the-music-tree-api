@@ -38,7 +38,7 @@ router.register(r'spotify-artists', SpotifyArtistViewSet, basename='spotify-arti
 router.register(r'artists', ArtistViewSet, basename='artist')
 router.register(r'albums', AlbumViewSet, basename='album')
 router.register(r'tags', TagViewSet, basename='tag')
-router.register(r'genres', GenreViewSet, basename='genre')
+router.register(r'me/genres', GenreViewSet, basename='me-genre')
 router.register(r'reference/genres', ReferenceGenreViewSet, basename='reference-genre')
 router.register(r'plays', PlayViewSet, basename='play')
 
@@ -46,7 +46,7 @@ router.register(r'plays', PlayViewSet, basename='play')
 # reverse urls.
 router.register(r'playlists', PlaylistViewSet, basename='playlist')
 router.register(r'manual-playlists', ManualPlaylistViewSet, basename='manual-playlist')
-router.register(r'my-genre-playlists', GenrePlaylistViewSet, basename='my-genre-playlist')
+router.register(r'me/genre-playlists', GenrePlaylistViewSet, basename='me-genre-playlist')
 router.register(r'tag-playlists', TagPlaylistViewSet, basename='tag-playlist')
 router.register(r'all-tracks', AllUploadedTracksViewSet, basename='all-uploaded-tracks')
 router.register(r'search', SearchViewSet, basename='search')
