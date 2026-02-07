@@ -78,6 +78,19 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
   - Capture and log migrate output for better debugging
   - Exit with error code if makemigrations or migrate fails
 
+- **check_data_initialized**: Handle missing tables gracefully
+  - Check if User table exists before querying it (prevents ProgrammingError)
+  - Properly detect "not initialized" state when tables don't exist
+  - Better error messages for debugging
+
+- **entrypoint.sh**: Improve migration error visibility
+  - Capture and log migrate output to diagnose migration failures
+  - Show exit code when migrations fail
+
+- **check-django-initialized.sh**: Show check command output
+  - Display check_data_initialized output instead of hiding it
+  - Better visibility into why initialization check passes/fails
+
 ### Documentation
 
 - **CONTRIBUTING.md**: Add Database migrations section (create in dev, never makemigrations in prod, migrations run on deploy, backward-compatibility)
