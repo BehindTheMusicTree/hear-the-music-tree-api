@@ -8,6 +8,7 @@ This document describes the architectural patterns, design decisions, and system
 - [Request Processing Pipeline](#request-processing-pipeline)
   - [API Request Format](#api-request-format)
     - [Multipart Form Data](#multipart-form-data)
+  - [API URL Design](#api-url-design)
 - [Core Architectural Patterns](#core-architectural-patterns)
   - [Models](#models)
   - [Serializers](#serializers)
@@ -96,6 +97,31 @@ When duplicate fields are detected, the API returns:
 Duplicate field detection is handled by `DuplicateFieldsMiddleware` before request data reaches the serializer. For PUT/PATCH requests, the middleware manually parses multipart data since Django doesn't populate `request.POST` for these methods.
 
 See `api.middleware.duplicate_fields.middleware.DuplicateFieldsMiddleware` for implementation details.
+
+### API URL Design
+
+**Scope as path segment**
+
+URLs use **hierarchy for scope or context**, not compound resource names. When the same logical resource is exposed in different contexts (e.g. current user vs system/reference), the context is a path segment and the resource name stays the same.
+
+- **Preferred:** `/{scope}/{resource}/` — e.g. `reference/genres/`, `reference/genre-playlists/`, `me/playlists/`
+- **Avoid:** `/{scope-resource}/` — e.g. `reference-genres/` (scope glued to resource name)
+
+This follows common practice (e.g. Spotify’s `/v1/me/playlists`, Google/Microsoft REST guidance) and keeps the API consistent and extensible: all reference data lives under `reference/`, and the resource name (`genres`, `playlists`) is unchanged.
+
+**Rules:**
+
+- Use a **path segment for scope** when the same resource exists in multiple contexts (e.g. user-owned vs reference/public).
+- Keep **resource names as nouns** (plural for collections): `genres`, `playlists`, `tags`.
+- Use **hierarchy for real parent-child relationships** (e.g. `/users/{id}/playlists`), and for scope when the same resource is scoped (e.g. `/reference/genres`).
+
+**Examples:**
+
+| Purpose              | URL pattern           | Example                    |
+|----------------------|-----------------------|----------------------------|
+| User’s resource      | `/{resource}/` or `/{scope}/{resource}/` | `genres/`, `me/genres/`   |
+| Reference (system)   | `reference/{resource}/`                  | `reference/genres/`       |
+| Resource by ID       | `/{resource}/{id}/` or `/{scope}/{resource}/{id}/` | `reference/genres/{uuid}/` |
 
 ## Core Architectural Patterns
 
