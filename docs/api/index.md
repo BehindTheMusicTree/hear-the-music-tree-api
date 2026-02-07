@@ -12,12 +12,12 @@ This index lists all API resources with their base URLs, authentication requirem
 | Artists                   | `/api/{APP_VERSION}/artists/`                     | TODO           | TODO        | [artists.md](artists.md)                |
 | Albums                    | `/api/{APP_VERSION}/albums/`                      | TODO           | TODO        | [albums.md](albums.md)                  |
 | Tags                      | `/api/{APP_VERSION}/tags/`                        | TODO           | TODO        | [tags.md](tags.md)                      |
-| My Genres                    | `/api/{APP_VERSION}/my-genres/`                   | TODO           | TODO        | [my-genres.md](my-genres.md)                   |
-| Reference Genres          | `/api/{APP_VERSION}/reference-genres/`            | None           | None        | [reference_genres.md](reference_genres.md) |
+| Me Genres                 | `/api/{APP_VERSION}/me/genres/`                    | TODO           | TODO        | [me_genres.md](me_genres.md)                   |
+| Reference Genres          | `/api/{APP_VERSION}/reference/genres/`             | None           | None        | [reference_genres.md](reference_genres.md) |
 | Plays                     | `/api/{APP_VERSION}/plays/`                       | TODO           | TODO        | [plays.md](plays.md)                    |
 | Playlists                 | `/api/{APP_VERSION}/playlists/`                   | TODO           | TODO        | [playlists.md](playlists.md)            |
 | Manual Playlists          | `/api/{APP_VERSION}/manual-playlists/`            | TODO           | TODO        | [manual_playlists.md](manual_playlists.md) |
-| My Genre Playlists        | `/api/{APP_VERSION}/my-genre-playlists/`          | TODO           | TODO        | [my_genre_playlists.md](my_genre_playlists.md) |
+| Me Genre Playlists        | `/api/{APP_VERSION}/me/genre-playlists/`           | TODO           | TODO        | [me_genre_playlists.md](me_genre_playlists.md) |
 | Reference Genre Playlists | `/api/{APP_VERSION}/reference/genre-playlists/`    | None           | None        | [reference_genre_playlists.md](reference_genre_playlists.md) |
 | Reference Genres          | `/api/{APP_VERSION}/reference/genres/`             | None           | None        | [reference_genres.md](reference_genres.md) |
 | Tag Playlists             | `/api/{APP_VERSION}/tag-playlists/`               | TODO           | TODO        | [tag_playlists.md](tag_playlists.md)     |
