@@ -1,162 +1,30 @@
-# plays
+# Plays
 
 ## Overview
 Manage play history
 
-## Base URL
-/api/{APP_VERSION}/plays/
-
-## Authentication
-JWT token required
-
-## Permissions
-Authenticated users only (IsAuthenticated)
+## Contexts
+| Context | Base Path | Authentication | Description |
+|--------|----------|----------------|-------------|
+| `me` | `/api/{version}/me/plays/` | Required | Play history for the authenticated user |
+| `reference` | `/api/{version}/reference/plays/` | Optional / Public | System-owned reference play data (managed by account defined by TMTA_USERNAME environment variable) |
 
 ## Endpoints
-| Method | Path | Action | Description |
-|------|------|--------|-------------|
-| GET | / | list | List plays |
-| POST | / | create | Record a new play |
-| GET | /{id}/ | retrieve | Get play details |
 
-## Request / Response
+#### List
+`GET {base}`
 
-### GET /
+#### Retrieve
+`GET {base}{id}/`
 
-**Description**
-List plays
+#### Create
+`POST {base}`
 
-**Request**
-Headers:
-Authorization: Bearer {token}
+### Context Differences
 
-Query params:
-page, page_size
+#### Reference
+- Managed internally by system account (defined by TMTA_USERNAME environment variable)
 
-Body:
-None
-
-**Response**
-Status codes:
- | 00 OK
-
-Body:
-```json
-{
-  "count": 10,
-  "next": null,
-  "previous": null,
-  "results": [
-    {
-      "uuid": "uuid",
-      "content_type": "string",
-      "content": {},
-      "created_on": "2023-01-01T00:00:00Z"
-    }
-  ]
-}
-```
-
-### Validation Rules
-None
-
-### Business Rules
-None
-
-### Errors
-Code	Meaning
- | 00	Bad Request - Invalid parameters
- | 01	Unauthorized - Invalid token
- | 04	Not Found - Play not found	
-
-### POST /
-
-**Description**
-Record a new play
-
-**Request**
-Headers:
-Authorization: Bearer {token}
-
-Query params:
-None
-
-Body:
-```json
-{
-  "content": "uuid"
-}
-```
-
-**Response**
-Status codes:
- | 01 Created
-
-Body:
-```json
-{
-  "uuid": "uuid",
-  "content_type": "string",
-  "content": {},
-  "created_on": "2023-01-01T00:00:00Z"
-}
-```
-
-### Validation Rules
-Content required, must be valid uuid of track or playlist
-
-### Business Rules
-None
-
-### Errors
-Code	Meaning
- | 00	Bad Request - Invalid parameters
- | 01	Unauthorized - Invalid token	
-
-### GET /{id}/
-
-**Description**
-Get play details
-
-**Request**
-Headers:
-Authorization: Bearer {token}
-
-Query params:
-None
-
-Body:
-None
-
-**Response**
-Status codes:
- | 00 OK
-
-Body:
-```json
-{
-  "uuid": "uuid",
-  "content_type": "string",
-  "content": {},
-  "created_on": "2023-01-01T00:00:00Z"
-}
-```
-
-### Validation Rules
-None
-
-### Business Rules
-None
-
-### Errors
-Code	Meaning
- | 00	Bad Request - Invalid parameters
- | 01	Unauthorized - Invalid token
- | 04	Not Found - Play not found	
-
-### Versioning
-
-{APP_VERSION}
-
-### Notes
-None
+#### Me
+- Scoped to authenticated user
+- Allows creating new play records

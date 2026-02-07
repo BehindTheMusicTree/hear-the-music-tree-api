@@ -20,6 +20,7 @@ from .view.viewset.model.criteria.children.ReferenceGenreViewSet import Referenc
 from .view.viewset.model.criteria.children.TagViewSet import TagViewSet
 from .view.viewset.model.ReferenceAlbumViewSet import ReferenceAlbumViewSet
 from .view.viewset.model.ReferenceArtistViewSet import ReferenceArtistViewSet
+from .view.viewset.model.ReferencePlayViewSet import ReferencePlayViewSet
 from .view.viewset.model.ReferenceUploadedTrackViewSet import ReferenceUploadedTrackViewSet
 from .view.viewset.model.UploadedTrackViewSet import UploadedTrackViewSet
 from .view.viewset.model.playlist.children.criteria.GenrePlaylistViewSet import GenrePlaylistViewSet
@@ -46,7 +47,8 @@ router.register(r'reference/albums', ReferenceAlbumViewSet, basename='reference-
 router.register(r'tags', TagViewSet, basename='tag')
 router.register(r'me/genres', GenreViewSet, basename='me-genre')
 router.register(r'reference/genres', ReferenceGenreViewSet, basename='reference-genre')
-router.register(r'plays', PlayViewSet, basename='play')
+router.register(r'me/plays', PlayViewSet, basename='me-play')
+router.register(r'reference/plays', ReferencePlayViewSet, basename='reference-play')
 
 # Do not move PlaylistViewSet after GenrePlaylistViewSet or ManualPlaylistViewSet or it will cause confusion resolving
 # reverse urls.
