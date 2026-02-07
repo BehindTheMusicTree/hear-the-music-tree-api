@@ -4,7 +4,7 @@
 Manage genres
 
 ## Base URL
-/api/{APP_VERSION}/genres/
+/api/{APP_VERSION}/my-genres/
 
 ## Authentication
 JWT token required
