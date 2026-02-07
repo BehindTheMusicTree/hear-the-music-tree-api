@@ -369,8 +369,8 @@ All endpoints are prefixed with the API base URL (`api/{version}/`). Most endpoi
 | `GET` | `/manual-playlists/{id}/` | Retrieve a manual playlist | 🔒 |
 | `PUT` | `/manual-playlists/{id}/` | Update a manual playlist | 🔒 |
 | `DELETE` | `/manual-playlists/{id}/` | Delete a manual playlist | 🔒 |
-| `GET` | `/genre-playlists/` | List genre-based playlists | 🔒 |
-| `GET` | `/genre-playlists/{id}/` | Retrieve a genre playlist | 🔒 |
+| `GET` | `/my-genre-playlists/` | List genre-based playlists | 🔒 |
+| `GET` | `/my-genre-playlists/{id}/` | Retrieve a genre playlist | 🔒 |
 | `GET` | `/tag-playlists/` | List tag-based playlists | 🔒 |
 | `GET` | `/tag-playlists/{id}/` | Retrieve a tag playlist | 🔒 |
 
