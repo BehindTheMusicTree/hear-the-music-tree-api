@@ -4,7 +4,7 @@
 Public endpoint to retrieve genres owned by the system user (defined by TMTA_USERNAME environment variable).
 
 ## Base URL
-`/api/{APP_VERSION}/reference-genres/`
+`/api/{APP_VERSION}/reference/genres/`
 
 ## Authentication
 None (public endpoint)
