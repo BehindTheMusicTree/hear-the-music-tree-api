@@ -4,7 +4,7 @@
 Public endpoint to retrieve genre playlists owned by the system user (defined by TMTA_USERNAME environment variable).
 
 ## Base URL
-/api/{APP_VERSION}/reference-genre-playlists/
+/api/{APP_VERSION}/reference/genre-playlists/
 
 ## Authentication
 None (public endpoint)
