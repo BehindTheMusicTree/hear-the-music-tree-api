@@ -6,7 +6,7 @@ This index lists all API resources with their base URLs, authentication requirem
 |---------------------------|---------------------------------------------------|----------------|-------------|-----------------------------------------|
 | Users                     | `/api/{APP_VERSION}/users/`                       | TODO           | IsAdminUser | [users.md](users.md)                   |
 | Spotify Users             | `/api/{APP_VERSION}/users/spotify/`               | Authenticated  | TODO        | [users_spotify.md](users_spotify.md)   |
-| Library Uploaded          | `/api/{APP_VERSION}/library/uploaded/`            | TODO           | TODO        | [library_uploaded.md](library_uploaded.md) |
+| Library Uploaded           | `/api/{APP_VERSION}/me/library/uploaded/`, `/api/{APP_VERSION}/reference/library/uploaded/` | Required / Optional | Uploaded tracks owned by authenticated user or system reference | [library_uploaded.md](library_uploaded.md) |
 | Library Spotify           | `/api/{APP_VERSION}/library/spotify/`             | TODO           | TODO        | [library_spotify.md](library_spotify.md) |
 | Spotify Artists           | `/api/{APP_VERSION}/spotify-artists/`             | TODO           | TODO        | [spotify_artists.md](spotify_artists.md) |
 | Artists                   | `/api/{APP_VERSION}/artists/`                     | TODO           | TODO        | [artists.md](artists.md)                |
