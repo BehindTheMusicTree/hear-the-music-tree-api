@@ -11,24 +11,24 @@ class GenrePlaylistTestCase(AppTestCase):
     saved_object: GenrePlaylist
 
     def _post_genre_playlist(self, **kwargs):
-        return self.api_client.post(path=reverse('genre-playlist-list'),
+        return self.api_client.post(path=reverse('my-genre-playlist-list'),
                                     data=kwargs,
                                     content_type='application/json',
                                     handle_response=self._set_results)
 
     def _retrieve_genre_playlist(self, uuid):
         return self.api_client.get(
-            path=reverse('genre-playlist-detail', kwargs={'pk': uuid}), handle_response=self._set_results)
+            path=reverse('my-genre-playlist-detail', kwargs={'pk': uuid}), handle_response=self._set_results)
 
     def _list_genre_playlists(self, **kwargs):
         return self.api_client.get(
-            path=reverse('genre-playlist-list'), data=kwargs, handle_response=self._set_results)
+            path=reverse('my-genre-playlist-list'), data=kwargs, handle_response=self._set_results)
 
     def _put_genre_playlist(self, uuid: UUID, **kwargs):
-        return self.api_client.put(path=reverse('genre-playlist-detail', kwargs={'pk': uuid}),
+        return self.api_client.put(path=reverse('my-genre-playlist-detail', kwargs={'pk': uuid}),
                                    data=kwargs,
                                    content_type='application/json',
                                    handle_response=self._set_results)
 
     def _delete_genre_playlist(self, uuid):
-        return self.api_client.delete(path=reverse('genre-playlist-detail', kwargs={'pk': uuid}))
+        return self.api_client.delete(path=reverse('my-genre-playlist-detail', kwargs={'pk': uuid}))
