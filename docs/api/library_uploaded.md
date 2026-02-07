@@ -37,11 +37,13 @@ Query params:
 page, page_size, title, artists_name, album_name, genre_name, language
 
 Body:
-None
+```json
+{}
+```
 
 **Response**
 Status codes:
-200 OK
+ | 00 OK
 
 Body:
 ```json
@@ -71,17 +73,24 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 None
 
-Business Rules
+### Business Rules
 None
 
-Errors
-Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token
-404	Not Found - Track not found	
+### Errors
+| Code | Meaning |
+|------|----------|
+| 400 | Bad Request - Invalid parameters |
+| 401 | Unauthorized - Invalid token |
+| 404 | Not Found - Track not found |
+
+### Versioning
+TODO
+
+### Notes
+TODO
 
 ### POST /
 
@@ -114,7 +123,7 @@ Body:
 
 **Response**
 Status codes:
-201 Created
+ | 01 Created
 
 Body:
 ```json
@@ -137,16 +146,23 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 File required, title max length, etc.
 
-Business Rules
+### Business Rules
 File metadata extraction, title generation if not provided
 
-Errors
-Code	Meaning
-400	Bad Request - Invalid file or parameters
-401	Unauthorized - Invalid token	
+### Errors
+| Code | Meaning |
+|------|----------|
+| 400 | Bad Request - Invalid file or parameters |
+| 401 | Unauthorized - Invalid token |
+
+### Versioning
+TODO
+
+### Notes
+TODO
 
 ### GET /{id}/
 
@@ -161,11 +177,13 @@ Query params:
 None
 
 Body:
-None
+```json
+{}
+```
 
 **Response**
 Status codes:
-200 OK
+ | 00 OK
 
 Body:
 ```json
@@ -188,17 +206,24 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 None
 
-Business Rules
+### Business Rules
 None
 
-Errors
-Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token
-404	Not Found - Track not found	
+### Errors
+| Code | Meaning |
+|------|----------|
+| 400 | Bad Request - Invalid parameters |
+| 401 | Unauthorized - Invalid token |
+| 404 | Not Found - Track not found |
+
+### Versioning
+TODO
+
+### Notes
+TODO
 
 ### PUT /{id}/
 
@@ -228,7 +253,7 @@ Body:
 
 **Response**
 Status codes:
-200 OK
+ | 00 OK
 
 Body:
 ```json
@@ -251,17 +276,24 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 Title max length, etc.
 
-Business Rules
+### Business Rules
 Album/artist creation if not exist
 
-Errors
-Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token
-404	Not Found - Track not found	
+### Errors
+| Code | Meaning |
+|------|----------|
+| 400 | Bad Request - Invalid parameters |
+| 401 | Unauthorized - Invalid token |
+| 404 | Not Found - Track not found |
+
+### Versioning
+TODO
+
+### Notes
+TODO
 
 ### DELETE /{id}/
 
@@ -276,26 +308,37 @@ Query params:
 None
 
 Body:
-None
+```json
+{}
+```
 
 **Response**
 Status codes:
-204 No Content
+ | 04 No Content
 
 Body:
+```json
+{}
+```
+
+### Validation Rules
 None
 
-Validation Rules
+### Business Rules
 None
 
-Business Rules
-None
+### Errors
+| Code | Meaning |
+|------|----------|
+| 400 | Bad Request - Invalid parameters |
+| 401 | Unauthorized - Invalid token |
+| 404 | Not Found - Track not found |
 
-Errors
-Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token
-404	Not Found - Track not found	
+### Versioning
+TODO
+
+### Notes
+TODO
 
 ### GET /{id}/download/
 
@@ -310,29 +353,31 @@ Query params:
 None
 
 Body:
-None
+```json
+{}
+```
 
 **Response**
 Status codes:
-200 OK
+ | 00 OK
 
 Body:
 File binary
 
-Validation Rules
+### Validation Rules
 None
 
-Business Rules
+### Business Rules
 None
 
-Errors
-Code	Meaning
-401	Unauthorized - Invalid token
-404	Not Found - Track or file not found	
+### Errors
+| Code | Meaning |
+|------|----------|
+| 401 | Unauthorized - Invalid token |
+| 404 | Not Found - Track or file not found |
 
-Versioning
-
+### Versioning
 {APP_VERSION}
 
-Notes
+### Notes
 None
