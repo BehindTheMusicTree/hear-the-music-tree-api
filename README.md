@@ -25,7 +25,8 @@
     - [Authentication](#authentication-1)
     - [Library Management](#library-management)
     - [Music Metadata](#music-metadata)
-    - [Genres](#genres)
+    - [Genres (me)](#genres-me)
+    - [Reference Genres](#reference-genres)
     - [Tags](#tags)
     - [Playlists](#playlists)
     - [Play History](#play-history)
@@ -338,15 +339,29 @@ All endpoints are prefixed with the API base URL (`api/{version}/`). Most endpoi
 | `GET` | `/spotify-artists/` | List Spotify artists | 🔒 |
 | `GET` | `/spotify-artists/{id}/` | Retrieve a specific Spotify artist | 🔒 |
 
-### Genres
+### Genres (me)
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| `GET` | `/genres/` | List genres | 🔒 |
-| `POST` | `/genres/` | Create a genre | 🔒 |
-| `GET` | `/genres/{id}/` | Retrieve a specific genre | 🔒 |
-| `PUT` | `/genres/{id}/` | Update a genre | 🔒 |
-| `DELETE` | `/genres/{id}/` | Delete a genre | 🔒 |
+| `GET` | `/me/genres/` | List genres | 🔒 |
+| `POST` | `/me/genres/` | Create a genre | 🔒 |
+| `GET` | `/me/genres/{id}/` | Retrieve a specific genre | 🔒 |
+| `PUT` | `/me/genres/{id}/` | Update a genre | 🔒 |
+| `DELETE` | `/me/genres/{id}/` | Delete a genre | 🔒 |
+| `GET` | `/me/genres/tree/` | Get genres tree | 🔒 |
+| `POST` | `/me/genres/tree/import/` | Import genres tree | 🔒 |
+
+### Reference Genres
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/reference/genres/` | List reference genres | 🔓 |
+| `POST` | `/reference/genres/` | Create a reference genre | 🔓 |
+| `GET` | `/reference/genres/{id}/` | Retrieve a reference genre | 🔓 |
+| `PUT` | `/reference/genres/{id}/` | Update a reference genre | 🔓 |
+| `DELETE` | `/reference/genres/{id}/` | Delete a reference genre | 🔓 |
+| `GET` | `/reference/genres/tree/` | Get reference genres tree | 🔓 |
+| `POST` | `/reference/genres/tree/import/` | Import reference genres tree | 🔓 |
 
 ### Tags
 
@@ -369,8 +384,8 @@ All endpoints are prefixed with the API base URL (`api/{version}/`). Most endpoi
 | `GET` | `/manual-playlists/{id}/` | Retrieve a manual playlist | 🔒 |
 | `PUT` | `/manual-playlists/{id}/` | Update a manual playlist | 🔒 |
 | `DELETE` | `/manual-playlists/{id}/` | Delete a manual playlist | 🔒 |
-| `GET` | `/my-genre-playlists/` | List genre-based playlists | 🔒 |
-| `GET` | `/my-genre-playlists/{id}/` | Retrieve a genre playlist | 🔒 |
+| `GET` | `/me/genre-playlists/` | List my genre-based playlists | 🔒 |
+| `GET` | `/me/genre-playlists/{id}/` | Retrieve a genre playlist | 🔒 |
 | `GET` | `/tag-playlists/` | List tag-based playlists | 🔒 |
 | `GET` | `/tag-playlists/{id}/` | Retrieve a tag playlist | 🔒 |
 
