@@ -1,10 +1,10 @@
-# genres
+# Me Genres
 
 ## Overview
 Manage genres
 
 ## Base URL
-/api/{APP_VERSION}/my-genres/
+/api/{APP_VERSION}/me/genres/
 
 ## Authentication
 JWT token required

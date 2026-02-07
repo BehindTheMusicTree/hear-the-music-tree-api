@@ -1,10 +1,10 @@
-# My Genre Playlists
+# Me Genre Playlists
 
 ## Overview
 Manage genre playlists
 
 ## Base URL
-/api/{APP_VERSION}/my-genre-playlists/
+/api/{APP_VERSION}/me/genre-playlists/
 
 ## Authentication
 JWT token required
