@@ -3,7 +3,7 @@ from rest_framework import status
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.serializer.model.artist.Fields import Fields as ArtistFields
 from api.test.utils.field.filter.char.NotNullableFreeCharFilterTestCase import NotNullableFreeCharFilterTestCase
-from api.test.integration.view.artist.ArtistTestCase import ArtistTestCase
+from api.test.tests.integration.artist.ArtistTestCase import ArtistTestCase
 from api.utils.data_transformer import to_camel_case
 
 

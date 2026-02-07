@@ -19,6 +19,8 @@ from .view.viewset.model.criteria.children.GenreViewSet import GenreViewSet
 from .view.viewset.model.criteria.children.ReferenceGenreViewSet import ReferenceGenreViewSet
 from .view.viewset.model.criteria.children.TagViewSet import TagViewSet
 from .view.viewset.model.ReferenceAlbumViewSet import ReferenceAlbumViewSet
+from .view.viewset.model.ReferenceArtistViewSet import ReferenceArtistViewSet
+from .view.viewset.model.ReferenceUploadedTrackViewSet import ReferenceUploadedTrackViewSet
 from .view.viewset.model.UploadedTrackViewSet import UploadedTrackViewSet
 from .view.viewset.model.playlist.children.criteria.GenrePlaylistViewSet import GenrePlaylistViewSet
 from .view.viewset.model.playlist.children.criteria.TagPlaylistViewSet import TagPlaylistViewSet
@@ -33,10 +35,12 @@ from .view.viewset.SearchViewSet import SearchViewSet
 router = routers.DefaultRouter()
 router.register(r'users', BaseUserViewSet, basename='user')
 router.register(r'users/spotify', SpotifyUserViewSet, basename='spotify-user')
-router.register(r'library/uploaded', UploadedTrackViewSet, basename='uploaded-track')
+router.register(r'me/library/uploaded', UploadedTrackViewSet, basename='me-uploaded-track')
+router.register(r'reference/library/uploaded', ReferenceUploadedTrackViewSet, basename='reference-uploaded-track')
 router.register(r'library/spotify', SpotifyLibTrackViewSet, basename='spotify-lib-track')
 router.register(r'spotify-artists', SpotifyArtistViewSet, basename='spotify-artist')
-router.register(r'artists', ArtistViewSet, basename='artist')
+router.register(r'me/artists', ArtistViewSet, basename='me-artist')
+router.register(r'reference/artists', ReferenceArtistViewSet, basename='reference-artist')
 router.register(r'me/albums', AlbumViewSet, basename='me-album')
 router.register(r'reference/albums', ReferenceAlbumViewSet, basename='reference-album')
 router.register(r'tags', TagViewSet, basename='tag')
