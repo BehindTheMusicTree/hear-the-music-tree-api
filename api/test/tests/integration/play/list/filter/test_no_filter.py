@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from api.test.integration.view.play.PlayTestCase import PlayTestCase
+from api.test.tests.integration.play.PlayTestCase import PlayTestCase
 
 
 class TestCase(PlayTestCase):
