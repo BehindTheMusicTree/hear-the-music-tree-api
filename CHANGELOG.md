@@ -72,6 +72,12 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
   - Prevents DROP USER / database purge on deploy when the init check fails or on first run
   - Reinit (purge + init) remains for manual use only; container only runs init (create DB/role if missing, migrate, fixtures)
 
+- **init-django-data.sh**: Follow best practices for migrations
+  - Only run `makemigrations` if no migration files exist (e.g., after purge)
+  - In production/normal init, migrations should already be in repo; only `migrate` runs
+  - Capture and log migrate output for better debugging
+  - Exit with error code if makemigrations or migrate fails
+
 ### Documentation
 
 - **CONTRIBUTING.md**: Add Database migrations section (create in dev, never makemigrations in prod, migrations run on deploy, backward-compatibility)
