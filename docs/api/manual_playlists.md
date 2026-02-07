@@ -39,7 +39,7 @@ None
 
 **Response**
 Status codes:
-200 OK
+ | 00 OK
 
 Body:
 ```json
@@ -61,17 +61,17 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 None
 
-Business Rules
+### Business Rules
 None
 
-Errors
+### Errors
 Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token
-404	Not Found - Playlist not found	
+ | 00	Bad Request - Invalid parameters
+ | 01	Unauthorized - Invalid token
+ | 04	Not Found - Playlist not found	
 
 ### POST /
 
@@ -94,7 +94,7 @@ Body:
 
 **Response**
 Status codes:
-201 Created
+ | 01 Created
 
 Body:
 ```json
@@ -109,16 +109,16 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 Name required, max length
 
-Business Rules
+### Business Rules
 None
 
-Errors
+### Errors
 Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token	
+ | 00	Bad Request - Invalid parameters
+ | 01	Unauthorized - Invalid token	
 
 ### GET /{id}/
 
@@ -137,7 +137,7 @@ None
 
 **Response**
 Status codes:
-200 OK
+ | 00 OK
 
 Body:
 ```json
@@ -152,17 +152,17 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 None
 
-Business Rules
+### Business Rules
 None
 
-Errors
+### Errors
 Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token
-404	Not Found - Playlist not found	
+ | 00	Bad Request - Invalid parameters
+ | 01	Unauthorized - Invalid token
+ | 04	Not Found - Playlist not found	
 
 ### PUT /{id}/
 
@@ -185,7 +185,7 @@ Body:
 
 **Response**
 Status codes:
-200 OK
+ | 00 OK
 
 Body:
 ```json
@@ -200,21 +200,21 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 Name max length
 
-Business Rules
+### Business Rules
 None
 
-Errors
+### Errors
 Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token
-404	Not Found - Playlist not found	
+ | 00	Bad Request - Invalid parameters
+ | 01	Unauthorized - Invalid token
+ | 04	Not Found - Playlist not found	
 
-Versioning
+### Versioning
 
 {APP_VERSION}
 
-Notes
+### Notes
 None

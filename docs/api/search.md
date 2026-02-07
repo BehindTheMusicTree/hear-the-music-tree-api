@@ -36,7 +36,7 @@ None
 
 **Response**
 Status codes:
-200 OK
+ | 00 OK
 
 Body:
 ```json
@@ -88,20 +88,20 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 None
 
-Business Rules
+### Business Rules
 None
 
-Errors
+### Errors
 Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token	
+ | 00	Bad Request - Invalid parameters
+ | 01	Unauthorized - Invalid token	
 
-Versioning
+### Versioning
 
 {APP_VERSION}
 
-Notes
+### Notes
 None

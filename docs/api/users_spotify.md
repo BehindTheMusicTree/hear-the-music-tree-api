@@ -32,11 +32,13 @@ Query params:
 None
 
 Body:
-None
+```json
+{}
+```
 
 **Response**
 Status codes:
-200 OK
+ | 00 OK
 
 Body:
 ```json
@@ -54,22 +56,23 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 None
 
-Business Rules
+### Business Rules
 User must have Spotify authorization
 
-Errors
-Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token
-403	Forbidden - User not authorized with Spotify
-404	Not Found - User not found	
+### Errors
+| Code | Meaning |
+|------|----------|
+| 400 | Bad Request - Invalid parameters |
+| 401 | Unauthorized - Invalid token |
+| 403 | Forbidden - User not authorized with Spotify |
+| 404 | Not Found - User not found |
 
-Versioning
+### Versioning
 
 {APP_VERSION}
 
-Notes
+### Notes
 Only accessible for the current user's own profile

@@ -34,11 +34,13 @@ Query params:
 page, page_size, name, album_artist_name
 
 Body:
-None
+```json
+{}
+```
 
 **Response**
 Status codes:
-200 OK
+ | 00 OK
 
 Body:
 ```json
@@ -64,17 +66,24 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 None
 
-Business Rules
+### Business Rules
 None
 
-Errors
-Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token
-404	Not Found - Album not found	
+### Errors
+| Code | Meaning |
+|------|----------|
+ | 00	Bad Request - Invalid parameters
+ | 01	Unauthorized - Invalid token
+ | 04	Not Found - Album not found
+
+### Versioning
+TODO
+
+### Notes
+TODO	
 
 ### GET /{id}/
 
@@ -89,11 +98,13 @@ Query params:
 None
 
 Body:
-None
+```json
+{}
+```
 
 **Response**
 Status codes:
-200 OK
+ | 00 OK
 
 Body:
 ```json
@@ -112,17 +123,24 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 None
 
-Business Rules
+### Business Rules
 None
 
-Errors
-Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token
-404	Not Found - Album not found	
+### Errors
+| Code | Meaning |
+|------|----------|
+ | 00	Bad Request - Invalid parameters
+ | 01	Unauthorized - Invalid token
+ | 04	Not Found - Album not found
+
+### Versioning
+TODO
+
+### Notes
+TODO	
 
 ### DELETE /{id}/
 
@@ -137,30 +155,43 @@ Query params:
 None
 
 Body:
-None
+```json
+{}
+```
 
 **Response**
 Status codes:
-204 No Content
+ | 04 No Content
 
 Body:
+```json
+{}
+```
+
+### Validation Rules
 None
 
-Validation Rules
+### Business Rules
 None
 
-Business Rules
-None
+### Errors
+| Code | Meaning |
+|------|----------|
+ | 00	Bad Request - Invalid parameters
+ | 01	Unauthorized - Invalid token
+ | 04	Not Found - Album not found
 
-Errors
-Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token
-404	Not Found - Album not found	
+### Versioning
+TODO
 
-Versioning
+### Notes
+TODO
+ | 01	Unauthorized - Invalid token
+ | 04	Not Found - Album not found	
+
+### Versioning
 
 {APP_VERSION}
 
-Notes
+### Notes
 None
