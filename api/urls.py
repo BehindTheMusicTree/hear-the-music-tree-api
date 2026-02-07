@@ -16,6 +16,7 @@ from .view.health import HealthCheckView
 from .view.viewset.model.AlbumViewSet import AlbumViewSet
 from .view.viewset.model.ArtistViewSet import ArtistViewSet
 from .view.viewset.model.criteria.children.GenreViewSet import GenreViewSet
+from .view.viewset.model.criteria.children.ReferenceGenreViewSet import ReferenceGenreViewSet
 from .view.viewset.model.criteria.children.TagViewSet import TagViewSet
 from .view.viewset.model.UploadedTrackViewSet import UploadedTrackViewSet
 from .view.viewset.model.playlist.children.criteria.GenrePlaylistViewSet import GenrePlaylistViewSet
@@ -38,6 +39,7 @@ router.register(r'artists', ArtistViewSet, basename='artist')
 router.register(r'albums', AlbumViewSet, basename='album')
 router.register(r'tags', TagViewSet, basename='tag')
 router.register(r'genres', GenreViewSet, basename='genre')
+router.register(r'reference-genres', ReferenceGenreViewSet, basename='reference-genre')
 router.register(r'plays', PlayViewSet, basename='play')
 
 # Do not move PlaylistViewSet after GenrePlaylistViewSet or ManualPlaylistViewSet or it will cause confusion resolving
