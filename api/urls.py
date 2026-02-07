@@ -39,7 +39,7 @@ router.register(r'artists', ArtistViewSet, basename='artist')
 router.register(r'albums', AlbumViewSet, basename='album')
 router.register(r'tags', TagViewSet, basename='tag')
 router.register(r'genres', GenreViewSet, basename='genre')
-router.register(r'reference-genres', ReferenceGenreViewSet, basename='reference-genre')
+router.register(r'reference/genres', ReferenceGenreViewSet, basename='reference-genre')
 router.register(r'plays', PlayViewSet, basename='play')
 
 # Do not move PlaylistViewSet after GenrePlaylistViewSet or ManualPlaylistViewSet or it will cause confusion resolving
