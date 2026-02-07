@@ -1,7 +1,7 @@
 from rest_framework import status
 
 from api.model.criteria.children.tag.Tag import Tag
-from api.test.integration.view.criteria.TagTestCase import TagTestCase
+from api.test.tests.integration.criteria.TagTestCase import TagTestCase
 
 
 class TestCase(TagTestCase):

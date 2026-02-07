@@ -11,7 +11,7 @@ This index lists all API resources with their base URLs, authentication requirem
 | Spotify Artists           | `/api/{APP_VERSION}/spotify-artists/`             | TODO           | TODO        | [spotify_artists.md](spotify_artists.md) |
 | Artists                   | `/api/{APP_VERSION}/artists/`                     | TODO           | TODO        | [artists.md](artists.md)                |
 | Albums                    | `/api/{APP_VERSION}/me/albums/`, `/api/{APP_VERSION}/reference/albums/` | Required / Optional | Albums in authenticated user's library or system reference | [albums.md](albums.md) |
-| Tags                      | `/api/{APP_VERSION}/tags/`                        | TODO           | TODO        | [tags.md](tags.md)                      |
+| Tags                      | `/api/{APP_VERSION}/me/tags/`, `/api/{APP_VERSION}/reference/tags/` | Required / Optional | Tags owned by authenticated user or system reference | [tags.md](tags.md)                      |
 | Genres                 | `/api/{APP_VERSION}/me/genres/`, `/api/{APP_VERSION}/reference/genres/` | Required / Optional | Genres owned by authenticated user or system reference | [genres.md](genres.md) |
 | Plays                     | `/api/{APP_VERSION}/me/plays/`, `/api/{APP_VERSION}/reference/plays/` | Required / Optional | Play history for authenticated user or system reference | [plays.md](plays.md)                    |
 | Playlists                 | `/api/{APP_VERSION}/playlists/`                   | TODO           | TODO        | [playlists.md](playlists.md)            |

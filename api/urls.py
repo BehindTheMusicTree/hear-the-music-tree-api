@@ -17,6 +17,7 @@ from .view.viewset.model.AlbumViewSet import AlbumViewSet
 from .view.viewset.model.ArtistViewSet import ArtistViewSet
 from .view.viewset.model.criteria.children.GenreViewSet import GenreViewSet
 from .view.viewset.model.criteria.children.ReferenceGenreViewSet import ReferenceGenreViewSet
+from .view.viewset.model.criteria.children.ReferenceTagViewSet import ReferenceTagViewSet
 from .view.viewset.model.criteria.children.TagViewSet import TagViewSet
 from .view.viewset.model.ReferenceAlbumViewSet import ReferenceAlbumViewSet
 from .view.viewset.model.ReferenceArtistViewSet import ReferenceArtistViewSet
@@ -44,7 +45,8 @@ router.register(r'me/artists', ArtistViewSet, basename='me-artist')
 router.register(r'reference/artists', ReferenceArtistViewSet, basename='reference-artist')
 router.register(r'me/albums', AlbumViewSet, basename='me-album')
 router.register(r'reference/albums', ReferenceAlbumViewSet, basename='reference-album')
-router.register(r'tags', TagViewSet, basename='tag')
+router.register(r'me/tags', TagViewSet, basename='me-tag')
+router.register(r'reference/tags', ReferenceTagViewSet, basename='reference-tag')
 router.register(r'me/genres', GenreViewSet, basename='me-genre')
 router.register(r'reference/genres', ReferenceGenreViewSet, basename='reference-genre')
 router.register(r'me/plays', PlayViewSet, basename='me-play')
