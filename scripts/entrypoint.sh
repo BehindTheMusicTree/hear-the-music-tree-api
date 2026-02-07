@@ -74,9 +74,11 @@ main (){
     fi
 
     log_with_script_prefixe "Applying migrations..."
-    python3 ${PROJECT_DIR}manage.py migrate
-    if [ $? -ne 0 ]; then
-        log_with_script_prefixe "ERROR: Failed to apply migrations." >&2
+    output=$(python3 ${PROJECT_DIR}manage.py migrate 2>&1)
+    exit_code=$?
+    log_with_script_prefixe "$output"
+    if [ $exit_code -ne 0 ]; then
+        log_with_script_prefixe "ERROR: Failed to apply migrations (exit code $exit_code)." >&2
         exit 1
     fi
 

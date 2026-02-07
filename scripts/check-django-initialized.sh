@@ -7,9 +7,10 @@ log_with_script_prefixe () {
     log "[Django data initialized checker] $1"
 }
 
-output=$(python manage.py check_data_initialized > /dev/null 2>&1)
-if [ $? -ne 0 ]; then
-    log_with_script_prefixe "Django data is not initialized." >&2
+output=$(python manage.py check_data_initialized 2>&1)
+exit_code=$?
+if [ $exit_code -ne 0 ]; then
+    log_with_script_prefixe "Django data is not initialized: $output" >&2
     exit 1
 fi
-log_with_script_prefixe "Django data is initialized."
+log_with_script_prefixe "Django data is initialized: $output"
