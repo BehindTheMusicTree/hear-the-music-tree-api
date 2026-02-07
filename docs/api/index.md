@@ -10,7 +10,7 @@ This index lists all API resources with their base URLs, authentication requirem
 | Library Spotify           | `/api/{APP_VERSION}/library/spotify/`             | TODO           | TODO        | [library_spotify.md](library_spotify.md) |
 | Spotify Artists           | `/api/{APP_VERSION}/spotify-artists/`             | TODO           | TODO        | [spotify_artists.md](spotify_artists.md) |
 | Artists                   | `/api/{APP_VERSION}/artists/`                     | TODO           | TODO        | [artists.md](artists.md)                |
-| Albums                    | `/api/{APP_VERSION}/albums/`                      | TODO           | TODO        | [albums.md](albums.md)                  |
+| Albums                    | `/api/{APP_VERSION}/me/albums/`, `/api/{APP_VERSION}/reference/albums/` | Required / Optional | Albums in authenticated user's library or system reference | [albums.md](albums.md) |
 | Tags                      | `/api/{APP_VERSION}/tags/`                        | TODO           | TODO        | [tags.md](tags.md)                      |
 | Genres                 | `/api/{APP_VERSION}/me/genres/`, `/api/{APP_VERSION}/reference/genres/` | Required / Optional | Genres owned by authenticated user or system reference | [genres.md](genres.md) |
 | Plays                     | `/api/{APP_VERSION}/plays/`                       | TODO           | TODO        | [plays.md](plays.md)                    |
