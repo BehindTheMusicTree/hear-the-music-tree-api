@@ -1,378 +1,43 @@
-# tags
+# Tags
 
 ## Overview
-Manage tags
+Manage tag hierarchies and trees.
 
-## Base URL
-/api/{APP_VERSION}/tags/
-
-## Authentication
-JWT token required
-
-## Permissions
-Authenticated users only (IsAuthenticated)
+## Contexts
+| Context | Base Path | Authentication | Description |
+|--------|----------|----------------|-------------|
+| `me` | `/api/{version}/me/tags/` | Required | Tags owned by the authenticated user |
+| `reference` | `/api/{version}/reference/tags/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
 
 ## Endpoints
-| Method | Path | Action | Description |
-|------|------|--------|-------------|
-| GET | / | list | List tags |
-| POST | / | create | Create a new tag |
-| GET | /{id}/ | retrieve | Get tag details |
-| PUT | /{id}/ | update | Update tag |
-| DELETE | /{id}/ | destroy | Delete tag |
-| GET | /tree/ | tree | Get tags tree |
-| POST | /tree/import/ | import_tree | Import tags tree |
 
-## Request / Response
+#### List
+`GET {base}`
 
-### GET /
+#### Retrieve
+`GET {base}{id}/`
 
-**Description**
-List tags
+#### Create
+`POST {base}`
 
-**Request**
-Headers:
-Authorization: Bearer {token}
+#### Update
+`PUT {base}{id}/`
 
-Query params:
-page, page_size, name, parent
+#### Delete
+`DELETE {base}{id}/`
 
-Body:
-```json
-{}
-```
+#### Tree
+`GET {base}tree/`
 
-**Response**
-Status codes:
- | 00 OK
+#### Import Tree
+`POST {base}tree/import/`
 
-Body:
-```json
-{
-  "count": 10,
-  "next": null,
-  "previous": null,
-  "results": [
-    {
-      "uuid": "uuid",
-      "name": "string",
-      "parent": {},
-      "ascendants": [],
-      "descendants": [],
-      "root": {},
-      "children": [],
-      "criteria_playlist": {},
-      "uploaded_tracks": [],
-      "uploaded_tracks_count": 10,
-      "uploaded_tracks_archived_count": 0,
-      "created_on": "2023-01-01T00:00:00Z",
-      "updated_on": "2023-01-01T00:00:00Z"
-    }
-  ]
-}
-```
+### Context Differences
 
-### Validation Rules
-None
+#### Reference
+- Managed internally by system account (defined by TMTA_USERNAME environment variable)
+- Includes tree operations for loading reference data
 
-### Business Rules
-None
-
-### Errors
-| Code | Meaning |
-|------|----------|
-| 400 | Bad Request - Invalid parameters |
-| 401 | Unauthorized - Invalid token |
-| 404 | Not Found - Tag not found |
-
-### Versioning
-TODO
-
-### Notes
-TODO
-
-### POST /
-
-**Description**
-Create a new tag
-
-**Request**
-Headers:
-Authorization: Bearer {token}
-
-Query params:
-None
-
-Body:
-```json
-{
-  "name": "string",
-  "parent": "uuid"
-}
-```
-
-**Response**
-Status codes:
- | 01 Created
-
-Body:
-```json
-{
-  "uuid": "uuid",
-  "name": "string",
-  "parent": {},
-  "ascendants": [],
-  "descendants": [],
-  "root": {},
-  "children": [],
-  "criteria_playlist": {},
-  "uploaded_tracks": [],
-  "uploaded_tracks_count": 10,
-  "uploaded_tracks_archived_count": 0,
-  "created_on": "2023-01-01T00:00:00Z",
-  "updated_on": "2023-01-01T00:00:00Z"
-}
-```
-
-### Validation Rules
-Name required, max length
-
-### Business Rules
-None
-
-### Errors
-Code	Meaning
- | 00	Bad Request - Invalid parameters
- | 01	Unauthorized - Invalid token	
-
-### GET /{id}/
-
-**Description**
-Get tag details
-
-**Request**
-Headers:
-Authorization: Bearer {token}
-
-Query params:
-None
-
-Body:
-None
-
-**Response**
-Status codes:
- | 00 OK
-
-Body:
-```json
-{
-  "uuid": "uuid",
-  "name": "string",
-  "parent": {},
-  "ascendants": [],
-  "descendants": [],
-  "root": {},
-  "children": [],
-  "criteria_playlist": {},
-  "uploaded_tracks": [],
-  "uploaded_tracks_count": 10,
-  "uploaded_tracks_archived_count": 0,
-  "created_on": "2023-01-01T00:00:00Z",
-  "updated_on": "2023-01-01T00:00:00Z"
-}
-```
-
-### Validation Rules
-None
-
-### Business Rules
-None
-
-### Errors
-Code	Meaning
- | 00	Bad Request - Invalid parameters
- | 01	Unauthorized - Invalid token
- | 04	Not Found - Tag not found	
-
-### PUT /{id}/
-
-**Description**
-Update tag
-
-**Request**
-Headers:
-Authorization: Bearer {token}
-
-Query params:
-None
-
-Body:
-```json
-{
-  "name": "string",
-  "parent": "uuid"
-}
-```
-
-**Response**
-Status codes:
- | 00 OK
-
-Body:
-```json
-{
-  "uuid": "uuid",
-  "name": "string",
-  "parent": {},
-  "ascendants": [],
-  "descendants": [],
-  "root": {},
-  "children": [],
-  "criteria_playlist": {},
-  "uploaded_tracks": [],
-  "uploaded_tracks_count": 10,
-  "uploaded_tracks_archived_count": 0,
-  "created_on": "2023-01-01T00:00:00Z",
-  "updated_on": "2023-01-01T00:00:00Z"
-}
-```
-
-### Validation Rules
-Name max length
-
-### Business Rules
-None
-
-### Errors
-Code	Meaning
- | 00	Bad Request - Invalid parameters
- | 01	Unauthorized - Invalid token
- | 04	Not Found - Tag not found	
-
-### DELETE /{id}/
-
-**Description**
-Delete tag
-
-**Request**
-Headers:
-Authorization: Bearer {token}
-
-Query params:
-None
-
-Body:
-None
-
-**Response**
-Status codes:
- | 04 No Content
-
-Body:
-None
-
-### Validation Rules
-None
-
-### Business Rules
-Children reassigned to parent
-
-### Errors
-Code	Meaning
- | 00	Bad Request - Invalid parameters
- | 01	Unauthorized - Invalid token
- | 04	Not Found - Tag not found	
-
-### GET /tree/
-
-**Description**
-Get tags tree
-
-**Request**
-Headers:
-Authorization: Bearer {token}
-
-Query params:
-None
-
-Body:
-None
-
-**Response**
-Status codes:
- | 00 OK
-
-Body:
-```json
-[
-  {
-    "name": "string",
-    "children": []
-  }
-]
-```
-
-### Validation Rules
-None
-
-### Business Rules
-None
-
-### Errors
-Code	Meaning
- | 01	Unauthorized - Invalid token	
-
-### POST /tree/import/
-
-**Description**
-Import tags tree
-
-**Request**
-Headers:
-Authorization: Bearer {token}
-
-Query params:
-None
-
-Body:
-```json
-[
-  {
-    "name": "string",
-    "children": []
-  }
-]
-```
-
-**Response**
-Status codes:
- | 01 Created
-
-Body:
-```json
-{
-  "count": 10,
-  "next": null,
-  "previous": null,
-  "results": []
-}
-```
-
-### Validation Rules
-None
-
-### Business Rules
-Replaces all existing tags
-
-### Errors
-Code	Meaning
- | 00	Bad Request - Invalid parameters
- | 01	Unauthorized - Invalid token	
-
-### Versioning
-
-{APP_VERSION}
-
-### Notes
-None
+#### Me
+- Fully editable
+- Scoped to authenticated user

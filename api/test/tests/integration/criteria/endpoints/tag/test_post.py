@@ -1,7 +1,7 @@
 from rest_framework import status
 
 from api.serializer.model.criteria.input.post import Fields as PostFields
-from api.test.integration.view.criteria.TagTestCase import TagTestCase
+from api.test.tests.integration.criteria.TagTestCase import TagTestCase
 
 
 class TestCase(TagTestCase):
