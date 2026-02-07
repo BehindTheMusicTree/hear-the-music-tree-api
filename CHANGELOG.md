@@ -60,6 +60,16 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Added
 
+- **Reference Contexts**: Implement public read-only reference contexts for all major API endpoints
+  - Add reference contexts for genres, albums, artists, plays, tags, and library/uploaded endpoints
+  - Create Reference ViewSets with AllowAny permissions and system user fallback for public access
+  - Restructure URL paths to hierarchical design (/me/ and /reference/ scopes)
+  - Update router registrations in urls.py for new hierarchical paths
+  - Regenerate API documentation with contexts tables for all endpoints
+  - Update test reverse calls and import paths to reflect new URL structure
+  - Modify Bruno test files to use new hierarchical URLs
+  - Ensure all endpoint tests pass with the new reference contexts
+
 - **Health Check**: Add health check endpoint to API for improved service monitoring
 
 ### Improved
