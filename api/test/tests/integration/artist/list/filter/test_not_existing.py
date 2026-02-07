@@ -1,7 +1,7 @@
 from rest_framework import status
 
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
-from api.test.integration.view.artist.ArtistTestCase import ArtistTestCase
+from api.test.tests.integration.artist.ArtistTestCase import ArtistTestCase
 
 
 class TestCase(ArtistTestCase):

@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from api.model.album.Album import Album
-from api.test.integration.view.artist.ArtistTestCase import ArtistTestCase
+from api.test.tests.integration.artist.ArtistTestCase import ArtistTestCase
 
 
 class TestCase(ArtistTestCase):
