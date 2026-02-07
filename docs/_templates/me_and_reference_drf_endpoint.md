@@ -22,6 +22,7 @@
 ### Context Differences
 
 #### Reference
+- Managed internally by system account (defined by TMTA_USERNAME environment variable)
 {{REFERENCE_DIFFERENCES}}
 
 #### Me
