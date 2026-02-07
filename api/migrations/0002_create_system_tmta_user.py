@@ -2,6 +2,7 @@
 import os
 from django.db import migrations, models
 from django.core.management.base import CommandError
+from django.contrib.auth.hashers import make_password
 
 
 def create_tmta_user(apps, schema_editor):
@@ -23,10 +24,10 @@ def create_tmta_user(apps, schema_editor):
         }
     )
 
-    if created:
-        # Secure the account by making password unusable
-        user.set_unusable_password()
-        user.save()
+    # enforce unusable password even if user already existed
+    if user.password and not user.password.startswith("!"):
+        user.password = make_password(None)
+        user.save(update_fields=["password"])
 
 
 class Migration(migrations.Migration):
