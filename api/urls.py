@@ -37,20 +37,22 @@ from .view.viewset.SearchViewSet import SearchViewSet
 router = routers.DefaultRouter()
 router.register(r'users', BaseUserViewSet, basename='user')
 router.register(r'users/spotify', SpotifyUserViewSet, basename='spotify-user')
-router.register(r'me/library/uploaded', UploadedTrackViewSet, basename='me-uploaded-track')
-router.register(r'reference/library/uploaded', ReferenceUploadedTrackViewSet, basename='reference-uploaded-track')
-router.register(r'library/spotify', SpotifyLibTrackViewSet, basename='spotify-lib-track')
 router.register(r'spotify-artists', SpotifyArtistViewSet, basename='spotify-artist')
-router.register(r'me/artists', ArtistViewSet, basename='me-artist')
+router.register(r'library/spotify', SpotifyLibTrackViewSet, basename='spotify-lib-track')
+
+router.register(r'reference/library/uploaded', ReferenceUploadedTrackViewSet, basename='reference-uploaded-track')
 router.register(r'reference/artists', ReferenceArtistViewSet, basename='reference-artist')
-router.register(r'me/albums', AlbumViewSet, basename='me-album')
 router.register(r'reference/albums', ReferenceAlbumViewSet, basename='reference-album')
-router.register(r'me/tags', TagViewSet, basename='me-tag')
 router.register(r'reference/tags', ReferenceTagViewSet, basename='reference-tag')
-router.register(r'me/genres', GenreViewSet, basename='me-genre')
 router.register(r'reference/genres', ReferenceGenreViewSet, basename='reference-genre')
-router.register(r'me/plays', PlayViewSet, basename='me-play')
 router.register(r'reference/plays', ReferencePlayViewSet, basename='reference-play')
+
+router.register(r'me/library/uploaded', UploadedTrackViewSet, basename='me-uploaded-track')
+router.register(r'me/artists', ArtistViewSet, basename='me-artist')
+router.register(r'me/albums', AlbumViewSet, basename='me-album')
+router.register(r'me/tags', TagViewSet, basename='me-tag')
+router.register(r'me/genres', GenreViewSet, basename='me-genre')
+router.register(r'me/plays', PlayViewSet, basename='me-play')
 
 # Do not move PlaylistViewSet after GenrePlaylistViewSet or ManualPlaylistViewSet or it will cause confusion resolving
 # reverse urls.
