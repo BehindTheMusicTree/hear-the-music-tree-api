@@ -12,7 +12,7 @@ This index lists all API resources with their base URLs, authentication requirem
 | Artists                   | `/api/{APP_VERSION}/artists/`                     | TODO           | TODO        | [artists.md](artists.md)                |
 | Albums                    | `/api/{APP_VERSION}/albums/`                      | TODO           | TODO        | [albums.md](albums.md)                  |
 | Tags                      | `/api/{APP_VERSION}/tags/`                        | TODO           | TODO        | [tags.md](tags.md)                      |
-| Genres                    | `/api/{APP_VERSION}/my-genres/`                   | TODO           | TODO        | [genres.md](genres.md)                   |
+| My Genres                    | `/api/{APP_VERSION}/my-genres/`                   | TODO           | TODO        | [my-genres.md](my-genres.md)                   |
 | Reference Genres          | `/api/{APP_VERSION}/reference-genres/`            | None           | None        | [reference_genres.md](reference_genres.md) |
 | Plays                     | `/api/{APP_VERSION}/plays/`                       | TODO           | TODO        | [plays.md](plays.md)                    |
 | Playlists                 | `/api/{APP_VERSION}/playlists/`                   | TODO           | TODO        | [playlists.md](playlists.md)            |
