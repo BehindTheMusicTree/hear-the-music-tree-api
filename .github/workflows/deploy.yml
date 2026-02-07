@@ -172,6 +172,7 @@ jobs:
             echo 'ALLOWED_HOSTS=${{ vars.ALLOWED_HOSTS }}' >> ${{ env.API_ENV_FILE }} &&
 
             echo 'TMP_UPLOADED_FILES=${{ vars.TMP_UPLOADED_FILES_EXTERNAL }}' >> ${{ env.API_ENV_FILE }} &&
+            echo 'MEDIA_URL=${{ vars.HTMT_API_MEDIA_URL }}' >> ${{ env.API_ENV_FILE }} &&
             echo 'MEDIA_DIR_EXTERNAL=${{ vars.MEDIA_DIR_EXTERNAL }}' >> ${{ env.API_ENV_FILE }} &&
             echo 'LIBRARIES_DIR_NAME=${{ vars.LIBRARIES_DIR_NAME }}' >> ${{ env.API_ENV_FILE }} &&
 
