@@ -36,31 +36,34 @@ Query params:
 Body:
 ```json
 {{REQUEST_EXAMPLE}}
+```
 
-
-Response
+**Response**
 Status codes:
 {{STATUS_CODES}}
 
 Body:
-
+```json
 {{RESPONSE_EXAMPLE}}
+```
 
-Validation Rules
+### Validation Rules
 
 {{SERIALIZER_VALIDATION_RULES}}
 
-Business Rules
+### Business Rules
 
 {{NON_TECHNICAL_RULES}}
 
-Errors
-Code	Meaning
-{{COMMON_ERRORS}}	
-Versioning
+### Errors
+| Code | Meaning |
+|------|----------|
+{{COMMON_ERRORS}}
+
+### Versioning
 
 {{API_VERSION_IF_ANY}}
 
-Notes
+### Notes
 
 {{PERFORMANCE_OR_SECURITY_NOTES}}

@@ -33,11 +33,13 @@ Query params:
 page, page_size, name, popularity_min, popularity_max, created_on, updated_on
 
 Body:
-None
+```json
+{}
+```
 
 **Response**
 Status codes:
-200 OK
+ | 00 OK
 
 Body:
 ```json
@@ -58,17 +60,24 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 None
 
-Business Rules
+### Business Rules
 None
 
-Errors
-Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token
-404	Not Found - Artist not found	
+### Errors
+| Code | Meaning |
+|------|----------|
+| 400 | Bad Request - Invalid parameters |
+| 401 | Unauthorized - Invalid token |
+| 404 | Not Found - Artist not found |
+
+### Versioning
+TODO
+
+### Notes
+TODO
 
 ### GET /{id}/
 
@@ -83,11 +92,13 @@ Query params:
 None
 
 Body:
-None
+```json
+{}
+```
 
 **Response**
 Status codes:
-200 OK
+ | 00 OK
 
 Body:
 ```json
@@ -101,21 +112,21 @@ Body:
 }
 ```
 
-Validation Rules
+### Validation Rules
 None
 
-Business Rules
+### Business Rules
 None
 
-Errors
-Code	Meaning
-400	Bad Request - Invalid parameters
-401	Unauthorized - Invalid token
-404	Not Found - Artist not found	
+### Errors
+| Code | Meaning |
+|------|----------|
+| 400 | Bad Request - Invalid parameters |
+| 401 | Unauthorized - Invalid token |
+| 404 | Not Found - Artist not found |
 
-Versioning
-
+### Versioning
 {APP_VERSION}
 
-Notes
+### Notes
 None
