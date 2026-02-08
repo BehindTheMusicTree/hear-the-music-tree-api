@@ -32,8 +32,8 @@ class ReferenceGenreTestCase(ReferenceTestCase):
         assert genre.name == 'test_reference_genre'
         assert genre.user == self._system_user
 
-    def test_load_reference_tree_then_201(self):
-        response = self.api_client.post(path=reverse('reference-genre-load-reference-tree'))
+    def test_load_example_tree_then_201(self):
+        response = self.api_client.post(path=reverse('reference-genre-load-example-tree'))
         assert response.status_code == status.HTTP_201_CREATED
         data = response.json()
-        assert data['message'] == "Reference genre tree loaded successfully"
+        assert data['message'] == "Example genre tree loaded successfully"

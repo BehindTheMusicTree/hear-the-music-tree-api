@@ -4,12 +4,12 @@ from api.model.criteria.children.genre.Genre import Genre
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.model.uploaded_track.Fields import Fields as UploadedTrackFields
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.test.integration.view.criteria.GenreTestCase import GenreTestCase
+from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestWithExistingTracks(GenreTestCase):
 
-    def test_load_reference_tree_with_existing_tracks_then_tracks_genres_nullified(self):
+    def test_load_example_tree_with_existing_tracks_then_tracks_genres_nullified(self):
         # Create existing genres
         genre_rock = self.model_fixture_factory.create_genre(name="Rock")
         genre_metal = self.model_fixture_factory.create_genre(name="Metal", parent=genre_rock)
@@ -28,36 +28,36 @@ class TestWithExistingTracks(GenreTestCase):
             **{UploadedTrackFields.GENRE: genre_metal}
         )
 
-        # Verify tracks have genres before loading reference tree
+        # Verify tracks have genres before loading example tree
         track1.refresh_from_db()
         track2.refresh_from_db()
         assert track1.genre == genre_rock
         assert track2.genre == genre_metal
 
-        # Load reference tree
-        response = self._post_genres_tree_load_reference()
+        # Load example tree
+        response = self._post_genres_tree_load_example()
 
         # Verify successful response
         assert response.status_code == status.HTTP_201_CREATED
 
-        # Verify tracks have null genres after loading reference tree
+        # Verify tracks have null genres after loading example tree
         track1.refresh_from_db()
         track2.refresh_from_db()
         assert track1.genre is None
         assert track2.genre is None
 
-        # Verify old genres are deleted and new reference tree is loaded
-        # The old "Rock" and "Metal" genres should be deleted, but new ones from reference tree should exist
+        # Verify old genres are deleted and new example tree is loaded
+        # The old "Rock" and "Metal" genres should be deleted, but new ones from example tree should exist
         old_rock_count = Genre.objects.filter(user=self.test_user1, name="Rock").count()
         old_metal_count = Genre.objects.filter(user=self.test_user1, name="Metal").count()
-        # Should have new reference tree genres (not the old ones we created)
-        assert old_rock_count > 0  # New reference tree has "Rock"
-        assert old_metal_count > 0  # New reference tree has "Metal"
-        # Verify reference tree genres are loaded (checking for some expected genres from the reference tree)
+        # Should have new example tree genres (not the old ones we created)
+        assert old_rock_count > 0  # New example tree has "Rock"
+        assert old_metal_count > 0  # New example tree has "Metal"
+        # Verify example tree genres are loaded (checking for some expected genres from the example tree)
         assert Genre.objects.filter(user=self.test_user1, name="Electronic").count() > 0
         assert Genre.objects.filter(user=self.test_user1, name="Jazz").count() > 0
 
-    def test_load_reference_tree_with_tracks_from_different_user_then_only_current_user_tracks_affected(self):
+    def test_load_example_tree_with_tracks_from_different_user_then_only_current_user_tracks_affected(self):
         # Create genres for both users
         genre_rock_user1 = self.model_fixture_factory.create_genre(name="Rock", user=self.test_user1)
         genre_rock_user2 = self.model_fixture_factory.create_genre(name="Rock", user=self.test_user2)
@@ -76,8 +76,8 @@ class TestWithExistingTracks(GenreTestCase):
             **{UploadedTrackFields.GENRE: genre_rock_user2}
         )
 
-        # Load reference tree as user1
-        response = self._post_genres_tree_load_reference()
+        # Load example tree as user1
+        response = self._post_genres_tree_load_example()
 
         # Verify successful response
         assert response.status_code == status.HTTP_201_CREATED
@@ -88,19 +88,19 @@ class TestWithExistingTracks(GenreTestCase):
         assert track1_user1.genre is None
         assert track2_user2.genre == genre_rock_user2
 
-        # Verify only user1's genre is deleted and reference tree is loaded
-        # User1 should have new reference tree genres (not the old ones we created)
+        # Verify only user1's genre is deleted and example tree is loaded
+        # User1 should have new example tree genres (not the old ones we created)
         user1_rock_count = Genre.objects.filter(user=self.test_user1, name="Rock").count()
         user2_rock_count = Genre.objects.filter(user=self.test_user2, name="Rock").count()
-        assert user1_rock_count > 0  # New reference tree has "Rock" for user1
+        assert user1_rock_count > 0  # New example tree has "Rock" for user1
         assert user2_rock_count == 1  # User2 still has old "Rock" genre
         # Verify reference tree genres are loaded for user1
         assert Genre.objects.filter(user=self.test_user1, name="Electronic").count() > 0
         assert Genre.objects.filter(user=self.test_user1, name="Jazz").count() > 0
 
-    def test_load_reference_tree_with_no_existing_tracks_then_success(self):
-        # Load reference tree with no existing tracks
-        response = self._post_genres_tree_load_reference()
+    def test_load_example_tree_with_no_existing_tracks_then_success(self):
+        # Load example tree with no existing tracks
+        response = self._post_genres_tree_load_example()
 
         # Verify successful response
         assert response.status_code == status.HTTP_201_CREATED

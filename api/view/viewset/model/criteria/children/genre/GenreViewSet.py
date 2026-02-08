@@ -13,12 +13,12 @@ class GenreViewSet(CriteriaViewSet):
     def __init__(self, **kwargs):
         super().__init__(model_class=Genre, **kwargs)
 
-    @action(detail=False, methods=['post'], url_path='tree/load-reference')
-    def load_reference_tree(self, request):
-        data_path = settings.DATA_DIR / 'genre_reference_tree.json'
+    @action(detail=False, methods=['post'], url_path='tree/load-example')
+    def load_example_tree(self, request):
+        data_path = settings.DATA_DIR / 'genre_example_tree.json'
 
         if not data_path.exists():
-            raise FileNotFoundError(f"Reference genre tree file not found at {data_path}")
+            raise FileNotFoundError(f"Example genre tree file not found at {data_path}")
 
         with open(data_path, 'r') as f:
             data = json.load(f)
@@ -32,4 +32,4 @@ class GenreViewSet(CriteriaViewSet):
 
         Genre.objects.import_criteria_tree(request.user, serializer.validated_data)
 
-        return Response({"message": "Reference genre tree loaded successfully"}, status=status.HTTP_201_CREATED)
+        return Response({"message": "Example genre tree loaded successfully"}, status=status.HTTP_201_CREATED)
