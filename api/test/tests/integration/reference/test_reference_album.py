@@ -5,7 +5,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from api.model.album.Album import Album
-from api.test.tests.integration.reference.base import ReferenceTestCase
+from api.test.tests.integration.reference.reference_test_case import ReferenceTestCase
 from api.view.pagination.PaginatedResponseFields import PaginatedResponseFields
 
 
