@@ -5,7 +5,7 @@ from api.serializer.model.playlist.children.criteria.output.detailed import Fiel
 from api.test.utils.field.filter.foreign_key.PrivateForeignKeyFilterTestCase import (
     PrivateForeignKeyFilterTestCase
 )
-from api.test.integration.view.playlist.children.criteria.tag.TagPlaylistTestCase import TagPlaylistTestCase
+from api.test.tests.integration.playlist.children.criteria.tag.TagPlaylistTestCase import TagPlaylistTestCase
 
 
 class TestCase(TagPlaylistTestCase, PrivateForeignKeyFilterTestCase):

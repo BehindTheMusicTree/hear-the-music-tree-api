@@ -29,6 +29,7 @@ from .view.viewset.model.playlist.children.criteria.genre.GenrePlaylistViewSet i
 from .view.viewset.model.playlist.children.criteria.genre.ReferenceGenrePlaylistViewSet import (
     ReferenceGenrePlaylistViewSet)
 from .view.viewset.model.playlist.children.criteria.TagPlaylistViewSet import TagPlaylistViewSet
+from .view.viewset.model.playlist.children.criteria.tag.ReferenceTagPlaylistViewSet import ReferenceTagPlaylistViewSet
 from .view.viewset.model.playlist.children.ManualPlaylistViewSet import ManualPlaylistViewSet
 from .view.viewset.model.playlist.PlaylistViewSet import PlaylistViewSet
 from .view.viewset.model.SpotifyLibTrackViewSet import SpotifyLibTrackViewSet
@@ -53,6 +54,7 @@ router.register(r'reference/tags', ReferenceTagViewSet, basename='reference-tag'
 router.register(r'reference/playlists', PlaylistViewSet, basename='reference-playlist')
 router.register(r'reference/manual-playlists', ManualPlaylistViewSet, basename='reference-manual-playlist')
 router.register(r'reference/genre-playlists', ReferenceGenrePlaylistViewSet, basename='reference-genre-playlist')
+router.register(r'reference/tag-playlists', ReferenceTagPlaylistViewSet, basename='reference-tag-playlist')
 router.register(r'reference/plays', ReferencePlayViewSet, basename='reference-play')
 
 router.register(r'me/library/uploaded', UploadedTrackViewSet, basename='me-uploaded-track')
@@ -63,9 +65,9 @@ router.register(r'me/tags', TagViewSet, basename='me-tag')
 router.register(r'me/playlists', PlaylistViewSet, basename='me-playlist')
 router.register(r'me/manual-playlists', ManualPlaylistViewSet, basename='me-manual-playlist')
 router.register(r'me/genre-playlists', GenrePlaylistViewSet, basename='me-genre-playlist')
+router.register(r'me/tag-playlists', TagPlaylistViewSet, basename='me-tag-playlist')
 router.register(r'me/plays', PlayViewSet, basename='me-play')
 
-router.register(r'tag-playlists', TagPlaylistViewSet, basename='tag-playlist')
 router.register(r'all-tracks', AllUploadedTracksViewSet, basename='all-uploaded-tracks')
 router.register(r'search', SearchViewSet, basename='search')
 

@@ -1,22 +1,32 @@
-# tag-playlists
+# Tag Playlists
 
 ## Overview
-Manage tag playlists
+Manage playlists based on tags.
 
-## Base URL
-/api/{APP_VERSION}/tag-playlists/
-
-## Authentication
-JWT token required
-
-## Permissions
-Authenticated users only (IsAuthenticated)
+## Contexts
+| Context | Base Path | Authentication | Description |
+|--------|----------|----------------|-------------|
+| `me` | `/{version}/me/tag-playlists/` | Required | Tag playlists owned by the authenticated user |
+| `reference` | `/{version}/reference/tag-playlists/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
 
 ## Endpoints
-| Method | Path | Action | Description |
-|------|------|--------|-------------|
-| GET | / | list | List tag playlists |
-| GET | /{id}/ | retrieve | Get tag playlist details |
+
+#### List
+`GET {base}`
+
+#### Retrieve
+`GET {base}{id}/`
+
+### Context Differences
+
+#### Reference
+- Read-only
+- Public access
+- Owned by system account (defined by TMTA_USERNAME environment variable)
+
+#### Me
+- Editable by owner
+- Scoped to authenticated user
 
 ## Request / Response
 
