@@ -15,3 +15,14 @@ class ReferenceAlbumTestCase(ReferenceTestCase):
         self.model_fixture_factory.create_album("user1_album", user=self.test_user1)
         response = self.api_client.get(path=reverse('reference-album-list'))
         self._assert_all_results_belong_to_tmta(response, Album)
+
+    def test_reference_album_retrieve_then_200(self):
+        album = self.model_fixture_factory.create_album("tmta_album", user=self._system_user)
+        response = self.api_client.get(path=reverse('reference-album-detail', kwargs={'pk': album.uuid}))
+        self._assert_retrieve_result_belongs_to_tmta(response, Album)
+
+    def test_reference_album_destroy_then_204(self):
+        album = self.model_fixture_factory.create_album("tmta_album", user=self._system_user)
+        response = self.api_client.delete(path=reverse('reference-album-detail', kwargs={'pk': album.uuid}))
+        assert response.status_code == status.HTTP_204_NO_CONTENT
+        assert not Album.objects.filter(uuid=album.uuid).exists()
