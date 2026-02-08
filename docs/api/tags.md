@@ -6,8 +6,8 @@ Manage tag hierarchies and trees.
 ## Contexts
 | Context | Base Path | Authentication | Description |
 |--------|----------|----------------|-------------|
-| `me` | `/api/{version}/me/tags/` | Required | Tags owned by the authenticated user |
-| `reference` | `/api/{version}/reference/tags/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
+| `me` | `/{version}/me/tags/` | Required | Tags owned by the authenticated user |
+| `reference` | `/{version}/reference/tags/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
 
 ## Endpoints
 
