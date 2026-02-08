@@ -157,9 +157,9 @@ If you prefer a different venv name or layout, adjust your local VS Code interpr
 
 #### Base URL
 
-The API base URL follows the pattern: `api/{version}/`
+The API base URL follows the pattern: `{version}/`
 
-For example: `api/v1/`
+For example: `v1/`
 
 The API version is configured via the `APP_VERSION` environment variable.
 
@@ -300,128 +300,128 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc...
 
 Legend: 🔒 = Requires authentication | 🔓 = No authentication required
 
-All endpoints are prefixed with the API base URL (`api/{version}/`). Most endpoints require authentication via JWT Bearer token.
+All endpoints are prefixed with the API base URL (`{version}/`). Most endpoints require authentication via JWT Bearer token.
 
 ### Authentication
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| `POST` | `/auth/token/` | Obtain JWT access and refresh tokens | 🔓 |
-| `POST` | `/auth/token/refresh/` | Refresh access token | 🔓 |
-| `POST` | `/auth/spotify/` | Authenticate with Spotify | 🔓 |
+| `POST` | `auth/token/` | Obtain JWT access and refresh tokens | 🔓 |
+| `POST` | `auth/token/refresh/` | Refresh access token | 🔓 |
+| `POST` | `auth/spotify/` | Authenticate with Spotify | 🔓 |
 
 ### Library Management
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| `GET` | `/library/uploaded/` | List uploaded tracks | 🔒 |
-| `POST` | `/library/uploaded/` | Upload a new track | 🔒 |
-| `GET` | `/library/uploaded/{id}/` | Retrieve a specific uploaded track | 🔒 |
-| `PUT` | `/library/uploaded/{id}/` | Update an uploaded track | 🔒 |
-| `DELETE` | `/library/uploaded/{id}/` | Delete an uploaded track | 🔒 |
-| `GET` | `/library/spotify/` | List Spotify library tracks | 🔒 |
-| `GET` | `/library/spotify/{id}/` | Retrieve a specific Spotify track | 🔒 |
-| `GET` | `/all-tracks/` | Get all tracks (uploaded and Spotify) | 🔒 |
+| `GET` | `library/uploaded/` | List uploaded tracks | 🔒 |
+| `POST` | `library/uploaded/` | Upload a new track | 🔒 |
+| `GET` | `library/uploaded/{id}/` | Retrieve a specific uploaded track | 🔒 |
+| `PUT` | `library/uploaded/{id}/` | Update an uploaded track | 🔒 |
+| `DELETE` | `library/uploaded/{id}/` | Delete an uploaded track | 🔒 |
+| `GET` | `library/spotify/` | List Spotify library tracks | 🔒 |
+| `GET` | `library/spotify/{id}/` | Retrieve a specific Spotify track | 🔒 |
+| `GET` | `all-tracks/` | Get all tracks (uploaded and Spotify) | 🔒 |
 
 ### Music Metadata
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| `GET` | `/artists/` | List artists | 🔒 |
-| `POST` | `/artists/` | Create an artist | 🔒 |
-| `GET` | `/artists/{id}/` | Retrieve a specific artist | 🔒 |
-| `PUT` | `/artists/{id}/` | Update an artist | 🔒 |
-| `DELETE` | `/artists/{id}/` | Delete an artist | 🔒 |
-| `GET` | `/albums/` | List albums | 🔒 |
-| `POST` | `/albums/` | Create an album | 🔒 |
-| `GET` | `/albums/{id}/` | Retrieve a specific album | 🔒 |
-| `PUT` | `/albums/{id}/` | Update an album | 🔒 |
-| `DELETE` | `/albums/{id}/` | Delete an album | 🔒 |
-| `GET` | `/spotify-artists/` | List Spotify artists | 🔒 |
-| `GET` | `/spotify-artists/{id}/` | Retrieve a specific Spotify artist | 🔒 |
+| `GET` | `artists/` | List artists | 🔒 |
+| `POST` | `artists/` | Create an artist | 🔒 |
+| `GET` | `artists/{id}/` | Retrieve a specific artist | 🔒 |
+| `PUT` | `artists/{id}/` | Update an artist | 🔒 |
+| `DELETE` | `artists/{id}/` | Delete an artist | 🔒 |
+| `GET` | `albums/` | List albums | 🔒 |
+| `POST` | `albums/` | Create an album | 🔒 |
+| `GET` | `albums/{id}/` | Retrieve a specific album | 🔒 |
+| `PUT` | `albums/{id}/` | Update an album | 🔒 |
+| `DELETE` | `albums/{id}/` | Delete an album | 🔒 |
+| `GET` | `spotify-artists/` | List Spotify artists | 🔒 |
+| `GET` | `spotify-artists/{id}/` | Retrieve a specific Spotify artist | 🔒 |
 
 ### Genres (me)
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| `GET` | `/me/genres/` | List genres | 🔒 |
-| `POST` | `/me/genres/` | Create a genre | 🔒 |
-| `GET` | `/me/genres/{id}/` | Retrieve a specific genre | 🔒 |
-| `PUT` | `/me/genres/{id}/` | Update a genre | 🔒 |
-| `DELETE` | `/me/genres/{id}/` | Delete a genre | 🔒 |
-| `GET` | `/me/genres/tree/` | Get genres tree | 🔒 |
-| `POST` | `/me/genres/tree/import/` | Import genres tree | 🔒 |
+| `GET` | `me/genres/` | List genres | 🔒 |
+| `POST` | `me/genres/` | Create a genre | 🔒 |
+| `GET` | `me/genres/{id}/` | Retrieve a specific genre | 🔒 |
+| `PUT` | `me/genres/{id}/` | Update a genre | 🔒 |
+| `DELETE` | `me/genres/{id}/` | Delete a genre | 🔒 |
+| `GET` | `me/genres/tree/` | Get genres tree | 🔒 |
+| `POST` | `me/genres/tree/import/` | Import genres tree | 🔒 |
 
 ### Reference Genres
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| `GET` | `/reference/genres/` | List reference genres | 🔓 |
-| `POST` | `/reference/genres/` | Create a reference genre | 🔓 |
-| `GET` | `/reference/genres/{id}/` | Retrieve a reference genre | 🔓 |
-| `PUT` | `/reference/genres/{id}/` | Update a reference genre | 🔓 |
-| `DELETE` | `/reference/genres/{id}/` | Delete a reference genre | 🔓 |
-| `GET` | `/reference/genres/tree/` | Get reference genres tree | 🔓 |
-| `POST` | `/reference/genres/tree/import/` | Import reference genres tree | 🔓 |
+| `GET` | `reference/genres/` | List reference genres | 🔓 |
+| `POST` | `reference/genres/` | Create a reference genre | 🔓 |
+| `GET` | `reference/genres/{id}/` | Retrieve a reference genre | 🔓 |
+| `PUT` | `reference/genres/{id}/` | Update a reference genre | 🔓 |
+| `DELETE` | `reference/genres/{id}/` | Delete a reference genre | 🔓 |
+| `GET` | `reference/genres/tree/` | Get reference genres tree | 🔓 |
+| `POST` | `reference/genres/tree/import/` | Import reference genres tree | 🔓 |
 
 ### Tags (me)
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| `GET` | `/me/tags/` | List tags | 🔒 |
-| `POST` | `/me/tags/` | Create a tag | 🔒 |
-| `GET` | `/me/tags/{id}/` | Retrieve a specific tag | 🔒 |
-| `PUT` | `/me/tags/{id}/` | Update a tag | 🔒 |
-| `DELETE` | `/me/tags/{id}/` | Delete a tag | 🔒 |
-| `GET` | `/me/tags/tree/` | Get tags tree | 🔒 |
-| `POST` | `/me/tags/tree/import/` | Import tags tree | 🔒 |
+| `GET` | `me/tags/` | List tags | 🔒 |
+| `POST` | `me/tags/` | Create a tag | 🔒 |
+| `GET` | `me/tags/{id}/` | Retrieve a specific tag | 🔒 |
+| `PUT` | `me/tags/{id}/` | Update a tag | 🔒 |
+| `DELETE` | `me/tags/{id}/` | Delete a tag | 🔒 |
+| `GET` | `me/tags/tree/` | Get tags tree | 🔒 |
+| `POST` | `me/tags/tree/import/` | Import tags tree | 🔒 |
 
 ### Reference Tags
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| `GET` | `/reference/tags/` | List reference tags | 🔓 |
-| `POST` | `/reference/tags/` | Create a reference tag | 🔓 |
-| `GET` | `/reference/tags/{id}/` | Retrieve a reference tag | 🔓 |
-| `PUT` | `/reference/tags/{id}/` | Update a reference tag | 🔓 |
-| `DELETE` | `/reference/tags/{id}/` | Delete a reference tag | 🔓 |
-| `GET` | `/reference/tags/tree/` | Get reference tags tree | 🔓 |
-| `POST` | `/reference/tags/tree/import/` | Import reference tags tree | 🔓 |
+| `GET` | `reference/tags/` | List reference tags | 🔓 |
+| `POST` | `reference/tags/` | Create a reference tag | 🔓 |
+| `GET` | `reference/tags/{id}/` | Retrieve a reference tag | 🔓 |
+| `PUT` | `reference/tags/{id}/` | Update a reference tag | 🔓 |
+| `DELETE` | `reference/tags/{id}/` | Delete a reference tag | 🔓 |
+| `GET` | `reference/tags/tree/` | Get reference tags tree | 🔓 |
+| `POST` | `reference/tags/tree/import/` | Import reference tags tree | 🔓 |
 
 ### Playlists
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| `GET` | `/me/playlists/` | List my playlists | 🔒 |
-| `GET` | `/me/playlists/{id}/` | Retrieve a specific playlist | 🔒 |
-| `GET` | `/reference/playlists/` | List reference playlists | 🔓 |
-| `GET` | `/reference/playlists/{id}/` | Retrieve a reference playlist | 🔓 |
-| `GET` | `/me/manual-playlists/` | List my manual playlists | 🔒 |
-| `POST` | `/me/manual-playlists/` | Create a manual playlist | 🔒 |
-| `GET` | `/me/manual-playlists/{id}/` | Retrieve a manual playlist | 🔒 |
-| `PUT` | `/me/manual-playlists/{id}/` | Update a manual playlist | 🔒 |
-| `GET` | `/reference/manual-playlists/` | List reference manual playlists | 🔓 |
-| `GET` | `/reference/manual-playlists/{id}/` | Retrieve a reference manual playlist | 🔓 |
-| `GET` | `/me/genre-playlists/` | List my genre-based playlists | 🔒 |
-| `GET` | `/me/genre-playlists/{id}/` | Retrieve a genre playlist | 🔒 |
-| `GET` | `/reference/genre-playlists/` | List reference genre playlists | 🔓 |
-| `GET` | `/reference/genre-playlists/{id}/` | Retrieve a reference genre playlist | 🔓 |
-| `GET` | `/tag-playlists/` | List tag-based playlists | 🔒 |
-| `GET` | `/tag-playlists/{id}/` | Retrieve a tag playlist | 🔒 |
+| `GET` | `me/playlists/` | List my playlists | 🔒 |
+| `GET` | `me/playlists/{id}/` | Retrieve a specific playlist | 🔒 |
+| `GET` | `reference/playlists/` | List reference playlists | 🔓 |
+| `GET` | `reference/playlists/{id}/` | Retrieve a reference playlist | 🔓 |
+| `GET` | `me/manual-playlists/` | List my manual playlists | 🔒 |
+| `POST` | `me/manual-playlists/` | Create a manual playlist | 🔒 |
+| `GET` | `me/manual-playlists/{id}/` | Retrieve a manual playlist | 🔒 |
+| `PUT` | `me/manual-playlists/{id}/` | Update a manual playlist | 🔒 |
+| `GET` | `reference/manual-playlists/` | List reference manual playlists | 🔓 |
+| `GET` | `reference/manual-playlists/{id}/` | Retrieve a reference manual playlist | 🔓 |
+| `GET` | `me/genre-playlists/` | List my genre-based playlists | 🔒 |
+| `GET` | `me/genre-playlists/{id}/` | Retrieve a genre playlist | 🔒 |
+| `GET` | `reference/genre-playlists/` | List reference genre playlists | 🔓 |
+| `GET` | `reference/genre-playlists/{id}/` | Retrieve a reference genre playlist | 🔓 |
+| `GET` | `tag-playlists/` | List tag-based playlists | 🔒 |
+| `GET` | `tag-playlists/{id}/` | Retrieve a tag playlist | 🔒 |
 
 ### Play History
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| `GET` | `/plays/` | List play history | 🔒 |
-| `POST` | `/plays/` | Record a play | 🔒 |
-| `GET` | `/plays/{id}/` | Retrieve a specific play record | 🔒 |
+| `GET` | `plays/` | List play history | 🔒 |
+| `POST` | `plays/` | Record a play | 🔒 |
+| `GET` | `plays/{id}/` | Retrieve a specific play record | 🔒 |
 
 ### Search
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| `GET` | `/search/` | Search across tracks, albums, artists, and playlists | 🔒 |
+| `GET` | `search/` | Search across tracks, albums, artists, and playlists | 🔒 |
 
 **Query Parameters**:
 - `query`: Search query string
@@ -431,13 +431,13 @@ All endpoints are prefixed with the API base URL (`api/{version}/`). Most endpoi
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| `GET` | `/users/` | List users | 🔒 |
-| `POST` | `/users/` | Create a user | 🔒 |
-| `GET` | `/users/{id}/` | Retrieve a specific user | 🔒 |
-| `PUT` | `/users/{id}/` | Update a user | 🔒 |
-| `DELETE` | `/users/{id}/` | Delete a user | 🔒 |
-| `GET` | `/users/spotify/` | List Spotify users | 🔒 |
-| `GET` | `/users/spotify/{id}/` | Retrieve a specific Spotify user | 🔒 |
+| `GET` | `users/` | List users | 🔒 |
+| `POST` | `users/` | Create a user | 🔒 |
+| `GET` | `users/{id}/` | Retrieve a specific user | 🔒 |
+| `PUT` | `users/{id}/` | Update a user | 🔒 |
+| `DELETE` | `users/{id}/` | Delete a user | 🔒 |
+| `GET` | `users/spotify/` | List Spotify users | 🔒 |
+| `GET` | `users/spotify/{id}/` | Retrieve a specific Spotify user | 🔒 |
 
 ## Usage
 
@@ -446,7 +446,7 @@ All endpoints are prefixed with the API base URL (`api/{version}/`). Most endpoi
 #### 1. Authenticate
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/auth/token/ \
+curl -X POST http://localhost:8000/v1/auth/token/ \
   -H "Content-Type: application/json" \
   -d '{
     "username": "your_username",
@@ -465,7 +465,7 @@ Response:
 #### 2. Upload a Track
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/library/uploaded/ \
+curl -X POST http://localhost:8000/v1/library/uploaded/ \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -F "file=@/path/to/your/track.mp3"
 ```
@@ -480,7 +480,7 @@ The API will automatically:
 
 ```bash
 # Create parent genre
-curl -X POST http://localhost:8000/api/v1/genres/ \
+curl -X POST http://localhost:8000/v1/genres/ \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -488,7 +488,7 @@ curl -X POST http://localhost:8000/api/v1/genres/ \
   }'
 
 # Create child genre
-curl -X POST http://localhost:8000/api/v1/genres/ \
+curl -X POST http://localhost:8000/v1/genres/ \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -502,7 +502,7 @@ When a track is tagged with "Techno", it will automatically appear in both the "
 #### 4. Tag a Track
 
 ```bash
-curl -X PUT http://localhost:8000/api/v1/library/uploaded/{track_id}/ \
+curl -X PUT http://localhost:8000/v1/library/uploaded/{track_id}/ \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
@@ -514,14 +514,14 @@ curl -X PUT http://localhost:8000/api/v1/library/uploaded/{track_id}/ \
 #### 5. Search for Tracks
 
 ```bash
-curl -X GET "http://localhost:8000/api/v1/search/?query=techno&type=track" \
+curl -X GET "http://localhost:8000/v1/search/?query=techno&type=track" \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
 #### 6. Record a Play
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/plays/ \
+curl -X POST http://localhost:8000/v1/plays/ \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
   -d '{
