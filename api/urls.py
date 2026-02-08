@@ -43,28 +43,28 @@ router.register(r'users/spotify', SpotifyUserViewSet, basename='spotify-user')
 router.register(r'spotify-artists', SpotifyArtistViewSet, basename='spotify-artist')
 router.register(r'library/spotify', SpotifyLibTrackViewSet, basename='spotify-lib-track')
 
+# Do not move PlaylistViewSet after GenrePlaylistViewSet or ManualPlaylistViewSet or it will cause confusion resolving
+# reverse urls.
 router.register(r'reference/library/uploaded', ReferenceUploadedTrackViewSet, basename='reference-uploaded-track')
 router.register(r'reference/artists', ReferenceArtistViewSet, basename='reference-artist')
 router.register(r'reference/albums', ReferenceAlbumViewSet, basename='reference-album')
-router.register(r'reference/tags', ReferenceTagViewSet, basename='reference-tag')
 router.register(r'reference/genres', ReferenceGenreViewSet, basename='reference-genre')
+router.register(r'reference/tags', ReferenceTagViewSet, basename='reference-tag')
+router.register(r'reference/playlists', PlaylistViewSet, basename='reference-playlist')
+router.register(r'reference/manual-playlists', ManualPlaylistViewSet, basename='reference-manual-playlist')
 router.register(r'reference/genre-playlists', ReferenceGenrePlaylistViewSet, basename='reference-genre-playlist')
 router.register(r'reference/plays', ReferencePlayViewSet, basename='reference-play')
 
 router.register(r'me/library/uploaded', UploadedTrackViewSet, basename='me-uploaded-track')
 router.register(r'me/artists', ArtistViewSet, basename='me-artist')
 router.register(r'me/albums', AlbumViewSet, basename='me-album')
-router.register(r'me/tags', TagViewSet, basename='me-tag')
 router.register(r'me/genres', GenreViewSet, basename='me-genre')
+router.register(r'me/tags', TagViewSet, basename='me-tag')
+router.register(r'me/playlists', PlaylistViewSet, basename='me-playlist')
+router.register(r'me/manual-playlists', ManualPlaylistViewSet, basename='me-manual-playlist')
 router.register(r'me/genre-playlists', GenrePlaylistViewSet, basename='me-genre-playlist')
 router.register(r'me/plays', PlayViewSet, basename='me-play')
 
-# Do not move PlaylistViewSet after GenrePlaylistViewSet or ManualPlaylistViewSet or it will cause confusion resolving
-# reverse urls.
-router.register(r'me/playlists', PlaylistViewSet, basename='me-playlist')
-router.register(r'reference/playlists', PlaylistViewSet, basename='reference-playlist')
-router.register(r'me/manual-playlists', ManualPlaylistViewSet, basename='me-manual-playlist')
-router.register(r'reference/manual-playlists', ManualPlaylistViewSet, basename='reference-manual-playlist')
 router.register(r'tag-playlists', TagPlaylistViewSet, basename='tag-playlist')
 router.register(r'all-tracks', AllUploadedTracksViewSet, basename='all-uploaded-tracks')
 router.register(r'search', SearchViewSet, basename='search')
