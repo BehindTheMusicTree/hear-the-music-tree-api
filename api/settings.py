@@ -297,7 +297,7 @@ def setup_app_exposure_if_needed():
     global APP_VERSION
     APP_VERSION = load_required_str_env_var('APP_VERSION')
     global API_ROOT_BASE
-    API_ROOT_BASE = 'api/' + APP_VERSION + '/'
+    API_ROOT_BASE = APP_VERSION + '/'
     print_django("API_ROOT_BASE: " + API_ROOT_BASE)
 
     global ROOT_URLCONF
