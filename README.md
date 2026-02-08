@@ -27,7 +27,8 @@
     - [Music Metadata](#music-metadata)
     - [Genres (me)](#genres-me)
     - [Reference Genres](#reference-genres)
-    - [Tags](#tags)
+    - [Tags (me)](#tags-me)
+    - [Reference Tags](#reference-tags)
     - [Playlists](#playlists)
     - [Play History](#play-history)
     - [Search](#search)
@@ -363,15 +364,29 @@ All endpoints are prefixed with the API base URL (`api/{version}/`). Most endpoi
 | `GET` | `/reference/genres/tree/` | Get reference genres tree | 🔓 |
 | `POST` | `/reference/genres/tree/import/` | Import reference genres tree | 🔓 |
 
-### Tags
+### Tags (me)
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| `GET` | `/tags/` | List tags | 🔒 |
-| `POST` | `/tags/` | Create a tag | 🔒 |
-| `GET` | `/tags/{id}/` | Retrieve a specific tag | 🔒 |
-| `PUT` | `/tags/{id}/` | Update a tag | 🔒 |
-| `DELETE` | `/tags/{id}/` | Delete a tag | 🔒 |
+| `GET` | `/me/tags/` | List tags | 🔒 |
+| `POST` | `/me/tags/` | Create a tag | 🔒 |
+| `GET` | `/me/tags/{id}/` | Retrieve a specific tag | 🔒 |
+| `PUT` | `/me/tags/{id}/` | Update a tag | 🔒 |
+| `DELETE` | `/me/tags/{id}/` | Delete a tag | 🔒 |
+| `GET` | `/me/tags/tree/` | Get tags tree | 🔒 |
+| `POST` | `/me/tags/tree/import/` | Import tags tree | 🔒 |
+
+### Reference Tags
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `GET` | `/reference/tags/` | List reference tags | 🔓 |
+| `POST` | `/reference/tags/` | Create a reference tag | 🔓 |
+| `GET` | `/reference/tags/{id}/` | Retrieve a reference tag | 🔓 |
+| `PUT` | `/reference/tags/{id}/` | Update a reference tag | 🔓 |
+| `DELETE` | `/reference/tags/{id}/` | Delete a reference tag | 🔓 |
+| `GET` | `/reference/tags/tree/` | Get reference tags tree | 🔓 |
+| `POST` | `/reference/tags/tree/import/` | Import reference tags tree | 🔓 |
 
 ### Playlists
 
@@ -381,11 +396,13 @@ All endpoints are prefixed with the API base URL (`api/{version}/`). Most endpoi
 | `GET` | `/me/playlists/{id}/` | Retrieve a specific playlist | 🔒 |
 | `GET` | `/reference/playlists/` | List reference playlists | 🔓 |
 | `GET` | `/reference/playlists/{id}/` | Retrieve a reference playlist | 🔓 |
-| `GET` | `/manual-playlists/` | List manual playlists | 🔒 |
-| `POST` | `/manual-playlists/` | Create a manual playlist | 🔒 |
-| `GET` | `/manual-playlists/{id}/` | Retrieve a manual playlist | 🔒 |
-| `PUT` | `/manual-playlists/{id}/` | Update a manual playlist | 🔒 |
-| `DELETE` | `/manual-playlists/{id}/` | Delete a manual playlist | 🔒 |
+| `GET` | `/me/manual-playlists/` | List my manual playlists | 🔒 |
+| `POST` | `/me/manual-playlists/` | Create a manual playlist | 🔒 |
+| `GET` | `/me/manual-playlists/{id}/` | Retrieve a manual playlist | 🔒 |
+| `PUT` | `/me/manual-playlists/{id}/` | Update a manual playlist | 🔒 |
+| `DELETE` | `/me/manual-playlists/{id}/` | Delete a manual playlist | 🔒 |
+| `GET` | `/reference/manual-playlists/` | List reference manual playlists | 🔓 |
+| `GET` | `/reference/manual-playlists/{id}/` | Retrieve a reference manual playlist | 🔓 |
 | `GET` | `/me/genre-playlists/` | List my genre-based playlists | 🔒 |
 | `GET` | `/me/genre-playlists/{id}/` | Retrieve a genre playlist | 🔒 |
 | `GET` | `/reference/genre-playlists/` | List reference genre playlists | 🔓 |
