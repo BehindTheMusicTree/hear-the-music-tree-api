@@ -377,8 +377,10 @@ All endpoints are prefixed with the API base URL (`api/{version}/`). Most endpoi
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| `GET` | `/playlists/` | List all playlists | 🔒 |
-| `GET` | `/playlists/{id}/` | Retrieve a specific playlist | 🔒 |
+| `GET` | `/me/playlists/` | List my playlists | 🔒 |
+| `GET` | `/me/playlists/{id}/` | Retrieve a specific playlist | 🔒 |
+| `GET` | `/reference/playlists/` | List reference playlists | 🔓 |
+| `GET` | `/reference/playlists/{id}/` | Retrieve a reference playlist | 🔓 |
 | `GET` | `/manual-playlists/` | List manual playlists | 🔒 |
 | `POST` | `/manual-playlists/` | Create a manual playlist | 🔒 |
 | `GET` | `/manual-playlists/{id}/` | Retrieve a manual playlist | 🔒 |
@@ -386,6 +388,8 @@ All endpoints are prefixed with the API base URL (`api/{version}/`). Most endpoi
 | `DELETE` | `/manual-playlists/{id}/` | Delete a manual playlist | 🔒 |
 | `GET` | `/me/genre-playlists/` | List my genre-based playlists | 🔒 |
 | `GET` | `/me/genre-playlists/{id}/` | Retrieve a genre playlist | 🔒 |
+| `GET` | `/reference/genre-playlists/` | List reference genre playlists | 🔓 |
+| `GET` | `/reference/genre-playlists/{id}/` | Retrieve a reference genre playlist | 🔓 |
 | `GET` | `/tag-playlists/` | List tag-based playlists | 🔒 |
 | `GET` | `/tag-playlists/{id}/` | Retrieve a tag playlist | 🔒 |
 
