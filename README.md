@@ -400,7 +400,6 @@ All endpoints are prefixed with the API base URL (`api/{version}/`). Most endpoi
 | `POST` | `/me/manual-playlists/` | Create a manual playlist | 🔒 |
 | `GET` | `/me/manual-playlists/{id}/` | Retrieve a manual playlist | 🔒 |
 | `PUT` | `/me/manual-playlists/{id}/` | Update a manual playlist | 🔒 |
-| `DELETE` | `/me/manual-playlists/{id}/` | Delete a manual playlist | 🔒 |
 | `GET` | `/reference/manual-playlists/` | List reference manual playlists | 🔓 |
 | `GET` | `/reference/manual-playlists/{id}/` | Retrieve a reference manual playlist | 🔓 |
 | `GET` | `/me/genre-playlists/` | List my genre-based playlists | 🔒 |

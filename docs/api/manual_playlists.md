@@ -23,9 +23,6 @@ Manage manual playlists
 #### Update
 `PUT {base}{id}/`
 
-#### Delete
-`DELETE {base}{id}/`
-
 ### Context Differences
 
 #### Reference
@@ -34,5 +31,5 @@ Manage manual playlists
 - Owned by system account (defined by TMTA_USERNAME environment variable)
 
 #### Me
-- Editable by owner
+- Editable (create, update)
 - Scoped to authenticated user
