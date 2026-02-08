@@ -6,8 +6,8 @@ Manage playlists
 ## Contexts
 | Context | Base Path | Authentication | Description |
 |--------|----------|----------------|-------------|
-| `me` | `/api/{version}/me/playlists/` | Required | Playlists owned by the authenticated user |
-| `reference` | `/api/{version}/reference/playlists/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
+| `me` | `/{version}/me/playlists/` | Required | Playlists owned by the authenticated user |
+| `reference` | `/{version}/reference/playlists/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
 
 ## Endpoints
 
