@@ -13,22 +13,24 @@ from api.view.viewset.model.user.SpotifyUserViewSet import SpotifyUserViewSet
 
 from . import settings
 from .view.health import HealthCheckView
-from .view.viewset.model.AlbumViewSet import AlbumViewSet
-from .view.viewset.model.ArtistViewSet import ArtistViewSet
-from .view.viewset.model.criteria.children.GenreViewSet import GenreViewSet
-from .view.viewset.model.criteria.children.ReferenceGenreViewSet import ReferenceGenreViewSet
-from .view.viewset.model.criteria.children.ReferenceTagViewSet import ReferenceTagViewSet
-from .view.viewset.model.criteria.children.TagViewSet import TagViewSet
-from .view.viewset.model.ReferenceAlbumViewSet import ReferenceAlbumViewSet
-from .view.viewset.model.ReferenceArtistViewSet import ReferenceArtistViewSet
-from .view.viewset.model.ReferencePlayViewSet import ReferencePlayViewSet
-from .view.viewset.model.ReferenceUploadedTrackViewSet import ReferenceUploadedTrackViewSet
-from .view.viewset.model.UploadedTrackViewSet import UploadedTrackViewSet
-from .view.viewset.model.playlist.children.criteria.GenrePlaylistViewSet import GenrePlaylistViewSet
+from .view.viewset.model.album.AlbumViewSet import AlbumViewSet
+from .view.viewset.model.album.ReferenceAlbumViewSet import ReferenceAlbumViewSet
+from .view.viewset.model.artist.ArtistViewSet import ArtistViewSet
+from .view.viewset.model.criteria.children.genre.GenreViewSet import GenreViewSet
+from .view.viewset.model.criteria.children.genre.ReferenceGenreViewSet import ReferenceGenreViewSet
+from .view.viewset.model.criteria.children.tag.ReferenceTagViewSet import ReferenceTagViewSet
+from .view.viewset.model.criteria.children.tag.TagViewSet import TagViewSet
+from .view.viewset.model.artist.ReferenceArtistViewSet import ReferenceArtistViewSet
+from .view.viewset.model.play.ReferencePlayViewSet import ReferencePlayViewSet
+from .view.viewset.model.play.PlayViewSet import PlayViewSet
+from .view.viewset.model.uploaded_track.ReferenceUploadedTrackViewSet import ReferenceUploadedTrackViewSet
+from .view.viewset.model.uploaded_track.UploadedTrackViewSet import UploadedTrackViewSet
+from .view.viewset.model.playlist.children.criteria.genre.GenrePlaylistViewSet import GenrePlaylistViewSet
+from .view.viewset.model.playlist.children.criteria.genre.ReferenceGenrePlaylistViewSet import (
+    ReferenceGenrePlaylistViewSet)
 from .view.viewset.model.playlist.children.criteria.TagPlaylistViewSet import TagPlaylistViewSet
 from .view.viewset.model.playlist.children.ManualPlaylistViewSet import ManualPlaylistViewSet
 from .view.viewset.model.playlist.PlaylistViewSet import PlaylistViewSet
-from .view.viewset.model.PlayViewSet import PlayViewSet
 from .view.viewset.model.SpotifyLibTrackViewSet import SpotifyLibTrackViewSet
 from .view.viewset.model.user.BaseUserViewSet import BaseUserViewSet
 from .view.viewset.SearchViewSet import SearchViewSet
@@ -45,6 +47,7 @@ router.register(r'reference/artists', ReferenceArtistViewSet, basename='referenc
 router.register(r'reference/albums', ReferenceAlbumViewSet, basename='reference-album')
 router.register(r'reference/tags', ReferenceTagViewSet, basename='reference-tag')
 router.register(r'reference/genres', ReferenceGenreViewSet, basename='reference-genre')
+router.register(r'reference/genre-playlists', ReferenceGenrePlaylistViewSet, basename='reference-genre-playlist')
 router.register(r'reference/plays', ReferencePlayViewSet, basename='reference-play')
 
 router.register(r'me/library/uploaded', UploadedTrackViewSet, basename='me-uploaded-track')
@@ -52,13 +55,13 @@ router.register(r'me/artists', ArtistViewSet, basename='me-artist')
 router.register(r'me/albums', AlbumViewSet, basename='me-album')
 router.register(r'me/tags', TagViewSet, basename='me-tag')
 router.register(r'me/genres', GenreViewSet, basename='me-genre')
+router.register(r'me/genre-playlists', GenrePlaylistViewSet, basename='me-genre-playlist')
 router.register(r'me/plays', PlayViewSet, basename='me-play')
 
 # Do not move PlaylistViewSet after GenrePlaylistViewSet or ManualPlaylistViewSet or it will cause confusion resolving
 # reverse urls.
 router.register(r'playlists', PlaylistViewSet, basename='playlist')
 router.register(r'manual-playlists', ManualPlaylistViewSet, basename='manual-playlist')
-router.register(r'me/genre-playlists', GenrePlaylistViewSet, basename='me-genre-playlist')
 router.register(r'tag-playlists', TagPlaylistViewSet, basename='tag-playlist')
 router.register(r'all-tracks', AllUploadedTracksViewSet, basename='all-uploaded-tracks')
 router.register(r'search', SearchViewSet, basename='search')

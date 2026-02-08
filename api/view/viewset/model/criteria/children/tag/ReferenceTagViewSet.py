@@ -1,10 +1,10 @@
 from rest_framework.permissions import AllowAny
 
 from api.model.user.User import User
-from api.view.viewset.model.AlbumViewSet import AlbumViewSet
+from api.view.viewset.model.criteria.children.tag.TagViewSet import TagViewSet
 
 
-class ReferenceAlbumViewSet(AlbumViewSet):
+class ReferenceTagViewSet(TagViewSet):
     permission_classes = [AllowAny]
 
     def initial(self, request, *args, **kwargs):

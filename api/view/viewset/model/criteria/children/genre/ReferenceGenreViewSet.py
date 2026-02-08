@@ -1,10 +1,10 @@
 from rest_framework.permissions import AllowAny
 
 from api.model.user.User import User
-from api.view.viewset.model.UploadedTrackViewSet import UploadedTrackViewSet
+from api.view.viewset.model.criteria.children.genre.GenreViewSet import GenreViewSet
 
 
-class ReferenceUploadedTrackViewSet(UploadedTrackViewSet):
+class ReferenceGenreViewSet(GenreViewSet):
     permission_classes = [AllowAny]
 
     def initial(self, request, *args, **kwargs):
