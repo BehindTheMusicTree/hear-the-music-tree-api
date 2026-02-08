@@ -61,8 +61,10 @@ router.register(r'me/plays', PlayViewSet, basename='me-play')
 
 # Do not move PlaylistViewSet after GenrePlaylistViewSet or ManualPlaylistViewSet or it will cause confusion resolving
 # reverse urls.
-router.register(r'playlists', PlaylistViewSet, basename='playlist')
-router.register(r'manual-playlists', ManualPlaylistViewSet, basename='manual-playlist')
+router.register(r'me/playlists', PlaylistViewSet, basename='me-playlist')
+router.register(r'reference/playlists', PlaylistViewSet, basename='reference-playlist')
+router.register(r'me/manual-playlists', ManualPlaylistViewSet, basename='me-manual-playlist')
+router.register(r'reference/manual-playlists', ManualPlaylistViewSet, basename='reference-manual-playlist')
 router.register(r'tag-playlists', TagPlaylistViewSet, basename='tag-playlist')
 router.register(r'all-tracks', AllUploadedTracksViewSet, basename='all-uploaded-tracks')
 router.register(r'search', SearchViewSet, basename='search')
