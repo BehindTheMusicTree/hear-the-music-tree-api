@@ -6,8 +6,8 @@ Manage playlists based on genres.
 ## Contexts
 | Context | Base Path | Authentication | Description |
 |--------|----------|----------------|-------------|
-| `me` | `/api/{version}/me/genre-playlists/` | Required | Genre playlists owned by the authenticated user |
-| `reference` | `/api/{version}/reference/genre-playlists/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
+| `me` | `/{version}/me/genre-playlists/` | Required | Genre playlists owned by the authenticated user |
+| `reference` | `/{version}/reference/genre-playlists/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
 
 ## Endpoints
 
