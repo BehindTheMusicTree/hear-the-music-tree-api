@@ -37,6 +37,7 @@ from .view.viewset.SearchViewSet import SearchViewSet
 
 
 router = routers.DefaultRouter()
+
 router.register(r'users', BaseUserViewSet, basename='user')
 router.register(r'users/spotify', SpotifyUserViewSet, basename='spotify-user')
 router.register(r'spotify-artists', SpotifyArtistViewSet, basename='spotify-artist')
