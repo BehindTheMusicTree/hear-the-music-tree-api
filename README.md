@@ -406,8 +406,10 @@ All endpoints are prefixed with the API base URL (`{version}/`). Most endpoints 
 | `GET` | `me/genre-playlists/{id}/` | Retrieve a genre playlist | 🔒 |
 | `GET` | `reference/genre-playlists/` | List reference genre playlists | 🔓 |
 | `GET` | `reference/genre-playlists/{id}/` | Retrieve a reference genre playlist | 🔓 |
-| `GET` | `tag-playlists/` | List tag-based playlists | 🔒 |
-| `GET` | `tag-playlists/{id}/` | Retrieve a tag playlist | 🔒 |
+| `GET` | `me/tag-playlists/` | List my tag-based playlists | 🔒 |
+| `GET` | `me/tag-playlists/{id}/` | Retrieve a tag playlist | 🔒 |
+| `GET` | `reference/tag-playlists/` | List reference tag playlists | 🔓 |
+| `GET` | `reference/tag-playlists/{id}/` | Retrieve a reference tag playlist | 🔓 |
 
 ### Play History
 

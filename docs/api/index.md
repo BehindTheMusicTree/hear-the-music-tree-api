@@ -18,6 +18,6 @@ This index lists all API resources with their base URLs, authentication requirem
 | Manual Playlists          | `/{APP_VERSION}/me/manual-playlists/`, `/{APP_VERSION}/reference/manual-playlists/` | Required / Optional | Manual playlists owned by authenticated user or system reference | [manual_playlists.md](manual_playlists.md) |
 | Genre Playlists        | `/{APP_VERSION}/me/genre-playlists/`, `/{APP_VERSION}/reference/genre-playlists/` | Required / Optional | Genre playlists owned by authenticated user or system reference | [genre_playlists.md](genre_playlists.md) |
 | Reference Genres          | `/{APP_VERSION}/reference/genres/`             | None           | None        | [reference_genres.md](reference_genres.md) |
-| Tag Playlists             | `/{APP_VERSION}/tag-playlists/`               | TODO           | TODO        | [tag_playlists.md](tag_playlists.md)     |
+| Tag Playlists             | `/{APP_VERSION}/me/tag-playlists/`, `/{APP_VERSION}/reference/tag-playlists/` | Required / Optional | Tag playlists owned by authenticated user or system reference | [tag_playlists.md](tag_playlists.md)     |
 | All Tracks                | `/{APP_VERSION}/all-tracks/`                  | TODO           | TODO        | [all_tracks.md](all_tracks.md)           |
 | Search                    | `/{APP_VERSION}/search/`                      | TODO           | TODO        | [search.md](search.md)                   |

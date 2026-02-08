@@ -4,7 +4,7 @@ from django.utils import timezone
 
 from api.model.playlist.children.criteria.tag.TagPlaylist import TagPlaylist
 from api.serializer.model.playlist.children.criteria.output.detailed import Fields as RietrieveFields
-from api.test.integration.view.playlist.children.criteria.tag.TagPlaylistTestCase import TagPlaylistTestCase
+from api.test.tests.integration.playlist.children.criteria.tag.TagPlaylistTestCase import TagPlaylistTestCase
 from api.model.playlist.children.criteria.Fields import Fields as ModelFields
 from api.filtering.set.private_unique_resource.Fields import Fields as PrivateUniqueResourceFields
 from api.filtering.set.playlist.children.criteria.Fields import Fields as CriteriaPlaylistFields
