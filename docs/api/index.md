@@ -15,7 +15,7 @@ This index lists all API resources with their base URLs, authentication requirem
 | Genres                 | `/api/{APP_VERSION}/me/genres/`, `/api/{APP_VERSION}/reference/genres/` | Required / Optional | Genres owned by authenticated user or system reference | [genres.md](genres.md) |
 | Plays                     | `/api/{APP_VERSION}/me/plays/`, `/api/{APP_VERSION}/reference/plays/` | Required / Optional | Play history for authenticated user or system reference | [plays.md](plays.md)                    |
 | Playlists                 | `/api/{APP_VERSION}/playlists/`                   | TODO           | TODO        | [playlists.md](playlists.md)            |
-| Manual Playlists          | `/api/{APP_VERSION}/manual-playlists/`            | TODO           | TODO        | [manual_playlists.md](manual_playlists.md) |
+| Manual Playlists          | `/api/{APP_VERSION}/me/manual-playlists/`, `/api/{APP_VERSION}/reference/manual-playlists/` | Required / Optional | Manual playlists owned by authenticated user or system reference | [manual_playlists.md](manual_playlists.md) |
 | Genre Playlists        | `/api/{APP_VERSION}/me/genre-playlists/`, `/api/{APP_VERSION}/reference/genre-playlists/` | Required / Optional | Genre playlists owned by authenticated user or system reference | [genre_playlists.md](genre_playlists.md) |
 | Reference Genres          | `/api/{APP_VERSION}/reference/genres/`             | None           | None        | [reference_genres.md](reference_genres.md) |
 | Tag Playlists             | `/api/{APP_VERSION}/tag-playlists/`               | TODO           | TODO        | [tag_playlists.md](tag_playlists.md)     |

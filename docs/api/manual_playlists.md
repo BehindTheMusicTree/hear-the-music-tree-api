@@ -1,220 +1,38 @@
-# manual-playlists
+# Manual Playlists
 
 ## Overview
 Manage manual playlists
 
-## Base URL
-/api/{APP_VERSION}/manual-playlists/
-
-## Authentication
-JWT token required
-
-## Permissions
-Authenticated users only (IsAuthenticated)
+## Contexts
+| Context | Base Path | Authentication | Description |
+|--------|----------|----------------|-------------|
+| `me` | `/api/{version}/me/manual-playlists/` | Required | Manual playlists owned by the authenticated user |
+| `reference` | `/api/{version}/reference/manual-playlists/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
 
 ## Endpoints
-| Method | Path | Action | Description |
-|------|------|--------|-------------|
-| GET | / | list | List manual playlists |
-| POST | / | create | Create a new manual playlist |
-| GET | /{id}/ | retrieve | Get manual playlist details |
-| PUT | /{id}/ | update | Update manual playlist |
 
-## Request / Response
+#### List
+`GET {base}`
 
-### GET /
+#### Retrieve
+`GET {base}{id}/`
 
-**Description**
-List manual playlists
+#### Create
+`POST {base}`
 
-**Request**
-Headers:
-Authorization: Bearer {token}
+#### Update
+`PUT {base}{id}/`
 
-Query params:
-page, page_size, name
+#### Delete
+`DELETE {base}{id}/`
 
-Body:
-None
+### Context Differences
 
-**Response**
-Status codes:
- | 00 OK
+#### Reference
+- Read-only
+- Public access
+- Owned by system account (defined by TMTA_USERNAME environment variable)
 
-Body:
-```json
-{
-  "count": 10,
-  "next": null,
-  "previous": null,
-  "results": [
-    {
-      "uuid": "uuid",
-      "name": "string",
-      "uploaded_tracks": [],
-      "uploaded_tracks_count": 10,
-      "uploaded_tracks_archived_count": 0,
-      "created_on": "2023-01-01T00:00:00Z",
-      "updated_on": "2023-01-01T00:00:00Z"
-    }
-  ]
-}
-```
-
-### Validation Rules
-None
-
-### Business Rules
-None
-
-### Errors
-Code	Meaning
- | 00	Bad Request - Invalid parameters
- | 01	Unauthorized - Invalid token
- | 04	Not Found - Playlist not found	
-
-### POST /
-
-**Description**
-Create a new manual playlist
-
-**Request**
-Headers:
-Authorization: Bearer {token}
-
-Query params:
-None
-
-Body:
-```json
-{
-  "name": "string"
-}
-```
-
-**Response**
-Status codes:
- | 01 Created
-
-Body:
-```json
-{
-  "uuid": "uuid",
-  "name": "string",
-  "uploaded_tracks": [],
-  "uploaded_tracks_count": 10,
-  "uploaded_tracks_archived_count": 0,
-  "created_on": "2023-01-01T00:00:00Z",
-  "updated_on": "2023-01-01T00:00:00Z"
-}
-```
-
-### Validation Rules
-Name required, max length
-
-### Business Rules
-None
-
-### Errors
-Code	Meaning
- | 00	Bad Request - Invalid parameters
- | 01	Unauthorized - Invalid token	
-
-### GET /{id}/
-
-**Description**
-Get manual playlist details
-
-**Request**
-Headers:
-Authorization: Bearer {token}
-
-Query params:
-None
-
-Body:
-None
-
-**Response**
-Status codes:
- | 00 OK
-
-Body:
-```json
-{
-  "uuid": "uuid",
-  "name": "string",
-  "uploaded_tracks": [],
-  "uploaded_tracks_count": 10,
-  "uploaded_tracks_archived_count": 0,
-  "created_on": "2023-01-01T00:00:00Z",
-  "updated_on": "2023-01-01T00:00:00Z"
-}
-```
-
-### Validation Rules
-None
-
-### Business Rules
-None
-
-### Errors
-Code	Meaning
- | 00	Bad Request - Invalid parameters
- | 01	Unauthorized - Invalid token
- | 04	Not Found - Playlist not found	
-
-### PUT /{id}/
-
-**Description**
-Update manual playlist
-
-**Request**
-Headers:
-Authorization: Bearer {token}
-
-Query params:
-None
-
-Body:
-```json
-{
-  "name": "string"
-}
-```
-
-**Response**
-Status codes:
- | 00 OK
-
-Body:
-```json
-{
-  "uuid": "uuid",
-  "name": "string",
-  "uploaded_tracks": [],
-  "uploaded_tracks_count": 10,
-  "uploaded_tracks_archived_count": 0,
-  "created_on": "2023-01-01T00:00:00Z",
-  "updated_on": "2023-01-01T00:00:00Z"
-}
-```
-
-### Validation Rules
-Name max length
-
-### Business Rules
-None
-
-### Errors
-Code	Meaning
- | 00	Bad Request - Invalid parameters
- | 01	Unauthorized - Invalid token
- | 04	Not Found - Playlist not found	
-
-### Versioning
-
-{APP_VERSION}
-
-### Notes
-None
+#### Me
+- Editable by owner
+- Scoped to authenticated user
