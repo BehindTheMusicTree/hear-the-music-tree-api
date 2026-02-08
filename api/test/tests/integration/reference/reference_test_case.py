@@ -31,3 +31,15 @@ class ReferenceTestCase(AppTestCase):
             obj = model_class.objects.get(**{uuid_field: UUID(str(obj_uuid))
                                           if isinstance(obj_uuid, str) else obj_uuid})
             assert getattr(obj, "user_id") == self._system_user.id
+
+    def _assert_retrieve_result_belongs_to_tmta(
+        self, response, model_class: type[models.Model], uuid_field: str = "uuid"
+    ) -> None:
+        """Assert that the retrieved result belongs to the system user (TMTA)."""
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        obj_uuid = data.get(uuid_field)
+        if obj_uuid is not None:
+            obj = model_class.objects.get(**{uuid_field: UUID(str(obj_uuid))
+                                          if isinstance(obj_uuid, str) else obj_uuid})
+            assert getattr(obj, "user_id") == self._system_user.id
