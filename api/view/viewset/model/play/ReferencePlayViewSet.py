@@ -1,10 +1,10 @@
 from rest_framework.permissions import AllowAny
 
 from api.model.user.User import User
-from api.view.viewset.model.criteria.children.TagViewSet import TagViewSet
+from api.view.viewset.model.play.PlayViewSet import PlayViewSet
 
 
-class ReferenceTagViewSet(TagViewSet):
+class ReferencePlayViewSet(PlayViewSet):
     permission_classes = [AllowAny]
 
     def initial(self, request, *args, **kwargs):
