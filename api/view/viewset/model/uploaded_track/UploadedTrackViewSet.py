@@ -13,7 +13,7 @@ from api.serializer.model.uploaded_track.input.post.Fields import Fields as Post
 from api.serializer.model.uploaded_track.input.put.put import UploadedTrackPutSerializer
 from api.serializer.model.uploaded_track.output.detailed import UploadedTrackDetailedSerializer
 
-from .AppModelViewSet import AppModelViewSet
+from ..AppModelViewSet import AppModelViewSet
 
 
 class UploadedTrackViewSet(AppModelViewSet[UploadedTrack]):
