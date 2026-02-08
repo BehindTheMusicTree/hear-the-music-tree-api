@@ -1,7 +1,16 @@
 from pathlib import Path
 from typing import Generic, Type, TypeVar, Union, cast
+import os
+from uuid import UUID
 
+from django.contrib.auth.hashers import make_password
 from django.core.management import call_command
+from django.db import models
+from django.http import HttpResponse, JsonResponse
+from django.test import TestCase
+from django.urls import reverse
+from rest_framework import status
+from rest_framework_simplejwt.tokens import AccessToken
 from django.db import models
 from django.http import HttpResponse, JsonResponse
 from django.test import TestCase
@@ -153,7 +162,8 @@ class AppTestCase(TestCase, Generic[T]):
                 kwargs = file_field_dict
 
             return self.api_client.post(
-                path=reverse('me-uploaded-track-list'), data=kwargs, format='multipart', handle_response=self._set_results)
+                path=reverse('me-uploaded-track-list'),
+                data=kwargs, format='multipart', handle_response=self._set_results)
 
     # Defined here and not in UploadedTrackTestCase because other views needs sometimes to put a track for testing purposes
     # (testing Genre deletion for example)
@@ -170,6 +180,27 @@ class AppTestCase(TestCase, Generic[T]):
         self._logout()
         return self.api_client.post(
             path=reverse('me-uploaded-track-list'), data={}, format='multipart', handle_response=self._set_results)
+
+    def _setup_system_user_for_reference_tests(self, system_username: str = "test_reference_system_user"):
+        """Set up system user for reference endpoint tests and configure TMTA_USERNAME environment variable."""
+        self._system_user, created = User.objects.get_or_create(
+            username=system_username,
+            defaults={
+                "is_system": True,
+                "is_active": True,
+                "is_staff": False,
+                "is_superuser": False,
+                "email": "system@test.com",
+                "is_test_user": True,
+                "password": make_password(None),
+            },
+        )
+        if created or not self._system_user.password.startswith("!"):
+            self._system_user.set_unusable_password()
+            self._system_user.save(update_fields=["password"])
+        self._original_tmta_username = os.environ.get("TMTA_USERNAME")
+        os.environ["TMTA_USERNAME"] = system_username
+        return self._system_user
 
     def setUp(self, methods_names_to_implement: list[str] | None = None) -> None:
 
@@ -203,3 +234,12 @@ class AppTestCase(TestCase, Generic[T]):
 
         self.api_client = AppApiClient(test_case=self)
         self._login_as_test_user1()
+
+    def tearDown(self):
+        # Restore TMTA_USERNAME environment variable if it was modified during setup
+        if hasattr(self, '_original_tmta_username'):
+            if self._original_tmta_username is not None:
+                os.environ["TMTA_USERNAME"] = self._original_tmta_username
+            elif "TMTA_USERNAME" in os.environ:
+                del os.environ["TMTA_USERNAME"]
+        super().tearDown()
