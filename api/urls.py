@@ -84,9 +84,9 @@ urlpatterns = [
     path(settings.API_ROOT_BASE + 'auth/spotify/', spotify_auth, name='api-auth-spotify'),
 
 
-    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-    path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    path('schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
 
 if settings.STATIC_FILES_STATE in [StaticFileStates.COLLECTING, StaticFileStates.SERVING]:
