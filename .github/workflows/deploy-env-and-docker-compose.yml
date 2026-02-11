@@ -1,4 +1,4 @@
-name: Deploy
+name: Deploy Env variables And Partial Docker Compose
 
 on:
   workflow_call:
@@ -7,8 +7,6 @@ on:
         description: 'App version to use'
         required: true
         type: string
-  push:
-    branches: chore/improve-cicd
 
 env:
   SSH_DESTINATION: ${{ secrets.SERVER_DEPLOY_USERNAME }}@${{ vars.DOMAIN_NAME }}
@@ -291,12 +289,4 @@ jobs:
       - name: SSH Transfer partial docker-compose files to server
         run: |
           scp scripts/*${{ vars.DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE }} ${{ env.SSH_DESTINATION }}:${{ env.SERVER_DOCKER_COMPOSE_DIR }}
-
-  redeploy-webhook-call:
-    name: Redeploy webhook
-    needs: [set-env-variables-on-server, set-partial-docker-compose-on-server]
-    uses: BehindTheMusicTree/github-workflows/.github/workflows/call-redeployment-webhook.yml@main
-    with:
-      env: TEST
-    secrets: inherit
 

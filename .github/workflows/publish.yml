@@ -56,11 +56,19 @@ jobs:
       app_version: ${{ needs.determine-version.outputs.app_version }}
     secrets: inherit
 
-  deploy:
+  deploy-env-and-docker-compose:
     name: Deploy
     needs: [determine-version]
-    uses: ./.github/workflows/deploy.yml
+    uses: ./.github/workflows/deploy-env-and-docker-compose.yml
     with:
       app_version: ${{ needs.determine-version.outputs.app_version }}
+    secrets: inherit
+
+  redeploy-webhook-call:
+    name: Redeploy webhook
+    needs: [build-and-push, deploy-env-and-docker-compose]
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/call-redeployment-webhook.yml@main
+    with:
+      env: TEST
     secrets: inherit
 
