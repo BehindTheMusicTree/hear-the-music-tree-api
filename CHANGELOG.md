@@ -73,6 +73,11 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Health Check**: Add health check endpoint to API for improved service monitoring
 
+### Fixed
+
+- **CriteriaType**: Seed genre and tag criteria types in migration so reference genre tree load-example and other flows no longer raise DoesNotExist
+  - Add data migration `0003_seed_criteria_types` to ensure `CriteriaType` rows with pk 0 (genre) and 1 (tag) exist
+
 ### Improved
 
 - **Deployment**: Apply Django migrations on every container start
