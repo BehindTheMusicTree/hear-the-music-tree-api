@@ -58,7 +58,7 @@ jobs:
 
   deploy:
     name: Deploy
-    needs: [build-and-push, determine-version]
+    needs: [determine-version]
     uses: ./.github/workflows/deploy.yml
     with:
       app_version: ${{ needs.determine-version.outputs.app_version }}
