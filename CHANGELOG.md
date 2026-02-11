@@ -63,6 +63,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **Reference Contexts**: Implement public read-only reference contexts for all major API endpoints
   - Add reference contexts for genres, albums, artists, plays, tags, and library/uploaded endpoints
   - Create Reference ViewSets with AllowAny permissions and system user fallback for public access
+  - Add ReferencePlaylistViewSet and ReferenceManualPlaylistViewSet so reference/playlists and reference/manual-playlists expose system-owned public data
   - Restructure URL paths to hierarchical design (/me/ and /reference/ scopes)
   - Update router registrations in urls.py for new hierarchical paths
   - Regenerate API documentation with contexts tables for all endpoints
