@@ -19,7 +19,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PROJECT_DIR=$PROJECT_DIR \
     APP_VERSION=$APP_VERSION \
-    DB_IS_NEEDED=true
+    DB_IS_NEEDED=true \
+    API_DIR_NAME=${PROJECT_DIR}api
 
 RUN apt-get update && \
     apt-get install -y gosu && \
