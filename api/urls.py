@@ -31,7 +31,9 @@ from .view.viewset.model.playlist.children.criteria.genre.ReferenceGenrePlaylist
 from .view.viewset.model.playlist.children.criteria.TagPlaylistViewSet import TagPlaylistViewSet
 from .view.viewset.model.playlist.children.criteria.tag.ReferenceTagPlaylistViewSet import ReferenceTagPlaylistViewSet
 from .view.viewset.model.playlist.children.ManualPlaylistViewSet import ManualPlaylistViewSet
+from .view.viewset.model.playlist.children.ReferenceManualPlaylistViewSet import ReferenceManualPlaylistViewSet
 from .view.viewset.model.playlist.PlaylistViewSet import PlaylistViewSet
+from .view.viewset.model.playlist.ReferencePlaylistViewSet import ReferencePlaylistViewSet
 from .view.viewset.model.SpotifyLibTrackViewSet import SpotifyLibTrackViewSet
 from .view.viewset.model.user.BaseUserViewSet import BaseUserViewSet
 from .view.viewset.SearchViewSet import SearchViewSet
@@ -51,8 +53,8 @@ router.register(r'reference/artists', ReferenceArtistViewSet, basename='referenc
 router.register(r'reference/albums', ReferenceAlbumViewSet, basename='reference-album')
 router.register(r'reference/genres', ReferenceGenreViewSet, basename='reference-genre')
 router.register(r'reference/tags', ReferenceTagViewSet, basename='reference-tag')
-router.register(r'reference/playlists', PlaylistViewSet, basename='reference-playlist')
-router.register(r'reference/manual-playlists', ManualPlaylistViewSet, basename='reference-manual-playlist')
+router.register(r'reference/playlists', ReferencePlaylistViewSet, basename='reference-playlist')
+router.register(r'reference/manual-playlists', ReferenceManualPlaylistViewSet, basename='reference-manual-playlist')
 router.register(r'reference/genre-playlists', ReferenceGenrePlaylistViewSet, basename='reference-genre-playlist')
 router.register(r'reference/tag-playlists', ReferenceTagPlaylistViewSet, basename='reference-tag-playlist')
 router.register(r'reference/plays', ReferencePlayViewSet, basename='reference-play')
