@@ -1,8 +1,8 @@
 from rest_framework.permissions import AllowAny
 
 from api.view.viewset.model.ReferenceViewSetMixin import ReferenceViewSetMixin
-from .GenrePlaylistViewSet import GenrePlaylistViewSet
+from api.view.viewset.model.playlist.PlaylistViewSet import PlaylistViewSet
 
 
-class ReferenceGenrePlaylistViewSet(ReferenceViewSetMixin, GenrePlaylistViewSet):
+class ReferencePlaylistViewSet(ReferenceViewSetMixin, PlaylistViewSet):
     permission_classes = [AllowAny]
