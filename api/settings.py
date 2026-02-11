@@ -98,11 +98,11 @@ LIBRARIES_DIR: Path
 # Data
 DATA_DIR: Path
 
-# API Keys
+# Spotify
 SPOTIFY_CLIENT_ID: str
 SPOTIFY_CLIENT_SECRET: str
-# Must match what's registered in Spotify Dashboard
-SPOTIFY_REDIRECT_URI: str = "http://127.0.0.1:5000/auth/spotify/callback"
+SPOTIFY_REDIRECT_URI: str
+SPOTIFY_SCOPE = "user-library-read"
 
 # Secret Key
 SECRET_KEY: str
@@ -110,9 +110,6 @@ SECRET_KEY: str
 # File Upload
 FILE_UPLOAD_TEMP_DIR: str | None
 FILE_UPLOAD_ENABLED: bool
-
-# Spotify API settings
-SPOTIFY_SCOPE = "user-library-read"
 
 
 def init_logs_if_needed():
@@ -707,8 +704,10 @@ def setup_media_dirs():
     # Load Spotify API credentials
     global SPOTIFY_CLIENT_ID
     global SPOTIFY_CLIENT_SECRET
+    global SPOTIFY_REDIRECT_URI
     SPOTIFY_CLIENT_ID = load_required_secret_env_var('SPOTIFY_CLIENT_ID')
     SPOTIFY_CLIENT_SECRET = load_required_secret_env_var('SPOTIFY_CLIENT_SECRET')
+    SPOTIFY_REDIRECT_URI = load_required_str_env_var('SPOTIFY_REDIRECT_URI',)
     print_django("Spotify API credentials loaded.")
 
     global MEDIA_ROOT  # Django constant, do not rename.
