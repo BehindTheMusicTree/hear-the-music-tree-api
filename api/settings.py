@@ -707,9 +707,13 @@ def setup_media_dirs():
     global SPOTIFY_REDIRECT_URI
     global SPOTIFY_SCOPES
     SPOTIFY_CLIENT_ID = load_required_secret_env_var('SPOTIFY_CLIENT_ID')
+    print_django(f"SPOTIFY_CLIENT_ID = {SPOTIFY_CLIENT_ID}")
     SPOTIFY_CLIENT_SECRET = load_required_secret_env_var('SPOTIFY_CLIENT_SECRET')
+    print_django(f"SPOTIFY_CLIENT_SECRET = {SPOTIFY_CLIENT_SECRET}")
     SPOTIFY_REDIRECT_URI = load_required_str_env_var('SPOTIFY_REDIRECT_URI',)
+    print_django(f"SPOTIFY_REDIRECT_URI = {SPOTIFY_REDIRECT_URI}")
     SPOTIFY_SCOPES = load_required_str_env_var('SPOTIFY_SCOPES',)
+    print_django(f"SPOTIFY_SCOPES = {SPOTIFY_SCOPES}")
     print_django("Spotify API credentials loaded.")
 
     global MEDIA_ROOT  # Django constant, do not rename.
