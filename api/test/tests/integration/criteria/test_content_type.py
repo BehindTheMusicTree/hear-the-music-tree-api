@@ -17,7 +17,7 @@ class TestCase(GenreTestCase):
         assert response.json()['details']['code'] == 'parse_error'
 
     def test_missing_content_type_then_error(self):
-        path = reverse('genre-list')
+        path = reverse('me-genre-list')
 
         # Use the special test header to force the middleware to treat this as having no Content-Type
         response = self.api_client.post(

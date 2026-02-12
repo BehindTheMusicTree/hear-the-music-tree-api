@@ -1,0 +1,58 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      commit_hash:
+        description: 'Commit hash to build from (optional)'
+        required: false
+        type: string
+      app_version:
+        description: 'App version to use'
+        required: true
+        type: string
+
+env:
+  CONTAINER_ROOT_DIR: /home/api/
+  DB_CONNECTION_TEST_MAX_ATTEMPTS: 10
+  DB_CONNECTION_TEST_SLEEP_INTERVAL: 5
+  DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
+
+jobs:
+  build-and-push-to-dockerhub:
+    name: Push to Docker Hub
+    runs-on: ubuntu-latest
+    environment:
+      name: TEST
+    env:
+      APP_VERSION: ${{ inputs.app_version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.commit_hash || github.sha }}
+
+      - name: Check required vars and secrets
+        env:
+          DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
+          APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
+          DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
+        run: bash scripts/check-workflow-env.sh DOCKERHUB_USERNAME APP_IMAGE_REPO DOCKERHUB_ACCESS_TOKEN
+
+      - name: Login to Dockerhub
+        run: |
+          echo "${{ secrets.DOCKERHUB_ACCESS_TOKEN }}" | \
+          docker login -u "${{ vars.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Build and Push Docker image
+        env:
+          IMAGE_FULL_NAME: ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.APP_IMAGE_REPO }}:${{ env.APP_VERSION }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE_FULL_NAME }}
+          build-args: |
+            PROJECT_DIR=${{ env.CONTAINER_ROOT_DIR }}
+            APP_VERSION=${{ inputs.app_version }}

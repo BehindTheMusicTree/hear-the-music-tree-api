@@ -8,7 +8,7 @@ class SpotifyCredentialManager:
         self.client_id = settings.SPOTIFY_CLIENT_ID
         self.client_secret = settings.SPOTIFY_CLIENT_SECRET
         self.redirect_uri = settings.SPOTIFY_REDIRECT_URI
-        self.scope = settings.SPOTIFY_SCOPE
+        self.scope = settings.SPOTIFY_SCOPES
 
     def get_client_credentials(self) -> dict:
         return {
@@ -19,5 +19,11 @@ class SpotifyCredentialManager:
         }
 
     def validate_credentials(self) -> None:
-        if not self.client_id or not self.client_secret:
-            raise spotify_exception.SpotifyAPIException("Spotify client credentials are not configured")
+        missing = []
+        if not self.client_id:
+            missing.append("client_id")
+        if not self.client_secret:
+            missing.append("client_secret")
+        if missing:
+            raise spotify_exception.SpotifyAPIException(
+                f"Spotify {' and '.join(missing)} {'is' if len(missing) == 1 else 'are'} not configured")

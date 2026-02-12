@@ -254,6 +254,13 @@ Running the container requires the following environment variables:
 
 The HearTheMusicTree API requires a PostgreSQL database to function. The database runs in a Docker container, which is started by the `run-db-and-afp-containers.sh` script. This ensures a consistent development environment across all contributors.
 
+#### Database migrations
+
+- **Create migrations in development**: Run `python manage.py makemigrations` locally and commit the generated files under `api/migrations/`.
+- **Never run `makemigrations` in production**: Schema changes are created in dev and shipped with the code; production only applies them.
+- **Migrations run automatically on deploy**: The container entrypoint (`scripts/entrypoint.sh`) runs `migrate` after the database is ready, so every deployment applies pending migrations before starting the app.
+- **Keep migrations backward-compatible**: Prefer additive changes (e.g. nullable columns or defaults) so the previous app version keeps working until the new one has run.
+
 #### Audio Fingerprinting Requirement
 
 For audio fingerprinting, the HearTheMusicTree API requires an app called Audio Fingerprinter. You can find the Audio Fingerprinter app on GitHub at the following link: [Audio Fingerprinter](https://github.com/BehindTheMusicTree/bodzify-audio-fingerprinter-flask)
@@ -738,7 +745,7 @@ The project uses focused, reusable GitHub Actions workflows for CI/CD. For a ful
   3. Deploys to the test server
 
 **Other Workflows**:
-- `build.yml` - Builds and pushes Docker images (reusable)
+- `build-and-push.yml` - Builds and pushes Docker images (reusable)
 - `deploy.yml` - Handles server deployment (reusable)
 - `static-files.yml` - Collects and commits static files (reusable)
 - `branch-protection.yml` - Enforces Git Flow branching rules

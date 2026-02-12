@@ -5,7 +5,7 @@ from api.filtering.set.playlist.Fields import Fields as FilterFields
 from api.model.playlist.children.criteria.tag.TagPlaylist import TagPlaylist
 from api.serializer.model.playlist.children.criteria.output.detailed import Fields as RietrieveFields
 from api.test.utils.field.filter.char.NotNullableFreeCharFilterTestCase import NotNullableFreeCharFilterTestCase
-from api.test.integration.view.playlist.children.criteria.tag.TagPlaylistTestCase import TagPlaylistTestCase
+from api.test.tests.integration.playlist.children.criteria.tag.TagPlaylistTestCase import TagPlaylistTestCase
 
 
 class TestCase(TagPlaylistTestCase, NotNullableFreeCharFilterTestCase):

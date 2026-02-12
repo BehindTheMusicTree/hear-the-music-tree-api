@@ -55,7 +55,6 @@ class RequestLoggingMiddleware:
                 self.requestDebugLogger.error(f"[{request_id}] Error reading request body: {str(e)}")
 
         try:
-            self.requestDebugLogger.info(f"[{request_id}] DEBUG: About to call get_response")
             response = self.get_response(request)
             duration = time.time() - start_time
 
@@ -69,12 +68,23 @@ class RequestLoggingMiddleware:
                 self.requestDebugLogger.info(
                     f"[{request_id}] DEBUG: PUT request to genres completed with status {response.status_code}")
 
-            # Log response body for non-streaming responses
+            # Log response body for non-streaming responses; skip full body for HTML/error pages
             if hasattr(response, 'content') and not getattr(response, 'streaming', False):
                 try:
-                    content = response.content.decode('utf-8')
-                    if content:
-                        self.requestDebugLogger.info(f"[{request_id}] Response Body: {content}")
+                    content_type = response.get('Content-Type', '') or ''
+                    is_html = 'text/html' in content_type
+                    is_error = 400 <= response.status_code < 600
+                    if is_html or is_error:
+                        size = len(response.content)
+                        self.requestDebugLogger.info(
+                            f"[{request_id}] Response Body: <{response.status_code} "
+                            f"{'text/html' if is_html else content_type.split(';')[0].strip() or 'unknown'}, "
+                            f"{size} bytes, omitted>"
+                        )
+                    else:
+                        content = response.content.decode('utf-8')
+                        if content:
+                            self.requestDebugLogger.info(f"[{request_id}] Response Body: {content}")
                 except UnicodeDecodeError:
                     self.requestDebugLogger.info(f"[{request_id}] Response Body: <binary data>")
 

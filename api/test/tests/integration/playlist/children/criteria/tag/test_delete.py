@@ -1,7 +1,7 @@
 
 from rest_framework import status
 
-from api.test.integration.view.playlist.children.criteria.tag.TagPlaylistTestCase import TagPlaylistTestCase
+from api.test.tests.integration.playlist.children.criteria.tag.TagPlaylistTestCase import TagPlaylistTestCase
 
 
 class TestCase(TagPlaylistTestCase):

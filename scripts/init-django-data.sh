@@ -22,25 +22,41 @@ check_script_vars_are_set() {
   log_with_script_prefixe "Environment variables loaded successfully."
 }
 
-create_initial_migration() {
-  log_with_script_prefixe "Creating initial migrations..."
-  output=$(python3 $MANAGE_SCRIPT makemigrations 2>&1)
-  log_with_script_prefixe "$output"
-  if echo "$output" | grep -q "Connection refused"; then
-      log_with_script_prefixe "Failed to create migrations due to database connection issue." >&2
-      exit 1
-  elif echo "$output" | grep -q "password authentication failed"; then
-      log_with_script_prefixe "ERROR: Password authentication failed." >&2
-      exit 1
+create_initial_migration_if_needed() {
+  MIGRATIONS_DIR="${PROJECT_DIR}${API_DIR_NAME}/migrations/"
+  MIGRATION_FILES_COUNT=$(find "${MIGRATIONS_DIR}" -name "*.py" -not -name "__init__.py" 2>/dev/null | wc -l | tr -d ' ')
+  
+  if [ "$MIGRATION_FILES_COUNT" -eq 0 ]; then
+    log_with_script_prefixe "No migration files found. Creating initial migrations..."
+    output=$(python3 $MANAGE_SCRIPT makemigrations 2>&1)
+    exit_code=$?
+    log_with_script_prefixe "$output"
+    if [ $exit_code -ne 0 ]; then
+      if echo "$output" | grep -q "Connection refused"; then
+        log_with_script_prefixe "Failed to create migrations due to database connection issue." >&2
+        exit 1
+      elif echo "$output" | grep -q "password authentication failed"; then
+        log_with_script_prefixe "ERROR: Password authentication failed." >&2
+        exit 1
+      else
+        log_with_script_prefixe "ERROR: makemigrations failed with exit code $exit_code" >&2
+        exit 1
+      fi
+    fi
+    log_with_script_prefixe "Migrations created successfully."
+  else
+    log_with_script_prefixe "Migration files already exist in ${MIGRATIONS_DIR} (found $MIGRATION_FILES_COUNT files). Skipping makemigrations."
+    log_with_script_prefixe "Migrations should be committed to version control and applied via 'migrate'."
   fi
-  log_with_script_prefixe "Migrations created successfully."
 }
 
 apply_migrations() {
   log_with_script_prefixe "Applying migrations..."
-  python3 $MANAGE_SCRIPT migrate
-  if [ $? -ne 0 ]; then
-    log_with_script_prefixe "ERROR: Failed to apply migrations. Abort" >&2
+  output=$(python3 $MANAGE_SCRIPT migrate 2>&1)
+  exit_code=$?
+  log_with_script_prefixe "$output"
+  if [ $exit_code -ne 0 ]; then
+    log_with_script_prefixe "ERROR: Failed to apply migrations (exit code $exit_code). Abort" >&2
     exit 1
   fi
   log_with_script_prefixe "Migrations applied successfully."
@@ -48,27 +64,15 @@ apply_migrations() {
 
 load_initial_fixtures() {
   log_with_script_prefixe "Loading initial data."
-  log_with_script_prefixe "Loading app.json..."
-  app_fixture="${PROJECT_DIR}${API_DIR_NAME}/fixtures/app.json"
-  if [ -f "$app_fixture" ]; then
-      python3 $MANAGE_SCRIPT loaddata $app_fixture
-      if [ $? -ne 0 ]; then
-          log_with_script_prefixe "ERROR: Failed to load initial data from $app_fixture" >&2
-          exit 1
-      fi
-  else
-      log_with_script_prefixe "ERROR: app.json not found in ${PROJECT_DIR}${API_DIR_NAME}/fixtures/" >&2
-      exit 1
-  fi
-  log_with_script_prefixe "app.json loaded successfully."
+  fixtures_dir="${PROJECT_DIR}${API_DIR_NAME}/fixtures"
 
-  log_with_script_prefixe "Loading other fixtures..."
-  for fixture in ${PROJECT_DIR}${API_DIR_NAME}/fixtures/*.json; 
+  if [ ! -d "$fixtures_dir" ]; then
+    log_with_script_prefixe "No fixtures directory found at $fixtures_dir. Skipping fixture loading."
+    return 0
+  fi
+
+  for fixture in "$fixtures_dir"/*.json;
   do
-    if [ "$fixture" = "$app_fixture" ]; then
-      continue
-    fi
-    
     if [ ! -f "$fixture" ]; then
       continue
     fi
@@ -107,7 +111,7 @@ main (){
     exit 1
   fi
 
-  create_initial_migration
+  create_initial_migration_if_needed
   apply_migrations
   load_initial_fixtures
 

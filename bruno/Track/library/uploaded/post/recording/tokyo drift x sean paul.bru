@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{BASE_URL}}library/uploaded/
+  url: {{BASE_URL}}me/library/uploaded/
   body: multipartForm
   auth: inherit
 }
@@ -15,6 +15,6 @@ headers {
 }
 
 body:multipart-form {
-  file: @file(/Users/mignot/Documents/Music/mariage/Tokyo Drift x Temperature x You Little Beauty (BENNE BOOM Mashup).mp3)
+  file: @file(/Users/mignot/git/hear-the-music-tree-api/api/test/utils/uploaded_track/files/recording=Tokyo Drift_no mb recording.mp3)
   language: fr
 }
