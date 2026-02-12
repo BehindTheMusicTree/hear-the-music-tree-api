@@ -167,11 +167,13 @@ The API version is configured via the `APP_VERSION` environment variable.
 
 #### Interactive Documentation
 
-The API provides interactive documentation using OpenAPI/Swagger:
+The API provides interactive documentation using OpenAPI (OAS 3.x):
 
-- **Swagger UI**: `http://localhost:8000/api/docs/` - Interactive API explorer with try-it-out functionality
-- **ReDoc**: `http://localhost:8000/api/schema/redoc/` - Alternative API documentation with clean, readable format
-- **OpenAPI Schema**: `http://localhost:8000/api/schema/` - Raw OpenAPI schema (JSON/YAML) for code generation and integration
+- **Swagger UI**: `http://localhost:8000/api/docs/` — Interactive API explorer with try-it-out functionality
+- **ReDoc**: `http://localhost:8000/api/schema/redoc/` — Alternative API documentation with a readable layout
+- **OpenAPI Schema**: `http://localhost:8000/api/schema/` — Raw OpenAPI schema (JSON or YAML via content negotiation) for code generation and tooling
+
+**How the schema is generated**: The schema is produced at runtime by [drf-spectacular](https://drf-spectacular.readthedocs.io/), which introspects Django REST Framework views and serializers. It always reflects the current API; no separate hand-written spec is required for the served docs.
 
 > **Quick Access**: When running the development server locally, visit [http://localhost:8000/api/docs/](http://localhost:8000/api/docs/) to explore the API interactively.
 
