@@ -1,4 +1,4 @@
-# api/health.py
+# api/view/health.py
 """
 Health check endpoint pour monitoring et orchestration Docker
 """
