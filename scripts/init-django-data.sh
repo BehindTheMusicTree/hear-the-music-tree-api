@@ -64,27 +64,15 @@ apply_migrations() {
 
 load_initial_fixtures() {
   log_with_script_prefixe "Loading initial data."
-  log_with_script_prefixe "Loading app.json..."
-  app_fixture="${PROJECT_DIR}${API_DIR_NAME}/fixtures/app.json"
-  if [ -f "$app_fixture" ]; then
-      python3 $MANAGE_SCRIPT loaddata $app_fixture
-      if [ $? -ne 0 ]; then
-          log_with_script_prefixe "ERROR: Failed to load initial data from $app_fixture" >&2
-          exit 1
-      fi
-  else
-      log_with_script_prefixe "ERROR: app.json not found in ${PROJECT_DIR}${API_DIR_NAME}/fixtures/" >&2
-      exit 1
-  fi
-  log_with_script_prefixe "app.json loaded successfully."
+  fixtures_dir="${PROJECT_DIR}${API_DIR_NAME}/fixtures"
 
-  log_with_script_prefixe "Loading other fixtures..."
-  for fixture in ${PROJECT_DIR}${API_DIR_NAME}/fixtures/*.json; 
+  if [ ! -d "$fixtures_dir" ]; then
+    log_with_script_prefixe "No fixtures directory found at $fixtures_dir. Skipping fixture loading."
+    return 0
+  fi
+
+  for fixture in "$fixtures_dir"/*.json;
   do
-    if [ "$fixture" = "$app_fixture" ]; then
-      continue
-    fi
-    
     if [ ! -f "$fixture" ]; then
       continue
     fi
