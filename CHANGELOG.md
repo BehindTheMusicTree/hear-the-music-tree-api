@@ -56,7 +56,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 **Note:** During releases, maintainers will move entries from `[Unreleased]` to a versioned section (e.g., `## [0.2.8] - 2025-01-XX`).
 
-## [Unreleased]
+## [v1.0.2] - 2026-02-12
 
 ### Added
 
@@ -111,6 +111,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **CONTRIBUTING.md**: Add Database migrations section (create in dev, never makemigrations in prod, migrations run on deploy, backward-compatibility)
 - **workflows.md**: Document that migrations are applied by container entrypoint, not by deploy workflow
+
+## [Unreleased]
 
 ## [v0.3.6] - 2026-02-06
 
