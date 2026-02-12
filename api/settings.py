@@ -676,7 +676,7 @@ def setup_django_constants():
         'DESCRIPTION': "API to handle genre oriented music libraries",
         'VERSION': os.environ.get('APP_VERSION'),
         'SERVE_INCLUDE_SCHEMA': False,
-        'SCHEMA_PATH_PREFIX': '/api/v[0-9]',
+        'SCHEMA_PATH_PREFIX': r'/v[\d.]+',
         'COMPONENT_SPLIT_REQUEST': True,
         'COMPONENT_NO_READ_ONLY_REQUIRED': True,
         'APPEND_COMPONENTS': {
