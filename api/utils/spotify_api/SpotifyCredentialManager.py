@@ -8,7 +8,7 @@ class SpotifyCredentialManager:
         self.client_id = settings.SPOTIFY_CLIENT_ID
         self.client_secret = settings.SPOTIFY_CLIENT_SECRET
         self.redirect_uri = settings.SPOTIFY_REDIRECT_URI
-        self.scope = settings.SPOTIFY_SCOPE
+        self.scope = settings.SPOTIFY_SCOPES
 
     def get_client_credentials(self) -> dict:
         return {

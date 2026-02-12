@@ -73,8 +73,9 @@ jobs:
           SERVER_DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.SERVER_DEPLOY_SSH_PRIVATE_KEY }}
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
           ACOUSTID_API_KEY: ${{ secrets.ACOUSTID_API_KEY }}
-          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID_PROD }}
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SPOTIFY_SCOPES: ${{ secrets.SPOTIFY_SCOPES }}
           TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
         run: |
           bash scripts/check-workflow-env.sh \
@@ -167,6 +168,7 @@ jobs:
             echo 'SPOTIFY_CLIENT_ID='\''${{ secrets.SPOTIFY_CLIENT_ID }}'\''' >> ${{ env.API_ENV_FILE }} &&
             echo 'SPOTIFY_CLIENT_SECRET='\''${{ secrets.SPOTIFY_CLIENT_SECRET }}'\''' >> ${{ env.API_ENV_FILE }} &&
             echo 'SPOTIFY_REDIRECT_URI='\''${{ vars.GTMT_FRONT_SUBDOMAIN_NAME }}.${{ vars.DOMAIN_NAME }}/${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}'\''' >> ${{ env.API_ENV_FILE }} &&
+            echo 'SPOTIFY_SCOPES='\''${{ vars.SPOTIFY_SCOPES }}'\''' >> ${{ env.API_ENV_FILE }} &&
             echo 'CSRF_TRUSTED_ORIGINS=${{ vars.CSRF_TRUSTED_ORIGINS }}' >> ${{ env.API_ENV_FILE }} &&
             echo 'ALLOWED_HOSTS=${{ vars.ALLOWED_HOSTS }}' >> ${{ env.API_ENV_FILE }} &&
 
