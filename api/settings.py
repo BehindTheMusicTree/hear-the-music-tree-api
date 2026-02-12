@@ -706,7 +706,7 @@ def setup_media_dirs():
     global SPOTIFY_CLIENT_SECRET
     global SPOTIFY_REDIRECT_URI
     global SPOTIFY_SCOPES
-    SPOTIFY_CLIENT_ID = load_required_secret_env_var('SPOTIFY_CLIENT_ID')
+    SPOTIFY_CLIENT_ID = load_required_str_env_var('SPOTIFY_CLIENT_ID')
     print_django(f"SPOTIFY_CLIENT_ID = {SPOTIFY_CLIENT_ID}")
     SPOTIFY_CLIENT_SECRET = load_required_secret_env_var('SPOTIFY_CLIENT_SECRET')
     print_django(f"SPOTIFY_CLIENT_SECRET = {SPOTIFY_CLIENT_SECRET}")
