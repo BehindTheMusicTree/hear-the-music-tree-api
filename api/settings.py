@@ -102,7 +102,7 @@ DATA_DIR: Path
 SPOTIFY_CLIENT_ID: str
 SPOTIFY_CLIENT_SECRET: str
 SPOTIFY_REDIRECT_URI: str
-SPOTIFY_SCOPE = "user-library-read"
+SPOTIFY_SCOPES: str
 
 # Secret Key
 SECRET_KEY: str
@@ -705,9 +705,11 @@ def setup_media_dirs():
     global SPOTIFY_CLIENT_ID
     global SPOTIFY_CLIENT_SECRET
     global SPOTIFY_REDIRECT_URI
+    global SPOTIFY_SCOPES
     SPOTIFY_CLIENT_ID = load_required_secret_env_var('SPOTIFY_CLIENT_ID')
     SPOTIFY_CLIENT_SECRET = load_required_secret_env_var('SPOTIFY_CLIENT_SECRET')
     SPOTIFY_REDIRECT_URI = load_required_str_env_var('SPOTIFY_REDIRECT_URI',)
+    SPOTIFY_SCOPES = load_required_str_env_var('SPOTIFY_SCOPES',)
     print_django("Spotify API credentials loaded.")
 
     global MEDIA_ROOT  # Django constant, do not rename.
