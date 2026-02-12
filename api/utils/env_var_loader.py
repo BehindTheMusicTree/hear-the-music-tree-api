@@ -9,8 +9,8 @@ from api.utils.utils import print_django
 
 def load_required_str_env_var(var_name: str, must_print_value: bool = True) -> str:
     var_value = os.getenv(var_name)
-    if var_value is None:
-        raise EnvironmentError(f"The {var_name} environment variable must be set")
+    if var_value is None or var_value == "":
+        raise EnvironmentError(f"The {var_name} environment variable must be set and non-empty")
     if must_print_value:
         print_django(f"{var_name}: {var_value}")
     else:
