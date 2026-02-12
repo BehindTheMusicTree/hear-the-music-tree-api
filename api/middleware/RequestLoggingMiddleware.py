@@ -55,7 +55,6 @@ class RequestLoggingMiddleware:
                 self.requestDebugLogger.error(f"[{request_id}] Error reading request body: {str(e)}")
 
         try:
-            self.requestDebugLogger.info(f"[{request_id}] DEBUG: About to call get_response")
             response = self.get_response(request)
             duration = time.time() - start_time
 
