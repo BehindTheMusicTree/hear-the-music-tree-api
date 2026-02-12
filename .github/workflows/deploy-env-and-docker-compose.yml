@@ -167,7 +167,7 @@ jobs:
             echo 'ACOUSTID_API_KEY='\''${{ secrets.ACOUSTID_API_KEY }}'\''' >> ${{ env.API_ENV_FILE }} &&
             echo 'SPOTIFY_CLIENT_ID='\''${{ secrets.SPOTIFY_CLIENT_ID_PROD }}'\''' >> ${{ env.API_ENV_FILE }} &&
             echo 'SPOTIFY_CLIENT_SECRET='\''${{ secrets.SPOTIFY_CLIENT_SECRET }}'\''' >> ${{ env.API_ENV_FILE }} &&
-            echo 'SPOTIFY_REDIRECT_URI='\''${{ vars.GTMT_FRONT_SUBDOMAIN_NAME }}.${{ vars.DOMAIN_NAME }}/${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}'\''' >> ${{ env.API_ENV_FILE }} &&
+            echo 'SPOTIFY_REDIRECT_URI='\''https://${{ vars.GTMT_FRONT_SUBDOMAIN_NAME }}.${{ vars.DOMAIN_NAME }}/${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}'\''' >> ${{ env.API_ENV_FILE }} &&
             echo 'SPOTIFY_SCOPES='\''${{ vars.SPOTIFY_SCOPES }}'\''' >> ${{ env.API_ENV_FILE }} &&
             echo 'CSRF_TRUSTED_ORIGINS=${{ vars.CSRF_TRUSTED_ORIGINS }}' >> ${{ env.API_ENV_FILE }} &&
             echo 'ALLOWED_HOSTS=${{ vars.ALLOWED_HOSTS }}' >> ${{ env.API_ENV_FILE }} &&
