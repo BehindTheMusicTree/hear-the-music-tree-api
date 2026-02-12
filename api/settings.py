@@ -63,6 +63,7 @@ PAGINATION_PAGE_SIZE_MULTIMODEL_DEFAULT: int
 PAGINATION_PAGE_SIZE_MAX: int  # Security measure to avoid a DoS attack if a user requests a huge page size
 CRITERIA_TREE_IMPORT_MAX_ROOT_COUNT: int
 CRITERIA_TREE_IMPORT_MAX_TOTAL_COUNT: int
+
 # AFP Connection
 AFP_POST_FULL_URL: str
 
@@ -622,6 +623,9 @@ def setup_templates():
 
 
 def setup_django_constants():
+    global APP_TITLE
+    APP_TITLE = load_required_str_env_var('APP_TITLE')
+
     global WSGI_APPLICATION
     WSGI_APPLICATION = 'api.wsgi.application'
 
@@ -668,9 +672,9 @@ def setup_django_constants():
 
     global SPECTACULAR_SETTINGS
     SPECTACULAR_SETTINGS = {
-        'TITLE': APP_NAME,
+        'TITLE': APP_TITLE,
         'DESCRIPTION': "API to handle genre oriented music libraries",
-        'VERSION': '0.1.0',
+        'VERSION': os.environ.get('APP_VERSION'),
         'SERVE_INCLUDE_SCHEMA': False,
         'SCHEMA_PATH_PREFIX': '/api/v[0-9]',
         'COMPONENT_SPLIT_REQUEST': True,

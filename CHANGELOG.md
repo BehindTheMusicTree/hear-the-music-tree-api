@@ -62,6 +62,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Dependencies**: Upgrade drf-spectacular to version 0.29.0
 
+- **OpenAPI schema**: Title and version now configurable and aligned with app
+  - OpenAPI `info.version` uses `APP_VERSION` (e.g. 1.0.2) instead of hardcoded 0.1.0
+  - OpenAPI title can be set via `APP_TITLE` for a human-readable docs title
+
 ### Fixed
 
 - **OpenAPI schema**: Fix TypeError when generating schema for models with DecimalField/GeneratedField
