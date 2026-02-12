@@ -58,6 +58,30 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [v1.0.2] - 2026-02-12
 
+### Changed
+
+(No changes yet.)
+
+## [v1.0.3] - 2026-02-13
+
+### Changed
+
+- **Dependencies**: Upgrade drf-spectacular to version 0.29.0
+
+- **OpenAPI schema**: Title and version now configurable and aligned with app
+  - OpenAPI `info.version` uses `APP_VERSION` (e.g. 1.0.2) instead of hardcoded 0.1.0
+  - OpenAPI title set via `APP_TITLE` for human-readable docs title
+
+- **OpenAPI schema**: Path prefix updated for subdomain deployment
+  - `SCHEMA_PATH_PREFIX` changed from `/api/v[0-9]` to `/v[\d.]+` so it matches the version segment only (no `/api/` prefix)
+
+### Fixed
+
+- **OpenAPI schema**: Fix TypeError when generating schema for models with DecimalField/GeneratedField
+  - Add custom AppAutoSchema that maps GeneratedField via output_field and passes max_digits/decimal_places for DecimalField so /schema/ and docs endpoints work
+
+## [v1.0.2] - 2026-02-13
+
 ### Added
 
 - **Reference Contexts**: Implement public read-only reference contexts for all major API endpoints
@@ -106,7 +130,6 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **check-django-initialized.sh**: Show check command output
   - Display check_data_initialized output instead of hiding it
   - Better visibility into why initialization check passes/fails
-
 ### Documentation
 
 - **CONTRIBUTING.md**: Add Database migrations section (create in dev, never makemigrations in prod, migrations run on deploy, backward-compatibility)
