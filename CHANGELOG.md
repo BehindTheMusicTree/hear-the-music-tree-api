@@ -62,6 +62,11 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Dependencies**: Upgrade drf-spectacular to version 0.29.0
 
+### Fixed
+
+- **OpenAPI schema**: Fix TypeError when generating schema for models with DecimalField/GeneratedField
+  - Add custom AppAutoSchema that maps GeneratedField via output_field and passes max_digits/decimal_places for DecimalField so /schema/ and docs endpoints work
+
 ## [v1.0.2] - 2026-02-13
 
 ### Added
