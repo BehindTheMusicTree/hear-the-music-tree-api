@@ -60,7 +60,7 @@ class TestCase(NullableListBodyDataTestCase, UploadedTrackTestCase):
         track = self.model_fixture_factory.create_uploaded_track_with_file(title="koko")
         malformed_put_json_field_name = "artists_names[]"
         response = self.api_client.put(
-            path=reverse('uploaded-track-detail', kwargs={'pk': track.uuid}),
+            path=reverse('me-uploaded-track-detail', kwargs={'pk': track.uuid}),
             data={malformed_put_json_field_name: ['muse']}, format='json', handle_response=self._set_results)
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST

@@ -52,16 +52,16 @@ Orchestrates release: collect static files, build Docker image, deploy to the te
 
 1. **determine-version** (Determine version) – extracts version from git tag
 2. **static** (Static files) – calls `static-files.yml`, commits and pushes collected static files
-3. **build** (Docker image) – calls `build.yml` with commit hash from step 2
+3. **build-and-push** (Docker image) – calls `build-and-push.yml` with commit hash from step 2
 4. **deploy** (Deploy) – calls `deploy.yml` to deploy to the test server
 
 **Environment:** Uses `TEST` environment vars and secrets.
 
 **Versioning:** Version is automatically extracted from git tags (e.g., `refs/tags/v0.3.4` → `0.3.4`). If not triggered by a tag, it fetches the latest git tag.
 
-## Build
+## Build And Push
 
-**File:** `.github/workflows/build.yml`
+**File:** `.github/workflows/build-and-push.yml`
 
 Builds the app Docker image and pushes it to Docker Hub.
 
@@ -91,6 +91,8 @@ Deploys the application to the test server via SSH and redeployment webhook.
 4. **redeploy-webhook-call** (Redeploy webhook) – call BehindTheMusicTree server-management redeployment webhook (depends on jobs 2 and 3)
 
 **Environment:** `TEST`. Uses `SERVER_DEPLOY_SSH_PRIVATE_KEY`, `DOMAIN_NAME`, `WEBHOOK_DIR`, etc.
+
+**Migrations:** The workflow does not run Django migrations. Migrations are applied when the container starts: the API container entrypoint (`scripts/entrypoint.sh`) runs `migrate` after the database is ready, so each new deployment applies pending migrations before Gunicorn starts.
 
 ## Static Files
 

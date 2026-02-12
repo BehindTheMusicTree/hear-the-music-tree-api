@@ -58,6 +58,60 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Added
+
+- **Reference Contexts**: Implement public read-only reference contexts for all major API endpoints
+  - Add reference contexts for genres, albums, artists, plays, tags, and library/uploaded endpoints
+  - Create Reference ViewSets with AllowAny permissions and system user fallback for public access
+  - Add ReferencePlaylistViewSet and ReferenceManualPlaylistViewSet so reference/playlists and reference/manual-playlists expose system-owned public data
+  - Restructure URL paths to hierarchical design (/me/ and /reference/ scopes)
+  - Update router registrations in urls.py for new hierarchical paths
+  - Regenerate API documentation with contexts tables for all endpoints
+  - Update test reverse calls and import paths to reflect new URL structure
+  - Modify Bruno test files to use new hierarchical URLs
+  - Ensure all endpoint tests pass with the new reference contexts
+
+- **Health Check**: Add health check endpoint to API for improved service monitoring
+
+### Fixed
+
+- **CriteriaType**: Seed genre and tag criteria types in migration so reference genre tree load-example and other flows no longer raise DoesNotExist
+  - Add data migration `0003_seed_criteria_types` to ensure `CriteriaType` rows with pk 0 (genre) and 1 (tag) exist
+
+### Improved
+
+- **Deployment**: Apply Django migrations on every container start
+  - Entrypoint always runs `migrate` after DB is ready (first init and subsequent deploys)
+  - Single code path; migrate is idempotent
+
+- **Entrypoint**: Use init-django-data instead of reinit when Django is not initialized
+  - Prevents DROP USER / database purge on deploy when the init check fails or on first run
+  - Reinit (purge + init) remains for manual use only; container only runs init (create DB/role if missing, migrate, fixtures)
+
+- **init-django-data.sh**: Follow best practices for migrations
+  - Only run `makemigrations` if no migration files exist (e.g., after purge)
+  - In production/normal init, migrations should already be in repo; only `migrate` runs
+  - Capture and log migrate output for better debugging
+  - Exit with error code if makemigrations or migrate fails
+
+- **check_data_initialized**: Handle missing tables gracefully
+  - Check if User table exists before querying it (prevents ProgrammingError)
+  - Properly detect "not initialized" state when tables don't exist
+  - Better error messages for debugging
+
+- **entrypoint.sh**: Improve migration error visibility
+  - Capture and log migrate output to diagnose migration failures
+  - Show exit code when migrations fail
+
+- **check-django-initialized.sh**: Show check command output
+  - Display check_data_initialized output instead of hiding it
+  - Better visibility into why initialization check passes/fails
+
+### Documentation
+
+- **CONTRIBUTING.md**: Add Database migrations section (create in dev, never makemigrations in prod, migrations run on deploy, backward-compatibility)
+- **workflows.md**: Document that migrations are applied by container entrypoint, not by deploy workflow
+
 ## [v0.3.6] - 2026-02-06
 
 ### CI

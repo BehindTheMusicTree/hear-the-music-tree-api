@@ -2,7 +2,7 @@ from rest_framework import status
 
 from api.serializer.model.artist.detailed import Fields as ArtistFields
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.test.integration.view.artist.ArtistTestCase import ArtistTestCase
+from api.test.tests.integration.artist.ArtistTestCase import ArtistTestCase
 from api.utils import data_transformer
 
 

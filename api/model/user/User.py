@@ -25,6 +25,10 @@ if TYPE_CHECKING:
 class User(AbstractUser, BaseModel):
     DEFAULT_UPLOADED_TRACK_FILENAME_WITH_EXTENSION = "default.mp3"
 
+    is_system = models.BooleanField(
+        default=False,
+        help_text="Designates a user as a system-owned account. Cannot log in."
+    )
     is_test_user = models.BooleanField(default=False)
     lib_path_relative_to_media = models.GeneratedField(  # type: ignore
         expression=ConditionalExpression(
@@ -55,6 +59,13 @@ class User(AbstractUser, BaseModel):
 
     def does_track_filename_exist_in_lib(self, test_uploaded_track_filename: str):
         return os.path.isfile(Path(self.lib_abs_path) / test_uploaded_track_filename)
+
+    def save(self, *args, **kwargs):
+        if self.is_system:
+            self.is_active = True
+            self.is_staff = False
+            self.is_superuser = False
+        super().save(*args, **kwargs)
 
     def delete(self, *args, **kwargs):
         if self.lib_abs_path.exists():

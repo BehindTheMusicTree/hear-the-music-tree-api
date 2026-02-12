@@ -12,8 +12,8 @@ class GenreTestCase(AppTestCase[Genre]):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.detail_endpoint = 'genre-detail'
-        self.list_endpoint = 'genre-list'
+        self.detail_endpoint = 'me-genre-detail'
+        self.list_endpoint = 'me-genre-list'
 
     def _retrieve_genre(self, uuid: UUID):
         return self.api_client.get(
@@ -59,7 +59,7 @@ class GenreTestCase(AppTestCase[Genre]):
                                     content_type='application/json',
                                     handle_response=self._set_results)
 
-    def _post_genres_tree_load_reference(self):
-        return self.api_client.post(path=reverse(self.list_endpoint) + 'tree/load-reference/',
+    def _post_genres_tree_load_example(self):
+        return self.api_client.post(path=reverse(self.list_endpoint) + 'tree/load-example/',
                                     content_type='application/json',
                                     handle_response=self._set_error_response_result_if_failure)

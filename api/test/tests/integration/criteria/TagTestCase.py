@@ -13,8 +13,8 @@ class TagTestCase(AppTestCase[Tag]):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.detail_endpoint = 'tag-detail'
-        self.list_endpoint = 'tag-list'
+        self.detail_endpoint = 'me-tag-detail'
+        self.list_endpoint = 'me-tag-list'
 
     def _retrieve_tag(self, uuid: UUID):
         return self.api_client.get(
