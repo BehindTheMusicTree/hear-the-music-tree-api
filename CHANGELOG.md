@@ -58,6 +58,12 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Changed
+
+- **Dependencies**: Upgrade drf-spectacular to version 0.29.0
+
+## [v1.0.2] - 2026-02-13
+
 ### Added
 
 - **Reference Contexts**: Implement public read-only reference contexts for all major API endpoints
@@ -106,7 +112,6 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **check-django-initialized.sh**: Show check command output
   - Display check_data_initialized output instead of hiding it
   - Better visibility into why initialization check passes/fails
-
 ### Documentation
 
 - **CONTRIBUTING.md**: Add Database migrations section (create in dev, never makemigrations in prod, migrations run on deploy, backward-compatibility)
