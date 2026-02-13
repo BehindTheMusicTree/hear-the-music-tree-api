@@ -2,11 +2,14 @@ from drf_spectacular.utils import extend_schema
 
 from api.model.user.spotify.SpotifyUser import SpotifyUser
 from api.serializer.model.user.spotify.output.detailed import SpotifyUserDetailedSerializer
+from api.view.permission.IsAuthenticatedReturn401 import IsAuthenticatedReturn401
 from api.view.viewset.model.AppModelViewSet import AppModelViewSet
 from api.utils.decorators.spotify import spotify_user_required
 
 
 class SpotifyUserViewSet(AppModelViewSet[SpotifyUser]):
+    permission_classes = [IsAuthenticatedReturn401]
+
     def __init__(self, **kwargs):
         super().__init__(
             model_class=SpotifyUser,
@@ -25,7 +28,8 @@ class SpotifyUserViewSet(AppModelViewSet[SpotifyUser]):
         description="Get the current user's Spotify profile",
         responses={
             200: SpotifyUserDetailedSerializer,
-            401: {"description": "Not authenticated (1006) or Spotify not authenticated (1005)"}
+            401: {"description": "Not authenticated (1006)"},
+            403: {"description": "Spotify not linked (1005)"}
         }
     )
     @spotify_user_required

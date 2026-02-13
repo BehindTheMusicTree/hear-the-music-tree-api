@@ -90,7 +90,7 @@ class ErrorResponseFields:
         ApiErrorCodeNumeric.AUTH_TOKEN_EXPIRED: status.HTTP_401_UNAUTHORIZED,
         ApiErrorCodeNumeric.AUTH_TOKEN_INVALID: status.HTTP_401_UNAUTHORIZED,
         ApiErrorCodeNumeric.AUTH_INSUFFICIENT_PERMISSIONS: status.HTTP_403_FORBIDDEN,
-        ApiErrorCodeNumeric.AUTH_SPOTIFY_NOT_AUTHENTICATED: status.HTTP_401_UNAUTHORIZED,
+        ApiErrorCodeNumeric.AUTH_SPOTIFY_NOT_AUTHENTICATED: status.HTTP_403_FORBIDDEN,
         ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED: status.HTTP_401_UNAUTHORIZED,
 
         # Validation errors -> 400

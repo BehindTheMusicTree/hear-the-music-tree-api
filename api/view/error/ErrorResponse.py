@@ -102,9 +102,14 @@ class ErrorResponse:
         except (AttributeError, TypeError):
             message = getattr(exception, 'default_detail', str(exception))
             code = getattr(exception, 'default_code', 'authentication_failed')
+        api_error_code = (
+            ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED
+            if code == 'authentication_required'
+            else ApiErrorCodeNumeric.AUTH_INVALID_CREDENTIALS
+        )
         return ErrorResponse.create_error_response(
             error_detail={'message': message, 'code': code},
-            api_error_code=ApiErrorCodeNumeric.AUTH_INVALID_CREDENTIALS)
+            api_error_code=api_error_code)
 
     @staticmethod
     def _from_unhandled_integrity_error(exception: IntegrityError) -> JsonResponse:
