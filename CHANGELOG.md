@@ -58,6 +58,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Fixed
+
+- **Spotify**: Added SpotifyAuthenticationException to custom exception handler for improved error handling
+
 ### Improved
 
 - **env**: Add SUPERADMIN and DEMO credentials to .env.dev.example for enhanced configuration
