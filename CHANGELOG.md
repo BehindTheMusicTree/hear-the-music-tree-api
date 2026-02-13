@@ -64,6 +64,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 -  **Users**: Added SUPERADMIN and DEMO environment variables to deployment workflow for enhanced configuration
 
+### Fixed
+
+- **Workflow**:Improved branch detection in static-files workflow by excluding symbolic refs
+
 ## [v1.0.3] - 2026-02-13
 
 ### Changed
