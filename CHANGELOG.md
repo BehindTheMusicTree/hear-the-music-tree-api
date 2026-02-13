@@ -70,6 +70,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Fixed
 
+- **URL routing**: Register `users/spotify` before `users` so GET `/users/spotify/` is handled by SpotifyUserViewSet instead of BaseUserViewSet detail with pk='spotify' (was returning 403 from IsAdminUser)
 - **Spotify**: Added SpotifyAuthenticationException to custom exception handler so Spotify auth failures return 401 JSON instead of 500 in DEBUG
 
 ### Improved
