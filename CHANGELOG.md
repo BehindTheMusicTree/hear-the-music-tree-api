@@ -56,11 +56,13 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 **Note:** During releases, maintainers will move entries from `[Unreleased]` to a versioned section (e.g., `## [0.2.8] - 2025-01-XX`).
 
-## [v1.0.2] - 2026-02-12
+## [Unreleased]
 
-### Changed
+## [v1.0.4] - 2026-02-13
 
-(No changes yet.)
+### Added
+
+-  **Users**: Added SUPERADMIN and DEMO environment variables to deployment workflow for enhanced configuration
 
 ## [v1.0.3] - 2026-02-13
 
@@ -69,7 +71,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **Dependencies**: Upgrade drf-spectacular to version 0.29.0
 
 - **OpenAPI schema**: Title and version now configurable and aligned with app
-  - OpenAPI `info.version` uses `APP_VERSION` (e.g. 1.0.2) instead of hardcoded 0.1.0
+  - OpenAPI `info.version` uses `APP_VERSION` (e.g. 1.0.4) instead of hardcoded 0.1.0
   - OpenAPI title set via `APP_TITLE` for human-readable docs title
 
 - **OpenAPI schema**: Path prefix updated for subdomain deployment
