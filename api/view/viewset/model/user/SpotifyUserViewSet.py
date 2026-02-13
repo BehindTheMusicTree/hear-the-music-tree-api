@@ -25,18 +25,7 @@ class SpotifyUserViewSet(AppModelViewSet[SpotifyUser]):
         description="Get the current user's Spotify profile",
         responses={
             200: SpotifyUserDetailedSerializer,
-            401: {
-                "type": "object",
-                "properties": {
-                    "error": {"type": "string"}
-                }
-            },
-            403: {
-                "type": "object",
-                "properties": {
-                    "error": {"type": "string"}
-                }
-            }
+            401: {"description": "Not authenticated (1006) or Spotify not authenticated (1005)"}
         }
     )
     @spotify_user_required
