@@ -18,6 +18,18 @@ class TestSpotifyUserRequiredDecoratorIntegration(AppTestCase):
         assert data['details']['code'] == 'authentication_required'
         assert data['success'] is False
 
+    def test_spotify_user_list_with_base_user_then_403_spotify_not_authenticated(self):
+        self._login_as_user(self.test_user1)
+        url = self._spotify_user_list_url()
+
+        response = self.api_client.get(url)
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        data = response.json()
+        assert data['code'] == ApiErrorCodeNumeric.AUTH_SPOTIFY_NOT_AUTHENTICATED
+        assert data['details']['code'] == 'spotify_authorization_required'
+        assert data['success'] is False
+
     def test_spotify_user_retrieve_without_auth_then_401_auth_not_authenticated(self):
         self._logout()
         url = self._spotify_user_detail_url(self.spotify_test_user_1.pk)

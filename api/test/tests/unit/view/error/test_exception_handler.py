@@ -38,23 +38,23 @@ class TestExceptionHandlerPermissionDenied(TestCase):
         assert data['code'] == ApiErrorCodeNumeric.AUTH_INSUFFICIENT_PERMISSIONS
         assert data['success'] is False
 
-    def test_permission_denied_with_no_request_in_context_then_403_forbidden(self):
+    def test_permission_denied_with_no_request_in_context_then_401_unauthorized(self):
         exc = PermissionDenied()
         context = {}
 
         response = _handle_exception_with_request(exc, context)
 
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
         data = json.loads(response.content)
-        assert data['code'] == ApiErrorCodeNumeric.AUTH_INSUFFICIENT_PERMISSIONS
+        assert data['code'] == ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED
         assert data['success'] is False
 
-    def test_permission_denied_with_none_context_then_403_forbidden(self):
+    def test_permission_denied_with_none_context_then_401_unauthorized(self):
         exc = PermissionDenied()
 
         response = _handle_exception_with_request(exc, None)
 
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
         data = json.loads(response.content)
-        assert data['code'] == ApiErrorCodeNumeric.AUTH_INSUFFICIENT_PERMISSIONS
+        assert data['code'] == ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED
         assert data['success'] is False

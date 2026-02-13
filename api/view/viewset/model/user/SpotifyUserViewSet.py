@@ -14,6 +14,7 @@ class SpotifyUserViewSet(AppModelViewSet[SpotifyUser]):
         super().__init__(
             model_class=SpotifyUser,
             detailed_serializer_class=SpotifyUserDetailedSerializer,
+            simple_serializer_class=SpotifyUserDetailedSerializer,
             is_private_resource=False,
             is_pk_uuid=False,
             **kwargs
@@ -23,6 +24,18 @@ class SpotifyUserViewSet(AppModelViewSet[SpotifyUser]):
         if not self.request.user.is_authenticated:
             return super().get_queryset().none()
         return super().get_queryset().filter(id=self.request.user.id)
+
+    @extend_schema(
+        description="List current user's Spotify profile (single item or empty)",
+        responses={
+            200: SpotifyUserDetailedSerializer,
+            401: {"description": "Not authenticated (1006)"},
+            403: {"description": "Spotify not linked (1005)"}
+        }
+    )
+    @spotify_user_required
+    def list(self, request, *args, **kwargs):
+        return self._handle_list()
 
     @extend_schema(
         description="Get the current user's Spotify profile",

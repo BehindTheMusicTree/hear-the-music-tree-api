@@ -67,12 +67,15 @@ def custom_exception_handler(exc, context):
 
 
 def _handle_exception_with_request(exc, context):
-    request = context.get('request') if context else None
-    if (
-        isinstance(exc, PermissionDenied)
-        and request is not None
-        and not getattr(request.user, 'is_authenticated', True)
-    ):
+    request = None
+    if context:
+        request = context.get('request')
+        if request is None and context.get('view') is not None:
+            request = getattr(context['view'], 'request', None)
+    is_authenticated = False
+    if request is not None and getattr(request, 'user', None) is not None:
+        is_authenticated = bool(getattr(request.user, 'is_authenticated', False))
+    if isinstance(exc, PermissionDenied) and not is_authenticated:
         return ErrorResponse.create_error_response(
             error_detail={'message': 'Authentication required', 'code': 'authentication_required'},
             api_error_code=ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED
