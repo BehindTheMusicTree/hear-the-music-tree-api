@@ -77,6 +77,12 @@ jobs:
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET_PROD }}
           SPOTIFY_SCOPES: ${{ secrets.SPOTIFY_SCOPES }}
           TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
+          SUPERADMIN_USERNAME: ${{ secrets.SUPERADMIN_USERNAME }}
+          SUPERADMIN_EMAIL: ${{ vars.SUPERADMIN_EMAIL }}
+          SUPERADMIN_PASSWORD: ${{ secrets.SUPERADMIN_PASSWORD }}
+          DEMO_USERNAME: ${{ secrets.DEMO_USERNAME }}
+          DEMO_EMAIL: ${{ vars.DEMO_EMAIL }}
+          DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
         run: |
           bash scripts/check-workflow-env.sh \
             DOMAIN_NAME \
@@ -127,7 +133,13 @@ jobs:
             SPOTIFY_CLIENT_ID \
             SPOTIFY_CLIENT_SECRET \
             TMTA_USERNAME \
-            
+            SUPERADMIN_USERNAME \
+            SUPERADMIN_EMAIL \
+            SUPERADMIN_PASSWORD \
+            DEMO_USERNAME \
+            DEMO_EMAIL \
+            DEMO_PASSWORD \
+
   set-env-variables-on-server:
     name: Set env vars
     needs: [check-vars-and-secrets]
@@ -196,6 +208,12 @@ jobs:
             echo 'AFP_POST_ENDPOINT=${{ vars.AFP_POST_ENDPOINT }}' >> ${{ env.API_ENV_FILE }} &&
 
             echo 'TMTA_USERNAME=${{ secrets.TMTA_USERNAME }}' >> ${{ env.API_ENV_FILE }} &&
+            echo 'SUPERADMIN_USERNAME=${{ secrets.SUPERADMIN_USERNAME }}' >> ${{ env.API_ENV_FILE }} &&
+            echo 'SUPERADMIN_EMAIL=${{ vars.SUPERADMIN_EMAIL }}' >> ${{ env.API_ENV_FILE }} &&
+            echo 'SUPERADMIN_PASSWORD='\''${{ secrets.SUPERADMIN_PASSWORD }}'\''' >> ${{ env.API_ENV_FILE }} &&
+            echo 'DEMO_USERNAME=${{ secrets.DEMO_USERNAME }}' >> ${{ env.API_ENV_FILE }} &&
+            echo 'DEMO_EMAIL=${{ vars.DEMO_EMAIL }}' >> ${{ env.API_ENV_FILE }} &&
+            echo 'DEMO_PASSWORD='\''${{ secrets.DEMO_PASSWORD }}'\''' >> ${{ env.API_ENV_FILE }} &&
 
             chmod 600 ${{ env.API_ENV_FILE }}
           EOF
