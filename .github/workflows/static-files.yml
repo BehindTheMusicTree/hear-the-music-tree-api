@@ -23,6 +23,7 @@ jobs:
     env:
       ENV: ${{ vars.ENV }}
       APP_NAME: ${{ vars.APP_NAME }}
+      APP_TITLE: ${{ vars.APP_TITLE }}
       DEBUG: false
       DB_IS_NEEDED: false
       APP_IS_EXPOSED: false
