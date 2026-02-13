@@ -76,7 +76,10 @@ jobs:
           if [ -z "$BRANCH" ]; then
             # Find which branch contains the current HEAD (tag commit)
             # Prefer non-main branches first, then fall back to any
-            BRANCH=$(git branch -r --contains HEAD | sed 's|origin/||' | grep -v '^main$' | head -1 || git branch -r --contains HEAD | sed 's|origin/||' | head -1)
+            # Exclude "origin/HEAD -> origin/..." symbolic ref line
+            REMOTE_BRANCHES=$(git branch -r --contains HEAD | grep -v ' -> ')
+            BRANCH=$(echo "$REMOTE_BRANCHES" | sed 's|origin/||' | grep -v '^main$' | head -1)
+            BRANCH=${BRANCH:-$(echo "$REMOTE_BRANCHES" | sed 's|origin/||' | head -1)}
             BRANCH=$(echo "$BRANCH" | xargs)
             
             if [ -z "$BRANCH" ]; then
