@@ -1,8 +1,8 @@
 from functools import wraps
-from rest_framework.response import Response
-from rest_framework import status
 
 from api.model.user.spotify.SpotifyUser import SpotifyUser
+from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
+from api.view.error.ErrorResponse import ErrorResponse
 
 
 def spotify_user_required(view_func):
@@ -22,24 +22,20 @@ def spotify_user_required(view_func):
     @wraps(view_func)
     def wrapper(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
-            return Response(
-                {'error': 'Authentication required to access this resource'},
-                status=status.HTTP_401_UNAUTHORIZED
+            return ErrorResponse.create_error_response(
+                error_detail={'message': 'Authentication required to access this resource', 'code': 'authentication_required'},
+                api_error_code=ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED
             )
 
         try:
-            # Check if the user exists in spotify_user table
             spotify_user = SpotifyUser.objects.get(pk=request.user.pk)
-            # Cast the user to SpotifyUser for this request
             request.user = spotify_user
-            print(f"User cast to SpotifyUser in decorator: {spotify_user.pk}")
         except SpotifyUser.DoesNotExist:
-            return Response(
-                {'error': 'This resource requires Spotify authorization'},
-                status=status.HTTP_403_FORBIDDEN
+            return ErrorResponse.create_error_response(
+                error_detail={'message': 'This resource requires Spotify authorization', 'code': 'spotify_authorization_required'},
+                api_error_code=ApiErrorCodeNumeric.AUTH_SPOTIFY_NOT_AUTHENTICATED
             )
 
-        # Call the original view function with the SpotifyUser
         return view_func(self, request, *args, **kwargs)
 
     return wrapper
