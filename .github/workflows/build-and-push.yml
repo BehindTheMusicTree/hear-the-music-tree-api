@@ -26,6 +26,7 @@ jobs:
       name: TEST
     env:
       APP_VERSION: ${{ inputs.app_version }}
+      APP_TITLE: ${{ vars.APP_TITLE }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -38,7 +39,7 @@ jobs:
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
           APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
           DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
-        run: bash scripts/check-workflow-env.sh DOCKERHUB_USERNAME APP_IMAGE_REPO DOCKERHUB_ACCESS_TOKEN
+        run: bash scripts/check-workflow-env.sh DOCKERHUB_USERNAME APP_IMAGE_REPO DOCKERHUB_ACCESS_TOKEN APP_TITLE
 
       - name: Login to Dockerhub
         run: |
@@ -56,3 +57,4 @@ jobs:
           build-args: |
             PROJECT_DIR=${{ env.CONTAINER_ROOT_DIR }}
             APP_VERSION=${{ inputs.app_version }}
+            APP_TITLE=${{ env.APP_TITLE }}
