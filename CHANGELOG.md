@@ -58,9 +58,19 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Changed
+
+- **Spotify / Auth**: Consistent 401 vs 403 for users/spotify and Spotify-required endpoints
+  - **401** when not logged in to the app (API code 1006, `authentication_required`): frontend should redirect to app login
+  - **403** when logged in but Spotify not linked (API code 1005, `spotify_authorization_required`): frontend should redirect to Spotify OAuth
+  - `IsAuthenticatedReturn401` permission returns 401 instead of DRF default 403 for unauthenticated requests to Spotify user endpoints
+  - Exception handler converts PermissionDenied to 401 when request is unauthenticated (fallback)
+  - `AUTH_SPOTIFY_NOT_AUTHENTICATED` (1005) mapped to 403; `AUTH_NOT_AUTHENTICATED` (1006) to 401
+  - Frontend guide: `docs/frontend/authentication-and-spotify.md`; API doc `docs/api/users_spotify.md` updated with error codes and link
+
 ### Fixed
 
-- **Spotify**: Added SpotifyAuthenticationException to custom exception handler for improved error handling
+- **Spotify**: Added SpotifyAuthenticationException to custom exception handler so Spotify auth failures return 401 JSON instead of 500 in DEBUG
 
 ### Improved
 

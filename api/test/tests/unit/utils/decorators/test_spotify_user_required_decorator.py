@@ -29,7 +29,7 @@ class TestSpotifyUserRequiredDecorator(TestCase):
         assert data['details']['message'] == 'Authentication required to access this resource'
         assert data['success'] is False
 
-    def test_authenticated_user_not_spotify_user_then_401_with_spotify_not_authenticated(self):
+    def test_authenticated_user_not_spotify_user_then_403_spotify_not_authenticated(self):
         wrapped = spotify_user_required(_fake_view)
         mock_self = MagicMock()
         mock_request = MagicMock()
@@ -39,7 +39,7 @@ class TestSpotifyUserRequiredDecorator(TestCase):
         with patch.object(SpotifyUser.objects, 'get', side_effect=SpotifyUser.DoesNotExist):
             response = wrapped(mock_self, mock_request)
 
-        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        assert response.status_code == status.HTTP_403_FORBIDDEN
         data = json.loads(response.content)
         assert data['code'] == ApiErrorCodeNumeric.AUTH_SPOTIFY_NOT_AUTHENTICATED
         assert data['details']['code'] == 'spotify_authorization_required'
