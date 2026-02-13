@@ -58,6 +58,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Improved
+
+- **env**: Add SUPERADMIN and DEMO credentials to .env.dev.example for enhanced configuration
+
 ## [v1.0.4] - 2026-02-13
 
 ### Added
