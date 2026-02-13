@@ -9,6 +9,7 @@ from rest_framework.exceptions import (
 )
 
 from api.exception.spotify import SpotifyAuthenticationException
+from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
 from api.view.error.ErrorResponse import ErrorResponse
 
 
@@ -59,7 +60,21 @@ def custom_exception_handler(exc, context):
         (ValidationError, InvalidToken, NotAuthenticated, AuthenticationFailed, MethodNotAllowed, Http404,
          PermissionDenied, ParseError, UnsupportedMediaType, SpotifyAuthenticationException)):
         if is_test_mode:
-            return ErrorResponse.handle_exception(exc)
+            return _handle_exception_with_request(exc, context)
         return None
 
+    return _handle_exception_with_request(exc, context)
+
+
+def _handle_exception_with_request(exc, context):
+    request = context.get('request') if context else None
+    if (
+        isinstance(exc, PermissionDenied)
+        and request is not None
+        and not getattr(request.user, 'is_authenticated', True)
+    ):
+        return ErrorResponse.create_error_response(
+            error_detail={'message': 'Authentication required', 'code': 'authentication_required'},
+            api_error_code=ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED
+        )
     return ErrorResponse.handle_exception(exc)
