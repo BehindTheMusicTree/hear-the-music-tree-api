@@ -75,6 +75,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Fixed
 
+- **API / OpenAPI**: Decimal fields are serialized as JSON numbers via `AppModelSerializer`: model `DecimalField` and `GeneratedField` with decimal `output_field` map to `FloatField` so schema and response use `number` (fixes Zod/client type mismatch)
+- **Test**: Unit test enforces that all model serializers (Meta.model) extend `AppModelSerializer` so decimal-as-number stays consistent
 - **URL routing**: Spotify profile moved to `me/spotify` (no longer under `users/`), so no route conflict with BaseUserViewSet
 - **Spotify**: Added SpotifyAuthenticationException to custom exception handler so Spotify auth failures return 401 JSON instead of 500 in DEBUG
 
