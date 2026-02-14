@@ -11,7 +11,7 @@ from api.filtering.set.spotify.lib_track.SpotifyLibTrackFilterSet import Spotify
 from api.filtering.set.spotify.lib_track.Fields import Fields as FilterFields
 from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
 from api.model.spotify_resource.children.track.Fields import Fields
-from api.utils.spotify_api.managers.SpotifyApiLibTrackManager import SpotifyApiLibTrackManager as spotify_api_lib_track_manager
+from api.utils.spotify_api.managers.SpotifyApiLibTrackManager import SpotifyApiLibTrackManager
 from api.serializer.model.spotify.lib_track.output.detailed import SpotifyLibTrackDetailedSerializer
 from api.serializer.model.spotify.lib_track.output.simple import SpotifyLibTrackSimpleSerializer
 from api.view.viewset.model.AppModelViewSet import AppModelViewSet
@@ -91,7 +91,7 @@ class SpotifyLibTrackViewSet(AppModelViewSet[SpotifyLibTrack]):
             request.user.save(update_fields=['spotify_sync_in_progress'])
 
         try:
-            tracks = spotify_api_lib_track_manager.SpotifyApiLibTrackManager().quick_sync(request.user)
+            tracks = SpotifyApiLibTrackManager().quick_sync(request.user)
             return Response(
                 {
                     'message': 'Spotify library quick sync completed successfully',
@@ -121,7 +121,7 @@ class SpotifyLibTrackViewSet(AppModelViewSet[SpotifyLibTrack]):
             request.user.save(update_fields=['spotify_sync_in_progress'])
 
         try:
-            spotify_api_lib_track_manager.SpotifyApiLibTrackManager().full_sync(request.user)
+            SpotifyApiLibTrackManager().full_sync(request.user)
             return Response(
                 {'message': 'Spotify library synced successfully'},
                 status=status.HTTP_200_OK
