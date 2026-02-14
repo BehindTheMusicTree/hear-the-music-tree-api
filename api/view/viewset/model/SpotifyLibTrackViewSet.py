@@ -11,7 +11,7 @@ from api.filtering.set.spotify.lib_track.SpotifyLibTrackFilterSet import Spotify
 from api.filtering.set.spotify.lib_track.Fields import Fields as FilterFields
 from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
 from api.model.spotify_resource.children.track.Fields import Fields
-from api.utils.spotify_api.managers.SpotifyApiLibTrackManager import SpotifyApiLibTrackManager as spotify_api_lib_track_manager
+from api.utils.spotify_api.managers.SpotifyApiLibTrackManager import SpotifyApiLibTrackManager
 from api.serializer.model.spotify.lib_track.output.detailed import SpotifyLibTrackDetailedSerializer
 from api.serializer.model.spotify.lib_track.output.simple import SpotifyLibTrackSimpleSerializer
 from api.view.viewset.model.AppModelViewSet import AppModelViewSet
@@ -81,43 +81,28 @@ class SpotifyLibTrackViewSet(AppModelViewSet[SpotifyLibTrack]):
         This only fetches new additions since the last sync and is faster than a full sync.
         """
         print("SpotifyLibTrackViewSet quick_sync user: ", request.user)
-        try:
-            with transaction.atomic():
-                # Check if a sync is already in progress
-                if request.user.spotify_sync_in_progress:
-                    return Response(
-                        {'error': 'A sync is already in progress. Please wait for it to complete.'},
-                        status=status.HTTP_409_CONFLICT
-                    )
-
-                # Mark sync as in progress
-                request.user.spotify_sync_in_progress = True
-                request.user.save(update_fields=['spotify_sync_in_progress'])
-
-            try:
-                tracks = spotify_api_lib_track_manager.SpotifyApiLibTrackManager().quick_sync(request.user)
+        with transaction.atomic():
+            if request.user.spotify_sync_in_progress:
                 return Response(
-                    {
-                        'message': 'Spotify library quick sync completed successfully',
-                        'new_tracks_count': len(tracks)
-                    },
-                    status=status.HTTP_200_OK
+                    {'error': 'A sync is already in progress. Please wait for it to complete.'},
+                    status=status.HTTP_409_CONFLICT
                 )
-            finally:
-                # Reset sync status
-                with transaction.atomic():
-                    request.user.spotify_sync_in_progress = False
-                    request.user.save(update_fields=['spotify_sync_in_progress'])
+            request.user.spotify_sync_in_progress = True
+            request.user.save(update_fields=['spotify_sync_in_progress'])
 
-        except Exception as e:
-            # Ensure sync status is reset even if an error occurs
+        try:
+            tracks = SpotifyApiLibTrackManager().quick_sync(request.user)
+            return Response(
+                {
+                    'message': 'Spotify library quick sync completed successfully',
+                    'new_tracks_count': len(tracks)
+                },
+                status=status.HTTP_200_OK
+            )
+        finally:
             with transaction.atomic():
                 request.user.spotify_sync_in_progress = False
                 request.user.save(update_fields=['spotify_sync_in_progress'])
-            return Response(
-                {'error': str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
 
     @action(detail=False, methods=['post'], url_path='sync/full')
     @spotify_user_required
@@ -126,37 +111,22 @@ class SpotifyLibTrackViewSet(AppModelViewSet[SpotifyLibTrack]):
         Perform a full sync of the user's Spotify library.
         This checks for both additions and removals, but is more resource-intensive.
         """
-        try:
-            with transaction.atomic():
-                # Check if a sync is already in progress
-                if request.user.spotify_sync_in_progress:
-                    return Response(
-                        {'error': 'A sync is already in progress. Please wait for it to complete.'},
-                        status=status.HTTP_409_CONFLICT
-                    )
-
-                # Mark sync as in progress
-                request.user.spotify_sync_in_progress = True
-                request.user.save(update_fields=['spotify_sync_in_progress'])
-
-            try:
-                spotify_api_lib_track_manager.SpotifyApiLibTrackManager().full_sync(request.user)
+        with transaction.atomic():
+            if request.user.spotify_sync_in_progress:
                 return Response(
-                    {'message': 'Spotify library synced successfully'},
-                    status=status.HTTP_200_OK
+                    {'error': 'A sync is already in progress. Please wait for it to complete.'},
+                    status=status.HTTP_409_CONFLICT
                 )
-            finally:
-                # Reset sync status
-                with transaction.atomic():
-                    request.user.spotify_sync_in_progress = False
-                    request.user.save(update_fields=['spotify_sync_in_progress'])
+            request.user.spotify_sync_in_progress = True
+            request.user.save(update_fields=['spotify_sync_in_progress'])
 
-        except Exception as e:
-            # Ensure sync status is reset even if an error occurs
+        try:
+            SpotifyApiLibTrackManager().full_sync(request.user)
+            return Response(
+                {'message': 'Spotify library synced successfully'},
+                status=status.HTTP_200_OK
+            )
+        finally:
             with transaction.atomic():
                 request.user.spotify_sync_in_progress = False
                 request.user.save(update_fields=['spotify_sync_in_progress'])
-            return Response(
-                {'error': str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )

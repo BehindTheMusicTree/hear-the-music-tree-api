@@ -1,7 +1,6 @@
-from rest_framework import serializers
-
 from api.model.musicbrainz_resource.children.recording.MbRecording import Fields as ModelFields
 from api.model.musicbrainz_resource.children.recording.MbRecording import MbRecording
+from api.serializer.AppModelSerializer import AppModelSerializer
 from api.serializer.model.musicbrainz.artist.detailed import MusicbrainzArtistDetailedSerializer
 
 
@@ -16,7 +15,7 @@ class Fields:
     RELEASE_DATE = ModelFields.RELEASE_DATE
 
 
-class MusicbrainzRecordingDetailedSerializer(serializers.ModelSerializer):
+class MusicbrainzRecordingDetailedSerializer(AppModelSerializer):
     musicbrainz_artists = MusicbrainzArtistDetailedSerializer(many=True)
 
     class Meta:

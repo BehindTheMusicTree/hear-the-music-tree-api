@@ -34,6 +34,8 @@ class ErrorResponseFields:
         ApiErrorCodeNumeric.AUTH_TOKEN_EXPIRED: "Authentication token has expired",
         ApiErrorCodeNumeric.AUTH_TOKEN_INVALID: "Invalid authentication token",
         ApiErrorCodeNumeric.AUTH_INSUFFICIENT_PERMISSIONS: "Insufficient permissions for this operation",
+        ApiErrorCodeNumeric.AUTH_SPOTIFY_NOT_AUTHENTICATED: "This resource requires Spotify authorization",
+        ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED: "Authentication required",
 
         # Validation errors
         ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT: "One or more fields contain invalid data. Please check the error details for specific validation requirements",
@@ -88,6 +90,8 @@ class ErrorResponseFields:
         ApiErrorCodeNumeric.AUTH_TOKEN_EXPIRED: status.HTTP_401_UNAUTHORIZED,
         ApiErrorCodeNumeric.AUTH_TOKEN_INVALID: status.HTTP_401_UNAUTHORIZED,
         ApiErrorCodeNumeric.AUTH_INSUFFICIENT_PERMISSIONS: status.HTTP_403_FORBIDDEN,
+        ApiErrorCodeNumeric.AUTH_SPOTIFY_NOT_AUTHENTICATED: status.HTTP_403_FORBIDDEN,
+        ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED: status.HTTP_401_UNAUTHORIZED,
 
         # Validation errors -> 400
         ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT: status.HTTP_400_BAD_REQUEST,
