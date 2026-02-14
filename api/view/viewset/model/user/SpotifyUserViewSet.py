@@ -1,4 +1,5 @@
 from drf_spectacular.utils import extend_schema
+from rest_framework.exceptions import MethodNotAllowed
 
 from api.model.user.spotify.SpotifyUser import SpotifyUser
 from api.serializer.model.user.spotify.output.detailed import SpotifyUserDetailedSerializer
@@ -25,8 +26,10 @@ class SpotifyUserViewSet(AppModelViewSet[SpotifyUser]):
             return super().get_queryset().none()
         return super().get_queryset().filter(id=self.request.user.id)
 
+    http_method_names = ["get", "head", "options"]
+
     @extend_schema(
-        description="List current user's Spotify profile (single item or empty)",
+        description="Get current user's Spotify profile (single item or empty list).",
         responses={
             200: SpotifyUserDetailedSerializer,
             401: {"description": "Not authenticated (1006)"},
@@ -37,14 +40,5 @@ class SpotifyUserViewSet(AppModelViewSet[SpotifyUser]):
     def list(self, request, *args, **kwargs):
         return self._handle_list()
 
-    @extend_schema(
-        description="Get the current user's Spotify profile",
-        responses={
-            200: SpotifyUserDetailedSerializer,
-            401: {"description": "Not authenticated (1006)"},
-            403: {"description": "Spotify not linked (1005)"}
-        }
-    )
-    @spotify_user_required
     def retrieve(self, *args, **kwargs):
-        return self._handle_retrieve()
+        raise MethodNotAllowed("GET", detail="Use GET /me/spotify/ for the current user's profile.")

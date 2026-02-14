@@ -440,8 +440,7 @@ All endpoints are prefixed with the API base URL (`{version}/`). Most endpoints 
 | `GET` | `users/{id}/` | Retrieve a specific user | 🔒 |
 | `PUT` | `users/{id}/` | Update a user | 🔒 |
 | `DELETE` | `users/{id}/` | Delete a user | 🔒 |
-| `GET` | `users/spotify/` | List Spotify users | 🔒 |
-| `GET` | `users/spotify/{id}/` | Retrieve a specific Spotify user | 🔒 |
+| `GET` | `me/spotify/` | Get current user's Spotify profile (list of 0 or 1 item) | 🔒 |
 
 ## Usage
 

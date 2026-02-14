@@ -1,6 +1,6 @@
 # Frontend: Handling authentication and Spotify errors
 
-Use this guide when calling endpoints that require app login and/or Spotify (e.g. `GET /v1.0.4/users/spotify/`, Spotify library, etc.).
+Use this guide when calling endpoints that require app login and/or Spotify (e.g. `GET /v1.0.4/me/spotify/`, Spotify library, etc.).
 
 ## Error response shape
 
@@ -33,7 +33,7 @@ All error responses use this structure:
 
 ## Recommended flow
 
-1. **On request to a Spotify-required endpoint** (e.g. `GET /users/spotify/` or list):
+1. **On request to a Spotify-required endpoint** (e.g. `GET /me/spotify/` or list):
    - Send the request with the app’s JWT (e.g. `Authorization: Bearer <access_token>`).
 
 2. **On response:**
@@ -48,7 +48,7 @@ All error responses use this structure:
 ## Example (pseudo-code)
 
 ```javascript
-const response = await fetch('/v1.0.4/users/spotify/', {
+const response = await fetch('/v1.0.4/me/spotify/', {
   headers: { Authorization: `Bearer ${appAccessToken}` }
 });
 
