@@ -1,0 +1,19 @@
+meta {
+  name: me-user-spotify
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://localhost:8000/api/schema/
+  body: none
+  auth: inherit
+}
+
+headers {
+  Authorization: Bearer {{tokenAccess}}
+}
+
+vars:post-response {
+  manualPlaylistFootUuid: res.body.results[0].uuid
+}
