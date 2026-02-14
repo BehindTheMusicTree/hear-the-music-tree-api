@@ -59,6 +59,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v1.0.5] - 2026-02-15
+
 ### Changed
 
 - **API**: Current user's Spotify profile endpoint moved from `users/spotify/` to `me/spotify/` for consistency with other "current user" resources (`me/artists`, `me/playlists`, etc.). Admin user management remains at `users/`.
@@ -89,6 +91,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ### Added
 
 -  **Users**: Added SUPERADMIN and DEMO environment variables to deployment workflow for enhanced configuration
+
+### Fixed
+
+- **Workflow**:Improved branch detection in static-files workflow by excluding symbolic refs
 
 ## [v1.0.3] - 2026-02-13
 
