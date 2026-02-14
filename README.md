@@ -316,13 +316,17 @@ All endpoints are prefixed with the API base URL (`{version}/`). Most endpoints 
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| `GET` | `library/uploaded/` | List uploaded tracks | 🔒 |
-| `POST` | `library/uploaded/` | Upload a new track | 🔒 |
-| `GET` | `library/uploaded/{id}/` | Retrieve a specific uploaded track | 🔒 |
-| `PUT` | `library/uploaded/{id}/` | Update an uploaded track | 🔒 |
-| `DELETE` | `library/uploaded/{id}/` | Delete an uploaded track | 🔒 |
-| `GET` | `library/spotify/` | List Spotify library tracks | 🔒 |
-| `GET` | `library/spotify/{id}/` | Retrieve a specific Spotify track | 🔒 |
+| `GET` | `me/library/uploaded/` | List user's uploaded tracks | 🔒 |
+| `POST` | `me/library/uploaded/` | Upload a new track | 🔒 |
+| `GET` | `me/library/uploaded/{id}/` | Retrieve a specific uploaded track | 🔒 |
+| `PUT` | `me/library/uploaded/{id}/` | Update an uploaded track | 🔒 |
+| `DELETE` | `me/library/uploaded/{id}/` | Delete an uploaded track | 🔒 |
+| `GET` | `reference/library/uploaded/` | List reference uploaded tracks | 🔓 |
+| `GET` | `reference/library/uploaded/{id}/` | Retrieve a specific reference uploaded track | 🔓 |
+| `GET` | `me/library/spotify/` | List user's Spotify library tracks | 🔒 |
+| `GET` | `me/library/spotify/{id}/` | Retrieve a specific Spotify track | 🔒 |
+| `GET` | `reference/library/spotify/` | List reference Spotify library tracks | 🔓 |
+| `GET` | `reference/library/spotify/{id}/` | Retrieve a specific reference Spotify track | 🔓 |
 | `GET` | `all-tracks/` | Get all tracks (uploaded and Spotify) | 🔒 |
 
 ### Music Metadata
@@ -440,8 +444,7 @@ All endpoints are prefixed with the API base URL (`{version}/`). Most endpoints 
 | `GET` | `users/{id}/` | Retrieve a specific user | 🔒 |
 | `PUT` | `users/{id}/` | Update a user | 🔒 |
 | `DELETE` | `users/{id}/` | Delete a user | 🔒 |
-| `GET` | `users/spotify/` | List Spotify users | 🔒 |
-| `GET` | `users/spotify/{id}/` | Retrieve a specific Spotify user | 🔒 |
+| `GET` | `me/spotify/` | Get current user's Spotify profile (list of 0 or 1 item) | 🔒 |
 
 ## Usage
 

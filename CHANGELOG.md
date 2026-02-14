@@ -47,6 +47,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **Track Upload**: Fixed issue with handling large audio files exceeding size limits
   - Includes regression tests to prevent future occurrences
   - Improved error messages for better user feedback
+- **Spotify library sync**: Fixed Spotify library sync
 
 ### CI
 
@@ -57,6 +58,33 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 **Note:** During releases, maintainers will move entries from `[Unreleased]` to a versioned section (e.g., `## [0.2.8] - 2025-01-XX`).
 
 ## [Unreleased]
+
+## [v1.0.5] - 2026-02-15
+
+### Changed
+
+- **API**: Current user's Spotify profile endpoint moved from `users/spotify/` to `me/spotify/` for consistency with other "current user" resources (`me/artists`, `me/playlists`, etc.). Admin user management remains at `users/`.
+  - Docs: `docs/api/me_spotify.md`, `docs/api/index.md`, `docs/frontend/authentication-and-spotify.md`, README updated
+- **API (me/spotify)**: Removed `GET /me/spotify/{id}/` (retrieve). Only `GET /me/spotify/` is supported; it returns a list of 0 or 1 item (current user's profile). Retrieve by id was redundant since the only valid id is the current user's.
+
+- **Spotify / Auth**: Consistent 401 vs 403 for me/spotify and Spotify-required endpoints
+  - **401** when not logged in to the app (API code 1006, `authentication_required`): frontend should redirect to app login
+  - **403** when logged in but Spotify not linked (API code 1005, `spotify_authorization_required`): frontend should redirect to Spotify OAuth
+  - `IsAuthenticatedReturn401` permission returns 401 instead of DRF default 403 for unauthenticated requests to Spotify user endpoints
+  - Exception handler converts PermissionDenied to 401 when request is unauthenticated (fallback)
+  - `AUTH_SPOTIFY_NOT_AUTHENTICATED` (1005) mapped to 403; `AUTH_NOT_AUTHENTICATED` (1006) to 401
+  - Frontend guide: `docs/frontend/authentication-and-spotify.md`; API doc `docs/api/me_spotify.md` updated with error codes and link
+
+### Fixed
+
+- **API / OpenAPI**: Decimal fields are serialized as JSON numbers via `AppModelSerializer`: model `DecimalField` and `GeneratedField` with decimal `output_field` map to `FloatField` so schema and response use `number` (fixes Zod/client type mismatch)
+- **Test**: Unit test enforces that all model serializers (Meta.model) extend `AppModelSerializer` so decimal-as-number stays consistent
+- **URL routing**: Spotify profile moved to `me/spotify` (no longer under `users/`), so no route conflict with BaseUserViewSet
+- **Spotify**: Added SpotifyAuthenticationException to custom exception handler so Spotify auth failures return 401 JSON instead of 500 in DEBUG
+
+### Improved
+
+- **env**: Add SUPERADMIN and DEMO credentials to .env.dev.example for enhanced configuration
 
 ## [v1.0.4] - 2026-02-13
 
