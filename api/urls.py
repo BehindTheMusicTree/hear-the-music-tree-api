@@ -35,6 +35,7 @@ from .view.viewset.model.playlist.children.ReferenceManualPlaylistViewSet import
 from .view.viewset.model.playlist.PlaylistViewSet import PlaylistViewSet
 from .view.viewset.model.playlist.ReferencePlaylistViewSet import ReferencePlaylistViewSet
 from .view.viewset.model.SpotifyLibTrackViewSet import SpotifyLibTrackViewSet
+from .view.viewset.model.ReferenceSpotifyLibTrackViewSet import ReferenceSpotifyLibTrackViewSet
 from .view.viewset.model.user.BaseUserViewSet import BaseUserViewSet
 from .view.viewset.SearchViewSet import SearchViewSet
 
@@ -43,11 +44,11 @@ router = routers.DefaultRouter()
 
 router.register(r'users', BaseUserViewSet, basename='user')
 router.register(r'spotify-artists', SpotifyArtistViewSet, basename='spotify-artist')
-router.register(r'library/spotify', SpotifyLibTrackViewSet, basename='spotify-lib-track')
 
 # Do not move PlaylistViewSet after GenrePlaylistViewSet or ManualPlaylistViewSet or it will cause confusion resolving
 # reverse urls.
 router.register(r'reference/library/uploaded', ReferenceUploadedTrackViewSet, basename='reference-uploaded-track')
+router.register(r'reference/library/spotify', ReferenceSpotifyLibTrackViewSet, basename='reference-spotify-lib-track')
 router.register(r'reference/artists', ReferenceArtistViewSet, basename='reference-artist')
 router.register(r'reference/albums', ReferenceAlbumViewSet, basename='reference-album')
 router.register(r'reference/genres', ReferenceGenreViewSet, basename='reference-genre')
@@ -60,6 +61,7 @@ router.register(r'reference/plays', ReferencePlayViewSet, basename='reference-pl
 
 router.register(r'me/spotify', SpotifyUserViewSet, basename='spotify-user')
 router.register(r'me/library/uploaded', UploadedTrackViewSet, basename='me-uploaded-track')
+router.register(r'me/library/spotify', SpotifyLibTrackViewSet, basename='me-spotify-lib-track')
 router.register(r'me/artists', ArtistViewSet, basename='me-artist')
 router.register(r'me/albums', AlbumViewSet, basename='me-album')
 router.register(r'me/genres', GenreViewSet, basename='me-genre')

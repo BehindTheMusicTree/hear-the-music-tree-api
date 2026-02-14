@@ -15,9 +15,9 @@ class SpotifyLibTrackTestCase(AppTestCase[SpotifyLibTrack]):
 
     def _list_spotify_lib_tracks(self, **kwargs):
         return self.api_client.get(
-            path=reverse('spotify-lib-track-list'),
+            path=reverse('me-spotify-lib-track-list'),
             data=kwargs)
 
     def _retrieve_spotify_lib_track(self, spotify_id: str):
         return self.api_client.get(
-            path=reverse('spotify-lib-track-detail', kwargs={'pk': spotify_id}))
+            path=reverse('me-spotify-lib-track-detail', kwargs={'pk': spotify_id}))
