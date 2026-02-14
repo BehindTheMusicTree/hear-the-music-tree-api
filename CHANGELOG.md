@@ -60,17 +60,21 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Changed
 
-- **Spotify / Auth**: Consistent 401 vs 403 for users/spotify and Spotify-required endpoints
+- **API**: Current user's Spotify profile endpoint moved from `users/spotify/` to `me/spotify/` for consistency with other "current user" resources (`me/artists`, `me/playlists`, etc.). Admin user management remains at `users/`.
+  - Docs: `docs/api/me_spotify.md`, `docs/api/index.md`, `docs/frontend/authentication-and-spotify.md`, README updated
+- **API (me/spotify)**: Removed `GET /me/spotify/{id}/` (retrieve). Only `GET /me/spotify/` is supported; it returns a list of 0 or 1 item (current user's profile). Retrieve by id was redundant since the only valid id is the current user's.
+
+- **Spotify / Auth**: Consistent 401 vs 403 for me/spotify and Spotify-required endpoints
   - **401** when not logged in to the app (API code 1006, `authentication_required`): frontend should redirect to app login
   - **403** when logged in but Spotify not linked (API code 1005, `spotify_authorization_required`): frontend should redirect to Spotify OAuth
   - `IsAuthenticatedReturn401` permission returns 401 instead of DRF default 403 for unauthenticated requests to Spotify user endpoints
   - Exception handler converts PermissionDenied to 401 when request is unauthenticated (fallback)
   - `AUTH_SPOTIFY_NOT_AUTHENTICATED` (1005) mapped to 403; `AUTH_NOT_AUTHENTICATED` (1006) to 401
-  - Frontend guide: `docs/frontend/authentication-and-spotify.md`; API doc `docs/api/users_spotify.md` updated with error codes and link
+  - Frontend guide: `docs/frontend/authentication-and-spotify.md`; API doc `docs/api/me_spotify.md` updated with error codes and link
 
 ### Fixed
 
-- **URL routing**: Register `users/spotify` before `users` so GET `/users/spotify/` is handled by SpotifyUserViewSet instead of BaseUserViewSet detail with pk='spotify' (was returning 403 from IsAdminUser)
+- **URL routing**: Spotify profile moved to `me/spotify` (no longer under `users/`), so no route conflict with BaseUserViewSet
 - **Spotify**: Added SpotifyAuthenticationException to custom exception handler so Spotify auth failures return 401 JSON instead of 500 in DEBUG
 
 ### Improved

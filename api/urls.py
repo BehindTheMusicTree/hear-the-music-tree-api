@@ -41,13 +41,13 @@ from .view.viewset.SearchViewSet import SearchViewSet
 
 router = routers.DefaultRouter()
 
-router.register(r'users/spotify', SpotifyUserViewSet, basename='spotify-user')
 router.register(r'users', BaseUserViewSet, basename='user')
 router.register(r'spotify-artists', SpotifyArtistViewSet, basename='spotify-artist')
 router.register(r'library/spotify', SpotifyLibTrackViewSet, basename='spotify-lib-track')
 
 # Do not move PlaylistViewSet after GenrePlaylistViewSet or ManualPlaylistViewSet or it will cause confusion resolving
 # reverse urls.
+router.register(r'me/spotify', SpotifyUserViewSet, basename='spotify-user')
 router.register(r'reference/library/uploaded', ReferenceUploadedTrackViewSet, basename='reference-uploaded-track')
 router.register(r'reference/artists', ReferenceArtistViewSet, basename='reference-artist')
 router.register(r'reference/albums', ReferenceAlbumViewSet, basename='reference-album')
