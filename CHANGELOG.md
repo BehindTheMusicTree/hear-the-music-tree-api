@@ -47,6 +47,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **Track Upload**: Fixed issue with handling large audio files exceeding size limits
   - Includes regression tests to prevent future occurrences
   - Improved error messages for better user feedback
+- **Spotify library sync**: Fixed Spotify library sync
 
 ### CI
 
