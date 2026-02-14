@@ -1,13 +1,14 @@
 from rest_framework import serializers
 
 from api.model.uploaded_track.file.TrackFile import TrackFile
+from api.serializer.AppModelSerializer import AppModelSerializer
 from api.serializer.model.fingerprint_missing_cause.detailed import FingerprintMissingCauseDetailedSerializer
 from api.serializer.model.musicbrainz.recording.detailed import MusicbrainzRecordingDetailedSerializer
 
 from .Fields import Fields
 
 
-class FileDetailedSerializer(serializers.ModelSerializer):
+class FileDetailedSerializer(AppModelSerializer):
     fingerprint_missing_cause = serializers.SerializerMethodField()
     musicbrainz_recording = MusicbrainzRecordingDetailedSerializer()
     musicbrainz_recording_missing_cause = serializers.SerializerMethodField()
