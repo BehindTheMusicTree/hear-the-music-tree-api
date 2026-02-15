@@ -43,16 +43,14 @@ class SpotifyOAuthService:
 
     def get_access_token(self, code: str) -> TokenInfo:
         """
-        Exchange authorization code for access token
+        Exchange authorization code for access token.
 
-        Args:
-            code: The authorization code from Spotify
-
-        Returns:
-            Dictionary containing access token and refresh token
+        Uses check_cache=False so each login uses the provided code instead of
+        spotipy's default file cache, which would otherwise return the first
+        cached user's token for every request.
         """
         try:
-            token_info = self.oauth.get_access_token(code)
+            token_info = self.oauth.get_access_token(code, check_cache=False)
             if token_info is None:
                 raise spotify_exception.SpotifyAuthenticationException(
                     "Failed to get access token: No token info returned")

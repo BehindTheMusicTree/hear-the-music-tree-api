@@ -34,7 +34,9 @@ class TestSpotifyOAuthAuth(AppTestCase):
         assert tokens[Fields.ACCESS_TOKEN] == "test_access_token"
         assert tokens[Fields.REFRESH_TOKEN] == "test_refresh_token"
         assert tokens[Fields.EXPIRES_IN] == 3600
-        mock_oauth.return_value.get_access_token.assert_called_once_with("valid_code")
+        mock_oauth.return_value.get_access_token.assert_called_once_with(
+            "valid_code", check_cache=False
+        )
 
     @mock.patch('api.utils.spotify_api.oauth.SpotifyOAuth')
     def test_get_access_token_with_invalid_code_then_raises_exception(self, mock_oauth):

@@ -59,6 +59,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Fixed
+
+- **Spotify OAuth**: Fixed backend always returning the same Spotify user regardless of which account completed login. Spotipy’s token cache was used by default, so the first user’s token was returned for every subsequent code exchange. The code exchange now uses `check_cache=False` so each login uses the provided authorization code.
+
 ### Improved
 
 - **Spotify OAuth**: When Spotify returns 403 "user may not be registered" (app in Development mode), the API now returns 401 with error code **1007** (`spotify_user_not_allowlisted`) and a clear user-facing message so the frontend can show a specific message without parsing. Docs and tests updated.
