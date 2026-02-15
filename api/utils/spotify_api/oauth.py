@@ -6,7 +6,10 @@ from django.conf import settings
 from spotipy.oauth2 import SpotifyOAuth
 
 from api.exception import spotify as spotify_exception
-from api.exception.spotify import SpotifyUserNotAllowlistedException
+from api.exception.spotify import (
+    SpotifyUserNotAllowlistedException,
+    SpotifyInvalidGrantException,
+)
 
 logger = logging.getLogger(settings.APP_NAME)
 
@@ -56,8 +59,17 @@ class SpotifyOAuthService:
                     "Failed to get access token: No token info returned")
             return token_info
         except Exception as e:
-            logger.error(f"Failed to get access token: {str(e)}")
-            raise spotify_exception.SpotifyAuthenticationException(f"Failed to get access token: {str(e)}")
+            err_str = str(e)
+            logger.error(f"Failed to get access token: {err_str}")
+            if (
+                "invalid_grant" in err_str.lower()
+                or "invalid authorization code" in err_str.lower()
+                or "authorization code expired" in err_str.lower()
+            ):
+                raise SpotifyInvalidGrantException(
+                    "Authorization code expired or already used. Please try connecting with Spotify again."
+                )
+            raise spotify_exception.SpotifyAuthenticationException(f"Failed to get access token: {err_str}")
 
     def refresh_access_token(self, refresh_token: str) -> TokenInfo:
         """

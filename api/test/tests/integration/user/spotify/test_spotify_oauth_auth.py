@@ -3,6 +3,7 @@ from unittest import mock
 from api.exception.spotify import (
     SpotifyAuthenticationException,
     SpotifyUserNotAllowlistedException,
+    SpotifyInvalidGrantException,
 )
 from api.test.utils.AppTestCase import AppTestCase
 from api.utils.spotify_api.oauth import SpotifyOAuthService
@@ -46,6 +47,20 @@ class TestSpotifyOAuthAuth(AppTestCase):
         with self.assertRaises(SpotifyAuthenticationException) as context:
             service.get_access_token("invalid_code")
         assert "Failed to get access token" in str(context.exception)
+
+    @mock.patch('api.utils.spotify_api.oauth.SpotifyOAuth')
+    def test_get_access_token_when_spotify_returns_invalid_grant_then_raises_SpotifyInvalidGrantException(
+        self, mock_oauth
+    ):
+        mock_oauth.return_value.get_access_token.side_effect = Exception(
+            "error: invalid_grant, error_description: Authorization code expired"
+        )
+
+        service = SpotifyOAuthService()
+        with self.assertRaises(SpotifyInvalidGrantException) as context:
+            service.get_access_token("expired_code")
+        assert "expired or already used" in str(context.exception)
+        assert "try connecting with Spotify again" in str(context.exception)
 
     @mock.patch('api.utils.spotify_api.oauth.SpotifyOAuth')
     def test_refresh_access_token_with_valid_token_then_returns_new_token(self, mock_oauth):

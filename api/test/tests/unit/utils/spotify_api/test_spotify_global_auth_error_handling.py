@@ -5,6 +5,7 @@ import json
 from api.exception.spotify import (
     SpotifyAuthenticationException,
     SpotifyUserNotAllowlistedException,
+    SpotifyInvalidGrantException,
 )
 from api.view.error.ErrorResponse import ErrorResponse
 from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
@@ -53,4 +54,17 @@ class TestSpotifyGlobalErrorHandling(TestCase):
         assert response_data['code'] == ApiErrorCodeNumeric.AUTH_SPOTIFY_USER_NOT_ALLOWLISTED
         assert response_data['details']['message'] == "Spotify app is in development mode."
         assert response_data['details']['code'] == 'spotify_user_not_allowlisted'
+        assert not response_data['success']
+
+    def test_spotify_invalid_grant_exception_then_401_with_code_1008(self):
+        exception = SpotifyInvalidGrantException(
+            "Authorization code expired or already used. Please try connecting with Spotify again."
+        )
+        response = ErrorResponse.handle_exception(exception)
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        response_data = json.loads(response.content)
+        assert response_data['code'] == ApiErrorCodeNumeric.AUTH_SPOTIFY_CODE_EXPIRED_OR_USED
+        assert response_data['details']['code'] == 'spotify_code_expired_or_used'
+        assert "expired or already used" in response_data['details']['message']
         assert not response_data['success']
