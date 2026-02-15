@@ -17,6 +17,7 @@ from api.exception.validation.app.AppValidationException import AppValidationExc
 from api.exception.spotify import (
     SpotifyAuthenticationException,
     SpotifyUserNotAllowlistedException,
+    SpotifyInvalidGrantException,
 )
 from api.utils.data_transformer import to_camel_case
 from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
@@ -424,6 +425,19 @@ class ErrorResponse:
         )
 
     @staticmethod
+    def _from_spotify_invalid_grant_exception(
+        exception: SpotifyInvalidGrantException,
+    ) -> JsonResponse:
+        try:
+            message = str(exception)
+        except Exception:
+            message = ErrorResponseFields.MESSAGES[ApiErrorCodeNumeric.AUTH_SPOTIFY_CODE_EXPIRED_OR_USED]
+        return ErrorResponse.create_error_response(
+            error_detail={'message': message, 'code': 'spotify_code_expired_or_used'},
+            api_error_code=ApiErrorCodeNumeric.AUTH_SPOTIFY_CODE_EXPIRED_OR_USED,
+        )
+
+    @staticmethod
     def _from_spotify_authentication_exception(exception: SpotifyAuthenticationException) -> JsonResponse:
         try:
             message = str(exception)
@@ -461,6 +475,8 @@ class ErrorResponse:
             return ErrorResponse._from_disallowed_host_exception(exc)
         elif isinstance(exc, SpotifyUserNotAllowlistedException):
             return ErrorResponse._from_spotify_user_not_allowlisted_exception(exc)
+        elif isinstance(exc, SpotifyInvalidGrantException):
+            return ErrorResponse._from_spotify_invalid_grant_exception(exc)
         elif isinstance(exc, SpotifyAuthenticationException):
             return ErrorResponse._from_spotify_authentication_exception(exc)
         else:

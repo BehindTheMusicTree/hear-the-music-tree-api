@@ -18,6 +18,11 @@ class SpotifyUserNotAllowlistedException(SpotifyAuthenticationException):
     pass
 
 
+class SpotifyInvalidGrantException(SpotifyAuthenticationException):
+    """Exception raised when Spotify returns invalid_grant (e.g. authorization code expired or already used)."""
+    pass
+
+
 class SpotifyResourceNotFoundException(SpotifyException):
     """Exception raised when a requested resource is not found on Spotify"""
     pass
