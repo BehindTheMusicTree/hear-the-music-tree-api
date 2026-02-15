@@ -1,21 +1,25 @@
 from unittest import mock
 
+from spotipy.exceptions import SpotifyException as SpotipyException
+
 from api.exception.spotify import SpotifyAuthenticationException
+from api.model.user.User import User
+from api.model.user.spotify.Fields import Fields
 from api.test.utils.AppTestCase import AppTestCase
 from api.utils.spotify_api.oauth import SpotifyOAuthService
-from api.model.user.spotify.Fields import Fields
-from api.model.user.spotify.SpotifyUser import SpotifyUser
 
 
 class TestSpotifyProfile(AppTestCase):
     def setUp(self):
         super().setUp()
-        self.test_user1 = SpotifyUser.objects.create_instance(
-            username='spotify_user1', password='spotify_user1', email='spotify@user1.com', is_test_user=True,
-            spotify_id='spotify_user1_id')
-        self.test_user2 = SpotifyUser.objects.create_instance(
-            username='spotify_user2', password='spotify_user2', email='spotify@user2.com', is_test_user=True,
-            spotify_id='spotify_user2_id')
+        self.test_user1 = User(username='spotify_user1', email='spotify@user1.com',
+                              spotify_id='spotify_user1_id', is_test_user=True)
+        self.test_user1.set_password('spotify_user1')
+        self.test_user1.save()
+        self.test_user2 = User(username='spotify_user2', email='spotify@user2.com',
+                              spotify_id='spotify_user2_id', is_test_user=True)
+        self.test_user2.set_password('spotify_user2')
+        self.test_user2.save()
         self._login_as_test_user1()
 
     @mock.patch('api.utils.spotify_api.oauth.spotipy.Spotify')
@@ -76,3 +80,33 @@ class TestSpotifyProfile(AppTestCase):
         with self.assertRaises(SpotifyAuthenticationException) as context:
             service.get_user_info("valid_token")
         assert "Failed to get user info" in str(context.exception)
+
+    @mock.patch('api.utils.spotify_api.oauth.spotipy.Spotify')
+    def test_get_user_info_with_403_allowlist_message_then_raises_with_allowlist_detail_code(self, mock_spotify):
+        mock_spotify.return_value.current_user.side_effect = SpotipyException(
+            403,
+            -1,
+            "https://api.spotify.com/v1/me:\n Check settings on developer.spotify.com/dashboard, the user may not be registered.",
+            reason=None,
+        )
+
+        service = SpotifyOAuthService()
+        with self.assertRaises(SpotifyAuthenticationException) as context:
+            service.get_user_info("token")
+        assert getattr(context.exception, "detail_code", None) == "spotify_user_not_in_allowlist"
+        assert "add you in the Spotify Developer Dashboard" in str(context.exception)
+
+    @mock.patch('api.utils.spotify_api.oauth.spotipy.Spotify')
+    def test_get_user_info_with_403_without_allowlist_message_then_raises_generic(self, mock_spotify):
+        mock_spotify.return_value.current_user.side_effect = SpotipyException(
+            403,
+            -1,
+            "Forbidden: app restricted",
+            reason=None,
+        )
+
+        service = SpotifyOAuthService()
+        with self.assertRaises(SpotifyAuthenticationException) as context:
+            service.get_user_info("token")
+        assert getattr(context.exception, "detail_code", None) != "spotify_user_not_in_allowlist"
+        assert "app restricted" in str(context.exception)

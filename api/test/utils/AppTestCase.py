@@ -20,7 +20,6 @@ from rest_framework_simplejwt.tokens import AccessToken
 
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.model.user.User import User
-from api.model.user.spotify.SpotifyUser import SpotifyUser
 from api.model.uuid.Fields import Fields as UuidModelFields
 from api.serializer.model.uploaded_track.input.post.Fields import Fields as UploadedTrackPostFields
 from api.test.utils.AppApiClient import AppApiClient
@@ -214,13 +213,15 @@ class AppTestCase(TestCase, Generic[T]):
         self.test_user2 = User.objects.create_instance(
             username='pytest_user2', password='pytest_user2', email='pytest@user2.com', is_test_user=True)
 
-        self.spotify_test_user_1: SpotifyUser = SpotifyUser.objects.create_instance(
-            username='spotify_test_user_1', password='spotify_test_user_1', spotify_id='spotify_test_user_1',
-            email='spotify@test.com', is_test_user=True)
+        self.spotify_test_user_1 = User(username='spotify_test_user_1', email='spotify@test.com',
+                                        spotify_id='spotify_test_user_1', is_test_user=True)
+        self.spotify_test_user_1.set_password('spotify_test_user_1')
+        self.spotify_test_user_1.save()
 
-        self.spotify_test_user_2: SpotifyUser = SpotifyUser.objects.create_instance(
-            username='spotify_test_user_2', password='spotify_test_user_2', spotify_id='spotify_test_user_2',
-            email='spotify@test.com', is_test_user=True)
+        self.spotify_test_user_2 = User(username='spotify_test_user_2', email='spotify@test.com',
+                                        spotify_id='spotify_test_user_2', is_test_user=True)
+        self.spotify_test_user_2.set_password('spotify_test_user_2')
+        self.spotify_test_user_2.save()
 
         self.model_fixture_factory = ModelFixtureFactory(
             default_test_user=self.test_user1, test_uploaded_track_dir=self.TEST_FILES_BASE_DIR,)
