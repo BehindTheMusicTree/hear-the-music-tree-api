@@ -59,6 +59,19 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Added
+
+- **Google OAuth**: `POST auth/google/` endpoint to exchange Google authorization code for session tokens
+  - Request: `{ "code": "<authorization_code_from_google_callback>" }`
+  - Response: `{ accessToken, refreshToken, expiresAt }` (same shape as Spotify auth for a single session model on the frontend)
+  - Backend exchanges code with `oauth2.googleapis.com/token`, fetches user info, creates or updates `GoogleUser`, issues JWT session
+  - Env: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` (must match frontend redirect URI)
+  - `GoogleAuthenticationException` mapped to 401; integration tests for view and OAuth service
+
+### Changed
+
+- **Auth response**: Spotify and Google auth now return `expiresAt` (Unix timestamp in milliseconds) for client-side expiry handling; JWT util returns `expires_at_ms` from access token payload
+
 ## [v1.0.5] - 2026-02-15
 
 ### Changed

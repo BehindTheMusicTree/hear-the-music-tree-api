@@ -260,7 +260,7 @@ The API supports authentication via Spotify OAuth, allowing users to sign in wit
 {
   "accessToken": "eyJ0eXAiOiJKV1QiLCJhbGc...",
   "refreshToken": "eyJ0eXAiOiJKV1QiLCJhbGc...",
-  "expires_at": "2024-01-15T12:00:00Z",
+  "expiresAt": 1739620800000,
   "spotifyUser": {
     "spotify_profile": {
       "id": "spotify_user_id",
@@ -298,6 +298,28 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc...
 
 **Note**: For detailed setup instructions and Spotify API configuration, see the [Spotify Integration documentation](api/utils/spotify_api/README.md).
 
+#### Google Authentication
+
+**Endpoint**: `POST /api/{version}/auth/google/`
+
+**Request Body**:
+```json
+{
+  "code": "<authorization_code_from_google_callback>"
+}
+```
+
+**Response** (same session shape as Spotify):
+```json
+{
+  "accessToken": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+  "refreshToken": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+  "expiresAt": 1739620800000
+}
+```
+
+Configure `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_REDIRECT_URI` (must match the frontend redirect URI used when sending the user to Google).
+
 ### Endpoints Reference
 
 Legend: 🔒 = Requires authentication | 🔓 = No authentication required
@@ -311,6 +333,7 @@ All endpoints are prefixed with the API base URL (`{version}/`). Most endpoints 
 | `POST` | `auth/token/` | Obtain JWT access and refresh tokens | 🔓 |
 | `POST` | `auth/token/refresh/` | Refresh access token | 🔓 |
 | `POST` | `auth/spotify/` | Authenticate with Spotify | 🔓 |
+| `POST` | `auth/google/` | Authenticate with Google OAuth | 🔓 |
 
 ### Library Management
 

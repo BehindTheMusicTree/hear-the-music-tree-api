@@ -66,7 +66,7 @@ class TestCase(AppTestCase):
 
         assert TokenFields.ACCESS_TOKEN in response_data
         assert TokenFields.REFRESH_TOKEN in response_data
-        assert 'expires_at' in response_data
+        assert 'expiresAt' in response_data
         assert 'spotifyUser' in response_data
 
         spotify_user_data = response_data['spotifyUser']

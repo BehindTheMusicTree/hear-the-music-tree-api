@@ -62,14 +62,13 @@ def spotify_auth(request):
         user.spotify_token_expires_at = timezone.now() + timezone.timedelta(seconds=token_info['expires_in'])
         user.save()
 
-    # Create JWT token
     jwt_token = create_jwt_token(user)
 
     login(request, user)
     return Response({
         'accessToken': jwt_token['access'],
         'refreshToken': jwt_token['refresh'],
-        'expires_at': jwt_token['expires_at'],
+        'expiresAt': jwt_token['expires_at_ms'],
         'spotifyUser': {
             SpotifyUserFields.SPOTIFY_PROFILE: user.spotify_profile,
             SpotifyUserFields.ID: user.id,

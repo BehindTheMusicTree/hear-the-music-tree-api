@@ -14,6 +14,7 @@ from rest_framework.exceptions import (
 
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.exception.validation.app.AppValidationException import AppValidationException
+from api.exception.google import GoogleAuthenticationException
 from api.exception.spotify import SpotifyAuthenticationException
 from api.utils.data_transformer import to_camel_case
 from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
@@ -418,6 +419,26 @@ class ErrorResponse:
             api_error_code=ApiErrorCodeNumeric.AUTH_INVALID_CREDENTIALS)
 
     @staticmethod
+    def _from_google_authentication_exception(exception: GoogleAuthenticationException) -> JsonResponse:
+        try:
+            message = str(exception)
+        except Exception:
+            message = f"{type(exception).__name__}: <unable to stringify exception>"
+        detail_code = getattr(exception, 'detail_code', 'google_authentication_error')
+        if detail_code in ('google_oauth_redirect_uri_mismatch', 'google_oauth_invalid_client'):
+            return ErrorResponse.create_error_response(
+                error_detail={
+                    'message': 'Sign-in is temporarily misconfigured. Please try again later or contact support.',
+                    'code': detail_code,
+                },
+                api_error_code=ApiErrorCodeNumeric.SYSTEM_INTERNAL_ERROR,
+            )
+        return ErrorResponse.create_error_response(
+            error_detail={'message': message, 'code': detail_code},
+            api_error_code=ApiErrorCodeNumeric.AUTH_INVALID_CREDENTIALS,
+        )
+
+    @staticmethod
     def handle_exception(exc: Exception) -> JsonResponse:
         """
         Routes different types of exceptions to their appropriate handlers.
@@ -445,5 +466,7 @@ class ErrorResponse:
             return ErrorResponse._from_disallowed_host_exception(exc)
         elif isinstance(exc, SpotifyAuthenticationException):
             return ErrorResponse._from_spotify_authentication_exception(exc)
+        elif isinstance(exc, GoogleAuthenticationException):
+            return ErrorResponse._from_google_authentication_exception(exc)
         else:
             return ErrorResponse._from_unhandled_exception(exc)
