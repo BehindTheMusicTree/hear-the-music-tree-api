@@ -28,7 +28,8 @@ All error responses use this structure:
 |-------------|------------|----------------|---------|-----------------|
 | **401** | **1006** | `authentication_required` | User is **not logged in** to the app. | Redirect to **app login** (e.g. login page or token obtain). Do **not** redirect to Spotify. |
 | **403** | **1005** | `spotify_authorization_required` | User **is logged in** to the app but has **not linked Spotify**. | Show “Connect Spotify” / “Link Spotify” and redirect to **Spotify OAuth** (e.g. open auth URL from your backend or start your Spotify connect flow). |
-| **401** | **1001** | `spotify_authentication_error` | Spotify login/callback failed (e.g. user denied, app in dev mode). | Show error from `details.message`; optionally retry or open Spotify app/settings. |
+| **401** | **1007** | `spotify_user_not_allowlisted` | Spotify app is in development mode; this user is not in the app's User Management. | Show `details.message`; user cannot sign in until the app owner adds them in the Spotify Developer Dashboard. |
+| **401** | **1001** | `spotify_authentication_error` | Spotify login/callback failed (e.g. user denied, other auth error). | Show error from `details.message`; optionally retry or open Spotify app/settings. |
 | **401** | **1001** | `authentication_failed` | Invalid or expired JWT. | Clear stored tokens and redirect to **app login**. |
 
 ## Recommended flow
@@ -42,8 +43,10 @@ All error responses use this structure:
      - User is not logged in to the app → redirect to **app login**.
    - **403** and **`code === 1005`** (or `details.code === 'spotify_authorization_required'`):
      - User is logged in but Spotify not linked → show “Connect Spotify” and start **Spotify OAuth** (do not log the user out of the app).
+   - **401** and **`code === 1007`** (or `details.code === 'spotify_user_not_allowlisted'`):
+     - User not in Spotify app's allowlist (development mode) → show `details.message`; user cannot complete sign-in until added in the dashboard.
    - **401** and **`code === 1001`**:
-     - Invalid/expired token or Spotify auth error → clear tokens and redirect to app login, or show `details.message` for Spotify-specific errors.
+     - Invalid/expired token or other Spotify auth error → clear tokens and redirect to app login, or show `details.message` for Spotify-specific errors.
 
 ## Example (pseudo-code)
 
@@ -74,6 +77,12 @@ if (response.status === 403 && (apiCode === 1005 || detailsCode === 'spotify_aut
   return;
 }
 
+if (response.status === 401 && (apiCode === 1007 || detailsCode === 'spotify_user_not_allowlisted')) {
+  // User not in Spotify app allowlist (dev mode)
+  showError(err.details?.message ?? err.message);
+  return;
+}
+
 if (response.status === 401 && apiCode === 1001) {
   // Invalid token or Spotify error
   clearTokens();
@@ -89,4 +98,5 @@ showError(err.details?.message ?? err.message);
 
 - **401 + 1006** → Not logged in to the app → **app login**.
 - **403 + 1005** → Logged in, Spotify not linked → **Connect Spotify** (Spotify OAuth).
-- **401 + 1001** → Bad/expired token or Spotify auth failure → **app login** or show message.
+- **401 + 1007** → User not in Spotify app allowlist (dev mode) → show message.
+- **401 + 1001** → Bad/expired token or other Spotify auth failure → **app login** or show message.

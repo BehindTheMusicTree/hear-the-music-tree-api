@@ -6,6 +6,7 @@ from django.conf import settings
 from spotipy.oauth2 import SpotifyOAuth
 
 from api.exception import spotify as spotify_exception
+from api.exception.spotify import SpotifyUserNotAllowlistedException
 
 logger = logging.getLogger(settings.APP_NAME)
 
@@ -80,6 +81,11 @@ class SpotifyOAuthService:
             logger.error(f"Failed to refresh access token: {str(e)}")
             raise spotify_exception.SpotifyAuthenticationException(f"Failed to refresh access token: {str(e)}")
 
+    _SPOTIFY_DEV_MODE_MESSAGE = (
+        "Spotify app is in development mode. Your account must be added in the "
+        "Spotify Developer Dashboard (Users and Access) to sign in."
+    )
+
     def get_user_info(self, access_token: str) -> dict:
         """
         Get user information from Spotify
@@ -97,5 +103,8 @@ class SpotifyOAuthService:
                 raise spotify_exception.SpotifyAuthenticationException("Failed to get user info: No user info returned")
             return user_info
         except Exception as e:
-            logger.error(f"Failed to get user info: {str(e)}")
-            raise spotify_exception.SpotifyAuthenticationException(f"Failed to get user info: {str(e)}")
+            err_str = str(e)
+            logger.error(f"Failed to get user info: {err_str}")
+            if "403" in err_str and ("user may not be registered" in err_str or "developer.spotify.com" in err_str):
+                raise SpotifyUserNotAllowlistedException(self._SPOTIFY_DEV_MODE_MESSAGE)
+            raise spotify_exception.SpotifyAuthenticationException(f"Failed to get user info: {err_str}")

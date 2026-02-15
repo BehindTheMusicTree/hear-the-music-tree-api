@@ -32,6 +32,8 @@ pip install -r requirements.txt
 
 4. After creating the app, you'll see your Client ID and you can click "Show Client Secret" to view your secret
 
+**Development mode:** If your app is in Development mode, only Spotify accounts added under **Settings → Users and Access** can complete OAuth. Users not in that list get a 403 from Spotify when the API calls e.g. `GET /v1/me`; the API returns 401 with a message asking to add the account in the dashboard. The **Spotify account that owns the app** (the developer account) can often use the app without being in the list, which is why localhost may work with 0 users added if you are testing with the same account that created the app. On a deployed environment, other users must be added to User Management.
+
 ### 3. Configure Spotify API Credentials
 
 Set the following environment variables with your Spotify API credentials:

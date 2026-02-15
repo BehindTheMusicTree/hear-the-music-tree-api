@@ -1,6 +1,9 @@
 from unittest import mock
 
-from api.exception.spotify import SpotifyAuthenticationException
+from api.exception.spotify import (
+    SpotifyAuthenticationException,
+    SpotifyUserNotAllowlistedException,
+)
 from api.test.utils.AppTestCase import AppTestCase
 from api.utils.spotify_api.oauth import SpotifyOAuthService
 from api.serializer.token.Fields import Fields
@@ -89,3 +92,18 @@ class TestSpotifyOAuthAuth(AppTestCase):
         with self.assertRaises(SpotifyAuthenticationException) as context:
             service.get_user_info("invalid_token")
         assert "Failed to get user info" in str(context.exception)
+
+    @mock.patch('api.utils.spotify_api.oauth.spotipy.Spotify')
+    def test_get_user_info_when_spotify_returns_403_user_not_registered_then_raises_SpotifyUserNotAllowlistedException(
+        self, mock_spotify
+    ):
+        mock_spotify.return_value.current_user.side_effect = Exception(
+            "http status: 403 - Check settings on developer.spotify.com/dashboard, the user may not be registered."
+        )
+
+        service = SpotifyOAuthService()
+        with self.assertRaises(SpotifyUserNotAllowlistedException) as context:
+            service.get_user_info("valid_token")
+        assert "development mode" in str(context.exception).lower()
+        assert "Users and Access" in str(context.exception)
+        assert "developer.spotify.com" not in str(context.exception)
