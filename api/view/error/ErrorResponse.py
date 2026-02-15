@@ -414,9 +414,11 @@ class ErrorResponse:
             message = str(exception)
         except Exception:
             message = f"{type(exception).__name__}: <unable to stringify exception>"
+        detail_code = getattr(exception, 'detail_code', 'spotify_authentication_error')
         return ErrorResponse.create_error_response(
-            error_detail={'message': message, 'code': 'spotify_authentication_error'},
-            api_error_code=ApiErrorCodeNumeric.AUTH_INVALID_CREDENTIALS)
+            error_detail={'message': message, 'code': detail_code},
+            api_error_code=ApiErrorCodeNumeric.AUTH_INVALID_CREDENTIALS,
+        )
 
     @staticmethod
     def _from_google_authentication_exception(exception: GoogleAuthenticationException) -> JsonResponse:

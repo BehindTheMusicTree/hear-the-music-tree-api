@@ -3,7 +3,7 @@ from unittest import mock
 from django.urls import reverse
 from rest_framework import status
 
-from api.model.user.spotify.SpotifyUser import SpotifyUser
+from api.model.user.User import User
 from api.model.user.spotify.Fields import Fields as SpotifyUserFields
 from api.test.utils.AppTestCase import AppTestCase
 from api.utils.spotify_api.oauth import SpotifyOAuthService
@@ -74,12 +74,12 @@ class TestCase(AppTestCase):
         assert spotify_user_data[SpotifyUserFields.EMAIL] == email
         assert spotify_user_data[SpotifyUserFields.DISPLAY_NAME] == display_name
 
-        spotify_user = SpotifyUser.objects.get(spotify_id=spotify_id)
-        assert spotify_user is not None
-        assert spotify_user.email == email
-        assert spotify_user.spotify_id == spotify_id
-        assert spotify_user.spotify_access_token == "test_access_token"
-        assert spotify_user.spotify_refresh_token == "test_refresh_token"
+        user = User.objects.get(spotify_id=spotify_id)
+        assert user is not None
+        assert user.email == email
+        assert user.spotify_id == spotify_id
+        assert user.spotify_access_token == "test_access_token"
+        assert user.spotify_refresh_token == "test_refresh_token"
 
         access_token = response_data[TokenFields.ACCESS_TOKEN]
         self.api_client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')

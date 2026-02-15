@@ -3,7 +3,7 @@ from unittest import mock
 from django.urls import reverse
 from rest_framework import status
 
-from api.model.user.google.GoogleUser import GoogleUser
+from api.model.user.User import User
 from api.test.utils.AppTestCase import AppTestCase
 from api.view.google_auth import AuthRequestFields
 
@@ -69,7 +69,7 @@ class TestGoogleAuthView(AppTestCase):
         assert "expiresAt" in data
         assert isinstance(data["expiresAt"], (int, float))
 
-        user = GoogleUser.objects.get(google_id="google_user_456")
+        user = User.objects.get(google_id="google_user_456")
         assert user.email == "google@example.com"
         assert user.google_access_token == "google_access_123"
         assert user.google_profile["name"] == "Google User"
