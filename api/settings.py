@@ -105,6 +105,11 @@ SPOTIFY_CLIENT_SECRET: str
 SPOTIFY_REDIRECT_URI: str
 SPOTIFY_SCOPES: str
 
+# Google OAuth
+GOOGLE_CLIENT_ID: str
+GOOGLE_CLIENT_SECRET: str
+GOOGLE_REDIRECT_URI: str
+
 # Secret Key
 SECRET_KEY: str
 
@@ -719,6 +724,17 @@ def setup_media_dirs():
     SPOTIFY_SCOPES = load_required_str_env_var('SPOTIFY_SCOPES',)
     print_django(f"SPOTIFY_SCOPES = {SPOTIFY_SCOPES}")
     print_django("Spotify API credentials loaded.")
+
+    global GOOGLE_CLIENT_ID
+    global GOOGLE_CLIENT_SECRET
+    global GOOGLE_REDIRECT_URI
+    GOOGLE_CLIENT_ID = load_required_str_env_var('GOOGLE_CLIENT_ID')
+    print_django(f"GOOGLE_CLIENT_ID = {GOOGLE_CLIENT_ID}")
+    GOOGLE_CLIENT_SECRET = load_required_secret_env_var('GOOGLE_CLIENT_SECRET')
+    print_django(f"GOOGLE_CLIENT_SECRET = {GOOGLE_CLIENT_SECRET}")
+    GOOGLE_REDIRECT_URI = load_required_str_env_var('GOOGLE_REDIRECT_URI')
+    print_django(f"GOOGLE_REDIRECT_URI = {GOOGLE_REDIRECT_URI}")
+    print_django("Google OAuth credentials loaded.")
 
     global MEDIA_ROOT  # Django constant, do not rename.
     MEDIA_ROOT = load_required_path_env_var('MEDIA_DIR')

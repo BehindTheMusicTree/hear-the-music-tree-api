@@ -8,6 +8,7 @@ from rest_framework.exceptions import (
     UnsupportedMediaType
 )
 
+from api.exception.google import GoogleAuthenticationException
 from api.exception.spotify import SpotifyAuthenticationException
 from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
 from api.view.error.ErrorResponse import ErrorResponse
@@ -58,7 +59,8 @@ def custom_exception_handler(exc, context):
     if settings.DEBUG and not isinstance(
         exc,
         (ValidationError, InvalidToken, NotAuthenticated, AuthenticationFailed, MethodNotAllowed, Http404,
-         PermissionDenied, ParseError, UnsupportedMediaType, SpotifyAuthenticationException)):
+         PermissionDenied, ParseError, UnsupportedMediaType, SpotifyAuthenticationException,
+         GoogleAuthenticationException)):
         if is_test_mode:
             return _handle_exception_with_request(exc, context)
         return None
