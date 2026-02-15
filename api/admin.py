@@ -21,11 +21,13 @@ from .model.uploaded_track.file.TrackFile import TrackFile
 from .model.uploaded_track.UploadedTrack import UploadedTrack
 from .model.user.admin.UserAdmin import UserAdmin
 from .model.user.User import User
+from .model.user.spotify.SpotifyUser import SpotifyUser
 from .model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
 from .model.spotify_resource.children.artist.SpotifyArtist import SpotifyArtist
 
 
 admin.site.register(User, UserAdmin)
+admin.site.register(SpotifyUser)
 admin.site.register(UploadedTrack)
 admin.site.register(TrackFile)
 admin.site.register(FingerprintMissingCause)
