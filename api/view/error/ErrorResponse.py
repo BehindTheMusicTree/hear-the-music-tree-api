@@ -14,7 +14,10 @@ from rest_framework.exceptions import (
 
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.exception.validation.app.AppValidationException import AppValidationException
-from api.exception.spotify import SpotifyAuthenticationException
+from api.exception.spotify import (
+    SpotifyAuthenticationException,
+    SpotifyUserNotAllowlistedException,
+)
 from api.utils.data_transformer import to_camel_case
 from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
 from api.view.error.DrfValidationErrorResponseDetail import DrfValidationErrorResponseDetail
@@ -408,6 +411,19 @@ class ErrorResponse:
         )
 
     @staticmethod
+    def _from_spotify_user_not_allowlisted_exception(
+        exception: SpotifyUserNotAllowlistedException,
+    ) -> JsonResponse:
+        try:
+            message = str(exception)
+        except Exception:
+            message = ErrorResponseFields.MESSAGES[ApiErrorCodeNumeric.AUTH_SPOTIFY_USER_NOT_ALLOWLISTED]
+        return ErrorResponse.create_error_response(
+            error_detail={'message': message, 'code': 'spotify_user_not_allowlisted'},
+            api_error_code=ApiErrorCodeNumeric.AUTH_SPOTIFY_USER_NOT_ALLOWLISTED,
+        )
+
+    @staticmethod
     def _from_spotify_authentication_exception(exception: SpotifyAuthenticationException) -> JsonResponse:
         try:
             message = str(exception)
@@ -443,6 +459,8 @@ class ErrorResponse:
             return ErrorResponse._from_permission_denied_exception(exc)
         elif isinstance(exc, DisallowedHost):
             return ErrorResponse._from_disallowed_host_exception(exc)
+        elif isinstance(exc, SpotifyUserNotAllowlistedException):
+            return ErrorResponse._from_spotify_user_not_allowlisted_exception(exc)
         elif isinstance(exc, SpotifyAuthenticationException):
             return ErrorResponse._from_spotify_authentication_exception(exc)
         else:

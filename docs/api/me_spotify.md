@@ -74,6 +74,7 @@ Body (200, one profile):
 |------|----------|--------------|---------|
 | 401 | 1006 | `authentication_required` | Not logged in to the app → redirect to app login |
 | 403 | 1005 | `spotify_authorization_required` | Logged in but Spotify not linked → redirect to Spotify OAuth |
+| 401 | 1007 | `spotify_user_not_allowlisted` | Spotify app in dev mode; user not in dashboard User Management (e.g. from `POST /auth/spotify/`) |
 | 401 | 1001 | `authentication_failed` / `spotify_authentication_error` | Invalid/expired token or Spotify auth failed |
 | 405 | - | - | GET /{id}/ is not supported; use GET / |
 

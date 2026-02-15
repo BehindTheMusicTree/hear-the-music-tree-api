@@ -13,6 +13,11 @@ class SpotifyAuthenticationException(SpotifyException):
     pass
 
 
+class SpotifyUserNotAllowlistedException(SpotifyAuthenticationException):
+    """Exception raised when Spotify returns 403 because the user is not in the app's User Management (development mode)."""
+    pass
+
+
 class SpotifyResourceNotFoundException(SpotifyException):
     """Exception raised when a requested resource is not found on Spotify"""
     pass
