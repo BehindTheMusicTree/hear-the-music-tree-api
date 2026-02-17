@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       app_version: ${{ steps.version.outputs.version }}
+      env: ${{ steps.version.outputs.env }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -22,22 +23,26 @@ jobs:
         id: version
         run: |
           if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            # Extract from tag ref (e.g., refs/tags/v0.3.4 -> 0.3.4)
             VERSION="${GITHUB_REF#refs/tags/v}"
             echo "Using version from tag ref: $VERSION"
           else
-            # Fallback: fetch tags and get the latest one
             git fetch --tags --force
             LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
             if [ -z "$LATEST_TAG" ]; then
               echo "Error: Cannot determine version. No tag provided."
               exit 1
             fi
-            # Remove 'v' prefix if present
             VERSION="${LATEST_TAG#v}"
             echo "Using latest tag version: $VERSION (from tag: $LATEST_TAG)"
           fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          if [[ "$VERSION" == *-* ]]; then
+            echo "env=test" >> "$GITHUB_OUTPUT"
+            echo "Prerelease version -> env test"
+          else
+            echo "env=prod" >> "$GITHUB_OUTPUT"
+            echo "Release version -> env prod"
+          fi
 
   static:
     name: Static files
@@ -62,13 +67,14 @@ jobs:
     uses: ./.github/workflows/deploy-env-and-docker-compose.yml
     with:
       app_version: ${{ needs.determine-version.outputs.app_version }}
+      env: ${{ needs.determine-version.outputs.env }}
     secrets: inherit
 
   redeploy-webhook-call:
     name: Redeploy webhook
-    needs: [build-and-push, deploy-env-and-docker-compose]
+    needs: [build-and-push, deploy-env-and-docker-compose, determine-version]
     uses: BehindTheMusicTree/github-workflows/.github/workflows/call-redeployment-webhook.yml@main
     with:
-      env: TEST
+      env: ${{ needs.determine-version.outputs.env }}
     secrets: inherit
 
