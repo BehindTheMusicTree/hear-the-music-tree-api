@@ -296,10 +296,10 @@ jobs:
           POOL_DIR: ${{ vars.WEBHOOK_DIR }}${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE }}-${{ inputs.env }}/pool
         run: |
           ssh ${{ env.SSH_DESTINATION }} "mkdir -p $POOL_DIR/compose/${{ vars.APP_NAME }}"
-          scp -r pool_compose/. ${{ env.SSH_DESTINATION }}:$POOL_DIR/compose/${{ vars.APP_NAME }}/
+          shopt -s dotglob && scp -r pool_compose/* ${{ env.SSH_DESTINATION }}:$POOL_DIR/compose/${{ vars.APP_NAME }}/
 
       - name: Deploy partial docker compose
         env:
           SERVER_DOCKER_COMPOSE_DIR: ${{ vars.WEBHOOK_DIR }}${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE }}-${{ inputs.env }}/${{ vars.DOCKER_COMPOSE_DIR_NAME }}/
         run: |
-          scp compose_parts/. ${{ env.SSH_DESTINATION }}:$SERVER_DOCKER_COMPOSE_DIR
+          shopt -s dotglob && scp -r compose_parts/* ${{ env.SSH_DESTINATION }}:$SERVER_DOCKER_COMPOSE_DIR
