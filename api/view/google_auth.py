@@ -10,7 +10,12 @@ from api.utils.jwt import create_jwt_token
 from api.model.user.User import User
 from api.exception.validation.app.AppValidationException import AppValidationException
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
+from django.conf import settings
+import logging
+
 from api.exception.google import GoogleAuthenticationException
+
+logger = logging.getLogger(settings.APP_NAME)
 
 
 class AuthRequestFields:
@@ -32,8 +37,10 @@ def google_auth(request):
         )
 
     try:
+        logger.info("Google auth: exchanging code for tokens")
         oauth_service = GoogleOAuthService()
         token_info = oauth_service.exchange_code_for_tokens(code)
+        logger.info("Google auth: fetching user info")
         user_info = oauth_service.get_user_info(token_info["access_token"])
     except GoogleAuthenticationException:
         raise
@@ -70,6 +77,7 @@ def google_auth(request):
             username, email or f"{google_id}@google.oauth", google_id, token_info, user_info
         )
 
+    logger.info("Google auth: creating session for user id=%s", user.id)
     jwt_token = create_jwt_token(user)
     login(request, user)
 
