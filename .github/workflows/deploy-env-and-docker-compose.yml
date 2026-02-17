@@ -292,7 +292,7 @@ jobs:
   deploy-nginx-env:
     name: Deploy nginx env fragment
     needs: [prepare]
-    uses: BehindTheMusicTree/github-workflows/.github/workflows/reference-reusable-deploy-nginx-env.yaml@main
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/deploy-nginx-env-fragment.yml@main
     with:
       env: ${{ inputs.env }}
       app_name: ${{ vars.APP_NAME }}
@@ -301,7 +301,7 @@ jobs:
   deploy-app-env:
     name: Deploy app env files
     needs: [prepare]
-    uses: BehindTheMusicTree/github-workflows/.github/workflows/reference-reusable-deploy-app-env.yaml@main
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/deploy-app-env-file.yml@main
     with:
       env: ${{ inputs.env }}
       app_name: ${{ vars.APP_NAME }}
@@ -310,7 +310,7 @@ jobs:
   deploy-compose:
     name: Deploy partial docker compose
     needs: [prepare]
-    uses: BehindTheMusicTree/github-workflows/.github/workflows/reference-reusable-deploy-compose.yaml@main
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/deploy-partial-docker-compose.yml@main
     with:
       env: ${{ inputs.env }}
       app_version: ${{ inputs.app_version }}
