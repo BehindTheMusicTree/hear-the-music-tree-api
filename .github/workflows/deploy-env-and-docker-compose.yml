@@ -263,6 +263,7 @@ jobs:
 
       - name: Generate partial docker compose files
         env:
+          APP_NAME: ${{ vars.APP_NAME }}
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
           AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
           AFP_VERSION: ${{ vars.AFP_VERSION }}
@@ -299,7 +300,7 @@ jobs:
       - name: Prepare compose-parts
         run: |
           mkdir -p compose_parts
-          cp scripts/* compose_parts/
+          cp scripts/db scripts/afp "scripts/${{ vars.APP_NAME }}" compose_parts/
 
       - name: Upload compose-parts artifact
         uses: actions/upload-artifact@v4
