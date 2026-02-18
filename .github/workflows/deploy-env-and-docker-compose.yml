@@ -330,7 +330,7 @@ jobs:
     secrets: inherit
 
   deploy-compose:
-    name: Deploy partial docker compose
+    name: Deploy compose parts
     needs: [prepare]
     uses: BehindTheMusicTree/github-workflows/.github/workflows/deploy-partial-docker-compose.yml@main
     with:
