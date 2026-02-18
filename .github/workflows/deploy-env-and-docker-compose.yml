@@ -30,7 +30,7 @@ jobs:
     name: Prepare artifacts
     runs-on: ubuntu-latest
     environment:
-      name: TEST
+      name: ${{ inputs.env }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -321,32 +321,86 @@ jobs:
   deploy-app-env-api:
     name: Deploy API env file
     needs: [prepare]
-    uses: BehindTheMusicTree/github-workflows/.github/workflows/deploy-app-env-file.yml@main
-    with:
-      env: ${{ inputs.env }}
-      app_name: ${{ vars.APP_NAME }}
-      artifact_name: app-env-api
-    secrets: inherit
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.env }}
+    env:
+      POOL_DIR: ${{ vars.WEBHOOK_DIR }}${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE }}-${{ inputs.env }}/pool
+    steps:
+      - name: Download app env files artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-env-api
+
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SERVER_DEPLOY_SSH_PRIVATE_KEY }}
+
+      - name: Add host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ vars.DOMAIN_NAME }} >> ~/.ssh/known_hosts
+
+      - name: Ensure pool/compose subdir and upload env files
+        run: |
+          ssh ${{ env.SSH_DESTINATION }} "mkdir -p ${{ env.POOL_DIR }}/compose/${{ vars.APP_NAME }}"
+          shopt -s dotglob && scp -r ./* ${{ env.SSH_DESTINATION }}:${{ env.POOL_DIR }}/compose/${{ vars.APP_NAME }}/
 
   deploy-app-env-db:
     name: Deploy DB env file
     needs: [prepare]
-    uses: BehindTheMusicTree/github-workflows/.github/workflows/deploy-app-env-file.yml@main
-    with:
-      env: ${{ inputs.env }}
-      app_name: ${{ vars.APP_NAME }}
-      artifact_name: app-env-db
-    secrets: inherit
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.env }}
+    env:
+      POOL_DIR: ${{ vars.WEBHOOK_DIR }}${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE }}-${{ inputs.env }}/pool
+    steps:
+      - name: Download app env files artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-env-db
+
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SERVER_DEPLOY_SSH_PRIVATE_KEY }}
+
+      - name: Add host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ vars.DOMAIN_NAME }} >> ~/.ssh/known_hosts
+
+      - name: Ensure pool/compose subdir and upload env files
+        run: |
+          ssh ${{ env.SSH_DESTINATION }} "mkdir -p ${{ env.POOL_DIR }}/compose/${{ vars.APP_NAME }}"
+          shopt -s dotglob && scp -r ./* ${{ env.SSH_DESTINATION }}:${{ env.POOL_DIR }}/compose/${{ vars.APP_NAME }}/
 
   deploy-app-env-afp:
     name: Deploy AFP env file
     needs: [prepare]
-    uses: BehindTheMusicTree/github-workflows/.github/workflows/deploy-app-env-file.yml@main
-    with:
-      env: ${{ inputs.env }}
-      app_name: ${{ vars.APP_NAME }}
-      artifact_name: app-env-afp
-    secrets: inherit
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.env }}
+    env:
+      POOL_DIR: ${{ vars.WEBHOOK_DIR }}${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE }}-${{ inputs.env }}/pool
+    steps:
+      - name: Download app env files artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-env-afp
+
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SERVER_DEPLOY_SSH_PRIVATE_KEY }}
+
+      - name: Add host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ vars.DOMAIN_NAME }} >> ~/.ssh/known_hosts
+
+      - name: Ensure pool/compose subdir and upload env files
+        run: |
+          ssh ${{ env.SSH_DESTINATION }} "mkdir -p ${{ env.POOL_DIR }}/compose/${{ vars.APP_NAME }}"
+          shopt -s dotglob && scp -r ./* ${{ env.SSH_DESTINATION }}:${{ env.POOL_DIR }}/compose/${{ vars.APP_NAME }}/
 
   deploy-compose:
     name: Deploy partial docker compose
