@@ -27,6 +27,8 @@ env:
   SSH_DESTINATION: ${{ secrets.SERVER_DEPLOY_USERNAME }}@${{ vars.DOMAIN_NAME }}
   CONTAINER_ROOT_DIR: /home/api/
   DOCKERIZED_APP_ENV_FILENAME: .env_api
+  DB_COMPOSE_PART_FILENAME: ${{ vars.APP_NAME }}_db.yml
+  AFP_COMPOSE_PART_FILENAME: ${{ vars.APP_NAME }}_afp.yml
 
 jobs:
   prepare:
@@ -46,8 +48,6 @@ jobs:
           WEBHOOK_DIR: ${{ vars.WEBHOOK_DIR }}
           WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE: ${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE }}
           DOCKER_COMPOSE_DIR_NAME: ${{ vars.DOCKER_COMPOSE_DIR_NAME }}
-          DB_COMPOSE_PART_FILENAME: ${{ vars.DB_COMPOSE_PART_FILENAME }}
-          AFP_COMPOSE_PART_FILENAME: ${{ vars.AFP_COMPOSE_PART_FILENAME }}
           DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
           API_PORT: ${{ vars.HTMT_API_PORT }}
           CSRF_TRUSTED_ORIGINS: ${{ vars.CSRF_TRUSTED_ORIGINS }}
