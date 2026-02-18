@@ -244,33 +244,23 @@ jobs:
             echo 'APP_PORT=${{ vars.AFP_PORT }}'
           } > pool_compose_afp/.env_afp
 
-      - uses: webfactory/ssh-agent@v0.9.0
+      - name: Upload app-env-api artifact
+        uses: actions/upload-artifact@v4
         with:
-          ssh-private-key: ${{ secrets.SERVER_DEPLOY_SSH_PRIVATE_KEY }}
+          name: app-env-api
+          path: pool_compose_api/
 
-      - name: Add host to known_hosts
-        run: |
-          mkdir -p ~/.ssh
-          ssh-keyscan -H ${{ vars.DOMAIN_NAME }} >> ~/.ssh/known_hosts
+      - name: Upload app-env-db artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-env-db
+          path: pool_compose_db/
 
-      - name: Deploy API env file
-        env:
-          POOL_DIR: ${{ vars.WEBHOOK_DIR }}${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE }}-${{ inputs.env }}/pool
-        run: |
-          ssh ${{ env.SSH_DESTINATION }} "mkdir -p $POOL_DIR/compose/${{ vars.APP_NAME }}"
-          shopt -s dotglob && scp -r pool_compose_api/* ${{ env.SSH_DESTINATION }}:$POOL_DIR/compose/${{ vars.APP_NAME }}/
-
-      - name: Deploy DB env file
-        env:
-          POOL_DIR: ${{ vars.WEBHOOK_DIR }}${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE }}-${{ inputs.env }}/pool
-        run: |
-          shopt -s dotglob && scp -r pool_compose_db/* ${{ env.SSH_DESTINATION }}:$POOL_DIR/compose/${{ vars.APP_NAME }}/
-
-      - name: Deploy AFP env file
-        env:
-          POOL_DIR: ${{ vars.WEBHOOK_DIR }}${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE }}-${{ inputs.env }}/pool
-        run: |
-          shopt -s dotglob && scp -r pool_compose_afp/* ${{ env.SSH_DESTINATION }}:$POOL_DIR/compose/${{ vars.APP_NAME }}/
+      - name: Upload app-env-afp artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-env-afp
+          path: pool_compose_afp/
 
       - name: Generate partial docker compose files
         env:
@@ -326,6 +316,36 @@ jobs:
     with:
       env: ${{ inputs.env }}
       app_name: ${{ vars.APP_NAME }}
+    secrets: inherit
+
+  deploy-app-env-api:
+    name: Deploy API env file
+    needs: [prepare]
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/deploy-app-env-file.yml@main
+    with:
+      env: ${{ inputs.env }}
+      app_name: ${{ vars.APP_NAME }}
+      artifact_name: app-env-api
+    secrets: inherit
+
+  deploy-app-env-db:
+    name: Deploy DB env file
+    needs: [prepare]
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/deploy-app-env-file.yml@main
+    with:
+      env: ${{ inputs.env }}
+      app_name: ${{ vars.APP_NAME }}
+      artifact_name: app-env-db
+    secrets: inherit
+
+  deploy-app-env-afp:
+    name: Deploy AFP env file
+    needs: [prepare]
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/deploy-app-env-file.yml@main
+    with:
+      env: ${{ inputs.env }}
+      app_name: ${{ vars.APP_NAME }}
+      artifact_name: app-env-afp
     secrets: inherit
 
   deploy-compose:
