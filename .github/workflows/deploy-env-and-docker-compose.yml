@@ -1,11 +1,14 @@
 # Reference caller workflow for an app repo (e.g. htmt-api): prepare env vars and partial
-# docker-compose, then call the three reusable workflows (nginx env, app env, docker compose).
+# docker-compose, then call the reusable workflows (nginx env, app env, docker compose).
 # The reusables live in the public repo BehindTheMusicTree/github-workflows; copy only this
 # caller to your app repo's .github/workflows/ (reusables are called from that repo).
 #
 # Pool: $WEBHOOK_DIR + $WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE + "-" + env + "/pool". Subdirs:
 #   pool/nginx/<app>.env — merged into nginx .env by redeploy.
 #   pool/compose/<app_name>/ — compose env files; redeploy copies to compose dir.
+#
+# App env: one combined artifact (app-env-files) is used so the reusable workflow from
+# another repo can download it reliably; all .env_api, .env_db, .env_afp go to pool/compose/<APP_NAME>/.
 name: Deploy Env variables And Partial Docker Compose
 
 on:
@@ -244,23 +247,14 @@ jobs:
             echo 'APP_PORT=${{ vars.AFP_PORT }}'
           } > pool_compose_afp/.env_afp
 
-      - name: Upload app-env-api artifact
-        uses: actions/upload-artifact@v4
+      - name: Prepare combined app-env-files and upload
+        run: |
+          mkdir -p pool_compose_all
+          cp pool_compose_api/.env_api pool_compose_db/.env_db pool_compose_afp/.env_afp pool_compose_all/
+      - uses: actions/upload-artifact@v4
         with:
-          name: app-env-api
-          path: pool_compose_api/
-
-      - name: Upload app-env-db artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-env-db
-          path: pool_compose_db/
-
-      - name: Upload app-env-afp artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-env-afp
-          path: pool_compose_afp/
+          name: app-env-files
+          path: pool_compose_all/
 
       - name: Generate partial docker compose files
         env:
@@ -318,34 +312,14 @@ jobs:
       app_name: ${{ vars.APP_NAME }}
     secrets: inherit
 
-  deploy-app-env-api:
-    name: Deploy API env file
+  deploy-app-env-files:
+    name: Deploy app env files (API, DB, AFP)
     needs: [prepare]
     uses: BehindTheMusicTree/github-workflows/.github/workflows/deploy-app-env-file.yml@main
     with:
       env: ${{ inputs.env }}
       app_name: ${{ vars.APP_NAME }}
-      artifact_name: app-env-api
-    secrets: inherit
-
-  deploy-app-env-db:
-    name: Deploy DB env file
-    needs: [prepare]
-    uses: BehindTheMusicTree/github-workflows/.github/workflows/deploy-app-env-file.yml@main
-    with:
-      env: ${{ inputs.env }}
-      app_name: ${{ vars.APP_NAME }}
-      artifact_name: app-env-db
-    secrets: inherit
-
-  deploy-app-env-afp:
-    name: Deploy AFP env file
-    needs: [prepare]
-    uses: BehindTheMusicTree/github-workflows/.github/workflows/deploy-app-env-file.yml@main
-    with:
-      env: ${{ inputs.env }}
-      app_name: ${{ vars.APP_NAME }}
-      artifact_name: app-env-afp
+      artifact_name: app-env-files
     secrets: inherit
 
   deploy-compose:
