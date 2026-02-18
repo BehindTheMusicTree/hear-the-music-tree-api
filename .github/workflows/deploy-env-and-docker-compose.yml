@@ -330,7 +330,7 @@ jobs:
   deploy-compose:
     name: Deploy compose parts
     needs: [prepare]
-    uses: BehindTheMusicTree/github-workflows/.github/workflows/deploy-partial-docker-compose.yml@main
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/deploy-docker-compose-part.yml@main
     with:
       env: ${{ inputs.env }}
       app_version: ${{ inputs.app_version }}
