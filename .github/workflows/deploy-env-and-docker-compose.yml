@@ -111,8 +111,6 @@ jobs:
             WEBHOOK_DIR \
             WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE \
             DOCKER_COMPOSE_DIR_NAME \
-            DB_COMPOSE_PART_FILENAME \
-            AFP_COMPOSE_PART_FILENAME \
             API_PORT \
             CSRF_TRUSTED_ORIGINS \
             ALLOWED_HOSTS \
@@ -259,6 +257,7 @@ jobs:
           cp "pool_compose_api/$APP_ENV_FILENAME" "pool_compose_all/${APP_ENV_FILENAME#.}"
           cp "pool_compose_db/$DB_ENV_FILENAME" "pool_compose_all/${DB_ENV_FILENAME#.}"
           cp "pool_compose_afp/$AFP_ENV_FILENAME" "pool_compose_all/${AFP_ENV_FILENAME#.}"
+
       - name: Upload app-env-files artifact
         uses: actions/upload-artifact@v4
         with:
@@ -268,8 +267,8 @@ jobs:
       - name: Generate partial docker compose files
         env:
           APP_NAME: ${{ vars.APP_NAME }}
-          DB_COMPOSE_PART_FILENAME: ${{ vars.DB_COMPOSE_PART_FILENAME }}
-          AFP_COMPOSE_PART_FILENAME: ${{ vars.AFP_COMPOSE_PART_FILENAME }}
+          DB_COMPOSE_PART_FILENAME: ${{ env.DB_COMPOSE_PART_FILENAME }}
+          AFP_COMPOSE_PART_FILENAME: ${{ env.AFP_COMPOSE_PART_FILENAME }}
           APP_COMPOSE_PART_FILENAME: ${{ vars.APP_NAME }}.yml
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
           AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
