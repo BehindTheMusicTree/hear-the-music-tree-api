@@ -61,9 +61,9 @@ jobs:
           DB_DATA_DIR: ${{ vars.DB_DATA_DIR }}
           DB_PORT_HOST: ${{ vars.DB_PORT_HOST }}
           DB_SUPERUSER_PASSWORD: ${{ secrets.DB_SUPERUSER_PASSWORD }}
-          DB_BODZIFY_API_DB_NAME: ${{ secrets.DB_BODZIFY_API_DB_NAME }}
-          DB_BODZIFY_API_USERNAME: ${{ secrets.DB_BODZIFY_API_USERNAME }}
-          DB_BODZIFY_API_USER_PASSWORD: ${{ secrets.DB_BODZIFY_API_USER_PASSWORD }}
+          DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
+          DB_APP_USERNAME: ${{ secrets.DB_APP_USERNAME }}
+          DB_APP_USER_PASSWORD: ${{ secrets.DB_APP_USER_PASSWORD }}
           AFP_CONTAINER_NAME: ${{ vars.AFP_CONTAINER_NAME }}
           AFP_PORT: ${{ vars.AFP_PORT }}
           AFP_POST_ENDPOINT: ${{ vars.AFP_POST_ENDPOINT }}
@@ -124,9 +124,9 @@ jobs:
             DB_DATA_DIR \
             DB_PORT_HOST \
             DB_SUPERUSER_PASSWORD \
-            DB_BODZIFY_API_DB_NAME \
-            DB_BODZIFY_API_USERNAME \
-            DB_BODZIFY_API_USER_PASSWORD \
+            DB_APP_DB_NAME \
+            DB_APP_USERNAME \
+            DB_APP_USER_PASSWORD \
             AFP_CONTAINER_NAME \
             AFP_PORT \
             AFP_POST_ENDPOINT \
@@ -212,9 +212,9 @@ jobs:
             echo 'DB_CONNECTION_TEST_SLEEP_INTERVAL=5'
             echo 'DB_SUPERUSER_NAME=${{ vars.DB_SUPERUSER_NAME }}'
             echo "DB_SUPERUSER_PASSWORD='${{ secrets.DB_SUPERUSER_PASSWORD }}'"
-            echo 'DB_BODZIFY_API_DB_NAME=${{ secrets.DB_BODZIFY_API_DB_NAME }}'
-            echo 'DB_BODZIFY_API_USERNAME=${{ secrets.DB_BODZIFY_API_USERNAME }}'
-            echo "DB_BODZIFY_API_USER_PASSWORD='${{ secrets.DB_BODZIFY_API_USER_PASSWORD }}'"
+            echo 'DB_APP_DB_NAME=${{ secrets.DB_APP_DB_NAME }}'
+            echo 'DB_APP_USERNAME=${{ secrets.DB_APP_USERNAME }}'
+            echo "DB_APP_USER_PASSWORD='${{ secrets.DB_APP_USER_PASSWORD }}'"
             echo 'AFP_CONTAINER_NAME=${{ vars.AFP_CONTAINER_NAME }}'
             echo 'AFP_PORT=${{ vars.AFP_PORT }}'
             echo 'AFP_POST_ENDPOINT=${{ vars.AFP_POST_ENDPOINT }}'
@@ -232,7 +232,7 @@ jobs:
           mkdir -p pool_compose_db
           {
             echo 'ENV=${{ inputs.env }}'
-            echo 'POSTGRES_DB=${{ secrets.DB_BODZIFY_API_DB_NAME }}'
+            echo 'POSTGRES_DB=${{ secrets.DB_APP_DB_NAME }}'
             echo 'POSTGRES_USER=${{ vars.DB_SUPERUSER_NAME }}'
             echo "POSTGRES_PASSWORD=${{ secrets.DB_SUPERUSER_PASSWORD }}"
             echo 'POSTGRES_PORT=${{ vars.DB_PORT }}'
