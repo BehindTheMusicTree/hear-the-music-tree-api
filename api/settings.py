@@ -580,9 +580,9 @@ def setup_middlewares():
 
 
 def setup_db_connection():
-    DB_BODZIFY_API_DB_NAME = load_required_str_env_var('DB_BODZIFY_API_DB_NAME')
-    DB_BODZIFY_API_USERNAME = load_required_str_env_var('DB_BODZIFY_API_USERNAME')
-    DB_BODZIFY_API_USER_PASSWORD = load_required_secret_env_var('DB_BODZIFY_API_USER_PASSWORD')
+    DB_APP_DB_NAME = load_required_str_env_var('DB_APP_DB_NAME')
+    DB_APP_USERNAME = load_required_str_env_var('DB_APP_USERNAME')
+    DB_APP_USER_PASSWORD = load_required_secret_env_var('DB_APP_USER_PASSWORD')
 
     if APP_IS_EXPOSED:
         print_django("The app is exposed. The db host is the db container name.")
@@ -600,9 +600,9 @@ def setup_db_connection():
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': DB_BODZIFY_API_DB_NAME,
-            'USER': DB_BODZIFY_API_USERNAME,
-            'PASSWORD': DB_BODZIFY_API_USER_PASSWORD,
+            'NAME': DB_APP_DB_NAME,
+            'USER': DB_APP_USERNAME,
+            'PASSWORD': DB_APP_USER_PASSWORD,
             'HOST': DB_HOST,
             'PORT': DB_PORT,
             'DISABLE_SERVER_SIDE_CURSORS': True
