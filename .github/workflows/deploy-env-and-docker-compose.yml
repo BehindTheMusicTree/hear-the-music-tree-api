@@ -300,7 +300,7 @@ jobs:
       - name: Prepare compose-parts
         run: |
           mkdir -p compose_parts
-          cp scripts/db scripts/afp "scripts/${{ vars.APP_NAME }}" compose_parts/
+          cp scripts/db.yml scripts/afp.yml "scripts/${{ vars.APP_NAME }}.yml" compose_parts/
 
       - name: Upload compose-parts artifact
         uses: actions/upload-artifact@v4

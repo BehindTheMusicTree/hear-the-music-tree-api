@@ -44,7 +44,7 @@ REQUIRED_NON_BOOL_VARS=(
 )
 check_required_vars_are_set ${REQUIRED_NON_BOOL_VARS[@]}
 
-DOCKER_COMPOSE_PARTIAL_DB_FILE="${SCRIPTS_DIR}db$"
+DOCKER_COMPOSE_PARTIAL_DB_FILE="${SCRIPTS_DIR}db.yml"
 log "Generating the DB partial docker-compose files in $DOCKER_COMPOSE_PARTIAL_DB_FILE..."
 cat << EOF > "$DOCKER_COMPOSE_PARTIAL_DB_FILE"
   db:
@@ -58,7 +58,7 @@ cat << EOF > "$DOCKER_COMPOSE_PARTIAL_DB_FILE"
 EOF
 log "DB partial docker-compose file generated."
 
-DOCKER_COMPOSE_PARTIAL_AFP_FILE="${SCRIPTS_DIR}afp"
+DOCKER_COMPOSE_PARTIAL_AFP_FILE="${SCRIPTS_DIR}afp.yml"
 log "Generating the AFP partial docker-compose files in $DOCKER_COMPOSE_PARTIAL_AFP_FILE..."
 cat << EOF > "$DOCKER_COMPOSE_PARTIAL_AFP_FILE"
   audio_fingerprinter:
@@ -81,7 +81,7 @@ cat << EOF > "$DOCKER_COMPOSE_PARTIAL_AFP_FILE"
 EOF
 log "AFP partial docker-compose file generated."
 
-DOCKER_COMPOSE_PARTIAL_API_FILE="${SCRIPTS_DIR}${APP_NAME}"
+DOCKER_COMPOSE_PARTIAL_API_FILE="${SCRIPTS_DIR}${APP_NAME}.yml"
 log "Generating the API partial docker-compose files in $DOCKER_COMPOSE_PARTIAL_API_FILE..."
 cat << EOF > "$DOCKER_COMPOSE_PARTIAL_API_FILE"
   ${APP_SERVICE_NAME}:
