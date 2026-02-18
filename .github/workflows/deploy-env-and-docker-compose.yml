@@ -7,8 +7,8 @@
 #   pool/nginx/<app>.env — merged into nginx .env by redeploy.
 #   pool/compose/<app_name>/ — compose env files; redeploy copies to compose dir.
 #
-# App env: one combined artifact (app-env-files) is used so the reusable workflow from
-# another repo can download it reliably; all .env_api, .env_db, .env_afp go to pool/compose/<APP_NAME>/.
+# App env: one combined artifact (app-env-files) with non-dotfile names (env_api, env_db, env_afp)
+# so upload-artifact includes them; the reusable workflow renames to dotfiles on the server.
 name: Deploy Env variables And Partial Docker Compose
 
 on:
@@ -248,10 +248,17 @@ jobs:
           } > pool_compose_afp/.env_afp
 
       - name: Prepare combined app-env-files and upload
+        env:
+          APP_ENV_FILENAME: ${{ env.DOCKERIZED_APP_ENV_FILENAME }}
+          DB_ENV_FILENAME: ${{ vars.DB_ENV_FILENAME }}
+          AFP_ENV_FILENAME: ${{ vars.AFP_ENV_FILENAME }}
         run: |
           mkdir -p pool_compose_all
-          cp pool_compose_api/.env_api pool_compose_db/.env_db pool_compose_afp/.env_afp pool_compose_all/
-      - uses: actions/upload-artifact@v4
+          cp "pool_compose_api/$APP_ENV_FILENAME" "pool_compose_all/${APP_ENV_FILENAME#.}"
+          cp "pool_compose_db/$DB_ENV_FILENAME" "pool_compose_all/${DB_ENV_FILENAME#.}"
+          cp "pool_compose_afp/$AFP_ENV_FILENAME" "pool_compose_all/${AFP_ENV_FILENAME#.}"
+      - name: Upload app-env-files artifact
+        uses: actions/upload-artifact@v4
         with:
           name: app-env-files
           path: pool_compose_all/
