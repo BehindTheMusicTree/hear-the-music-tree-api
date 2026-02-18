@@ -12,7 +12,6 @@ log "Generating partial docker-compose files..."
 load_app_env_file_if_exists
 
 REQUIRED_NON_BOOL_VARS=(
-  DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE
   DOCKERHUB_USERNAME
   DB_IMAGE_REPO
   DB_VERSION
@@ -44,7 +43,7 @@ REQUIRED_NON_BOOL_VARS=(
 )
 check_required_vars_are_set ${REQUIRED_NON_BOOL_VARS[@]}
 
-DOCKER_COMPOSE_PARTIAL_DB_FILE="${SCRIPTS_DIR}db${DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE}"
+DOCKER_COMPOSE_PARTIAL_DB_FILE="${SCRIPTS_DIR}db$"
 log "Generating the DB partial docker-compose files in $DOCKER_COMPOSE_PARTIAL_DB_FILE..."
 cat << EOF > "$DOCKER_COMPOSE_PARTIAL_DB_FILE"
   db:
@@ -58,7 +57,7 @@ cat << EOF > "$DOCKER_COMPOSE_PARTIAL_DB_FILE"
 EOF
 log "DB partial docker-compose file generated."
 
-DOCKER_COMPOSE_PARTIAL_AFP_FILE="${SCRIPTS_DIR}afp${DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE}"
+DOCKER_COMPOSE_PARTIAL_AFP_FILE="${SCRIPTS_DIR}afp"
 log "Generating the AFP partial docker-compose files in $DOCKER_COMPOSE_PARTIAL_AFP_FILE..."
 cat << EOF > "$DOCKER_COMPOSE_PARTIAL_AFP_FILE"
   audio_fingerprinter:
@@ -81,7 +80,7 @@ cat << EOF > "$DOCKER_COMPOSE_PARTIAL_AFP_FILE"
 EOF
 log "AFP partial docker-compose file generated."
 
-DOCKER_COMPOSE_PARTIAL_API_FILE="${SCRIPTS_DIR}api${DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE}"
+DOCKER_COMPOSE_PARTIAL_API_FILE="${SCRIPTS_DIR}api"
 log "Generating the API partial docker-compose files in $DOCKER_COMPOSE_PARTIAL_API_FILE..."
 cat << EOF > "$DOCKER_COMPOSE_PARTIAL_API_FILE"
   ${APP_SERVICE_NAME}:

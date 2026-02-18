@@ -50,7 +50,6 @@ jobs:
           API_PORT: ${{ vars.HTMT_API_PORT }}
           CSRF_TRUSTED_ORIGINS: ${{ vars.CSRF_TRUSTED_ORIGINS }}
           ALLOWED_HOSTS: ${{ vars.ALLOWED_HOSTS }}
-          DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE: ${{ vars.DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE }}
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
           DB_CONTAINER_NAME: ${{ vars.DB_CONTAINER_NAME }}
           DB_PORT: ${{ vars.DB_PORT }}
@@ -113,7 +112,6 @@ jobs:
             API_PORT \
             CSRF_TRUSTED_ORIGINS \
             ALLOWED_HOSTS \
-            DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE \
             DOCKERHUB_USERNAME \
             DB_CONTAINER_NAME \
             DB_PORT \
@@ -265,7 +263,6 @@ jobs:
 
       - name: Generate partial docker compose files
         env:
-          DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE: ${{ vars.DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE }}
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
           AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
           AFP_VERSION: ${{ vars.AFP_VERSION }}
@@ -302,7 +299,7 @@ jobs:
       - name: Prepare compose-parts
         run: |
           mkdir -p compose_parts
-          cp scripts/*${{ vars.DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE }} compose_parts/
+          cp scripts/* compose_parts/
 
       - name: Upload compose-parts artifact
         uses: actions/upload-artifact@v4
