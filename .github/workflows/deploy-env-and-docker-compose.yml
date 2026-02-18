@@ -29,6 +29,7 @@ env:
   DOCKERIZED_APP_ENV_FILENAME: .env_api
   DB_COMPOSE_PART_FILENAME: ${{ vars.APP_NAME }}_db.yml
   AFP_COMPOSE_PART_FILENAME: ${{ vars.APP_NAME }}_afp.yml
+  APP_COMPOSE_PART_FILENAME: ${{ vars.APP_NAME }}.yml
 
 jobs:
   prepare:
@@ -90,11 +91,14 @@ jobs:
           ACOUSTID_API_KEY: ${{ secrets.ACOUSTID_API_KEY }}
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID_PROD }}
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET_PROD }}
-          SPOTIFY_SCOPES: ${{ secrets.SPOTIFY_SCOPES }}
+          SPOTIFY_SCOPES: ${{ vars.SPOTIFY_SCOPES }}
           SPOTIFY_REDIRECT_RELATIVE_URI: ${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID_PROD }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET_PROD }}
           GOOGLE_REDIRECT_RELATIVE_URI: ${{ vars.GOOGLE_REDIRECT_RELATIVE_URI }}
+          GTMT_FRONT_SUBDOMAIN_NAME: ${{ vars.GTMT_FRONT_SUBDOMAIN_NAME }}
+          HTMT_API_MEDIA_URL: ${{ vars.HTMT_API_MEDIA_URL }}
+          LIBRARIES_DIR_NAME: ${{ vars.LIBRARIES_DIR_NAME }}
           TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
           SUPERADMIN_USERNAME: ${{ secrets.SUPERADMIN_USERNAME }}
           SUPERADMIN_EMAIL: ${{ vars.SUPERADMIN_EMAIL }}
@@ -152,9 +156,14 @@ jobs:
             ACOUSTID_API_KEY \
             SPOTIFY_CLIENT_ID \
             SPOTIFY_CLIENT_SECRET \
+            SPOTIFY_SCOPES \
             SPOTIFY_REDIRECT_RELATIVE_URI \
             GOOGLE_CLIENT_ID \
             GOOGLE_CLIENT_SECRET \
+            GOOGLE_REDIRECT_RELATIVE_URI \
+            GTMT_FRONT_SUBDOMAIN_NAME \
+            HTMT_API_MEDIA_URL \
+            LIBRARIES_DIR_NAME \
             TMTA_USERNAME \
             SUPERADMIN_USERNAME \
             SUPERADMIN_EMAIL \
@@ -269,7 +278,7 @@ jobs:
           APP_NAME: ${{ vars.APP_NAME }}
           DB_COMPOSE_PART_FILENAME: ${{ env.DB_COMPOSE_PART_FILENAME }}
           AFP_COMPOSE_PART_FILENAME: ${{ env.AFP_COMPOSE_PART_FILENAME }}
-          APP_COMPOSE_PART_FILENAME: ${{ vars.APP_NAME }}.yml
+          APP_COMPOSE_PART_FILENAME: ${{ env.APP_COMPOSE_PART_FILENAME }}
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
           AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
           AFP_VERSION: ${{ vars.AFP_VERSION }}
@@ -304,13 +313,9 @@ jobs:
           bash scripts/generate-docker-compose-parts.sh
 
       - name: Prepare compose-parts
-        env:
-          DB_COMPOSE_PART_FILENAME: ${{ vars.DB_COMPOSE_PART_FILENAME }}
-          AFP_COMPOSE_PART_FILENAME: ${{ vars.AFP_COMPOSE_PART_FILENAME }}
-          APP_COMPOSE_PART_FILENAME: ${{ vars.APP_NAME }}.yml
         run: |
           mkdir -p compose_parts
-          cp "scripts/${{ env.DB_COMPOSE_PART_FILENAME }}" "scripts/${{ env.AFP_COMPOSE_PART_FILENAME }}" "scripts/${{ env.APP_COMPOSE_PART_FILENAME }}" compose_parts/
+          cp "scripts/$DB_COMPOSE_PART_FILENAME" "scripts/$AFP_COMPOSE_PART_FILENAME" "scripts/$APP_COMPOSE_PART_FILENAME" compose_parts/
 
       - name: Upload compose-parts artifact
         uses: actions/upload-artifact@v4
