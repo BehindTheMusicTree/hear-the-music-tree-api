@@ -315,6 +315,7 @@ jobs:
           DB_COMPOSE_PART_FILENAME: ${{ env.DB_COMPOSE_PART_FILENAME }}
           AFP_COMPOSE_PART_FILENAME: ${{ env.AFP_COMPOSE_PART_FILENAME }}
           APP_COMPOSE_PART_FILENAME: ${{ env.APP_COMPOSE_PART_FILENAME }}
+
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
           AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
           AFP_VERSION: ${{ vars.AFP_VERSION }}
@@ -323,6 +324,7 @@ jobs:
           AFP_ENV_FILENAME: ${{ vars.AFP_ENV_FILENAME }}
           AFP_POOL_DIR_EXTERNAL: ${{ vars.AFP_POOL_DIR_EXTERNAL }}
           AFP_FLASK_LOG_DIR_EXTERNAL: ${{ vars.AFP_FLASK_LOG_DIR_EXTERNAL }}
+          APP_ENV_FILENAME: ${{ env.APP_ENV_FILENAME }}
           AFP_GUNICORN_LOG_DIR_EXTERNAL: ${{ vars.AFP_GUNICORN_LOG_DIR_EXTERNAL }}
           APP_VERSION: ${{ inputs.app_version }}
           APP_ROOT_DIR: ${{ env.CONTAINER_ROOT_DIR }}
@@ -331,17 +333,16 @@ jobs:
           APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
           APP_CONTAINER_NAME: ${{ steps.set_container_names.outputs.app_container_name }}
           APP_PORT: ${{ vars.HTMT_API_PORT }}
-          APP_ENV_FILENAME: ${{ env.APP_ENV_FILENAME }}
           GUNICORN_LOG_DIR: ${{ vars.GUNICORN_LOG_DIR }}
           GUNICORN_LOG_ERROR_FILENAME: ${{ vars.GUNICORN_LOG_ERROR_FILENAME }}
           GUNICORN_LOG_ACCESS_FILENAME: ${{ vars.GUNICORN_LOG_ACCESS_FILENAME }}
+          DB_ENV_FILENAME: ${{ env.DB_ENV_FILENAME }}
           DB_IMAGE_REPO: ${{ vars.DB_IMAGE_REPO }}
           DB_VERSION: ${{ vars.DB_VERSION }}
           DB_CONTAINER_NAME: ${{ steps.set_container_names.outputs.db_container_name }}
           DB_DATA_DIR: ${{ vars.DB_DATA_DIR }}
           DB_PORT_HOST: ${{ vars.DB_PORT_HOST }}
           DB_PORT: ${{ vars.DB_PORT }}
-          DB_ENV_FILENAME: ${{ vars.DB_ENV_FILENAME }}
           DJANGO_LOG_DIR_EXTERNAL: ${{ vars.DJANGO_LOG_DIR_EXTERNAL }}
           MEDIA_DIR_EXTERNAL: ${{ vars.MEDIA_DIR_EXTERNAL }}
           STATIC_FILES_EXTERNAL: ${{ vars.STATIC_FILES_EXTERNAL }}
