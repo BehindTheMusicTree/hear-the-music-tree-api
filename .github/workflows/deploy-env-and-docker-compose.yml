@@ -66,6 +66,7 @@ jobs:
           DB_APP_USERNAME: ${{ secrets.DB_APP_USERNAME }}
           DB_APP_USER_PASSWORD: ${{ secrets.DB_APP_USER_PASSWORD }}
           AFP_CONTAINER_NAME: ${{ vars.AFP_APP_NAME }}
+          APP_CONTAINER_NAME: ${{ vars.HTMT_API_APP_NAME }}-${{ inputs.env }}
           AFP_PORT: ${{ vars.AFP_PORT }}
           AFP_POST_ENDPOINT: ${{ vars.AFP_POST_ENDPOINT }}
           AFP_ENV_FILENAME: ${{ vars.AFP_ENV_FILENAME }}
@@ -127,6 +128,8 @@ jobs:
             DB_APP_DB_NAME \
             DB_APP_USERNAME \
             DB_APP_USER_PASSWORD \
+            AFP_CONTAINER_NAME \
+            APP_CONTAINER_NAME \
             AFP_PORT \
             AFP_POST_ENDPOINT \
             AFP_ENV_FILENAME \
