@@ -272,7 +272,7 @@ jobs:
             echo 'DEMO_USERNAME=${{ secrets.DEMO_USERNAME }}'
             echo 'DEMO_EMAIL=${{ vars.DEMO_EMAIL }}'
             echo "DEMO_PASSWORD='${{ secrets.DEMO_PASSWORD }}'"
-          } > pool_compose_api/.env_api
+          } > pool_compose_api/${{ env.APP_ENV_FILENAME }}
 
       - name: Build DB env file
         run: |
@@ -283,7 +283,7 @@ jobs:
             echo 'POSTGRES_USER=${{ vars.DB_SUPERUSER_NAME }}'
             echo "POSTGRES_PASSWORD=${{ secrets.DB_SUPERUSER_PASSWORD }}"
             echo 'POSTGRES_PORT=${{ vars.DB_PORT }}'
-          } > pool_compose_db/.env_db
+          } > pool_compose_db/${{ env.DB_ENV_FILENAME }}
 
       - name: Build AFP env file
         run: |
@@ -292,13 +292,13 @@ jobs:
             echo 'ENV=${{ inputs.env }}'
             echo 'DEBUG=true'
             echo 'APP_PORT=${{ vars.AFP_PORT }}'
-          } > pool_compose_afp/.env_afp
+          } > pool_compose_afp/${{ env.AFP_ENV_FILENAME }}
 
       - name: Prepare combined app-env-files and upload
         env:
           APP_ENV_FILENAME: ${{ env.APP_ENV_FILENAME }}
-          DB_ENV_FILENAME: ${{ vars.DB_ENV_FILENAME }}
-          AFP_ENV_FILENAME: ${{ vars.AFP_ENV_FILENAME }}
+          DB_ENV_FILENAME: ${{ env.DB_ENV_FILENAME }}
+          AFP_ENV_FILENAME: ${{ env.AFP_ENV_FILENAME }}
         run: |
           mkdir -p pool_compose_all
           cp "pool_compose_api/$APP_ENV_FILENAME" "pool_compose_all/${APP_ENV_FILENAME#.}"
