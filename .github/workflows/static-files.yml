@@ -22,7 +22,7 @@ jobs:
       name: COLLECT_STATIC
     env:
       ENV: ${{ vars.ENV }}
-      APP_NAME: ${{ vars.APP_NAME }}
+      APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
       APP_TITLE: ${{ vars.APP_TITLE }}
       DEBUG: false
       DB_IS_NEEDED: false
