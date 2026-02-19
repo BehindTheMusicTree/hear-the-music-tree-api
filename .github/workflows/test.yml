@@ -33,7 +33,7 @@ jobs:
       - name: Check required vars and secrets
         env:
           ENV: ${{ vars.ENV }}
-          APP_NAME: ${{ vars.APP_NAME }}
+          APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
           APP_VERSION: 'test'
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
           TMP_UPLOADED_FILES_EXTERNAL: ${{ vars.TMP_UPLOADED_FILES_EXTERNAL }}
@@ -68,7 +68,7 @@ jobs:
       name: CI_TEST
     env:
       ENV: ${{ vars.ENV }}
-      APP_NAME: ${{ vars.APP_NAME }}
+      APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
       APP_VERSION: 'test'
       DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
       DEBUG: true
