@@ -41,13 +41,13 @@ jobs:
           LIBRARIES_DIR_NAME: ${{ vars.LIBRARIES_DIR_NAME }}
           DB_IMAGE_REPO: ${{ vars.DB_IMAGE_REPO }}
           DB_VERSION: ${{ vars.DB_VERSION }}
-          DB_CONTAINER_NAME: ${{ vars.DB_CONTAINER_NAME }}
+          DB_CONTAINER_NAME: ${{ vars.DB_APP_NAME }}
           DB_DATA_DIR: ${{ vars.DB_DATA_DIR }}
           DB_SUPERUSER_NAME: ${{ vars.DB_SUPERUSER_NAME }}
           DB_URL: ${{ vars.DB_URL }}
           DB_PORT: ${{ vars.DB_PORT }}
           AFP_URL: ${{ vars.AFP_URL }}
-          AFP_CONTAINER_NAME: ${{ vars.AFP_CONTAINER_NAME }}
+          AFP_CONTAINER_NAME: ${{ vars.AFP_APP_NAME }}
           AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
           AFP_VERSION: ${{ vars.AFP_VERSION }}
           AFP_PORT: ${{ vars.AFP_PORT }}
@@ -82,7 +82,7 @@ jobs:
       LIBRARIES_DIR_NAME: ${{ vars.LIBRARIES_DIR_NAME }}
       DB_IMAGE_REPO: ${{ vars.DB_IMAGE_REPO }}
       DB_VERSION: ${{ vars.DB_VERSION }}
-      DB_CONTAINER_NAME: ${{ vars.DB_CONTAINER_NAME }}
+      DB_CONTAINER_NAME: ${{ vars.DB_APP_NAME }}
       DB_DATA_DIR: ${{ vars.DB_DATA_DIR }}
       DB_SUPERUSER_NAME: ${{ vars.DB_SUPERUSER_NAME }}
       DB_SUPERUSER_PASSWORD: ${{ secrets.DB_SUPERUSER_PASSWORD }}
@@ -92,7 +92,7 @@ jobs:
       DB_URL: ${{ vars.DB_URL }}
       DB_PORT: ${{ vars.DB_PORT }}
       AFP_URL: ${{ vars.AFP_URL }}
-      AFP_CONTAINER_NAME: ${{ vars.AFP_CONTAINER_NAME }}
+      AFP_CONTAINER_NAME: ${{ vars.AFP_APP_NAME }}
       AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
       AFP_VERSION: ${{ vars.AFP_VERSION }}
       AFP_PORT: ${{ vars.AFP_PORT }}

@@ -54,7 +54,7 @@ jobs:
           CSRF_TRUSTED_ORIGINS: ${{ vars.CSRF_TRUSTED_ORIGINS }}
           ALLOWED_HOSTS: ${{ vars.ALLOWED_HOSTS }}
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
-          DB_CONTAINER_NAME: ${{ vars.DB_CONTAINER_NAME }}
+          DB_CONTAINER_NAME: ${{ vars.DB_APP_NAME }}
           DB_PORT: ${{ vars.DB_PORT }}
           DB_SUPERUSER_NAME: ${{ vars.DB_SUPERUSER_NAME }}
           DB_ENV_FILENAME: ${{ vars.DB_ENV_FILENAME }}
@@ -66,7 +66,7 @@ jobs:
           DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
           DB_APP_USERNAME: ${{ secrets.DB_APP_USERNAME }}
           DB_APP_USER_PASSWORD: ${{ secrets.DB_APP_USER_PASSWORD }}
-          AFP_CONTAINER_NAME: ${{ vars.AFP_CONTAINER_NAME }}
+          AFP_CONTAINER_NAME: ${{ vars.AFP_APP_NAME }}
           AFP_PORT: ${{ vars.AFP_PORT }}
           AFP_POST_ENDPOINT: ${{ vars.AFP_POST_ENDPOINT }}
           AFP_ENV_FILENAME: ${{ vars.AFP_ENV_FILENAME }}
@@ -174,6 +174,13 @@ jobs:
             HTMT_API_CONTAINER_MEDIA_DIR \
             HTMT_API_STATIC_FILES
 
+      - name: Set container names
+        id: set_container_names
+        run: |
+          echo "db_container_name=${{ vars.HTMT_API_APP_NAME }}-${{ inputs.env }}-${{ vars.DB_APP_NAME }}" >> $GITHUB_OUTPUT
+          echo "afp_container_name=${{ vars.HTMT_API_APP_NAME }}-${{ inputs.env }}-${{ vars.AFP_APP_NAME }}" >> $GITHUB_OUTPUT
+          echo "app_container_name=${{ vars.HTMT_API_APP_NAME }}-${{ inputs.env }}" >> $GITHUB_OUTPUT
+
       - name: Build nginx env fragment
         run: |
           mkdir -p nginx_fragment
@@ -215,7 +222,7 @@ jobs:
             echo 'GUNICORN_LOG_DIR=${{ vars.GUNICORN_LOG_DIR }}'
             echo 'GUNICORN_LOG_ACCESS_FILENAME=${{ vars.GUNICORN_LOG_ACCESS_FILENAME }}'
             echo 'GUNICORN_LOG_ERROR_FILENAME=${{ vars.GUNICORN_LOG_ERROR_FILENAME }}'
-            echo 'DB_CONTAINER_NAME=${{ vars.DB_CONTAINER_NAME }}'
+            echo 'DB_CONTAINER_NAME=${{ steps.set_container_names.outputs.db_container_name }}'
             echo 'DB_PORT=${{ vars.DB_PORT }}'
             echo 'DB_CONNECTION_TEST_MAX_ATTEMPTS=10'
             echo 'DB_CONNECTION_TEST_SLEEP_INTERVAL=5'
@@ -224,7 +231,7 @@ jobs:
             echo 'DB_APP_DB_NAME=${{ secrets.DB_APP_DB_NAME }}'
             echo 'DB_APP_USERNAME=${{ secrets.DB_APP_USERNAME }}'
             echo "DB_APP_USER_PASSWORD='${{ secrets.DB_APP_USER_PASSWORD }}'"
-            echo 'AFP_CONTAINER_NAME=${{ vars.AFP_CONTAINER_NAME }}'
+            echo 'AFP_CONTAINER_NAME=${{ steps.set_container_names.outputs.afp_container_name }}'
             echo 'AFP_PORT=${{ vars.AFP_PORT }}'
             echo 'AFP_POST_ENDPOINT=${{ vars.AFP_POST_ENDPOINT }}'
             echo 'TMTA_USERNAME=${{ secrets.TMTA_USERNAME }}'
@@ -275,14 +282,13 @@ jobs:
 
       - name: Generate partial docker compose files
         env:
-          APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
           DB_COMPOSE_PART_FILENAME: ${{ env.DB_COMPOSE_PART_FILENAME }}
           AFP_COMPOSE_PART_FILENAME: ${{ env.AFP_COMPOSE_PART_FILENAME }}
           APP_COMPOSE_PART_FILENAME: ${{ env.APP_COMPOSE_PART_FILENAME }}
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
           AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
           AFP_VERSION: ${{ vars.AFP_VERSION }}
-          AFP_CONTAINER_NAME: ${{ vars.AFP_CONTAINER_NAME }}
+          AFP_CONTAINER_NAME: ${{ steps.set_container_names.outputs.afp_container_name }}
           AFP_PORT: ${{ vars.AFP_PORT }}
           AFP_ENV_FILENAME: ${{ vars.AFP_ENV_FILENAME }}
           AFP_POOL_DIR_EXTERNAL: ${{ vars.AFP_POOL_DIR_EXTERNAL }}
@@ -292,7 +298,7 @@ jobs:
           APP_ROOT_DIR: ${{ env.CONTAINER_ROOT_DIR }}
           APP_SERVICE_NAME: ${{ vars.HTMT_API_SERVICE_NAME }}
           APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
-          APP_CONTAINER_NAME: ${{ vars.APP_CONTAINER_NAME }}
+          APP_CONTAINER_NAME: ${{ steps.set_container_names.outputs.app_container_name }}
           APP_PORT: ${{ vars.HTMT_API_PORT }}
           APP_ENV_FILENAME: ${{ env.DOCKERIZED_APP_ENV_FILENAME }}
           GUNICORN_LOG_DIR: ${{ vars.GUNICORN_LOG_DIR }}
@@ -300,7 +306,7 @@ jobs:
           GUNICORN_LOG_ACCESS_FILENAME: ${{ vars.GUNICORN_LOG_ACCESS_FILENAME }}
           DB_IMAGE_REPO: ${{ vars.DB_IMAGE_REPO }}
           DB_VERSION: ${{ vars.DB_VERSION }}
-          DB_CONTAINER_NAME: ${{ vars.DB_CONTAINER_NAME }}
+          DB_CONTAINER_NAME: ${{ steps.set_container_names.outputs.db_container_name }}
           DB_DATA_DIR: ${{ vars.DB_DATA_DIR }}
           DB_PORT_HOST: ${{ vars.DB_PORT_HOST }}
           DB_PORT: ${{ vars.DB_PORT }}
