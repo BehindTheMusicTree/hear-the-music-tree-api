@@ -53,6 +53,12 @@ cat << EOF > "$DOCKER_COMPOSE_PARTIAL_DB_FILE"
   db:
     image: $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION
     container_name: $DB_CONTAINER_NAME
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -p $DB_PORT"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     volumes:
       - db-data:$DB_DATA_DIR
     ports:
@@ -91,6 +97,12 @@ cat << EOF > "$DOCKER_COMPOSE_PARTIAL_API_FILE"
     working_dir: $APP_ROOT_DIR
     image: $DOCKERHUB_USERNAME/$APP_IMAGE_REPO:$APP_VERSION
     container_name: $APP_CONTAINER_NAME
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${APP_PORT}/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     volumes:
       - api-django-log-dir:${DJANGO_LOG_DIR_EXTERNAL}
       - api-gunicorn-log-dir:${GUNICORN_LOG_DIR}
@@ -100,8 +112,10 @@ cat << EOF > "$DOCKER_COMPOSE_PARTIAL_API_FILE"
     expose:
       - $APP_PORT
     depends_on:
-      - audio_fingerprinter
-      - db
+      audio_fingerprinter:
+        condition: service_started
+      db:
+        condition: service_healthy
     env_file: $APP_ENV_FILENAME
 EOF
 log "API partial docker-compose file generated."
