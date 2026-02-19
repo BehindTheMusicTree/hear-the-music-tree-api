@@ -218,9 +218,9 @@ jobs:
           IP_LIST="${{ steps.resolve_api_ips.outputs.ip_list }}"
           CSRF_ORIGINS="https://${{ vars.DOMAIN_NAME }},https://${API_HOST}"
           if [ -n "${IP_LIST}" ]; then
-            ALLOWED_HOSTS="${API_HOST},www.${API_HOST},${IP_LIST}"
+            ALLOWED_HOSTS="${API_HOST},www.${API_HOST},${IP_LIST},localhost"
           else
-            ALLOWED_HOSTS="${API_HOST},www.${API_HOST}"
+            ALLOWED_HOSTS="${API_HOST},www.${API_HOST},localhost"
           fi
           echo "csrf_origins=${CSRF_ORIGINS}" >> $GITHUB_OUTPUT
           echo "allowed_hosts=${ALLOWED_HOSTS}" >> $GITHUB_OUTPUT
