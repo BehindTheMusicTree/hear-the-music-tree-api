@@ -136,7 +136,6 @@ jobs:
             AFP_FLASK_LOG_DIR_EXTERNAL \
             AFP_GUNICORN_LOG_DIR_EXTERNAL \
             APP_IMAGE_REPO \
-            APP_CONTAINER_NAME \
             GUNICORN_LOG_DIR \
             GUNICORN_LOG_ERROR_FILENAME \
             GUNICORN_LOG_ACCESS_FILENAME \
