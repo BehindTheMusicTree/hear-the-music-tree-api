@@ -50,9 +50,8 @@ jobs:
           WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE: ${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE }}
           DOCKER_COMPOSE_DIR_NAME: ${{ vars.DOCKER_COMPOSE_DIR_NAME }}
           DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
+          HTMT_API_SUBDOMAIN_NAME: ${{ vars.HTMT_API_SUBDOMAIN_NAME }}
           API_PORT: ${{ vars.HTMT_API_PORT }}
-          CSRF_TRUSTED_ORIGINS: ${{ vars.CSRF_TRUSTED_ORIGINS }}
-          ALLOWED_HOSTS: ${{ vars.ALLOWED_HOSTS }}
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
           DB_PORT: ${{ vars.DB_PORT }}
           DB_SUPERUSER_NAME: ${{ vars.DB_SUPERUSER_NAME }}
@@ -110,12 +109,11 @@ jobs:
           bash scripts/check-workflow-env.sh \
             APP_NAME \
             DOMAIN_NAME \
+            HTMT_API_SUBDOMAIN_NAME \
             WEBHOOK_DIR \
             WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE \
             DOCKER_COMPOSE_DIR_NAME \
             API_PORT \
-            CSRF_TRUSTED_ORIGINS \
-            ALLOWED_HOSTS \
             DOCKERHUB_USERNAME \
             DB_PORT \
             DB_SUPERUSER_NAME \
@@ -191,6 +189,44 @@ jobs:
           name: nginx-env-fragment
           path: nginx_fragment/
 
+      - name: Set API host
+        id: set_api_host
+        run: |
+          if [ "${{ inputs.env }}" = "prod" ]; then
+            API_SUBDOMAIN="${{ vars.HTMT_API_SUBDOMAIN_NAME }}"
+          else
+            API_SUBDOMAIN="${{ vars.HTMT_API_SUBDOMAIN_NAME }}-${{ inputs.env }}"
+          fi
+          API_HOST="${API_SUBDOMAIN}.${{ vars.DOMAIN_NAME }}"
+          echo "api_subdomain=${API_SUBDOMAIN}" >> $GITHUB_OUTPUT
+          echo "api_host=${API_HOST}" >> $GITHUB_OUTPUT
+
+      - name: Resolve API host IPs
+        id: resolve_api_ips
+        run: |
+          API_HOST="${{ steps.set_api_host.outputs.api_host }}"
+          RESOLVED_IPS=$(dig +short "${API_HOST}" 2>/dev/null | grep -E '^[0-9.]+$|^[0-9a-f:]+$' || true)
+          if [ -n "$RESOLVED_IPS" ]; then
+            IP_LIST=$(echo "$RESOLVED_IPS" | tr '\n' ',' | sed 's/,$//')
+          else
+            IP_LIST=""
+          fi
+          echo "ip_list=${IP_LIST}" >> $GITHUB_OUTPUT
+
+      - name: Set CSRF and allowed hosts
+        id: set_csrf_and_allowed_hosts
+        run: |
+          API_HOST="${{ steps.set_api_host.outputs.api_host }}"
+          IP_LIST="${{ steps.resolve_api_ips.outputs.ip_list }}"
+          CSRF_ORIGINS="https://${{ vars.DOMAIN_NAME }},https://${API_HOST}"
+          if [ -n "${IP_LIST}" ]; then
+            ALLOWED_HOSTS="${API_HOST},www.${API_HOST},${IP_LIST}"
+          else
+            ALLOWED_HOSTS="${API_HOST},www.${API_HOST}"
+          fi
+          echo "csrf_origins=${CSRF_ORIGINS}" >> $GITHUB_OUTPUT
+          echo "allowed_hosts=${ALLOWED_HOSTS}" >> $GITHUB_OUTPUT
+
       - name: Build API env file
         run: |
           mkdir -p pool_compose_api
@@ -209,8 +245,8 @@ jobs:
             echo "GOOGLE_CLIENT_ID='${{ secrets.GOOGLE_CLIENT_ID_PROD }}'"
             echo "GOOGLE_CLIENT_SECRET='${{ secrets.GOOGLE_CLIENT_SECRET_PROD }}'"
             echo "GOOGLE_REDIRECT_URI='https://${{ vars.GTMT_FRONT_SUBDOMAIN_NAME }}.${{ vars.DOMAIN_NAME }}/${{ vars.GOOGLE_REDIRECT_RELATIVE_URI }}'"
-            echo 'CSRF_TRUSTED_ORIGINS=${{ vars.CSRF_TRUSTED_ORIGINS }}'
-            echo 'ALLOWED_HOSTS=${{ vars.ALLOWED_HOSTS }}'
+            echo "CSRF_TRUSTED_ORIGINS=${{ steps.set_csrf_and_allowed_hosts.outputs.csrf_origins }}"
+            echo "ALLOWED_HOSTS=${{ steps.set_csrf_and_allowed_hosts.outputs.allowed_hosts }}"
             echo 'TMP_UPLOADED_FILES=${{ vars.TMP_UPLOADED_FILES_EXTERNAL }}'
             echo 'MEDIA_URL=${{ vars.HTMT_API_MEDIA_URL }}'
             echo 'MEDIA_DIR_EXTERNAL=${{ vars.MEDIA_DIR_EXTERNAL }}'
