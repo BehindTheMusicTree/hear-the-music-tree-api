@@ -26,10 +26,12 @@ on:
 env:
   SSH_DESTINATION: ${{ secrets.SERVER_DEPLOY_USERNAME }}@${{ vars.DOMAIN_NAME }}
   CONTAINER_ROOT_DIR: /home/api/
-  DOCKERIZED_APP_ENV_FILENAME: .env_api
   DB_COMPOSE_PART_FILENAME: ${{ vars.HTMT_API_APP_NAME }}_db.yml
   AFP_COMPOSE_PART_FILENAME: ${{ vars.HTMT_API_APP_NAME }}_afp.yml
   APP_COMPOSE_PART_FILENAME: ${{ vars.HTMT_API_APP_NAME }}.yml
+  APP_ENV_FILENAME: ${{ vars.HTMT_API_APP_NAME }}.env
+  DB_ENV_FILENAME: ${{ vars.DB_APP_NAME }}.env
+  AFP_ENV_FILENAME: ${{ vars.AFP_APP_NAME }}.env
 
 jobs:
   prepare:
@@ -46,12 +48,13 @@ jobs:
       - name: Check required vars and secrets
         env:
           APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
+          APP_CONTAINER_NAME: ${{ vars.HTMT_API_APP_NAME }}-${{ inputs.env }}
+          APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
           WEBHOOK_DIR: ${{ vars.WEBHOOK_DIR }}
           WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE: ${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE }}
           DOCKER_COMPOSE_DIR_NAME: ${{ vars.DOCKER_COMPOSE_DIR_NAME }}
           DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
           HTMT_API_SUBDOMAIN_NAME: ${{ vars.HTMT_API_SUBDOMAIN_NAME }}
-          API_PORT: ${{ vars.HTMT_API_PORT }}
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
           DB_PORT: ${{ vars.DB_PORT }}
           DB_SUPERUSER_NAME: ${{ vars.DB_SUPERUSER_NAME }}
@@ -61,20 +64,18 @@ jobs:
           DB_DATA_DIR: ${{ vars.DB_DATA_DIR }}
           DB_PORT_HOST: ${{ vars.DB_PORT_HOST }}
           DB_SUPERUSER_PASSWORD: ${{ secrets.DB_SUPERUSER_PASSWORD }}
+          DB_APP_NAME: ${{ vars.DB_APP_NAME }}
           DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
           DB_APP_USERNAME: ${{ secrets.DB_APP_USERNAME }}
           DB_APP_USER_PASSWORD: ${{ secrets.DB_APP_USER_PASSWORD }}
-          AFP_CONTAINER_NAME: ${{ vars.AFP_APP_NAME }}
-          APP_CONTAINER_NAME: ${{ vars.HTMT_API_APP_NAME }}-${{ inputs.env }}
+          AFP_APP_NAME: ${{ vars.AFP_APP_NAME }}
           AFP_PORT: ${{ vars.AFP_PORT }}
           AFP_POST_ENDPOINT: ${{ vars.AFP_POST_ENDPOINT }}
-          AFP_ENV_FILENAME: ${{ vars.AFP_ENV_FILENAME }}
           AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
           AFP_VERSION: ${{ vars.AFP_VERSION }}
           AFP_POOL_DIR_EXTERNAL: ${{ vars.AFP_POOL_DIR_EXTERNAL }}
           AFP_FLASK_LOG_DIR_EXTERNAL: ${{ vars.AFP_FLASK_LOG_DIR_EXTERNAL }}
           AFP_GUNICORN_LOG_DIR_EXTERNAL: ${{ vars.AFP_GUNICORN_LOG_DIR_EXTERNAL }}
-          APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
           GUNICORN_LOG_DIR: ${{ vars.GUNICORN_LOG_DIR }}
           GUNICORN_LOG_ERROR_FILENAME: ${{ vars.GUNICORN_LOG_ERROR_FILENAME }}
           GUNICORN_LOG_ACCESS_FILENAME: ${{ vars.GUNICORN_LOG_ACCESS_FILENAME }}
@@ -113,8 +114,8 @@ jobs:
             WEBHOOK_DIR \
             WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE \
             DOCKER_COMPOSE_DIR_NAME \
-            API_PORT \
             DOCKERHUB_USERNAME \
+            DB_APP_NAME \
             DB_PORT \
             DB_SUPERUSER_NAME \
             DB_ENV_FILENAME \
@@ -126,11 +127,9 @@ jobs:
             DB_APP_DB_NAME \
             DB_APP_USERNAME \
             DB_APP_USER_PASSWORD \
-            AFP_CONTAINER_NAME \
-            APP_CONTAINER_NAME \
+            AFP_APP_NAME \
             AFP_PORT \
             AFP_POST_ENDPOINT \
-            AFP_ENV_FILENAME \
             AFP_IMAGE_REPO \
             AFP_VERSION \
             AFP_POOL_DIR_EXTERNAL \
@@ -297,7 +296,7 @@ jobs:
 
       - name: Prepare combined app-env-files and upload
         env:
-          APP_ENV_FILENAME: ${{ env.DOCKERIZED_APP_ENV_FILENAME }}
+          APP_ENV_FILENAME: ${{ env.APP_ENV_FILENAME }}
           DB_ENV_FILENAME: ${{ vars.DB_ENV_FILENAME }}
           AFP_ENV_FILENAME: ${{ vars.AFP_ENV_FILENAME }}
         run: |
@@ -333,7 +332,7 @@ jobs:
           APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
           APP_CONTAINER_NAME: ${{ steps.set_container_names.outputs.app_container_name }}
           APP_PORT: ${{ vars.HTMT_API_PORT }}
-          APP_ENV_FILENAME: ${{ env.DOCKERIZED_APP_ENV_FILENAME }}
+          APP_ENV_FILENAME: ${{ env.APP_ENV_FILENAME }}
           GUNICORN_LOG_DIR: ${{ vars.GUNICORN_LOG_DIR }}
           GUNICORN_LOG_ERROR_FILENAME: ${{ vars.GUNICORN_LOG_ERROR_FILENAME }}
           GUNICORN_LOG_ACCESS_FILENAME: ${{ vars.GUNICORN_LOG_ACCESS_FILENAME }}
