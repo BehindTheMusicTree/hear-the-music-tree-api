@@ -292,7 +292,8 @@ jobs:
           AFP_GUNICORN_LOG_DIR_EXTERNAL: ${{ vars.AFP_GUNICORN_LOG_DIR_EXTERNAL }}
           APP_VERSION: ${{ inputs.app_version }}
           APP_ROOT_DIR: ${{ env.CONTAINER_ROOT_DIR }}
-          APP_SERVICE_NAME: ${{ vars.APP_NAME }}
+          APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
+          APP_SERVICE_NAME: ${{ vars.HTMT_API_APP_NAME }}
           APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
           APP_CONTAINER_NAME: ${{ steps.set_container_names.outputs.app_container_name }}
           APP_PORT: ${{ vars.HTMT_API_PORT }}
