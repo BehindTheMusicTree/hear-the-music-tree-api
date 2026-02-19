@@ -321,7 +321,7 @@ jobs:
           AFP_VERSION: ${{ vars.AFP_VERSION }}
           AFP_CONTAINER_NAME: ${{ steps.set_container_names.outputs.afp_container_name }}
           AFP_PORT: ${{ vars.AFP_PORT }}
-          AFP_ENV_FILENAME: ${{ vars.AFP_ENV_FILENAME }}
+          AFP_ENV_FILENAME: ${{ env.AFP_ENV_FILENAME }}
           AFP_POOL_DIR_EXTERNAL: ${{ vars.AFP_POOL_DIR_EXTERNAL }}
           AFP_FLASK_LOG_DIR_EXTERNAL: ${{ vars.AFP_FLASK_LOG_DIR_EXTERNAL }}
           APP_ENV_FILENAME: ${{ env.APP_ENV_FILENAME }}
