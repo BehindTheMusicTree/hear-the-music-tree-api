@@ -6,6 +6,7 @@ This document describes how application versioning is handled in CI/CD workflows
 
 - [Overview](#overview)
 - [Version Format](#version-format)
+- [API URL path prefix](#api-url-path-prefix)
 - [Pre-Release Versions](#pre-release-versions)
   - [Development Tags (`-dev`)](#development-tags--dev-)
   - [Release Candidate Tags (`-rc`, `-beta`, `-alpha`)](#release-candidate-tags--rc--beta--alpha-)
@@ -29,6 +30,10 @@ Versions follow semantic versioning with a `v` prefix:
 
 - Format: `v<major>.<minor>.<patch>` (e.g., `v0.2.0`)
 - The `v` prefix is stripped when used in workflows (e.g., `v0.2.0` → `0.2.0`)
+
+## API URL path prefix
+
+The API URL path prefix uses the **major version only** (e.g. `v1/`). It is derived from `APP_VERSION` at runtime: for `APP_VERSION=1.2.3`, the prefix is `v1/`. This keeps client URLs stable across minor and patch releases; only a new major version would change the path prefix.
 
 ## Pre-Release Versions
 

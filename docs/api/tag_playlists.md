@@ -6,8 +6,8 @@ Manage playlists based on tags.
 ## Contexts
 | Context | Base Path | Authentication | Description |
 |--------|----------|----------------|-------------|
-| `me` | `/{version}/me/tag-playlists/` | Required | Tag playlists owned by the authenticated user |
-| `reference` | `/{version}/reference/tag-playlists/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
+| `me` | `/v1/me/tag-playlists/` | Required | Tag playlists owned by the authenticated user |
+| `reference` | `/v1/reference/tag-playlists/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
 
 ## Endpoints
 
@@ -137,7 +137,7 @@ Code	Meaning
 
 ### Versioning
 
-{APP_VERSION}
+API path prefix uses the major version only (e.g. `v1`), derived from `APP_VERSION`.
 
 ### Notes
 None

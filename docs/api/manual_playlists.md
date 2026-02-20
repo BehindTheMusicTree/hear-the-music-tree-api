@@ -6,8 +6,8 @@ Manage manual playlists
 ## Contexts
 | Context | Base Path | Authentication | Description |
 |--------|----------|----------------|-------------|
-| `me` | `/{version}/me/manual-playlists/` | Required | Manual playlists owned by the authenticated user |
-| `reference` | `/{version}/reference/manual-playlists/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
+| `me` | `/v1/me/manual-playlists/` | Required | Manual playlists owned by the authenticated user |
+| `reference` | `/v1/reference/manual-playlists/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
 
 ## Endpoints
 
