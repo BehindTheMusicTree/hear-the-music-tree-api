@@ -57,7 +57,7 @@ jobs:
           DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
           HTMT_API_SUBDOMAIN_NAME: ${{ vars.HTMT_API_SUBDOMAIN_NAME }}
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
-          DB_PORT: ${{ vars.DB_PORT }}
+          DB_PORT_CONTAINER: ${{ vars.DB_PORT_CONTAINER }}
           DB_SUPERUSER_NAME: ${{ vars.DB_SUPERUSER_NAME }}
           DB_IMAGE_REPO: ${{ vars.DB_IMAGE_REPO }}
           DB_VERSION: ${{ vars.DB_VERSION }}
@@ -118,13 +118,13 @@ jobs:
             DOCKER_COMPOSE_DIR_NAME \
             DOCKERHUB_USERNAME \
             DB_APP_NAME \
-            DB_PORT \
+            DB_PORT_CONTAINER \
+            DB_PORT_HOST \
             DB_SUPERUSER_NAME \
             DB_ENV_FILENAME \
             DB_IMAGE_REPO \
             DB_VERSION \
             DB_DATA_DIR \
-            DB_PORT_HOST \
             DB_SUPERUSER_PASSWORD \
             DB_APP_DB_NAME \
             DB_APP_USERNAME \
@@ -264,7 +264,7 @@ jobs:
             echo 'GUNICORN_LOG_ACCESS_FILENAME=${{ vars.GUNICORN_LOG_ACCESS_FILENAME }}'
             echo 'GUNICORN_LOG_ERROR_FILENAME=${{ vars.GUNICORN_LOG_ERROR_FILENAME }}'
             echo 'DB_CONTAINER_NAME=${{ steps.set_container_names.outputs.db_container_name }}'
-            echo 'DB_PORT=${{ vars.DB_PORT }}'
+            echo 'DB_PORT=${{ vars.DB_PORT_CONTAINER }}'
             echo 'DB_CONNECTION_TEST_MAX_ATTEMPTS=10'
             echo 'DB_CONNECTION_TEST_SLEEP_INTERVAL=5'
             echo 'DB_SUPERUSER_NAME=${{ vars.DB_SUPERUSER_NAME }}'
@@ -292,7 +292,7 @@ jobs:
             echo 'POSTGRES_DB=${{ secrets.DB_APP_DB_NAME }}'
             echo 'POSTGRES_USER=${{ vars.DB_SUPERUSER_NAME }}'
             echo "POSTGRES_PASSWORD=${{ secrets.DB_SUPERUSER_PASSWORD }}"
-            echo 'POSTGRES_PORT=${{ vars.DB_PORT }}'
+            echo 'POSTGRES_PORT=${{ vars.DB_PORT_CONTAINER }}'
           } > pool_compose_db/${{ env.DB_ENV_FILENAME }}
 
       - name: Build AFP env file
@@ -353,7 +353,7 @@ jobs:
           DB_CONTAINER_NAME: ${{ steps.set_container_names.outputs.db_container_name }}
           DB_DATA_DIR: ${{ vars.DB_DATA_DIR }}
           DB_PORT_HOST: ${{ vars.DB_PORT_HOST }}
-          DB_PORT: ${{ vars.DB_PORT }}
+          DB_PORT_CONTAINER: ${{ vars.DB_PORT_CONTAINER }}
           DJANGO_LOG_DIR_EXTERNAL: ${{ vars.DJANGO_LOG_DIR_EXTERNAL }}
           MEDIA_DIR_EXTERNAL: ${{ vars.MEDIA_DIR_EXTERNAL }}
           STATIC_FILES_EXTERNAL: ${{ vars.STATIC_FILES_EXTERNAL }}
