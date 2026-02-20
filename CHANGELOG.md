@@ -59,6 +59,9 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Changed
+- **CI**: Differentiate produciton and db host db ports
+
 ## [v2.0.1] - 2026-02-20
 
 ### Changed
