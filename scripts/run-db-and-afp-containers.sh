@@ -19,9 +19,9 @@ check_script_vars_are_set () {
         DB_DATA_DIR
         DB_SUPERUSER_NAME
         DB_SUPERUSER_PASSWORD
-        DB_BODZIFY_API_DB_NAME
-        DB_BODZIFY_API_USERNAME
-        DB_BODZIFY_API_USER_PASSWORD
+        DB_APP_DB_NAME
+        DB_APP_USERNAME
+        DB_APP_USER_PASSWORD
         DB_PORT
         AFP_CONTAINER_NAME
         AFP_IMAGE_REPO
@@ -32,7 +32,7 @@ check_script_vars_are_set () {
     check_required_vars_are_set ${REQUIRED_NON_BOOL_VARS[@]}
     check_bool_vars_are_set DEBUG APP_IS_EXPOSED DB_DATA_MUST_PERSIST
     export_value_removing_potential_surrounding_quotes DB_SUPERUSER_PASSWORD
-    export_value_removing_potential_surrounding_quotes "DB_BODZIFY_API_USER_PASSWORD"
+    export_value_removing_potential_surrounding_quotes "DB_APP_USER_PASSWORD"
     log_with_script_prefixe "Environment variables loaded successfully."
 }
 
@@ -91,7 +91,7 @@ main() {
             --volume=db-data:$DB_DATA_DIR \
             -p $DB_PORT:$DB_PORT \
             -e ENV=$ENV \
-            -e POSTGRES_DB=$DB_BODZIFY_API_DB_NAME \
+            -e POSTGRES_DB=$DB_APP_DB_NAME \
             -e POSTGRES_USER=$DB_SUPERUSER_NAME \
             -e POSTGRES_PASSWORD=$DB_SUPERUSER_PASSWORD \
             -e POSTGRES_PORT=$DB_PORT \
@@ -101,7 +101,7 @@ main() {
             --name=$DB_CONTAINER_NAME \
             -p $DB_PORT:$DB_PORT \
             -e ENV=$ENV \
-            -e POSTGRES_DB=$DB_BODZIFY_API_DB_NAME \
+            -e POSTGRES_DB=$DB_APP_DB_NAME \
             -e POSTGRES_USER=$DB_SUPERUSER_NAME \
             -e POSTGRES_PASSWORD=$DB_SUPERUSER_PASSWORD \
             -e POSTGRES_PORT=$DB_PORT \

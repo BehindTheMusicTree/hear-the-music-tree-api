@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
 
 from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
-from api.model.user.spotify.SpotifyUser import SpotifyUser
+from api.model.user.User import User
 from api.exception import spotify as spotify_exception
 from ..SpotifyClient import SpotifyClient
 from ..ApiFields import ApiFields
@@ -17,7 +17,7 @@ class SpotifyApiLibTrackManager:
     def __init__(self):
         self.spotify_client = SpotifyClient()
 
-    def get_or_create_spotify_lib_track(self, user: SpotifyUser, track_id: str) -> SpotifyLibTrack | None:
+    def get_or_create_spotify_lib_track(self, user: User, track_id: str) -> SpotifyLibTrack | None:
         """
         Get or create a SpotifyLibTrack instance for the given Spotify track ID
 
@@ -50,7 +50,7 @@ class SpotifyApiLibTrackManager:
             logger.error(f"Unexpected error getting Spotify track: {str(e)}")
             return None
 
-    def search_spotify_lib_tracks(self, user: SpotifyUser, query: str, limit: int = 5) -> List[SpotifyLibTrack]:
+    def search_spotify_lib_tracks(self, user: User, query: str, limit: int = 5) -> List[SpotifyLibTrack]:
         """
         Search for tracks on Spotify and create track models for the results
 
@@ -105,7 +105,7 @@ class SpotifyApiLibTrackManager:
         except Exception as e:
             logger.error(f"Unexpected error retrieving track by ISRC: {str(e)}")
 
-    def quick_sync(self, user: SpotifyUser) -> list[SpotifyLibTrack]:
+    def quick_sync(self, user: User) -> list[SpotifyLibTrack]:
         """
         Perform a quick sync of a user's Spotify library, focusing on new additions only.
         This is designed to be faster for routine use and is automatically called when a user connects.
@@ -225,7 +225,7 @@ class SpotifyApiLibTrackManager:
 
         return tracks
 
-    def full_sync(self, user: SpotifyUser) -> list[SpotifyLibTrack]:
+    def full_sync(self, user: User) -> list[SpotifyLibTrack]:
         """
         Perform a complete sync of a user's Spotify library by fetching all saved tracks.
         This handles both new additions and removals, but is more resource-intensive than quick_sync.

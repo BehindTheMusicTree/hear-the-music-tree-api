@@ -6,8 +6,8 @@ Manage artists
 ## Contexts
 | Context | Base Path | Authentication | Description |
 |--------|----------|----------------|-------------|
-| `me` | `/api/{version}/me/artists/` | Required | Artists associated with the authenticated user |
-| `reference` | `/api/{version}/reference/artists/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
+| `me` | `/v1/me/artists/` | Required | Artists associated with the authenticated user |
+| `reference` | `/v1/reference/artists/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
 
 ## Endpoints
 

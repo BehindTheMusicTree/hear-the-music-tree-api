@@ -6,8 +6,8 @@ Manage genre hierarchies and trees.
 ## Contexts
 | Context | Base Path | Authentication | Description |
 |--------|----------|----------------|-------------|
-| `me` | `/api/{version}/me/genres/` | Required | Genres owned by the authenticated user |
-| `reference` | `/api/{version}/reference/genres/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
+| `me` | `/v1/me/genres/` | Required | Genres owned by the authenticated user |
+| `reference` | `/v1/reference/genres/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
 
 ## Endpoints
 

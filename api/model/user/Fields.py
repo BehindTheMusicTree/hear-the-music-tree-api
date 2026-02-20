@@ -9,3 +9,17 @@ class Fields:
     GROUPS = 'groups'
     USER_PERMISSIONS = 'user_permissions'
     ALL_UPLOADED_TRACK_MIXIN = 'all_uploaded_tracks_mixin'
+
+    SPOTIFY_ID = 'spotify_id'
+    SPOTIFY_ACCESS_TOKEN = 'spotify_access_token'
+    SPOTIFY_REFRESH_TOKEN = 'spotify_refresh_token'
+    SPOTIFY_PROFILE = 'spotify_profile'
+    SPOTIFY_TOKEN_EXPIRES_AT = 'spotify_token_expires_at'
+    SPOTIFY_LIBRARY_LAST_SYNCED_AT = 'spotify_library_last_synced_at'
+    SPOTIFY_SYNC_IN_PROGRESS = 'spotify_sync_in_progress'
+
+    GOOGLE_ID = 'google_id'
+    GOOGLE_ACCESS_TOKEN = 'google_access_token'
+    GOOGLE_REFRESH_TOKEN = 'google_refresh_token'
+    GOOGLE_PROFILE = 'google_profile'
+    GOOGLE_TOKEN_EXPIRES_AT = 'google_token_expires_at'

@@ -157,11 +157,7 @@ If you prefer a different venv name or layout, adjust your local VS Code interpr
 
 #### Base URL
 
-The API base URL follows the pattern: `{version}/`
-
-For example: `v1/`
-
-The API version is configured via the `APP_VERSION` environment variable.
+The API base URL follows the pattern: `v{major}/` (e.g. `v1/`). Only the major version is used in the path; it is derived from the `APP_VERSION` environment variable (e.g. `1.2.3` → `v1/`).
 
 > **Note**: Since the API is currently undergoing server migration and is not available online, all examples in this documentation use `http://localhost:8000` as the base URL. When running locally, replace this with your local server address if different.
 
@@ -183,7 +179,7 @@ The API uses JWT (JSON Web Tokens) for authentication. Most endpoints require au
 
 #### Obtaining Tokens
 
-**Endpoint**: `POST /api/{version}/auth/token/`
+**Endpoint**: `POST /v1/auth/token/`
 
 **Request Body**:
 ```json
@@ -260,7 +256,7 @@ The API supports authentication via Spotify OAuth, allowing users to sign in wit
 {
   "accessToken": "eyJ0eXAiOiJKV1QiLCJhbGc...",
   "refreshToken": "eyJ0eXAiOiJKV1QiLCJhbGc...",
-  "expires_at": "2024-01-15T12:00:00Z",
+  "expiresAt": 1739620800000,
   "spotifyUser": {
     "spotify_profile": {
       "id": "spotify_user_id",
@@ -298,6 +294,28 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc...
 
 **Note**: For detailed setup instructions and Spotify API configuration, see the [Spotify Integration documentation](api/utils/spotify_api/README.md).
 
+#### Google Authentication
+
+**Endpoint**: `POST /api/{version}/auth/google/`
+
+**Request Body**:
+```json
+{
+  "code": "<authorization_code_from_google_callback>"
+}
+```
+
+**Response** (same session shape as Spotify):
+```json
+{
+  "accessToken": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+  "refreshToken": "eyJ0eXAiOiJKV1QiLCJhbGc...",
+  "expiresAt": 1739620800000
+}
+```
+
+Configure `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `GOOGLE_REDIRECT_URI` (must match the frontend redirect URI used when sending the user to Google).
+
 ### Endpoints Reference
 
 Legend: 🔒 = Requires authentication | 🔓 = No authentication required
@@ -311,6 +329,7 @@ All endpoints are prefixed with the API base URL (`{version}/`). Most endpoints 
 | `POST` | `auth/token/` | Obtain JWT access and refresh tokens | 🔓 |
 | `POST` | `auth/token/refresh/` | Refresh access token | 🔓 |
 | `POST` | `auth/spotify/` | Authenticate with Spotify | 🔓 |
+| `POST` | `auth/google/` | Authenticate with Google OAuth | 🔓 |
 
 ### Library Management
 

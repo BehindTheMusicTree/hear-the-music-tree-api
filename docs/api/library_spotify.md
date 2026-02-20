@@ -6,8 +6,8 @@ Manage Spotify library tracks in user library.
 ## Contexts
 | Context | Base Path | Authentication | Description |
 |--------|----------|----------------|-------------|
-| `me` | `/api/{version}/me/library/spotify/` | Required | Spotify tracks in the authenticated user's library |
-| `reference` | `/api/{version}/reference/library/spotify/` | Optional / Public | System-owned reference Spotify resources |
+| `me` | `/v1/me/library/spotify/` | Required | Spotify tracks in the authenticated user's library |
+| `reference` | `/v1/reference/library/spotify/` | Optional / Public | System-owned reference Spotify resources |
 
 ## Endpoints
 

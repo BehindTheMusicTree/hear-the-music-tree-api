@@ -4,7 +4,7 @@
 Manage user accounts (admin only)
 
 ## Base URL
-/api/{APP_VERSION}/users/
+/v1/users/
 
 ## Authentication
 JWT token required
