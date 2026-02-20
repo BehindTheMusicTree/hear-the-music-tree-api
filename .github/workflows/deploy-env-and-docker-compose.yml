@@ -50,6 +50,7 @@ jobs:
           APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
           APP_CONTAINER_NAME: ${{ vars.HTMT_API_APP_NAME }}-${{ inputs.env }}
           APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
+          APP_PORT: ${{ vars.APP_PORT }}
           WEBHOOK_DIR: ${{ vars.WEBHOOK_DIR }}
           WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE: ${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE }}
           DOCKER_COMPOSE_DIR_NAME: ${{ vars.DOCKER_COMPOSE_DIR_NAME }}
@@ -87,14 +88,14 @@ jobs:
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
           ACOUSTID_API_KEY: ${{ secrets.ACOUSTID_API_KEY }}
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID_PROD }}
-          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET_PROD }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
           SPOTIFY_SCOPES: ${{ vars.SPOTIFY_SCOPES }}
           SPOTIFY_REDIRECT_RELATIVE_URI: ${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID_PROD }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET_PROD }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
           GOOGLE_REDIRECT_RELATIVE_URI: ${{ vars.GOOGLE_REDIRECT_RELATIVE_URI }}
           GTMT_FRONT_SUBDOMAIN_NAME: ${{ vars.GTMT_FRONT_SUBDOMAIN_NAME }}
-          HTMT_API_MEDIA_URL: ${{ vars.HTMT_API_MEDIA_URL }}
+          MEDIA_URL: ${{ vars.MEDIA_URL }}
           LIBRARIES_DIR_NAME: ${{ vars.LIBRARIES_DIR_NAME }}
           TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
           SUPERADMIN_USERNAME: ${{ secrets.SUPERADMIN_USERNAME }}
@@ -108,6 +109,8 @@ jobs:
         run: |
           bash scripts/check-workflow-env.sh \
             APP_NAME \
+            APP_PORT \
+            APP_IMAGE_REPO \
             DOMAIN_NAME \
             HTMT_API_SUBDOMAIN_NAME \
             WEBHOOK_DIR \
@@ -134,7 +137,6 @@ jobs:
             AFP_POOL_DIR_EXTERNAL \
             AFP_FLASK_LOG_DIR_EXTERNAL \
             AFP_GUNICORN_LOG_DIR_EXTERNAL \
-            APP_IMAGE_REPO \
             GUNICORN_LOG_DIR \
             GUNICORN_LOG_ERROR_FILENAME \
             GUNICORN_LOG_ACCESS_FILENAME \
@@ -154,7 +156,7 @@ jobs:
             GOOGLE_CLIENT_SECRET \
             GOOGLE_REDIRECT_RELATIVE_URI \
             GTMT_FRONT_SUBDOMAIN_NAME \
-            HTMT_API_MEDIA_URL \
+            MEDIA_URL \
             LIBRARIES_DIR_NAME \
             TMTA_USERNAME \
             SUPERADMIN_USERNAME \
@@ -177,9 +179,10 @@ jobs:
         run: |
           mkdir -p nginx_fragment
           {
-            echo "HTMT_API_CONTAINER_MEDIA_DIR=${{ vars.MEDIA_DIR_EXTERNAL }}"
-            echo "HTMT_API_STATIC_FILES=${{ vars.STATIC_FILES_EXTERNAL }}"
-          } > nginx_fragment/fragment.env
+            echo "HTMT_API_PORT=${{ vars.APP_PORT }}"
+            echo "HTMT_API_MEDIA_URL=${{ vars.MEDIA_URL }}"
+            echo "HTMT_API_STATIC_FILES_URL=${{ vars.STATIC_FILES_URL }}"
+          } > nginx_fragment/${{ vars.APP_PORT }}.env
 
       - name: Upload nginx-env-fragment artifact
         uses: actions/upload-artifact@v4
@@ -216,12 +219,12 @@ jobs:
         run: |
           API_HOST="${{ steps.set_api_host.outputs.api_host }}"
           IP_LIST="${{ steps.resolve_api_ips.outputs.ip_list }}"
-          API_PORT="${{ vars.HTMT_API_PORT }}"
+          APP_PORT="${{ vars.APP_PORT }}"
           CSRF_ORIGINS="https://${{ vars.DOMAIN_NAME }},https://${API_HOST}"
           if [ -n "${IP_LIST}" ]; then
-            ALLOWED_HOSTS="${API_HOST},www.${API_HOST},${IP_LIST},localhost,localhost:${API_PORT}"
+            ALLOWED_HOSTS="${API_HOST},www.${API_HOST},${IP_LIST},localhost,localhost:${APP_PORT}"
           else
-            ALLOWED_HOSTS="${API_HOST},www.${API_HOST},localhost,localhost:${API_PORT}"
+            ALLOWED_HOSTS="${API_HOST},www.${API_HOST},localhost,localhost:${APP_PORT}"
           fi
           echo "csrf_origins=${CSRF_ORIGINS}" >> $GITHUB_OUTPUT
           echo "allowed_hosts=${ALLOWED_HOSTS}" >> $GITHUB_OUTPUT
@@ -231,34 +234,30 @@ jobs:
           mkdir -p pool_compose_api
           if [ "${{ inputs.env }}" = "test" ]; then
             SPOTIFY_ID='${{ secrets.SPOTIFY_CLIENT_ID_TEST }}'
-            SPOTIFY_SECRET='${{ secrets.SPOTIFY_CLIENT_SECRET_TEST }}'
             GOOGLE_ID='${{ secrets.GOOGLE_CLIENT_ID_TEST }}'
-            GOOGLE_SECRET='${{ secrets.GOOGLE_CLIENT_SECRET_TEST }}'
           else
             SPOTIFY_ID='${{ secrets.SPOTIFY_CLIENT_ID_PROD }}'
-            SPOTIFY_SECRET='${{ secrets.SPOTIFY_CLIENT_SECRET_PROD }}'
             GOOGLE_ID='${{ secrets.GOOGLE_CLIENT_ID_PROD }}'
-            GOOGLE_SECRET='${{ secrets.GOOGLE_CLIENT_SECRET_PROD }}'
           fi
           {
             echo 'ENV=${{ inputs.env }}'
             echo 'APP_NAME=${{ vars.HTMT_API_APP_NAME }}'
-            echo 'APP_PORT=${{ vars.HTMT_API_PORT }}'
+            echo "APP_PORT=${{ vars.APP_PORT }}"
             echo 'DEBUG=true'
             echo 'APP_IS_EXPOSED=true'
             echo "DJANGO_SECRET_KEY='${{ secrets.DJANGO_SECRET_KEY }}'"
             echo "ACOUSTID_API_KEY='${{ secrets.ACOUSTID_API_KEY }}'"
             echo "SPOTIFY_CLIENT_ID='${SPOTIFY_ID}'"
-            echo "SPOTIFY_CLIENT_SECRET='${SPOTIFY_SECRET}'"
+            echo "SPOTIFY_CLIENT_SECRET='${{ secrets.SPOTIFY_CLIENT_SECRET }}'"
             echo "SPOTIFY_REDIRECT_URI='https://${{ vars.GTMT_FRONT_SUBDOMAIN_NAME }}.${{ vars.DOMAIN_NAME }}/${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}'"
             echo "SPOTIFY_SCOPES='${{ vars.SPOTIFY_SCOPES }}'"
             echo "GOOGLE_CLIENT_ID='${GOOGLE_ID}'"
-            echo "GOOGLE_CLIENT_SECRET='${GOOGLE_SECRET}'"
+            echo "GOOGLE_CLIENT_SECRET='${{ secrets.GOOGLE_CLIENT_SECRET }}'"
             echo "GOOGLE_REDIRECT_URI='https://${{ vars.GTMT_FRONT_SUBDOMAIN_NAME }}.${{ vars.DOMAIN_NAME }}/${{ vars.GOOGLE_REDIRECT_RELATIVE_URI }}'"
             echo "CSRF_TRUSTED_ORIGINS=${{ steps.set_csrf_and_allowed_hosts.outputs.csrf_origins }}"
             echo "ALLOWED_HOSTS=${{ steps.set_csrf_and_allowed_hosts.outputs.allowed_hosts }}"
             echo 'TMP_UPLOADED_FILES=${{ vars.TMP_UPLOADED_FILES_EXTERNAL }}'
-            echo 'MEDIA_URL=${{ vars.HTMT_API_MEDIA_URL }}'
+            echo 'MEDIA_URL=${{ vars.MEDIA_URL }}'
             echo 'MEDIA_DIR_EXTERNAL=${{ vars.MEDIA_DIR_EXTERNAL }}'
             echo 'LIBRARIES_DIR_NAME=${{ vars.LIBRARIES_DIR_NAME }}'
             echo 'GUNICORN_LOG_DIR=${{ vars.GUNICORN_LOG_DIR }}'
@@ -302,7 +301,7 @@ jobs:
           {
             echo 'ENV=${{ inputs.env }}'
             echo 'DEBUG=true'
-            echo 'APP_PORT=${{ vars.AFP_PORT }}'
+            echo "APP_PORT=${{ vars.AFP_PORT }}"
           } > pool_compose_afp/${{ env.AFP_ENV_FILENAME }}
 
       - name: Prepare combined app-env-files and upload
@@ -344,7 +343,7 @@ jobs:
           APP_SERVICE_NAME: ${{ vars.HTMT_API_APP_NAME }}
           APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
           APP_CONTAINER_NAME: ${{ steps.set_container_names.outputs.app_container_name }}
-          APP_PORT: ${{ vars.HTMT_API_PORT }}
+          APP_PORT: ${{ vars.APP_PORT}}
           GUNICORN_LOG_DIR: ${{ vars.GUNICORN_LOG_DIR }}
           GUNICORN_LOG_ERROR_FILENAME: ${{ vars.GUNICORN_LOG_ERROR_FILENAME }}
           GUNICORN_LOG_ACCESS_FILENAME: ${{ vars.GUNICORN_LOG_ACCESS_FILENAME }}
