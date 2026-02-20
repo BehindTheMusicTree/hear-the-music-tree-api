@@ -68,6 +68,13 @@ class GoogleOAuthService:
                     elif error_code == "invalid_client":
                         detail_code = "google_oauth_invalid_client"
                         msg = "Invalid Google OAuth client configuration (client_id or client_secret)."
+                    elif error_code == "unauthorized_client":
+                        detail_code = "google_oauth_unauthorized_client"
+                        msg = (
+                            "Google OAuth client is not authorized for the authorization code flow. "
+                            "In Google Cloud Console use a 'Web application' client and add the exact "
+                            "redirect URI to Authorized redirect URIs. Backend GOOGLE_REDIRECT_URI must match."
+                        )
                     else:
                         detail_code = None
                     logger.error(

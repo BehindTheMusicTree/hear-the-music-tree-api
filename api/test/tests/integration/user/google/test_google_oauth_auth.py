@@ -26,7 +26,7 @@ class TestGoogleOAuthAuth(AppTestCase):
         mock_post.assert_called_once()
 
     @mock.patch('api.utils.google_oauth.oauth.requests.post')
-    def test_exchange_code_with_invalid_code_then_raises_exception(self, mock_post):
+    def test_exchange_code_with_invalid_grant_then_raises_exception(self, mock_post):
         mock_response = mock.Mock()
         mock_response.json.return_value = {"error": "invalid_grant", "error_description": "Bad request"}
         mock_post.return_value.raise_for_status.side_effect = requests.HTTPError(response=mock_response)
@@ -35,6 +35,23 @@ class TestGoogleOAuthAuth(AppTestCase):
         with self.assertRaises(GoogleAuthenticationException) as context:
             service.exchange_code_for_tokens("invalid_code")
         assert "Failed to exchange code" in str(context.exception)
+        assert getattr(context.exception, "detail_code", None) == "google_oauth_code_invalid_or_expired"
+
+    @mock.patch('api.utils.google_oauth.oauth.requests.post')
+    def test_exchange_code_with_unauthorized_client_then_raises_with_unauthorized_client_detail_code(
+        self, mock_post
+    ):
+        mock_response = mock.Mock()
+        mock_response.json.return_value = {
+            "error": "unauthorized_client",
+            "error_description": "Unauthorized client",
+        }
+        mock_post.return_value.raise_for_status.side_effect = requests.HTTPError(response=mock_response)
+
+        service = GoogleOAuthService()
+        with self.assertRaises(GoogleAuthenticationException) as context:
+            service.exchange_code_for_tokens("code")
+        assert getattr(context.exception, "detail_code", None) == "google_oauth_unauthorized_client"
 
     @mock.patch('api.utils.google_oauth.oauth.requests.get')
     def test_get_user_info_with_valid_token_then_returns_user_info(self, mock_get):

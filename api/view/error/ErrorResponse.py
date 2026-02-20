@@ -427,7 +427,11 @@ class ErrorResponse:
         except Exception:
             message = f"{type(exception).__name__}: <unable to stringify exception>"
         detail_code = getattr(exception, 'detail_code', 'google_authentication_error')
-        if detail_code in ('google_oauth_redirect_uri_mismatch', 'google_oauth_invalid_client'):
+        if detail_code in (
+            'google_oauth_redirect_uri_mismatch',
+            'google_oauth_invalid_client',
+            'google_oauth_unauthorized_client',
+        ):
             return ErrorResponse.create_error_response(
                 error_detail={
                     'message': 'Sign-in is temporarily misconfigured. Please try again later or contact support.',
