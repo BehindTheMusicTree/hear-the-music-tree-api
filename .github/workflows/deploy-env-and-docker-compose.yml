@@ -180,7 +180,7 @@ jobs:
             echo "HTMT_API_PORT=${{ vars.APP_PORT }}"
             echo "HTMT_API_MEDIA_URL=${{ vars.MEDIA_URL }}"
             echo "HTMT_API_STATIC_FILES_URL=${{ vars.STATIC_FILES_URL }}"
-          } > nginx_fragment/fragment.env
+          } > nginx_fragment/${{ vars.APP_PORT }}.env
 
       - name: Upload nginx-env-fragment artifact
         uses: actions/upload-artifact@v4
