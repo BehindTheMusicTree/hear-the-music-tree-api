@@ -59,6 +59,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v2.0.0] - 2026-02-20
+
 ### Added
 
 - **Google OAuth**: `POST auth/google/` endpoint to exchange Google authorization code for session tokens
