@@ -295,15 +295,10 @@ jobs:
       - name: Build AFP env file
         run: |
           mkdir -p pool_compose_afp
-          if [ "${{ inputs.env }}" = "test" ]; then
-            APP_PORT='${{ vars.AFP_PORT_TEST }}'
-          else
-            APP_PORT='${{ vars.AFP_PORT_PROD }}'
-          fi
           {
             echo 'ENV=${{ inputs.env }}'
             echo 'DEBUG=true'
-            echo "APP_PORT=${APP_PORT}"
+            echo "APP_PORT=${{ vars.AFP_PORT }}"
           } > pool_compose_afp/${{ env.AFP_ENV_FILENAME }}
 
       - name: Prepare combined app-env-files and upload
