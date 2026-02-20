@@ -252,7 +252,7 @@ jobs:
             echo "SPOTIFY_REDIRECT_URI='https://${{ vars.GTMT_FRONT_SUBDOMAIN_NAME }}.${{ vars.DOMAIN_NAME }}/${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}'"
             echo "SPOTIFY_SCOPES='${{ vars.SPOTIFY_SCOPES }}'"
             echo "GOOGLE_CLIENT_ID='${GOOGLE_ID}'"
-            echo "GOOGLE_SECRET='${{ secrets.GOOGLE_CLIENT_SECRET }}'"
+            echo "GOOGLE_CLIENT_SECRET='${{ secrets.GOOGLE_CLIENT_SECRET }}'"
             echo "GOOGLE_REDIRECT_URI='https://${{ vars.GTMT_FRONT_SUBDOMAIN_NAME }}.${{ vars.DOMAIN_NAME }}/${{ vars.GOOGLE_REDIRECT_RELATIVE_URI }}'"
             echo "CSRF_TRUSTED_ORIGINS=${{ steps.set_csrf_and_allowed_hosts.outputs.csrf_origins }}"
             echo "ALLOWED_HOSTS=${{ steps.set_csrf_and_allowed_hosts.outputs.allowed_hosts }}"
