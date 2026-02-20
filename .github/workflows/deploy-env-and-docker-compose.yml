@@ -257,7 +257,7 @@ jobs:
             echo "CSRF_TRUSTED_ORIGINS=${{ steps.set_csrf_and_allowed_hosts.outputs.csrf_origins }}"
             echo "ALLOWED_HOSTS=${{ steps.set_csrf_and_allowed_hosts.outputs.allowed_hosts }}"
             echo 'TMP_UPLOADED_FILES=${{ vars.TMP_UPLOADED_FILES_EXTERNAL }}'
-            echo 'MEDIA_URL=${{ vars.HTMT_API_MEDIA_URL }}'
+            echo 'MEDIA_URL=${{ vars.MEDIA_URL }}'
             echo 'MEDIA_DIR_EXTERNAL=${{ vars.MEDIA_DIR_EXTERNAL }}'
             echo 'LIBRARIES_DIR_NAME=${{ vars.LIBRARIES_DIR_NAME }}'
             echo 'GUNICORN_LOG_DIR=${{ vars.GUNICORN_LOG_DIR }}'
