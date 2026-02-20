@@ -105,6 +105,11 @@ SPOTIFY_CLIENT_SECRET: str
 SPOTIFY_REDIRECT_URI: str
 SPOTIFY_SCOPES: str
 
+# Google OAuth
+GOOGLE_CLIENT_ID: str
+GOOGLE_CLIENT_SECRET: str
+GOOGLE_REDIRECT_URI: str
+
 # Secret Key
 SECRET_KEY: str
 
@@ -295,7 +300,7 @@ def setup_app_exposure_if_needed():
     global APP_VERSION
     APP_VERSION = load_required_str_env_var('APP_VERSION')
     global API_ROOT_BASE
-    API_ROOT_BASE = f"v{APP_VERSION}/"
+    API_ROOT_BASE = f"v{APP_VERSION.split('.')[0]}/"
     print_django("API_ROOT_BASE: " + API_ROOT_BASE)
 
     global ROOT_URLCONF
@@ -343,7 +348,14 @@ def setup_app_exposure_if_needed():
 
         print_django(f"CORS_ALLOW_ALL_ORIGINS is not set as a web server interface is used to handle CORS.")
     else:
-        ALLOWED_HOSTS = ['127.0.0.1', '127.0.0.1:8000', 'localhost', 'localhost:8000']
+        ALLOWED_HOSTS = [
+            '127.0.0.1',
+            '127.0.0.1:8000',
+            '127.0.0.1:8888',
+            'localhost',
+            'localhost:8000',
+            'localhost:8888',
+        ]
         global CORS_ALLOW_ALL_ORIGINS
         CORS_ALLOW_ALL_ORIGINS = True
         print_django(f"CORS_ALLOW_ALL_ORIGINS is set to: {CORS_ALLOW_ALL_ORIGINS}")
@@ -575,9 +587,9 @@ def setup_middlewares():
 
 
 def setup_db_connection():
-    DB_BODZIFY_API_DB_NAME = load_required_str_env_var('DB_BODZIFY_API_DB_NAME')
-    DB_BODZIFY_API_USERNAME = load_required_str_env_var('DB_BODZIFY_API_USERNAME')
-    DB_BODZIFY_API_USER_PASSWORD = load_required_secret_env_var('DB_BODZIFY_API_USER_PASSWORD')
+    DB_APP_DB_NAME = load_required_str_env_var('DB_APP_DB_NAME')
+    DB_APP_USERNAME = load_required_str_env_var('DB_APP_USERNAME')
+    DB_APP_USER_PASSWORD = load_required_secret_env_var('DB_APP_USER_PASSWORD')
 
     if APP_IS_EXPOSED:
         print_django("The app is exposed. The db host is the db container name.")
@@ -595,9 +607,9 @@ def setup_db_connection():
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': DB_BODZIFY_API_DB_NAME,
-            'USER': DB_BODZIFY_API_USERNAME,
-            'PASSWORD': DB_BODZIFY_API_USER_PASSWORD,
+            'NAME': DB_APP_DB_NAME,
+            'USER': DB_APP_USERNAME,
+            'PASSWORD': DB_APP_USER_PASSWORD,
             'HOST': DB_HOST,
             'PORT': DB_PORT,
             'DISABLE_SERVER_SIDE_CURSORS': True
@@ -719,6 +731,17 @@ def setup_media_dirs():
     SPOTIFY_SCOPES = load_required_str_env_var('SPOTIFY_SCOPES',)
     print_django(f"SPOTIFY_SCOPES = {SPOTIFY_SCOPES}")
     print_django("Spotify API credentials loaded.")
+
+    global GOOGLE_CLIENT_ID
+    global GOOGLE_CLIENT_SECRET
+    global GOOGLE_REDIRECT_URI
+    GOOGLE_CLIENT_ID = load_required_str_env_var('GOOGLE_CLIENT_ID')
+    print_django(f"GOOGLE_CLIENT_ID = {GOOGLE_CLIENT_ID}")
+    GOOGLE_CLIENT_SECRET = load_required_secret_env_var('GOOGLE_CLIENT_SECRET')
+    print_django(f"GOOGLE_CLIENT_SECRET = {GOOGLE_CLIENT_SECRET}")
+    GOOGLE_REDIRECT_URI = load_required_str_env_var('GOOGLE_REDIRECT_URI')
+    print_django(f"GOOGLE_REDIRECT_URI = {GOOGLE_REDIRECT_URI}")
+    print_django("Google OAuth credentials loaded.")
 
     global MEDIA_ROOT  # Django constant, do not rename.
     MEDIA_ROOT = load_required_path_env_var('MEDIA_DIR')

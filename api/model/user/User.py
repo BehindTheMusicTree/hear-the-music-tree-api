@@ -30,6 +30,21 @@ class User(AbstractUser, BaseModel):
         help_text="Designates a user as a system-owned account. Cannot log in."
     )
     is_test_user = models.BooleanField(default=False)
+
+    spotify_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    spotify_access_token = models.TextField(null=True, blank=True)
+    spotify_refresh_token = models.TextField(null=True, blank=True)
+    spotify_profile = models.JSONField(null=True, blank=True)
+    spotify_token_expires_at = models.DateTimeField(null=True, blank=True)
+    spotify_library_last_synced_at = models.DateTimeField(null=True, blank=True)
+    spotify_sync_in_progress = models.BooleanField(default=False, null=True, blank=True)
+
+    google_id = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    google_access_token = models.TextField(null=True, blank=True)
+    google_refresh_token = models.TextField(null=True, blank=True)
+    google_profile = models.JSONField(null=True, blank=True)
+    google_token_expires_at = models.DateTimeField(null=True, blank=True)
+
     lib_path_relative_to_media = models.GeneratedField(  # type: ignore
         expression=ConditionalExpression(
             condition_field=Fields.IS_TEST_USER,

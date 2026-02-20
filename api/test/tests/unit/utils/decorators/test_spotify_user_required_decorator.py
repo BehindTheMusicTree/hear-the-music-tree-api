@@ -1,10 +1,9 @@
 import json
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from django.test import TestCase
 from rest_framework import status
 
-from api.model.user.spotify.SpotifyUser import SpotifyUser
 from api.utils.decorators.spotify import spotify_user_required
 from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
 
@@ -34,10 +33,9 @@ class TestSpotifyUserRequiredDecorator(TestCase):
         mock_self = MagicMock()
         mock_request = MagicMock()
         mock_request.user.is_authenticated = True
-        mock_request.user.pk = 99999
+        mock_request.user.spotify_id = None
 
-        with patch.object(SpotifyUser.objects, 'get', side_effect=SpotifyUser.DoesNotExist):
-            response = wrapped(mock_self, mock_request)
+        response = wrapped(mock_self, mock_request)
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         data = json.loads(response.content)

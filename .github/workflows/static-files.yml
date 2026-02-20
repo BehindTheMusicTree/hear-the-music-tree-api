@@ -22,7 +22,7 @@ jobs:
       name: COLLECT_STATIC
     env:
       ENV: ${{ vars.ENV }}
-      APP_NAME: ${{ vars.APP_NAME }}
+      APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
       APP_TITLE: ${{ vars.APP_TITLE }}
       DEBUG: false
       DB_IS_NEEDED: false
@@ -40,7 +40,7 @@ jobs:
       - name: Check required vars and secrets
         env:
           ENV: ${{ vars.ENV }}
-          APP_NAME: ${{ vars.APP_NAME }}
+          APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
           STATIC_FILES_INTERNAL: ${{ vars.STATIC_FILES_INTERNAL }}
           API_STATIC_FILES_URL: ${{ vars.HTMT_API_STATIC_FILES_URL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

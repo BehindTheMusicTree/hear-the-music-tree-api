@@ -6,8 +6,8 @@ Manage play history
 ## Contexts
 | Context | Base Path | Authentication | Description |
 |--------|----------|----------------|-------------|
-| `me` | `/api/{version}/me/plays/` | Required | Play history for the authenticated user |
-| `reference` | `/api/{version}/reference/plays/` | Optional / Public | System-owned reference play data (managed by account defined by TMTA_USERNAME environment variable) |
+| `me` | `/v1/me/plays/` | Required | Play history for the authenticated user |
+| `reference` | `/v1/reference/plays/` | Optional / Public | System-owned reference play data (managed by account defined by TMTA_USERNAME environment variable) |
 
 ## Endpoints
 
