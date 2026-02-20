@@ -216,12 +216,12 @@ jobs:
         run: |
           API_HOST="${{ steps.set_api_host.outputs.api_host }}"
           IP_LIST="${{ steps.resolve_api_ips.outputs.ip_list }}"
-          API_PORT="${{ vars.HTMT_API_PORT }}"
+          APP_PORT="${{ vars.APP_PORT }}"
           CSRF_ORIGINS="https://${{ vars.DOMAIN_NAME }},https://${API_HOST}"
           if [ -n "${IP_LIST}" ]; then
-            ALLOWED_HOSTS="${API_HOST},www.${API_HOST},${IP_LIST},localhost,localhost:${API_PORT}"
+            ALLOWED_HOSTS="${API_HOST},www.${API_HOST},${IP_LIST},localhost,localhost:${APP_PORT}"
           else
-            ALLOWED_HOSTS="${API_HOST},www.${API_HOST},localhost,localhost:${API_PORT}"
+            ALLOWED_HOSTS="${API_HOST},www.${API_HOST},localhost,localhost:${APP_PORT}"
           fi
           echo "csrf_origins=${CSRF_ORIGINS}" >> $GITHUB_OUTPUT
           echo "allowed_hosts=${ALLOWED_HOSTS}" >> $GITHUB_OUTPUT
@@ -231,29 +231,25 @@ jobs:
           mkdir -p pool_compose_api
           if [ "${{ inputs.env }}" = "test" ]; then
             SPOTIFY_ID='${{ secrets.SPOTIFY_CLIENT_ID_TEST }}'
-            SPOTIFY_SECRET='${{ secrets.SPOTIFY_CLIENT_SECRET_TEST }}'
             GOOGLE_ID='${{ secrets.GOOGLE_CLIENT_ID_TEST }}'
-            GOOGLE_SECRET='${{ secrets.GOOGLE_CLIENT_SECRET_TEST }}'
           else
             SPOTIFY_ID='${{ secrets.SPOTIFY_CLIENT_ID_PROD }}'
-            SPOTIFY_SECRET='${{ secrets.SPOTIFY_CLIENT_SECRET_PROD }}'
             GOOGLE_ID='${{ secrets.GOOGLE_CLIENT_ID_PROD }}'
-            GOOGLE_SECRET='${{ secrets.GOOGLE_CLIENT_SECRET_PROD }}'
           fi
           {
             echo 'ENV=${{ inputs.env }}'
             echo 'APP_NAME=${{ vars.HTMT_API_APP_NAME }}'
-            echo 'APP_PORT=${{ vars.HTMT_API_PORT }}'
+            echo "APP_PORT=${APP_PORT}"
             echo 'DEBUG=true'
             echo 'APP_IS_EXPOSED=true'
             echo "DJANGO_SECRET_KEY='${{ secrets.DJANGO_SECRET_KEY }}'"
             echo "ACOUSTID_API_KEY='${{ secrets.ACOUSTID_API_KEY }}'"
             echo "SPOTIFY_CLIENT_ID='${SPOTIFY_ID}'"
-            echo "SPOTIFY_CLIENT_SECRET='${SPOTIFY_SECRET}'"
+            echo "SPOTIFY_SECRET='${{ secrets.SPOTIFY_CLIENT_SECRET }}'"
             echo "SPOTIFY_REDIRECT_URI='https://${{ vars.GTMT_FRONT_SUBDOMAIN_NAME }}.${{ vars.DOMAIN_NAME }}/${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}'"
             echo "SPOTIFY_SCOPES='${{ vars.SPOTIFY_SCOPES }}'"
             echo "GOOGLE_CLIENT_ID='${GOOGLE_ID}'"
-            echo "GOOGLE_CLIENT_SECRET='${GOOGLE_SECRET}'"
+            echo "GOOGLE_SECRET='${{ secrets.GOOGLE_CLIENT_SECRET }}'"
             echo "GOOGLE_REDIRECT_URI='https://${{ vars.GTMT_FRONT_SUBDOMAIN_NAME }}.${{ vars.DOMAIN_NAME }}/${{ vars.GOOGLE_REDIRECT_RELATIVE_URI }}'"
             echo "CSRF_TRUSTED_ORIGINS=${{ steps.set_csrf_and_allowed_hosts.outputs.csrf_origins }}"
             echo "ALLOWED_HOSTS=${{ steps.set_csrf_and_allowed_hosts.outputs.allowed_hosts }}"
@@ -299,10 +295,15 @@ jobs:
       - name: Build AFP env file
         run: |
           mkdir -p pool_compose_afp
+          if [ "${{ inputs.env }}" = "test" ]; then
+            APP_PORT='${{ vars.AFP_PORT_TEST }}'
+          else
+            APP_PORT='${{ vars.AFP_PORT_PROD }}'
+          fi
           {
             echo 'ENV=${{ inputs.env }}'
             echo 'DEBUG=true'
-            echo 'APP_PORT=${{ vars.AFP_PORT }}'
+            echo "APP_PORT=${APP_PORT}"
           } > pool_compose_afp/${{ env.AFP_ENV_FILENAME }}
 
       - name: Prepare combined app-env-files and upload
@@ -344,7 +345,7 @@ jobs:
           APP_SERVICE_NAME: ${{ vars.HTMT_API_APP_NAME }}
           APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
           APP_CONTAINER_NAME: ${{ steps.set_container_names.outputs.app_container_name }}
-          APP_PORT: ${{ vars.HTMT_API_PORT }}
+          APP_PORT: ${{ vars.APP_PORT}}
           GUNICORN_LOG_DIR: ${{ vars.GUNICORN_LOG_DIR }}
           GUNICORN_LOG_ERROR_FILENAME: ${{ vars.GUNICORN_LOG_ERROR_FILENAME }}
           GUNICORN_LOG_ACCESS_FILENAME: ${{ vars.GUNICORN_LOG_ACCESS_FILENAME }}
