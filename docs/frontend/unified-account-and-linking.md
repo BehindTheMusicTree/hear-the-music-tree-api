@@ -8,8 +8,8 @@ One user account can sign in with **Google**, **Spotify**, or both. The backend 
 
 | Action | Endpoint | Body | Response |
 |--------|----------|------|----------|
-| Exchange Google code for session | `POST /api/{version}/auth/google/` | `{ "code": "<authorization_code>" }` | Session (see below) |
-| Exchange Spotify code for session | `POST /api/{version}/auth/spotify/` | `{ "code": "<authorization_code>" }` | Session + optional `spotifyUser` |
+| Exchange Google code for session | `POST /v1/auth/google/` | `{ "code": "<authorization_code>" }` | Session (see below) |
+| Exchange Spotify code for session | `POST /v1/auth/spotify/` | `{ "code": "<authorization_code>" }` | Session + optional `spotifyUser` |
 
 ### Session response shape
 
@@ -62,7 +62,7 @@ Use **`details.code`** to choose the right message or flow.
 
 ### Checking if Spotify is linked
 
-- **`GET /api/{version}/me/spotify/`** with the app JWT:
+- **`GET /v1/me/spotify/`** with the app JWT:
   - **200** and non-empty list → Spotify is linked; use the payload for profile.
   - **403** with `details.code === 'spotify_authorization_required'` → User is logged in but Spotify is not linked; show “Connect Spotify” and start Spotify OAuth.
 
@@ -79,8 +79,8 @@ Google linked state is not exposed by a dedicated endpoint; it can be inferred f
 
 - Offer **Sign in with Google** and **Sign in with Spotify** (and any future providers).
 - After redirect from the provider, send the **authorization code** to the correct backend endpoint:
-  - Google → `POST /api/{version}/auth/google/` with `{ "code": "..." }`
-  - Spotify → `POST /api/{version}/auth/spotify/` with `{ "code": "..." }`
+  - Google → `POST /v1/auth/google/` with `{ "code": "..." }`
+  - Spotify → `POST /v1/auth/spotify/` with `{ "code": "..." }`
 - Store the returned `accessToken` / `refreshToken` / `expiresAt` the same way for both.
 
 ### 3. No “choose account” needed for linking

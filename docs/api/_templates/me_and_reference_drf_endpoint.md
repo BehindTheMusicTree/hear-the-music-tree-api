@@ -6,8 +6,8 @@
 ## Contexts
 | Context | Base Path | Authentication | Description |
 |--------|----------|----------------|-------------|
-| `me` | `/api/{version}/me/{{resource_slug}}/` | Required | {{ME_DESCRIPTION}} |
-| `reference` | `/api/{version}/reference/{{resource_slug}}/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
+| `me` | `/v1/me/{{resource_slug}}/` | Required | {{ME_DESCRIPTION}} |
+| `reference` | `/v1/reference/{{resource_slug}}/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
 
 ## Endpoints
 

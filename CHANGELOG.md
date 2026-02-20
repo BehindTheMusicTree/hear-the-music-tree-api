@@ -74,6 +74,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Changed
 
+- **API URL prefix**: Path prefix uses the major version only (e.g. `v1/`), derived from `APP_VERSION`; full semantic version is no longer used in URLs. Changelog and docs (README, `docs/versioning.md`, `docs/api/*`, frontend guides) updated to describe and use `v1` consistently
 - **Auth response**: Spotify and Google auth now return `expiresAt` (Unix timestamp in milliseconds) for client-side expiry handling; JWT util returns `expires_at_ms` from access token payload
 
 ## [v1.0.5] - 2026-02-15
