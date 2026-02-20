@@ -59,6 +59,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v2.0.1] - 2026-02-20
+
 ### Changed
 
 - **Deploy (env and docker-compose)**: API app env and reusable workflow input now set `APP_PORT` from `HTMT_API_PORT_TEST` when deploying to test and `HTMT_API_PORT` when deploying to prod
