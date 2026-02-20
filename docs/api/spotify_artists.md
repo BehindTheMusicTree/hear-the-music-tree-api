@@ -4,7 +4,7 @@
 Manage Spotify artists
 
 ## Base URL
-/api/{APP_VERSION}/spotify-artists/
+/v1/spotify-artists/
 
 ## Authentication
 JWT token required
@@ -126,7 +126,7 @@ None
 | 404 | Not Found - Artist not found |
 
 ### Versioning
-{APP_VERSION}
+API path prefix uses the major version only (e.g. `v1`), derived from `APP_VERSION`.
 
 ### Notes
 None

@@ -241,9 +241,9 @@ Running the container requires the following environment variables:
 - `ALLOWED_HOSTS`
 - `DB_CONTAINER_NAME`
 - `DB_PORT=5432`
-- `DB_BODZIFY_API_DB_NAME`
-- `DB_BODZIFY_API_USERNAME`
-- `DB_BODZIFY_API_USER_PASSWORD`
+- `DB_APP_DB_NAME`
+- `DB_APP_USERNAME`
+- `DB_APP_USER_PASSWORD`
 - `AFP_CONTAINER_NAME` (AFP meaning Audio FingerPrinter)
 - `AFP_PORT`
 - `AFP_POST_ENDPOINT`

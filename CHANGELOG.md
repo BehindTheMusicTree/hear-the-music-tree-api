@@ -59,6 +59,24 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Added
+
+- **Google OAuth**: `POST auth/google/` endpoint to exchange Google authorization code for session tokens
+  - Request: `{ "code": "<authorization_code_from_google_callback>" }`
+  - Response: `{ accessToken, refreshToken, expiresAt }` (same shape as Spotify auth for a single session model on the frontend)
+  - Backend exchanges code with `oauth2.googleapis.com/token`, fetches user info, creates or links user, issues JWT session
+  - Env: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` (must match frontend redirect URI)
+  - `GoogleAuthenticationException` mapped to 401; integration tests for view and OAuth service
+- **Unified account (Option A)**: One user can have both Google and Spotify linked; backend links by email when the same person signs in with a second provider
+  - Single `User` model with optional `spotify_id` and `google_id` (and provider tokens/profiles); `SpotifyUser` and `GoogleUser` subclasses removed
+  - Spotify auth: find by `spotify_id`, else by email (link), else create. Google auth: same for `google_id` and email
+  - Frontend guide: `docs/frontend/unified-account-and-linking.md`
+
+### Changed
+
+- **API URL prefix**: Path prefix uses the major version only (e.g. `v1/`), derived from `APP_VERSION`; full semantic version is no longer used in URLs. Changelog and docs (README, `docs/versioning.md`, `docs/api/*`, frontend guides) updated to describe and use `v1` consistently
+- **Auth response**: Spotify and Google auth now return `expiresAt` (Unix timestamp in milliseconds) for client-side expiry handling; JWT util returns `expires_at_ms` from access token payload
+
 ## [v1.0.5] - 2026-02-15
 
 ### Changed
