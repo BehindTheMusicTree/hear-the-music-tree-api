@@ -229,6 +229,17 @@ jobs:
       - name: Build API env file
         run: |
           mkdir -p pool_compose_api
+          if [ "${{ inputs.env }}" = "test" ]; then
+            SPOTIFY_ID='${{ secrets.SPOTIFY_CLIENT_ID_TEST }}'
+            SPOTIFY_SECRET='${{ secrets.SPOTIFY_CLIENT_SECRET_TEST }}'
+            GOOGLE_ID='${{ secrets.GOOGLE_CLIENT_ID_TEST }}'
+            GOOGLE_SECRET='${{ secrets.GOOGLE_CLIENT_SECRET_TEST }}'
+          else
+            SPOTIFY_ID='${{ secrets.SPOTIFY_CLIENT_ID_PROD }}'
+            SPOTIFY_SECRET='${{ secrets.SPOTIFY_CLIENT_SECRET_PROD }}'
+            GOOGLE_ID='${{ secrets.GOOGLE_CLIENT_ID_PROD }}'
+            GOOGLE_SECRET='${{ secrets.GOOGLE_CLIENT_SECRET_PROD }}'
+          fi
           {
             echo 'ENV=${{ inputs.env }}'
             echo 'APP_NAME=${{ vars.HTMT_API_APP_NAME }}'
@@ -237,12 +248,12 @@ jobs:
             echo 'APP_IS_EXPOSED=true'
             echo "DJANGO_SECRET_KEY='${{ secrets.DJANGO_SECRET_KEY }}'"
             echo "ACOUSTID_API_KEY='${{ secrets.ACOUSTID_API_KEY }}'"
-            echo "SPOTIFY_CLIENT_ID='${{ secrets.SPOTIFY_CLIENT_ID_PROD }}'"
-            echo "SPOTIFY_CLIENT_SECRET='${{ secrets.SPOTIFY_CLIENT_SECRET_PROD }}'"
+            echo "SPOTIFY_CLIENT_ID='${SPOTIFY_ID}'"
+            echo "SPOTIFY_CLIENT_SECRET='${SPOTIFY_SECRET}'"
             echo "SPOTIFY_REDIRECT_URI='https://${{ vars.GTMT_FRONT_SUBDOMAIN_NAME }}.${{ vars.DOMAIN_NAME }}/${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}'"
             echo "SPOTIFY_SCOPES='${{ vars.SPOTIFY_SCOPES }}'"
-            echo "GOOGLE_CLIENT_ID='${{ secrets.GOOGLE_CLIENT_ID_PROD }}'"
-            echo "GOOGLE_CLIENT_SECRET='${{ secrets.GOOGLE_CLIENT_SECRET_PROD }}'"
+            echo "GOOGLE_CLIENT_ID='${GOOGLE_ID}'"
+            echo "GOOGLE_CLIENT_SECRET='${GOOGLE_SECRET}'"
             echo "GOOGLE_REDIRECT_URI='https://${{ vars.GTMT_FRONT_SUBDOMAIN_NAME }}.${{ vars.DOMAIN_NAME }}/${{ vars.GOOGLE_REDIRECT_RELATIVE_URI }}'"
             echo "CSRF_TRUSTED_ORIGINS=${{ steps.set_csrf_and_allowed_hosts.outputs.csrf_origins }}"
             echo "ALLOWED_HOSTS=${{ steps.set_csrf_and_allowed_hosts.outputs.allowed_hosts }}"
