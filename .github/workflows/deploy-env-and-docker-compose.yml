@@ -216,11 +216,12 @@ jobs:
         run: |
           API_HOST="${{ steps.set_api_host.outputs.api_host }}"
           IP_LIST="${{ steps.resolve_api_ips.outputs.ip_list }}"
+          API_PORT="${{ vars.HTMT_API_PORT }}"
           CSRF_ORIGINS="https://${{ vars.DOMAIN_NAME }},https://${API_HOST}"
           if [ -n "${IP_LIST}" ]; then
-            ALLOWED_HOSTS="${API_HOST},www.${API_HOST},${IP_LIST},localhost"
+            ALLOWED_HOSTS="${API_HOST},www.${API_HOST},${IP_LIST},localhost,localhost:${API_PORT}"
           else
-            ALLOWED_HOSTS="${API_HOST},www.${API_HOST},localhost"
+            ALLOWED_HOSTS="${API_HOST},www.${API_HOST},localhost,localhost:${API_PORT}"
           fi
           echo "csrf_origins=${CSRF_ORIGINS}" >> $GITHUB_OUTPUT
           echo "allowed_hosts=${ALLOWED_HOSTS}" >> $GITHUB_OUTPUT
