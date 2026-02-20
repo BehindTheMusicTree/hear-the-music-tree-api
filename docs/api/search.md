@@ -4,7 +4,7 @@
 Search across tracks, albums, artists, and playlists
 
 ## Base URL
-/api/{APP_VERSION}/search/
+/v1/search/
 
 ## Authentication
 JWT token required
@@ -101,7 +101,7 @@ Code	Meaning
 
 ### Versioning
 
-{APP_VERSION}
+API path prefix uses the major version only (e.g. `v1`), derived from `APP_VERSION`.
 
 ### Notes
 None

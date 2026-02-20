@@ -1,6 +1,5 @@
 from rest_framework import status
 
-from api.model.user.spotify.SpotifyUser import SpotifyUser
 from api.test.utils.AppTestCase import AppTestCase
 from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
 

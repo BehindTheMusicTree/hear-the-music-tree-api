@@ -6,8 +6,8 @@ Manage album information.
 ## Contexts
 | Context | Base Path | Authentication | Description |
 |--------|----------|----------------|-------------|
-| `me` | `/api/{version}/me/albums/` | Required | Albums in authenticated user's library |
-| `reference` | `/api/{version}/reference/albums/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
+| `me` | `/v1/me/albums/` | Required | Albums in authenticated user's library |
+| `reference` | `/v1/reference/albums/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
 
 ## Endpoints
 

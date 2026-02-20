@@ -3,6 +3,7 @@ import logging
 
 import spotipy
 from django.conf import settings
+from spotipy.exceptions import SpotifyException as SpotipyException
 from spotipy.oauth2 import SpotifyOAuth
 
 from api.exception import spotify as spotify_exception
@@ -96,6 +97,17 @@ class SpotifyOAuthService:
             if user_info is None:
                 raise spotify_exception.SpotifyAuthenticationException("Failed to get user info: No user info returned")
             return user_info
+        except SpotipyException as e:
+            logger.error("Failed to get user info: %s", str(e))
+            allowlist_phrases = ("user may not be registered", "developer.spotify.com/dashboard")
+            msg_lower = (e.msg or "").lower()
+            if e.http_status == 403 and any(phrase in msg_lower for phrase in allowlist_phrases):
+                raise spotify_exception.SpotifyAuthenticationException(
+                    "Your Spotify account is not authorized for this app. The app owner must add you in the Spotify Developer Dashboard (User Management).",
+                    detail_code="spotify_user_not_in_allowlist",
+                ) from e
+            raise spotify_exception.SpotifyAuthenticationException(f"Failed to get user info: {e.msg or str(e)}") from e
         except Exception as e:
-            logger.error(f"Failed to get user info: {str(e)}")
-            raise spotify_exception.SpotifyAuthenticationException(f"Failed to get user info: {str(e)}")
+            msg = str(e)
+            logger.error("Failed to get user info: %s", msg)
+            raise spotify_exception.SpotifyAuthenticationException(f"Failed to get user info: {msg}") from e

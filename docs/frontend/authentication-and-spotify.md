@@ -1,6 +1,6 @@
 # Frontend: Handling authentication and Spotify errors
 
-Use this guide when calling endpoints that require app login and/or Spotify (e.g. `GET /v1.0.4/me/spotify/`, Spotify library, etc.).
+Use this guide when calling endpoints that require app login and/or Spotify (e.g. `GET /v1/me/spotify/`, Spotify library, etc.). The API path uses the major version only (e.g. `v1`).
 
 ## Error response shape
 
@@ -48,7 +48,7 @@ All error responses use this structure:
 ## Example (pseudo-code)
 
 ```javascript
-const response = await fetch('/v1.0.4/me/spotify/', {
+const response = await fetch('/v1/me/spotify/', {
   headers: { Authorization: `Bearer ${appAccessToken}` }
 });
 
