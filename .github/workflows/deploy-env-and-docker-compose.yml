@@ -50,6 +50,7 @@ jobs:
           APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
           APP_CONTAINER_NAME: ${{ vars.HTMT_API_APP_NAME }}-${{ inputs.env }}
           APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
+          APP_PORT: ${{ vars.APP_PORT }}
           WEBHOOK_DIR: ${{ vars.WEBHOOK_DIR }}
           WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE: ${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE }}
           DOCKER_COMPOSE_DIR_NAME: ${{ vars.DOCKER_COMPOSE_DIR_NAME }}
@@ -108,6 +109,8 @@ jobs:
         run: |
           bash scripts/check-workflow-env.sh \
             APP_NAME \
+            APP_PORT \
+            APP_IMAGE_REPO \
             DOMAIN_NAME \
             HTMT_API_SUBDOMAIN_NAME \
             WEBHOOK_DIR \
@@ -134,7 +137,6 @@ jobs:
             AFP_POOL_DIR_EXTERNAL \
             AFP_FLASK_LOG_DIR_EXTERNAL \
             AFP_GUNICORN_LOG_DIR_EXTERNAL \
-            APP_IMAGE_REPO \
             GUNICORN_LOG_DIR \
             GUNICORN_LOG_ERROR_FILENAME \
             GUNICORN_LOG_ACCESS_FILENAME \
@@ -240,7 +242,7 @@ jobs:
           {
             echo 'ENV=${{ inputs.env }}'
             echo 'APP_NAME=${{ vars.HTMT_API_APP_NAME }}'
-            echo "APP_PORT=${APP_PORT}"
+            echo "APP_PORT=${{ vars.APP_PORT }}"
             echo 'DEBUG=true'
             echo 'APP_IS_EXPOSED=true'
             echo "DJANGO_SECRET_KEY='${{ secrets.DJANGO_SECRET_KEY }}'"
