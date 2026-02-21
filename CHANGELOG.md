@@ -59,6 +59,21 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v2.0.2] - 2026-02-21
+
+### Fixed
+
+- **Spotify auth**: When Spotify returns `invalid_client` (e.g. wrong/missing app credentials), API now returns 500 with a generic "Sign-in is temporarily misconfigured" message instead of 401, since the failure is server configuration, not the user
+
+### Changed
+
+- **CI / Deploy**: Differentiate DB container port from host port: use `DB_PORT_CONTAINER` (and `DB_PORT_HOST`) instead of a single `DB_PORT` in workflows, Docker Compose generation, and env files
+- **CI / Deploy**: Standardize container root path to `/home/app/` (`CONTAINER_ROOT_DIR`) across deploy, test, and static-files workflows
+- **Dockerfile**: Remove `PROJECT_DIR` build arg; set `PROJECT_DIR=/home/app/` and `API_DIR_NAME=api` in image; build-and-push no longer passes `PROJECT_DIR`
+- **Deploy (env and docker-compose)**: Set `FRONT_HOST` per environment (prod vs test) for Spotify/Google redirect URIs; add Django log directory and log filenames to API env file and workflow inputs; simplify env echo for client IDs (no extra quotes)
+- **Deploy (docker-compose)**: DB and AFP compose parts use `DB_PORT_CONTAINER`; AFP healthcheck uses `AFP_PORT` instead of `APP_PORT`
+- **Scripts**: `init-django-data.sh` validates `API_DIR_NAME` is a relative path (reject leading `/`)
+
 ## [v2.0.1] - 2026-02-20
 
 ### Changed
