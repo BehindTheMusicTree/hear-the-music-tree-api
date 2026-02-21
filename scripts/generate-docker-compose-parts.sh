@@ -75,7 +75,7 @@ cat << EOF > "$DOCKER_COMPOSE_PARTIAL_AFP_FILE"
     image: $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION
     container_name: $AFP_CONTAINER_NAME
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${APP_PORT}/health/"]
+      test: ["CMD", "curl", "-f", "http://localhost:${AFP_PORT}/health/"]
       interval: 30s
       timeout: 10s
       retries: 3
