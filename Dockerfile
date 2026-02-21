@@ -7,7 +7,7 @@ FROM python:3.14-bookworm
 ARG APP_VERSION
 ARG APP_TITLE
 
-RUN for var in PROJECT_DIR APP_VERSION APP_TITLE; do \
+RUN for var in APP_VERSION APP_TITLE; do \
     eval "value=\$$var"; \
     if [ -z "$value" ]; then \
         echo "ERROR: The $var argument is not provided" >&2; \
