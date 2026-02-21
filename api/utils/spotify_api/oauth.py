@@ -59,7 +59,10 @@ class SpotifyOAuthService:
             return token_info
         except Exception as e:
             logger.error(f"Failed to get access token: {str(e)}")
-            raise spotify_exception.SpotifyAuthenticationException(f"Failed to get access token: {str(e)}")
+            detail_code = "spotify_invalid_client" if "invalid_client" in str(e).lower() else None
+            raise spotify_exception.SpotifyAuthenticationException(
+                f"Failed to get access token: {str(e)}", detail_code=detail_code
+            )
 
     def refresh_access_token(self, refresh_token: str) -> TokenInfo:
         """
@@ -79,7 +82,10 @@ class SpotifyOAuthService:
             return token_info
         except Exception as e:
             logger.error(f"Failed to refresh access token: {str(e)}")
-            raise spotify_exception.SpotifyAuthenticationException(f"Failed to refresh access token: {str(e)}")
+            detail_code = "spotify_invalid_client" if "invalid_client" in str(e).lower() else None
+            raise spotify_exception.SpotifyAuthenticationException(
+                f"Failed to refresh access token: {str(e)}", detail_code=detail_code
+            )
 
     def get_user_info(self, access_token: str) -> dict:
         """

@@ -59,6 +59,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Fixed
+
+- **Spotify auth**: When Spotify returns `invalid_client` (e.g. wrong/missing app credentials), API now returns 500 with a generic "Sign-in is temporarily misconfigured" message instead of 401, since the failure is server configuration, not the user
+
 ### Changed
 - **CI**: Differentiate produciton and db host db ports
 
