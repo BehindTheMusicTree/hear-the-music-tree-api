@@ -410,11 +410,19 @@ class ErrorResponse:
 
     @staticmethod
     def _from_spotify_authentication_exception(exception: SpotifyAuthenticationException) -> JsonResponse:
+        detail_code = getattr(exception, 'detail_code', 'spotify_authentication_error')
+        if detail_code == 'spotify_invalid_client':
+            return ErrorResponse.create_error_response(
+                error_detail={
+                    'message': 'Sign-in is temporarily misconfigured. Please try again later or contact support.',
+                    'code': detail_code,
+                },
+                api_error_code=ApiErrorCodeNumeric.SYSTEM_INTERNAL_ERROR,
+            )
         try:
             message = str(exception)
         except Exception:
             message = f"{type(exception).__name__}: <unable to stringify exception>"
-        detail_code = getattr(exception, 'detail_code', 'spotify_authentication_error')
         return ErrorResponse.create_error_response(
             error_detail={'message': message, 'code': detail_code},
             api_error_code=ApiErrorCodeNumeric.AUTH_INVALID_CREDENTIALS,

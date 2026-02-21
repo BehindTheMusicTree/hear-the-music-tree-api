@@ -64,6 +64,12 @@ apply_migrations() {
 
 load_initial_fixtures() {
   log_with_script_prefixe "Loading initial data."
+  case "${API_DIR_NAME}" in
+    /*)
+      log_with_script_prefixe "ERROR: API_DIR_NAME must be a relative directory name (e.g. api), got absolute path: ${API_DIR_NAME}" >&2
+      exit 1
+      ;;
+  esac
   fixtures_dir="${PROJECT_DIR}${API_DIR_NAME}/fixtures"
 
   if [ ! -d "$fixtures_dir" ]; then

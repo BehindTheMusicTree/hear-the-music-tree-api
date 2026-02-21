@@ -21,7 +21,7 @@ REQUIRED_NON_BOOL_VARS=(
   DB_CONTAINER_NAME
   DB_DATA_DIR
   DB_PORT_HOST
-  DB_PORT
+  DB_PORT_CONTAINER
   DB_ENV_FILENAME
   AFP_IMAGE_REPO
   AFP_VERSION
@@ -54,7 +54,7 @@ cat << EOF > "$DOCKER_COMPOSE_PARTIAL_DB_FILE"
     image: $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION
     container_name: $DB_CONTAINER_NAME
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -h localhost -p $DB_PORT"]
+      test: ["CMD-SHELL", "pg_isready -h localhost -p $DB_PORT_CONTAINER"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -62,7 +62,7 @@ cat << EOF > "$DOCKER_COMPOSE_PARTIAL_DB_FILE"
     volumes:
       - db-data:$DB_DATA_DIR
     ports:
-      - "$DB_PORT_HOST:$DB_PORT"
+      - "$DB_PORT_HOST:$DB_PORT_CONTAINER"
     env_file: $DB_ENV_FILENAME
 EOF
 log "DB partial docker-compose file generated."
@@ -75,7 +75,7 @@ cat << EOF > "$DOCKER_COMPOSE_PARTIAL_AFP_FILE"
     image: $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION
     container_name: $AFP_CONTAINER_NAME
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${APP_PORT}/health/"]
+      test: ["CMD", "curl", "-f", "http://localhost:${AFP_PORT}/health/"]
       interval: 30s
       timeout: 10s
       retries: 3
