@@ -13,7 +13,7 @@ on:
     branches: [main, develop]
 
 env:
-  CONTAINER_ROOT_DIR: /home/api/
+  CONTAINER_ROOT_DIR: /home/app/
   DB_CONNECTION_TEST_MAX_ATTEMPTS: 10
   DB_CONNECTION_TEST_SLEEP_INTERVAL: 5
 

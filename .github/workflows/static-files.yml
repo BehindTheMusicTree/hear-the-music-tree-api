@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 env:
-  CONTAINER_ROOT_DIR: /home/api/
+  CONTAINER_ROOT_DIR: /home/app/
 
 jobs:
   collect-and-push-static-files:
