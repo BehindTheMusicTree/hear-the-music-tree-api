@@ -263,6 +263,7 @@ jobs:
             echo 'GUNICORN_LOG_DIR=${{ vars.GUNICORN_LOG_DIR }}'
             echo 'GUNICORN_LOG_ACCESS_FILENAME=${{ vars.GUNICORN_LOG_ACCESS_FILENAME }}'
             echo 'GUNICORN_LOG_ERROR_FILENAME=${{ vars.GUNICORN_LOG_ERROR_FILENAME }}'
+            echo 'DJANGO_LOG_DIR_EXTERNAL=${{ vars.DJANGO_LOG_DIR_EXTERNAL }}'
             echo 'DB_CONTAINER_NAME=${{ steps.set_container_names.outputs.db_container_name }}'
             echo 'DB_PORT=${{ vars.DB_PORT_CONTAINER }}'
             echo 'DB_CONNECTION_TEST_MAX_ATTEMPTS=10'
