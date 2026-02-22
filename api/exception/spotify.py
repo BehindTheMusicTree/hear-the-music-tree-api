@@ -9,8 +9,11 @@ class SpotifyException(Exception):
 
 
 class SpotifyAuthenticationException(SpotifyException):
-    """Exception raised when authentication with Spotify fails"""
-    pass
+    """Exception raised when authentication with Spotify fails."""
+
+    def __init__(self, message: str, *, detail_code: str | None = None):
+        super().__init__(message)
+        self.detail_code = detail_code or "spotify_authentication_error"
 
 
 class SpotifyUserNotAllowlistedException(SpotifyAuthenticationException):

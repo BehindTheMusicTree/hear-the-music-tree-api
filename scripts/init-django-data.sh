@@ -11,14 +11,14 @@ check_script_vars_are_set() {
     API_DIR_NAME
     DB_SUPERUSER_NAME
     DB_SUPERUSER_PASSWORD
-    DB_BODZIFY_API_DB_NAME
-    DB_BODZIFY_API_USERNAME
-    DB_BODZIFY_API_USER_PASSWORD
+    DB_APP_DB_NAME
+    DB_APP_USERNAME
+    DB_APP_USER_PASSWORD
   )
   check_required_vars_are_set ${REQUIRED_NON_BOOL_VARS[@]}
   check_bool_vars_are_set APP_IS_EXPOSED
   export_value_removing_potential_surrounding_quotes DB_SUPERUSER_PASSWORD
-  export_value_removing_potential_surrounding_quotes "DB_BODZIFY_API_USER_PASSWORD"
+  export_value_removing_potential_surrounding_quotes "DB_APP_USER_PASSWORD"
   log_with_script_prefixe "Environment variables loaded successfully."
 }
 
@@ -64,6 +64,12 @@ apply_migrations() {
 
 load_initial_fixtures() {
   log_with_script_prefixe "Loading initial data."
+  case "${API_DIR_NAME}" in
+    /*)
+      log_with_script_prefixe "ERROR: API_DIR_NAME must be a relative directory name (e.g. api), got absolute path: ${API_DIR_NAME}" >&2
+      exit 1
+      ;;
+  esac
   fixtures_dir="${PROJECT_DIR}${API_DIR_NAME}/fixtures"
 
   if [ ! -d "$fixtures_dir" ]; then

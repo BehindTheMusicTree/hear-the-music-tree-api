@@ -25,10 +25,10 @@ check_script_vars_are_set() {
     	PROJECT_DIR
 		LIBRARIES_DIR
 		DB_PORT
-		DB_BODZIFY_API_DB_NAME
+		DB_APP_DB_NAME
 		DB_SUPERUSER_NAME
 		DB_SUPERUSER_PASSWORD
-		DB_BODZIFY_API_USERNAME
+		DB_APP_USERNAME
 	)
 	for VAR in "${REQUIRED_NON_BOOL_VARS[@]}"; do
 		check_required_vars_are_set "$VAR"
@@ -90,7 +90,7 @@ force_close_db_connections_if_exist() {
 
 empty_db() {
 
-	databases=("$DB_BODZIFY_API_DB_NAME" "test_$DB_BODZIFY_API_DB_NAME")
+	databases=("$DB_APP_DB_NAME" "test_$DB_APP_DB_NAME")
 
 	for db_name in "${databases[@]}"; do
 		force_close_db_connections_if_exist $db_name
@@ -119,9 +119,9 @@ empty_db() {
 		fi
 	done
 
-	log_with_script_prefixe "Dropping user $DB_BODZIFY_API_USERNAME if exists..."
+	log_with_script_prefixe "Dropping user $DB_APP_USERNAME if exists..."
 	output=$(timeout ${DB_TIMEOUT_SECONDS}s psql -h $DB_HOST -p $DB_PORT -U $DB_SUPERUSER_NAME -tAc \
-		"SELECT 1 FROM pg_roles WHERE rolname='${DB_BODZIFY_API_USERNAME}'" 2>&1)
+		"SELECT 1 FROM pg_roles WHERE rolname='${DB_APP_USERNAME}'" 2>&1)
 	exit_code=$?
 	handle_db_timeout $exit_code
 	if [ $? -ne 0 ] || echo "$output" | grep -i "error" > /dev/null; then
@@ -130,7 +130,7 @@ empty_db() {
 	fi
 	if [ "$output" = "1" ]; then
 		log_with_script_prefixe "User exists. Dropping user"
-		output=$(timeout ${DB_TIMEOUT_SECONDS}s psql -h $DB_HOST -p $DB_PORT -U $DB_SUPERUSER_NAME -tAc "DROP USER $DB_BODZIFY_API_USERNAME;" 2>&1)
+		output=$(timeout ${DB_TIMEOUT_SECONDS}s psql -h $DB_HOST -p $DB_PORT -U $DB_SUPERUSER_NAME -tAc "DROP USER $DB_APP_USERNAME;" 2>&1)
 		exit_code=$?
 		handle_db_timeout $exit_code
 		if [ $? -ne 0 ]; then

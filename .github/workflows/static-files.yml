@@ -12,7 +12,7 @@ permissions:
   contents: write
 
 env:
-  CONTAINER_ROOT_DIR: /home/api/
+  CONTAINER_ROOT_DIR: /home/app/
 
 jobs:
   collect-and-push-static-files:
@@ -22,7 +22,7 @@ jobs:
       name: COLLECT_STATIC
     env:
       ENV: ${{ vars.ENV }}
-      APP_NAME: ${{ vars.APP_NAME }}
+      APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
       APP_TITLE: ${{ vars.APP_TITLE }}
       DEBUG: false
       DB_IS_NEEDED: false
@@ -40,16 +40,16 @@ jobs:
       - name: Check required vars and secrets
         env:
           ENV: ${{ vars.ENV }}
-          APP_NAME: ${{ vars.APP_NAME }}
+          APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
           STATIC_FILES_INTERNAL: ${{ vars.STATIC_FILES_INTERNAL }}
-          API_STATIC_FILES_URL: ${{ vars.HTMT_API_STATIC_FILES_URL }}
+          STATIC_FILES_URL: ${{ vars.STATIC_FILES_URL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           bash scripts/check-workflow-env.sh \
             ENV \
             APP_NAME \
             STATIC_FILES_INTERNAL \
-            API_STATIC_FILES_URL \
+            STATIC_FILES_URL \
             GITHUB_TOKEN
 
       - name: Set up Python
@@ -105,7 +105,7 @@ jobs:
       - name: Collect static files
         env:
           APP_VERSION: ${{ inputs.app_version }}
-          STATIC_FILES_URL: ${{ vars.HTMT_API_STATIC_FILES_URL }}
+          STATIC_FILES_URL: ${{ vars.STATIC_FILES_URL }}
         run: python manage.py collectstatic --noinput
 
       - name: Commit and push static files

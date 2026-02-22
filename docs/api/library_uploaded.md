@@ -6,8 +6,8 @@ Manage uploaded tracks in user library.
 ## Contexts
 | Context | Base Path | Authentication | Description |
 |--------|----------|----------------|-------------|
-| `me` | `/api/{version}/me/library/uploaded/` | Required | Uploaded tracks owned by the authenticated user |
-| `reference` | `/api/{version}/reference/library/uploaded/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
+| `me` | `/v1/me/library/uploaded/` | Required | Uploaded tracks owned by the authenticated user |
+| `reference` | `/v1/reference/library/uploaded/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
 
 ## Endpoints
 

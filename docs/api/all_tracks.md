@@ -4,7 +4,7 @@
 List all uploaded tracks for the user
 
 ## Base URL
-/api/{APP_VERSION}/all-tracks/
+/v1/all-tracks/
 
 ## Authentication
 JWT token required
@@ -67,7 +67,7 @@ Code	Meaning
 
 ### Versioning
 
-{APP_VERSION}
+API path prefix uses the major version only (e.g. `v1`), derived from `APP_VERSION`.
 
 ### Notes
 None

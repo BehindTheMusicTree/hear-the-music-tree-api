@@ -12,14 +12,16 @@ log "Generating partial docker-compose files..."
 load_app_env_file_if_exists
 
 REQUIRED_NON_BOOL_VARS=(
-  DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE
+  DB_COMPOSE_PART_FILENAME
+  AFP_COMPOSE_PART_FILENAME
+  APP_COMPOSE_PART_FILENAME
   DOCKERHUB_USERNAME
   DB_IMAGE_REPO
   DB_VERSION
   DB_CONTAINER_NAME
   DB_DATA_DIR
   DB_PORT_HOST
-  DB_PORT
+  DB_PORT_CONTAINER
   DB_ENV_FILENAME
   AFP_IMAGE_REPO
   AFP_VERSION
@@ -29,6 +31,7 @@ REQUIRED_NON_BOOL_VARS=(
   AFP_POOL_DIR_EXTERNAL
   AFP_FLASK_LOG_DIR_EXTERNAL
   AFP_GUNICORN_LOG_DIR_EXTERNAL
+  APP_NAME
   APP_SERVICE_NAME
   APP_ROOT_DIR
   APP_IMAGE_REPO
@@ -44,21 +47,27 @@ REQUIRED_NON_BOOL_VARS=(
 )
 check_required_vars_are_set ${REQUIRED_NON_BOOL_VARS[@]}
 
-DOCKER_COMPOSE_PARTIAL_DB_FILE="${SCRIPTS_DIR}db${DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE}"
+DOCKER_COMPOSE_PARTIAL_DB_FILE="${SCRIPTS_DIR}${DB_COMPOSE_PART_FILENAME}"
 log "Generating the DB partial docker-compose files in $DOCKER_COMPOSE_PARTIAL_DB_FILE..."
 cat << EOF > "$DOCKER_COMPOSE_PARTIAL_DB_FILE"
   db:
     image: $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION
     container_name: $DB_CONTAINER_NAME
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h localhost -p $DB_PORT_CONTAINER"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     volumes:
       - db-data:$DB_DATA_DIR
     ports:
-      - "$DB_PORT_HOST:$DB_PORT"
+      - "$DB_PORT_HOST:$DB_PORT_CONTAINER"
     env_file: $DB_ENV_FILENAME
 EOF
 log "DB partial docker-compose file generated."
 
-DOCKER_COMPOSE_PARTIAL_AFP_FILE="${SCRIPTS_DIR}afp${DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE}"
+DOCKER_COMPOSE_PARTIAL_AFP_FILE="${SCRIPTS_DIR}${AFP_COMPOSE_PART_FILENAME}"
 log "Generating the AFP partial docker-compose files in $DOCKER_COMPOSE_PARTIAL_AFP_FILE..."
 cat << EOF > "$DOCKER_COMPOSE_PARTIAL_AFP_FILE"
   audio_fingerprinter:
@@ -66,7 +75,7 @@ cat << EOF > "$DOCKER_COMPOSE_PARTIAL_AFP_FILE"
     image: $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION
     container_name: $AFP_CONTAINER_NAME
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${APP_PORT}/health/"]
+      test: ["CMD", "curl", "-f", "http://localhost:${AFP_PORT}/health/"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -81,13 +90,19 @@ cat << EOF > "$DOCKER_COMPOSE_PARTIAL_AFP_FILE"
 EOF
 log "AFP partial docker-compose file generated."
 
-DOCKER_COMPOSE_PARTIAL_API_FILE="${SCRIPTS_DIR}api${DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE}"
+DOCKER_COMPOSE_PARTIAL_API_FILE="${SCRIPTS_DIR}${APP_COMPOSE_PART_FILENAME}"
 log "Generating the API partial docker-compose files in $DOCKER_COMPOSE_PARTIAL_API_FILE..."
 cat << EOF > "$DOCKER_COMPOSE_PARTIAL_API_FILE"
   ${APP_SERVICE_NAME}:
     working_dir: $APP_ROOT_DIR
     image: $DOCKERHUB_USERNAME/$APP_IMAGE_REPO:$APP_VERSION
     container_name: $APP_CONTAINER_NAME
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${APP_PORT}/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
     volumes:
       - api-django-log-dir:${DJANGO_LOG_DIR_EXTERNAL}
       - api-gunicorn-log-dir:${GUNICORN_LOG_DIR}
@@ -97,8 +112,10 @@ cat << EOF > "$DOCKER_COMPOSE_PARTIAL_API_FILE"
     expose:
       - $APP_PORT
     depends_on:
-      - audio_fingerprinter
-      - db
+      audio_fingerprinter:
+        condition: service_started
+      db:
+        condition: service_healthy
     env_file: $APP_ENV_FILENAME
 EOF
 log "API partial docker-compose file generated."

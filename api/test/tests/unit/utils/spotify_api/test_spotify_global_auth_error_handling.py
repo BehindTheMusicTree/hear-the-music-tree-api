@@ -68,3 +68,17 @@ class TestSpotifyGlobalErrorHandling(TestCase):
         assert response_data['details']['code'] == 'spotify_code_expired_or_used'
         assert "expired or already used" in response_data['details']['message']
         assert not response_data['success']
+
+    def test_spotify_invalid_client_then_500_internal_server_error(self):
+        exception = SpotifyAuthenticationException(
+            "Failed to get access token: error: invalid_client",
+            detail_code="spotify_invalid_client",
+        )
+        response = ErrorResponse.handle_exception(exception)
+
+        assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
+        response_data = json.loads(response.content)
+        assert response_data['code'] == ApiErrorCodeNumeric.SYSTEM_INTERNAL_ERROR
+        assert response_data['details']['code'] == 'spotify_invalid_client'
+        assert 'misconfigured' in response_data['details']['message']
+        assert not response_data['success']

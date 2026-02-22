@@ -4,11 +4,10 @@
 # Use Case: Suitable when you need a full Debian environment with more pre-installed tools and libraries.
 FROM python:3.14-bookworm
 
-ARG PROJECT_DIR
 ARG APP_VERSION
 ARG APP_TITLE
 
-RUN for var in PROJECT_DIR APP_VERSION APP_TITLE; do \
+RUN for var in APP_VERSION APP_TITLE; do \
     eval "value=\$$var"; \
     if [ -z "$value" ]; then \
         echo "ERROR: The $var argument is not provided" >&2; \
@@ -18,11 +17,11 @@ done
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PROJECT_DIR=$PROJECT_DIR \
+    PROJECT_DIR=/home/app/ \
+    API_DIR_NAME=api \
     APP_VERSION=$APP_VERSION \
     APP_TITLE=$APP_TITLE \
-    DB_IS_NEEDED=true \
-    API_DIR_NAME=${PROJECT_DIR}api
+    DB_IS_NEEDED=true
 
 RUN apt-get update && \
     apt-get install -y gosu && \

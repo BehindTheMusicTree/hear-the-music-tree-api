@@ -7,6 +7,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from api.utils.AppStaticFileStates import StaticFileStates
 from api.view.viewset.model.AllUploadedTracksMixinViewSet import AllUploadedTracksViewSet
+from api.view.google_auth import google_auth
 from api.view.spotify_auth import spotify_auth
 from api.view.viewset.model.SpotifyArtistViewSet import SpotifyArtistViewSet
 from api.view.viewset.model.user.SpotifyUserViewSet import SpotifyUserViewSet
@@ -86,7 +87,7 @@ urlpatterns = [
     path(settings.API_ROOT_BASE + 'auth/token/refresh/', TokenRefreshView.as_view(), name='token-refresh'),
 
     path(settings.API_ROOT_BASE + 'auth/spotify/', spotify_auth, name='api-auth-spotify'),
-
+    path(settings.API_ROOT_BASE + 'auth/google/', google_auth, name='api-auth-google'),
 
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
