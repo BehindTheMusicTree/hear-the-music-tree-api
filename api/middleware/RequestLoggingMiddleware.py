@@ -32,16 +32,18 @@ class RequestLoggingMiddleware:
         self.requestDebugLogger.info(logMessage)
         self.requestDebugLogger.info(_generate_log_about_headers(request))
 
-        # Log request body for non-GET requests
+        # Log request body for non-GET requests (skip multipart: stream is consumed by POST/FILES parsing)
         if request.method != 'GET':
             try:
-                # Try to get the body from the request attribute first (set by other middleware)
-                body = getattr(request, '_body', None)
-                if body is None:
-                    # If not set, try to read the body directly
-                    body = request.body
-                    # Store the body in a request attribute for other middleware
-                    request._body = body
+                content_type = (request.content_type or "").lower()
+                if content_type.startswith("multipart/"):
+                    self.requestDebugLogger.info(f"[{request_id}] Request Body: <multipart form data>")
+                    body = None
+                else:
+                    body = getattr(request, '_body', None)
+                    if body is None:
+                        body = request.body
+                        request._body = body
 
                 if body:
                     try:
