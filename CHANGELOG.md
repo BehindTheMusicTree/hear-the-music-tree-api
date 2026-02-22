@@ -61,6 +61,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Fixed
 
+- **Deploy**: Requests to the bare domain (e.g. `themusictree.org`) and `www` no longer trigger `DisallowedHost`. Deploy workflow now adds the domain and `www.${DOMAIN_NAME}` to `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS`.
+
 - **Spotify OAuth**: Fixed backend always returning the same Spotify user regardless of which account completed login. Spotipy’s token cache was used by default, so the first user’s token was returned for every subsequent code exchange. The code exchange now uses `check_cache=False` so each login uses the provided authorization code.
 
 ### Improved
