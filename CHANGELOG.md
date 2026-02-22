@@ -59,6 +59,28 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v2.0.1] - 2026-02-22
+
+### Fixed
+
+- **Deploy**: Requests to the bare domain (e.g. `themusictree.org`) and `www` no longer trigger `DisallowedHost`. Deploy workflow now adds the domain and `www.${DOMAIN_NAME}` to `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS`.
+- **Request logging**: Fixed "Error reading request body: You cannot access body after reading from request's data stream" on multipart requests (e.g. track upload to `uploaded/`). RequestLoggingMiddleware no longer reads `request.body` for `multipart/form-data` and logs a placeholder instead. Includes unit test.
+
+- **Spotify OAuth**: Fixed backend always returning the same Spotify user regardless of which account completed login. Spotipy’s token cache was used by default, so the first user’s token was returned for every subsequent code exchange. The code exchange now uses `check_cache=False` so each login uses the provided authorization code.
+
+### Removed
+
+- **Admin**: SpotifyUser is no longer registered in Django admin (model was removed in v2.0.0 unified account).
+
+### Changed
+
+- **Dev env example**: `APP_NAME` default set to `htmt-api` (was `htmt_api`).
+- **Scripts**: `run-db-and-afp-containers.sh` loads `env/.env` when present before running containers; `utils.sh` env loader trims keys and skips lines starting with `#`; `purge-django-data` cleanup (removed unused variable and redundant debug logs).
+
+### Improved
+
+- **Spotify OAuth**: When Spotify returns 403 "user may not be registered" (app in Development mode), the API now returns 401 with error code **1007** (`spotify_user_not_allowlisted`) and a clear user-facing message so the frontend can show a specific message without parsing. Docs and tests updated.
+
 ## [v2.0.2] - 2026-02-21
 
 ### Fixed

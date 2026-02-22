@@ -3,11 +3,13 @@ from unittest import mock
 from django.urls import reverse
 from rest_framework import status
 
+from api.exception.spotify import SpotifyInvalidGrantException
 from api.model.user.User import User
 from api.model.user.spotify.Fields import Fields as SpotifyUserFields
 from api.test.utils.AppTestCase import AppTestCase
 from api.utils.spotify_api.oauth import SpotifyOAuthService
 from api.serializer.token.Fields import Fields as TokenFields
+from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
 
 
 @pytest.mark.e2e
@@ -86,4 +88,23 @@ class TestCase(AppTestCase):
 
         response = self.api_client.get(reverse('user-list'))
         assert response.status_code == status.HTTP_200_OK
+
+    @mock.patch('api.view.spotify_auth.SpotifyOAuthService')
+    def test_post_auth_spotify_when_invalid_grant_then_401_with_code_1008(self, mock_oauth_class):
+        mock_oauth_class.return_value.get_access_token.side_effect = SpotifyInvalidGrantException(
+            "Authorization code expired or already used. Please try connecting with Spotify again."
+        )
+
+        response = self.api_client.post(
+            reverse('api-auth-spotify'),
+            data={'code': 'expired_or_used_code'},
+            content_type='application/json',
+        )
+
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+        data = response.json()
+        assert data['code'] == ApiErrorCodeNumeric.AUTH_SPOTIFY_CODE_EXPIRED_OR_USED
+        assert data['details']['code'] == 'spotify_code_expired_or_used'
+        assert 'expired or already used' in data['details']['message']
+        assert data['success'] is False
 

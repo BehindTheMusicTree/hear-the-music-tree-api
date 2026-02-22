@@ -1,6 +1,10 @@
 from unittest import mock
 
-from api.exception.spotify import SpotifyAuthenticationException
+from api.exception.spotify import (
+    SpotifyAuthenticationException,
+    SpotifyUserNotAllowlistedException,
+    SpotifyInvalidGrantException,
+)
 from api.test.utils.AppTestCase import AppTestCase
 from api.utils.spotify_api.oauth import SpotifyOAuthService
 from api.serializer.token.Fields import Fields
@@ -31,7 +35,9 @@ class TestSpotifyOAuthAuth(AppTestCase):
         assert tokens[Fields.ACCESS_TOKEN] == "test_access_token"
         assert tokens[Fields.REFRESH_TOKEN] == "test_refresh_token"
         assert tokens[Fields.EXPIRES_IN] == 3600
-        mock_oauth.return_value.get_access_token.assert_called_once_with("valid_code")
+        mock_oauth.return_value.get_access_token.assert_called_once_with(
+            "valid_code", check_cache=False
+        )
 
     @mock.patch('api.utils.spotify_api.oauth.SpotifyOAuth')
     def test_get_access_token_with_invalid_code_then_raises_exception(self, mock_oauth):
@@ -41,6 +47,20 @@ class TestSpotifyOAuthAuth(AppTestCase):
         with self.assertRaises(SpotifyAuthenticationException) as context:
             service.get_access_token("invalid_code")
         assert "Failed to get access token" in str(context.exception)
+
+    @mock.patch('api.utils.spotify_api.oauth.SpotifyOAuth')
+    def test_get_access_token_when_spotify_returns_invalid_grant_then_raises_SpotifyInvalidGrantException(
+        self, mock_oauth
+    ):
+        mock_oauth.return_value.get_access_token.side_effect = Exception(
+            "error: invalid_grant, error_description: Authorization code expired"
+        )
+
+        service = SpotifyOAuthService()
+        with self.assertRaises(SpotifyInvalidGrantException) as context:
+            service.get_access_token("expired_code")
+        assert "expired or already used" in str(context.exception)
+        assert "try connecting with Spotify again" in str(context.exception)
 
     @mock.patch('api.utils.spotify_api.oauth.SpotifyOAuth')
     def test_refresh_access_token_with_valid_token_then_returns_new_token(self, mock_oauth):
@@ -89,3 +109,18 @@ class TestSpotifyOAuthAuth(AppTestCase):
         with self.assertRaises(SpotifyAuthenticationException) as context:
             service.get_user_info("invalid_token")
         assert "Failed to get user info" in str(context.exception)
+
+    @mock.patch('api.utils.spotify_api.oauth.spotipy.Spotify')
+    def test_get_user_info_when_spotify_returns_403_user_not_registered_then_raises_SpotifyUserNotAllowlistedException(
+        self, mock_spotify
+    ):
+        mock_spotify.return_value.current_user.side_effect = Exception(
+            "http status: 403 - Check settings on developer.spotify.com/dashboard, the user may not be registered."
+        )
+
+        service = SpotifyOAuthService()
+        with self.assertRaises(SpotifyUserNotAllowlistedException) as context:
+            service.get_user_info("valid_token")
+        assert "development mode" in str(context.exception).lower()
+        assert "Users and Access" in str(context.exception)
+        assert "developer.spotify.com" not in str(context.exception)
