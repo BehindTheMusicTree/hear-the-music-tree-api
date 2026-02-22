@@ -4,7 +4,7 @@
 Get the current user's Spotify profile. Only one endpoint: list returns 0 or 1 item.
 
 ## Base URL
-/api/{APP_VERSION}/me/spotify/
+/v1/me/spotify/
 
 ## Authentication
 JWT token required
@@ -82,7 +82,7 @@ Body (200, one profile):
 
 ### Versioning
 
-{APP_VERSION}
+API path prefix uses the major version only (e.g. `v1`), derived from `APP_VERSION`.
 
 ### Notes
 Only the current user's own profile is accessible. Retrieve by id is not provided; use list.

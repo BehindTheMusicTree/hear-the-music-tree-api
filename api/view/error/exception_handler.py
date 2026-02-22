@@ -8,6 +8,7 @@ from rest_framework.exceptions import (
     UnsupportedMediaType
 )
 
+from api.exception.google import GoogleAuthenticationException
 from api.exception.spotify import (
     SpotifyAuthenticationException,
     SpotifyInvalidGrantException,
@@ -62,7 +63,7 @@ def custom_exception_handler(exc, context):
         exc,
         (ValidationError, InvalidToken, NotAuthenticated, AuthenticationFailed, MethodNotAllowed, Http404,
          PermissionDenied, ParseError, UnsupportedMediaType, SpotifyAuthenticationException,
-         SpotifyInvalidGrantException)):
+         SpotifyInvalidGrantException, GoogleAuthenticationException)):
         if is_test_mode:
             return _handle_exception_with_request(exc, context)
         return None

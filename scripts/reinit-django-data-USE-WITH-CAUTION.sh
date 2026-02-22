@@ -14,11 +14,11 @@ check_script_vars_are_set () {
   local REQUIRED_NON_BOOL_VARS=(
       API_DIR_NAME
       LIBRARIES_DIR
-      DB_BODZIFY_API_DB_NAME
+      DB_APP_DB_NAME
       DB_PORT
       DB_SUPERUSER_NAME
       DB_SUPERUSER_PASSWORD
-      DB_BODZIFY_API_USERNAME
+      DB_APP_USERNAME
   )
   check_required_vars_are_set "${REQUIRED_NON_BOOL_VARS[@]}"
   log_with_script_prefixe "Environment variables loaded successfully."

@@ -67,6 +67,48 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Spotify OAuth**: When Spotify returns 403 "user may not be registered" (app in Development mode), the API now returns 401 with error code **1007** (`spotify_user_not_allowlisted`) and a clear user-facing message so the frontend can show a specific message without parsing. Docs and tests updated.
 
+## [v2.0.2] - 2026-02-21
+
+### Fixed
+
+- **Spotify auth**: When Spotify returns `invalid_client` (e.g. wrong/missing app credentials), API now returns 500 with a generic "Sign-in is temporarily misconfigured" message instead of 401, since the failure is server configuration, not the user
+
+### Changed
+
+- **CI / Deploy**: Differentiate DB container port from host port: use `DB_PORT_CONTAINER` (and `DB_PORT_HOST`) instead of a single `DB_PORT` in workflows, Docker Compose generation, and env files
+- **CI / Deploy**: Standardize container root path to `/home/app/` (`CONTAINER_ROOT_DIR`) across deploy, test, and static-files workflows
+- **Dockerfile**: Remove `PROJECT_DIR` build arg; set `PROJECT_DIR=/home/app/` and `API_DIR_NAME=api` in image; build-and-push no longer passes `PROJECT_DIR`
+- **Deploy (env and docker-compose)**: Set `FRONT_HOST` per environment (prod vs test) for Spotify/Google redirect URIs; add Django log directory and log filenames to API env file and workflow inputs; simplify env echo for client IDs (no extra quotes)
+- **Deploy (docker-compose)**: DB and AFP compose parts use `DB_PORT_CONTAINER`; AFP healthcheck uses `AFP_PORT` instead of `APP_PORT`
+- **Scripts**: `init-django-data.sh` validates `API_DIR_NAME` is a relative path (reject leading `/`)
+
+## [v2.0.1] - 2026-02-20
+
+### Changed
+
+- **Deploy (env and docker-compose)**: API app env and reusable workflow input now set `APP_PORT` from `HTMT_API_PORT_TEST` when deploying to test and `HTMT_API_PORT` when deploying to prod
+- **Deploy (env and docker-compose)**: AFP env file now sets `APP_PORT` from `AFP_PORT_TEST` when deploying to test and `AFP_PORT_PROD` when deploying to prod
+
+## [v2.0.0] - 2026-02-20
+
+### Added
+
+- **Google OAuth**: `POST auth/google/` endpoint to exchange Google authorization code for session tokens
+  - Request: `{ "code": "<authorization_code_from_google_callback>" }`
+  - Response: `{ accessToken, refreshToken, expiresAt }` (same shape as Spotify auth for a single session model on the frontend)
+  - Backend exchanges code with `oauth2.googleapis.com/token`, fetches user info, creates or links user, issues JWT session
+  - Env: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI` (must match frontend redirect URI)
+  - `GoogleAuthenticationException` mapped to 401; integration tests for view and OAuth service
+- **Unified account (Option A)**: One user can have both Google and Spotify linked; backend links by email when the same person signs in with a second provider
+  - Single `User` model with optional `spotify_id` and `google_id` (and provider tokens/profiles); `SpotifyUser` and `GoogleUser` subclasses removed
+  - Spotify auth: find by `spotify_id`, else by email (link), else create. Google auth: same for `google_id` and email
+  - Frontend guide: `docs/frontend/unified-account-and-linking.md`
+
+### Changed
+
+- **API URL prefix**: Path prefix uses the major version only (e.g. `v1/`), derived from `APP_VERSION`; full semantic version is no longer used in URLs. Changelog and docs (README, `docs/versioning.md`, `docs/api/*`, frontend guides) updated to describe and use `v1` consistently
+- **Auth response**: Spotify and Google auth now return `expiresAt` (Unix timestamp in milliseconds) for client-side expiry handling; JWT util returns `expires_at_ms` from access token payload
+
 ## [v1.0.5] - 2026-02-15
 
 ### Changed

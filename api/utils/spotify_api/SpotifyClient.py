@@ -40,8 +40,9 @@ class SpotifyClient:
                 raise spotify_exception.SpotifyAuthenticationException("Failed to get access token: No token returned")
             return token
         except Exception as e:
+            detail_code = "spotify_invalid_client" if "invalid_client" in str(e).lower() else None
             raise spotify_exception.SpotifyAuthenticationException(
-                f"Failed to get access token: {str(e)}"
+                f"Failed to get access token: {str(e)}", detail_code=detail_code
             )
 
     def refresh_access_token(self, refresh_token: str) -> dict[str, Any]:
@@ -52,8 +53,9 @@ class SpotifyClient:
                     "Failed to refresh access token: No token returned")
             return token
         except Exception as e:
+            detail_code = "spotify_invalid_client" if "invalid_client" in str(e).lower() else None
             raise spotify_exception.SpotifyAuthenticationException(
-                f"Failed to refresh access token: {str(e)}"
+                f"Failed to refresh access token: {str(e)}", detail_code=detail_code
             )
 
     def retrieve_track_by_id(self, track_id: str) -> dict[str, Any]:

@@ -1,3 +1,14 @@
+# Reference caller workflow for an app repo (e.g. htmt-api): prepare env vars and partial
+# docker-compose, then call the reusable workflows (nginx env, app env, docker compose).
+# The reusables live in the public repo BehindTheMusicTree/github-workflows; copy only this
+# caller to your app repo's .github/workflows/ (reusables are called from that repo).
+#
+# Pool: $WEBHOOK_DIR + $WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE + "-" + env + "/pool". Subdirs:
+#   pool/nginx/<app>.env — merged into nginx .env by redeploy.
+#   pool/compose/<app_name>/ — compose env files; redeploy copies to compose dir.
+#
+# App env: one combined artifact (app-env-files) with non-dotfile names (env_api, env_db, env_afp)
+# so upload-artifact includes them; the reusable workflow renames to dotfiles on the server.
 name: Deploy Env variables And Partial Docker Compose
 
 on:
@@ -7,18 +18,27 @@ on:
         description: 'App version to use'
         required: true
         type: string
+      env:
+        description: 'Environment to deploy to (test or prod, lowercase to match server paths)'
+        required: true
+        type: string
 
 env:
   SSH_DESTINATION: ${{ secrets.SERVER_DEPLOY_USERNAME }}@${{ vars.DOMAIN_NAME }}
-  CONTAINER_ROOT_DIR: /home/api/
-  DOCKERIZED_APP_ENV_FILENAME: .env_api
+  CONTAINER_ROOT_DIR: /home/app/
+  DB_COMPOSE_PART_FILENAME: ${{ vars.HTMT_API_APP_NAME }}_db.yml
+  AFP_COMPOSE_PART_FILENAME: ${{ vars.HTMT_API_APP_NAME }}_afp.yml
+  APP_COMPOSE_PART_FILENAME: ${{ vars.HTMT_API_APP_NAME }}.yml
+  APP_ENV_FILENAME: ${{ vars.HTMT_API_APP_NAME }}.env
+  DB_ENV_FILENAME: ${{ vars.DB_APP_NAME }}.env
+  AFP_ENV_FILENAME: ${{ vars.AFP_APP_NAME }}.env
 
 jobs:
-  check-vars-and-secrets:
-    name: Check vars and secrets
+  prepare:
+    name: Prepare artifacts
     runs-on: ubuntu-latest
     environment:
-      name: TEST
+      name: ${{ inputs.env }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -27,45 +47,46 @@ jobs:
 
       - name: Check required vars and secrets
         env:
-          APP_NAME: ${{ vars.APP_NAME }}
+          APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
+          APP_CONTAINER_NAME: ${{ vars.HTMT_API_APP_NAME }}-${{ inputs.env }}
+          APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
+          APP_PORT: ${{ vars.APP_PORT }}
           WEBHOOK_DIR: ${{ vars.WEBHOOK_DIR }}
-          WEBHOOK_REDEPLOYMENT_DIR_NAME: ${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME }}
+          WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE: ${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE }}
           DOCKER_COMPOSE_DIR_NAME: ${{ vars.DOCKER_COMPOSE_DIR_NAME }}
           DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
-          API_PORT: ${{ vars.HTMT_API_PORT }}
-          CSRF_TRUSTED_ORIGINS: ${{ vars.CSRF_TRUSTED_ORIGINS }}
-          ALLOWED_HOSTS: ${{ vars.ALLOWED_HOSTS }}
-          DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE: ${{ vars.DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE }}
+          HTMT_API_SUBDOMAIN_NAME: ${{ vars.HTMT_API_SUBDOMAIN_NAME }}
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
-          DB_CONTAINER_NAME: ${{ vars.DB_CONTAINER_NAME }}
-          DB_PORT: ${{ vars.DB_PORT }}
+          DB_PORT_CONTAINER: ${{ vars.DB_PORT_CONTAINER }}
           DB_SUPERUSER_NAME: ${{ vars.DB_SUPERUSER_NAME }}
-          DB_ENV_FILENAME: ${{ vars.DB_ENV_FILENAME }}
-          ENV: ${{ vars.ENV }}
           DB_IMAGE_REPO: ${{ vars.DB_IMAGE_REPO }}
           DB_VERSION: ${{ vars.DB_VERSION }}
           DB_DATA_DIR: ${{ vars.DB_DATA_DIR }}
           DB_PORT_HOST: ${{ vars.DB_PORT_HOST }}
           DB_SUPERUSER_PASSWORD: ${{ secrets.DB_SUPERUSER_PASSWORD }}
-          DB_BODZIFY_API_DB_NAME: ${{ secrets.DB_BODZIFY_API_DB_NAME }}
-          DB_BODZIFY_API_USERNAME: ${{ secrets.DB_BODZIFY_API_USERNAME }}
-          DB_BODZIFY_API_USER_PASSWORD: ${{ secrets.DB_BODZIFY_API_USER_PASSWORD }}
-          AFP_CONTAINER_NAME: ${{ vars.AFP_CONTAINER_NAME }}
+          DB_APP_NAME: ${{ vars.DB_APP_NAME }}
+          DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
+          DB_APP_USERNAME: ${{ secrets.DB_APP_USERNAME }}
+          DB_APP_USER_PASSWORD: ${{ secrets.DB_APP_USER_PASSWORD }}
+          AFP_APP_NAME: ${{ vars.AFP_APP_NAME }}
           AFP_PORT: ${{ vars.AFP_PORT }}
           AFP_POST_ENDPOINT: ${{ vars.AFP_POST_ENDPOINT }}
-          AFP_ENV_FILENAME: ${{ vars.AFP_ENV_FILENAME }}
           AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
           AFP_VERSION: ${{ vars.AFP_VERSION }}
           AFP_POOL_DIR_EXTERNAL: ${{ vars.AFP_POOL_DIR_EXTERNAL }}
           AFP_FLASK_LOG_DIR_EXTERNAL: ${{ vars.AFP_FLASK_LOG_DIR_EXTERNAL }}
           AFP_GUNICORN_LOG_DIR_EXTERNAL: ${{ vars.AFP_GUNICORN_LOG_DIR_EXTERNAL }}
-          API_SERVICE_NAME: ${{ vars.HTMT_API_SERVICE_NAME }}
-          APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
-          APP_CONTAINER_NAME: ${{ vars.APP_CONTAINER_NAME }}
           GUNICORN_LOG_DIR: ${{ vars.GUNICORN_LOG_DIR }}
           GUNICORN_LOG_ERROR_FILENAME: ${{ vars.GUNICORN_LOG_ERROR_FILENAME }}
           GUNICORN_LOG_ACCESS_FILENAME: ${{ vars.GUNICORN_LOG_ACCESS_FILENAME }}
           DJANGO_LOG_DIR_EXTERNAL: ${{ vars.DJANGO_LOG_DIR_EXTERNAL }}
+          DJANGO_LOG_GENERAL_FILENAME: ${{ vars.DJANGO_LOG_GENERAL_FILENAME }}
+          DJANGO_LOG_INFO_FILENAME: ${{ vars.DJANGO_LOG_INFO_FILENAME }}
+          DJANGO_LOG_REQUESTS_FILENAME: ${{ vars.DJANGO_LOG_REQUESTS_FILENAME }}
+          DJANGO_LOG_REQUESTS_DEBUG_FILENAME: ${{ vars.DJANGO_LOG_REQUESTS_DEBUG_FILENAME }}
+          DJANGO_LOG_EXCEPTIONS_FILENAME: ${{ vars.DJANGO_LOG_EXCEPTIONS_FILENAME }}
+          DJANGO_LOG_DJANGO_FILENAME: ${{ vars.DJANGO_LOG_DJANGO_FILENAME }}
+          DJANGO_LOG_APP_FILENAME: ${{ vars.DJANGO_LOG_APP_FILENAME }}
           MEDIA_DIR_EXTERNAL: ${{ vars.MEDIA_DIR_EXTERNAL }}
           STATIC_FILES_EXTERNAL: ${{ vars.STATIC_FILES_EXTERNAL }}
           TMP_UPLOADED_FILES_EXTERNAL: ${{ vars.TMP_UPLOADED_FILES_EXTERNAL }}
@@ -74,8 +95,15 @@ jobs:
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
           ACOUSTID_API_KEY: ${{ secrets.ACOUSTID_API_KEY }}
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID_PROD }}
-          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET_PROD }}
-          SPOTIFY_SCOPES: ${{ secrets.SPOTIFY_SCOPES }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SPOTIFY_SCOPES: ${{ vars.SPOTIFY_SCOPES }}
+          SPOTIFY_REDIRECT_RELATIVE_URI: ${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID_PROD }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REDIRECT_RELATIVE_URI: ${{ vars.GOOGLE_REDIRECT_RELATIVE_URI }}
+          GTMT_FRONT_SUBDOMAIN_NAME: ${{ vars.GTMT_FRONT_SUBDOMAIN_NAME }}
+          MEDIA_URL: ${{ vars.MEDIA_URL }}
+          LIBRARIES_DIR_NAME: ${{ vars.LIBRARIES_DIR_NAME }}
           TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
           SUPERADMIN_USERNAME: ${{ secrets.SUPERADMIN_USERNAME }}
           SUPERADMIN_EMAIL: ${{ vars.SUPERADMIN_EMAIL }}
@@ -83,46 +111,50 @@ jobs:
           DEMO_USERNAME: ${{ secrets.DEMO_USERNAME }}
           DEMO_EMAIL: ${{ vars.DEMO_EMAIL }}
           DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
+          HTMT_API_CONTAINER_MEDIA_DIR: ${{ vars.MEDIA_DIR_EXTERNAL }}
+          HTMT_API_STATIC_FILES: ${{ vars.STATIC_FILES_EXTERNAL }}
         run: |
           bash scripts/check-workflow-env.sh \
+            APP_NAME \
+            APP_PORT \
+            APP_IMAGE_REPO \
             DOMAIN_NAME \
+            HTMT_API_SUBDOMAIN_NAME \
             WEBHOOK_DIR \
-            WEBHOOK_REDEPLOYMENT_DIR_NAME \
+            WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE \
             DOCKER_COMPOSE_DIR_NAME \
-            API_PORT \
-            CSRF_TRUSTED_ORIGINS \
-            ALLOWED_HOSTS \
-            ENV \
-            DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE \
             DOCKERHUB_USERNAME \
-            DB_CONTAINER_NAME \
-            DB_PORT \
+            DB_APP_NAME \
+            DB_PORT_CONTAINER \
+            DB_PORT_HOST \
             DB_SUPERUSER_NAME \
             DB_ENV_FILENAME \
             DB_IMAGE_REPO \
             DB_VERSION \
             DB_DATA_DIR \
-            DB_PORT_HOST \
             DB_SUPERUSER_PASSWORD \
-            DB_BODZIFY_API_DB_NAME \
-            DB_BODZIFY_API_USERNAME \
-            DB_BODZIFY_API_USER_PASSWORD \
-            AFP_CONTAINER_NAME \
+            DB_APP_DB_NAME \
+            DB_APP_USERNAME \
+            DB_APP_USER_PASSWORD \
+            AFP_APP_NAME \
             AFP_PORT \
             AFP_POST_ENDPOINT \
-            AFP_ENV_FILENAME \
             AFP_IMAGE_REPO \
             AFP_VERSION \
             AFP_POOL_DIR_EXTERNAL \
             AFP_FLASK_LOG_DIR_EXTERNAL \
             AFP_GUNICORN_LOG_DIR_EXTERNAL \
-            API_SERVICE_NAME \
-            APP_IMAGE_REPO \
-            APP_CONTAINER_NAME \
             GUNICORN_LOG_DIR \
             GUNICORN_LOG_ERROR_FILENAME \
             GUNICORN_LOG_ACCESS_FILENAME \
             DJANGO_LOG_DIR_EXTERNAL \
+            DJANGO_LOG_GENERAL_FILENAME \
+            DJANGO_LOG_INFO_FILENAME \
+            DJANGO_LOG_REQUESTS_FILENAME \
+            DJANGO_LOG_REQUESTS_DEBUG_FILENAME \
+            DJANGO_LOG_EXCEPTIONS_FILENAME \
+            DJANGO_LOG_DJANGO_FILENAME \
+            DJANGO_LOG_APP_FILENAME \
             MEDIA_DIR_EXTERNAL \
             STATIC_FILES_EXTERNAL \
             TMP_UPLOADED_FILES_EXTERNAL \
@@ -132,6 +164,14 @@ jobs:
             ACOUSTID_API_KEY \
             SPOTIFY_CLIENT_ID \
             SPOTIFY_CLIENT_SECRET \
+            SPOTIFY_SCOPES \
+            SPOTIFY_REDIRECT_RELATIVE_URI \
+            GOOGLE_CLIENT_ID \
+            GOOGLE_CLIENT_SECRET \
+            GOOGLE_REDIRECT_RELATIVE_URI \
+            GTMT_FRONT_SUBDOMAIN_NAME \
+            MEDIA_URL \
+            LIBRARIES_DIR_NAME \
             TMTA_USERNAME \
             SUPERADMIN_USERNAME \
             SUPERADMIN_EMAIL \
@@ -139,166 +179,209 @@ jobs:
             DEMO_USERNAME \
             DEMO_EMAIL \
             DEMO_PASSWORD \
+            HTMT_API_CONTAINER_MEDIA_DIR \
+            HTMT_API_STATIC_FILES
 
-  set-env-variables-on-server:
-    name: Set env vars
-    needs: [check-vars-and-secrets]
-    runs-on: ubuntu-latest
-    environment:
-      name: TEST
-    env:
-      DOCKER_COMPOSE_DIR: ${{ vars.WEBHOOK_DIR }}${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME }}/${{ vars.DOCKER_COMPOSE_DIR_NAME }}/
-    steps:
-      - uses: actions/checkout@v4
-      - uses: webfactory/ssh-agent@v0.9.0
+      - name: Set container names
+        id: set_container_names
+        run: |
+          echo "db_container_name=${{ vars.HTMT_API_APP_NAME }}-${{ inputs.env }}-${{ vars.DB_APP_NAME }}" >> $GITHUB_OUTPUT
+          echo "afp_container_name=${{ vars.HTMT_API_APP_NAME }}-${{ inputs.env }}-${{ vars.AFP_APP_NAME }}" >> $GITHUB_OUTPUT
+          echo "app_container_name=${{ vars.HTMT_API_APP_NAME }}-${{ inputs.env }}" >> $GITHUB_OUTPUT
+
+      - name: Build nginx env fragment
+        run: |
+          mkdir -p nginx_fragment
+          {
+            echo "HTMT_API_PORT=${{ vars.APP_PORT }}"
+            echo "HTMT_API_MEDIA_URL=${{ vars.MEDIA_URL }}"
+            echo "HTMT_API_STATIC_FILES_URL=${{ vars.STATIC_FILES_URL }}"
+          } > nginx_fragment/${{ vars.APP_PORT }}.env
+
+      - name: Upload nginx-env-fragment artifact
+        uses: actions/upload-artifact@v4
         with:
-          ssh-private-key: ${{ secrets.SERVER_DEPLOY_SSH_PRIVATE_KEY }}
+          name: nginx-env-fragment
+          path: nginx_fragment/
 
-      - name: Add host to known_hosts
+      - name: Set API host
+        id: set_api_host
         run: |
-          mkdir -p ~/.ssh &&
-          ssh-keyscan -H ${{ vars.DOMAIN_NAME }} >> ~/.ssh/known_hosts
+          if [ "${{ inputs.env }}" = "prod" ]; then
+            API_SUBDOMAIN="${{ vars.HTMT_API_SUBDOMAIN_NAME }}"
+          else
+            API_SUBDOMAIN="${{ vars.HTMT_API_SUBDOMAIN_NAME }}-${{ inputs.env }}"
+          fi
+          API_HOST="${API_SUBDOMAIN}.${{ vars.DOMAIN_NAME }}"
+          echo "api_subdomain=${API_SUBDOMAIN}" >> $GITHUB_OUTPUT
+          echo "api_host=${API_HOST}" >> $GITHUB_OUTPUT
 
-      - name: Set api environment variables on server
+      - name: Resolve API host IPs
+        id: resolve_api_ips
+        run: |
+          API_HOST="${{ steps.set_api_host.outputs.api_host }}"
+          RESOLVED_IPS=$(dig +short "${API_HOST}" 2>/dev/null | grep -E '^[0-9.]+$|^[0-9a-f:]+$' || true)
+          if [ -n "$RESOLVED_IPS" ]; then
+            IP_LIST=$(echo "$RESOLVED_IPS" | tr '\n' ',' | sed 's/,$//')
+          else
+            IP_LIST=""
+          fi
+          echo "ip_list=${IP_LIST}" >> $GITHUB_OUTPUT
+
+      - name: Set CSRF and allowed hosts
+        id: set_csrf_and_allowed_hosts
+        run: |
+          API_HOST="${{ steps.set_api_host.outputs.api_host }}"
+          IP_LIST="${{ steps.resolve_api_ips.outputs.ip_list }}"
+          APP_PORT="${{ vars.APP_PORT }}"
+          CSRF_ORIGINS="https://${{ vars.DOMAIN_NAME }},https://${API_HOST}"
+          if [ -n "${IP_LIST}" ]; then
+            ALLOWED_HOSTS="${API_HOST},www.${API_HOST},${IP_LIST},localhost,localhost:${APP_PORT}"
+          else
+            ALLOWED_HOSTS="${API_HOST},www.${API_HOST},localhost,localhost:${APP_PORT}"
+          fi
+          echo "csrf_origins=${CSRF_ORIGINS}" >> $GITHUB_OUTPUT
+          echo "allowed_hosts=${ALLOWED_HOSTS}" >> $GITHUB_OUTPUT
+
+      - name: Build API env file
+        run: |
+          mkdir -p pool_compose_api
+          ENV_LC=$(echo "${{ inputs.env }}" | tr '[:upper:]' '[:lower:]')
+          if [ "${ENV_LC}" = "prod" ]; then
+            FRONT_HOST='${{ vars.GTMT_FRONT_SUBDOMAIN_NAME }}'
+          else
+            FRONT_HOST="${{ vars.GTMT_FRONT_SUBDOMAIN_NAME }}-${ENV_LC}"
+          fi
+          if [ "${{ inputs.env }}" = "test" ]; then
+            SPOTIFY_ID='${{ secrets.SPOTIFY_CLIENT_ID_TEST }}'
+            GOOGLE_ID='${{ secrets.GOOGLE_CLIENT_ID_TEST }}'
+          else
+            SPOTIFY_ID='${{ secrets.SPOTIFY_CLIENT_ID_PROD }}'
+            GOOGLE_ID='${{ secrets.GOOGLE_CLIENT_ID_PROD }}'
+          fi
+          {
+            echo 'ENV=${{ inputs.env }}'
+            echo 'APP_NAME=${{ vars.HTMT_API_APP_NAME }}'
+            echo "APP_PORT=${{ vars.APP_PORT }}"
+            echo 'DEBUG=true'
+            echo 'APP_IS_EXPOSED=true'
+            echo "DJANGO_SECRET_KEY='${{ secrets.DJANGO_SECRET_KEY }}'"
+            echo "ACOUSTID_API_KEY='${{ secrets.ACOUSTID_API_KEY }}'"
+            echo "SPOTIFY_CLIENT_ID=${SPOTIFY_ID}"
+            echo "SPOTIFY_CLIENT_SECRET='${{ secrets.SPOTIFY_CLIENT_SECRET }}'"
+            echo "SPOTIFY_REDIRECT_URI='https://${FRONT_HOST}.${{ vars.DOMAIN_NAME }}/${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}'"
+            echo "SPOTIFY_SCOPES='${{ vars.SPOTIFY_SCOPES }}'"
+            echo "GOOGLE_CLIENT_ID=${GOOGLE_ID}"
+            echo "GOOGLE_CLIENT_SECRET='${{ secrets.GOOGLE_CLIENT_SECRET }}'"
+            echo "GOOGLE_REDIRECT_URI='https://${FRONT_HOST}.${{ vars.DOMAIN_NAME }}/${{ vars.GOOGLE_REDIRECT_RELATIVE_URI }}'"
+            echo "CSRF_TRUSTED_ORIGINS=${{ steps.set_csrf_and_allowed_hosts.outputs.csrf_origins }}"
+            echo "ALLOWED_HOSTS=${{ steps.set_csrf_and_allowed_hosts.outputs.allowed_hosts }}"
+            echo 'TMP_UPLOADED_FILES=${{ vars.TMP_UPLOADED_FILES_EXTERNAL }}'
+            echo 'MEDIA_URL=${{ vars.MEDIA_URL }}'
+            echo 'MEDIA_DIR_EXTERNAL=${{ vars.MEDIA_DIR_EXTERNAL }}'
+            echo 'LIBRARIES_DIR_NAME=${{ vars.LIBRARIES_DIR_NAME }}'
+            echo 'GUNICORN_LOG_DIR=${{ vars.GUNICORN_LOG_DIR }}'
+            echo 'GUNICORN_LOG_ACCESS_FILENAME=${{ vars.GUNICORN_LOG_ACCESS_FILENAME }}'
+            echo 'GUNICORN_LOG_ERROR_FILENAME=${{ vars.GUNICORN_LOG_ERROR_FILENAME }}'
+            echo 'DJANGO_LOG_DIR_EXTERNAL=${{ vars.DJANGO_LOG_DIR_EXTERNAL }}'
+            echo 'DJANGO_LOG_GENERAL_FILENAME=${{ vars.DJANGO_LOG_GENERAL_FILENAME }}'
+            echo 'DJANGO_LOG_INFO_FILENAME=${{ vars.DJANGO_LOG_INFO_FILENAME }}'
+            echo 'DJANGO_LOG_REQUESTS_FILENAME=${{ vars.DJANGO_LOG_REQUESTS_FILENAME }}'
+            echo 'DJANGO_LOG_REQUESTS_DEBUG_FILENAME=${{ vars.DJANGO_LOG_REQUESTS_DEBUG_FILENAME }}'
+            echo 'DJANGO_LOG_EXCEPTIONS_FILENAME=${{ vars.DJANGO_LOG_EXCEPTIONS_FILENAME }}'
+            echo 'DJANGO_LOG_DJANGO_FILENAME=${{ vars.DJANGO_LOG_DJANGO_FILENAME }}'
+            echo 'DJANGO_LOG_APP_FILENAME=${{ vars.DJANGO_LOG_APP_FILENAME }}'
+            echo 'DB_CONTAINER_NAME=${{ steps.set_container_names.outputs.db_container_name }}'
+            echo 'DB_PORT=${{ vars.DB_PORT_CONTAINER }}'
+            echo 'DB_CONNECTION_TEST_MAX_ATTEMPTS=10'
+            echo 'DB_CONNECTION_TEST_SLEEP_INTERVAL=5'
+            echo 'DB_SUPERUSER_NAME=${{ vars.DB_SUPERUSER_NAME }}'
+            echo "DB_SUPERUSER_PASSWORD='${{ secrets.DB_SUPERUSER_PASSWORD }}'"
+            echo 'DB_APP_DB_NAME=${{ secrets.DB_APP_DB_NAME }}'
+            echo 'DB_APP_USERNAME=${{ secrets.DB_APP_USERNAME }}'
+            echo "DB_APP_USER_PASSWORD='${{ secrets.DB_APP_USER_PASSWORD }}'"
+            echo 'AFP_CONTAINER_NAME=${{ steps.set_container_names.outputs.afp_container_name }}'
+            echo 'AFP_PORT=${{ vars.AFP_PORT }}'
+            echo 'AFP_POST_ENDPOINT=${{ vars.AFP_POST_ENDPOINT }}'
+            echo 'TMTA_USERNAME=${{ secrets.TMTA_USERNAME }}'
+            echo 'SUPERADMIN_USERNAME=${{ secrets.SUPERADMIN_USERNAME }}'
+            echo 'SUPERADMIN_EMAIL=${{ vars.SUPERADMIN_EMAIL }}'
+            echo "SUPERADMIN_PASSWORD='${{ secrets.SUPERADMIN_PASSWORD }}'"
+            echo 'DEMO_USERNAME=${{ secrets.DEMO_USERNAME }}'
+            echo 'DEMO_EMAIL=${{ vars.DEMO_EMAIL }}'
+            echo "DEMO_PASSWORD='${{ secrets.DEMO_PASSWORD }}'"
+          } > pool_compose_api/${{ env.APP_ENV_FILENAME }}
+
+      - name: Build DB env file
+        run: |
+          mkdir -p pool_compose_db
+          {
+            echo 'ENV=${{ inputs.env }}'
+            echo 'POSTGRES_DB=${{ secrets.DB_APP_DB_NAME }}'
+            echo 'POSTGRES_USER=${{ vars.DB_SUPERUSER_NAME }}'
+            echo "POSTGRES_PASSWORD=${{ secrets.DB_SUPERUSER_PASSWORD }}"
+            echo 'POSTGRES_PORT=${{ vars.DB_PORT_CONTAINER }}'
+          } > pool_compose_db/${{ env.DB_ENV_FILENAME }}
+
+      - name: Build AFP env file
+        run: |
+          mkdir -p pool_compose_afp
+          {
+            echo 'ENV=${{ inputs.env }}'
+            echo 'DEBUG=true'
+            echo "APP_PORT=${{ vars.AFP_PORT }}"
+          } > pool_compose_afp/${{ env.AFP_ENV_FILENAME }}
+
+      - name: Prepare combined app-env-files and upload
         env:
-          API_ENV_FILE: "${{ env.DOCKER_COMPOSE_DIR }}${{ env.DOCKERIZED_APP_ENV_FILENAME }}"
+          APP_ENV_FILENAME: ${{ env.APP_ENV_FILENAME }}
+          DB_ENV_FILENAME: ${{ env.DB_ENV_FILENAME }}
+          AFP_ENV_FILENAME: ${{ env.AFP_ENV_FILENAME }}
         run: |
-          ssh ${{ env.SSH_DESTINATION }} bash -s << 'EOF'
-            rm -f ${{ env.API_ENV_FILE }} &&
-            touch ${{ env.API_ENV_FILE }} &&
+          mkdir -p pool_compose_all
+          cp "pool_compose_api/$APP_ENV_FILENAME" "pool_compose_all/${APP_ENV_FILENAME#.}"
+          cp "pool_compose_db/$DB_ENV_FILENAME" "pool_compose_all/${DB_ENV_FILENAME#.}"
+          cp "pool_compose_afp/$AFP_ENV_FILENAME" "pool_compose_all/${AFP_ENV_FILENAME#.}"
 
-            echo 'ENV=TEST' >> ${{ env.API_ENV_FILE }} &&
-
-            echo 'APP_NAME=${{ vars.APP_NAME }}' >> ${{ env.API_ENV_FILE }} &&
-
-            echo 'APP_PORT=${{ vars.HTMT_API_PORT }}' >> ${{ env.API_ENV_FILE }} &&
-
-            echo 'DEBUG=true' >> ${{ env.API_ENV_FILE }} &&
-            echo 'APP_IS_EXPOSED=true' >> ${{ env.API_ENV_FILE }} &&
-            echo 'DJANGO_SECRET_KEY='\''${{ secrets.DJANGO_SECRET_KEY }}'\''' >> ${{ env.API_ENV_FILE }} &&
-            echo 'ACOUSTID_API_KEY='\''${{ secrets.ACOUSTID_API_KEY }}'\''' >> ${{ env.API_ENV_FILE }} &&
-            echo 'SPOTIFY_CLIENT_ID='\''${{ secrets.SPOTIFY_CLIENT_ID_PROD }}'\''' >> ${{ env.API_ENV_FILE }} &&
-            echo 'SPOTIFY_CLIENT_SECRET='\''${{ secrets.SPOTIFY_CLIENT_SECRET_PROD }}'\''' >> ${{ env.API_ENV_FILE }} &&
-            echo 'SPOTIFY_REDIRECT_URI='\''https://${{ vars.GTMT_FRONT_SUBDOMAIN_NAME }}.${{ vars.DOMAIN_NAME }}/${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}'\''' >> ${{ env.API_ENV_FILE }} &&
-            echo 'SPOTIFY_SCOPES='\''${{ vars.SPOTIFY_SCOPES }}'\''' >> ${{ env.API_ENV_FILE }} &&
-            echo 'CSRF_TRUSTED_ORIGINS=${{ vars.CSRF_TRUSTED_ORIGINS }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'ALLOWED_HOSTS=${{ vars.ALLOWED_HOSTS }}' >> ${{ env.API_ENV_FILE }} &&
-
-            echo 'TMP_UPLOADED_FILES=${{ vars.TMP_UPLOADED_FILES_EXTERNAL }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'MEDIA_URL=${{ vars.HTMT_API_MEDIA_URL }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'MEDIA_DIR_EXTERNAL=${{ vars.MEDIA_DIR_EXTERNAL }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'LIBRARIES_DIR_NAME=${{ vars.LIBRARIES_DIR_NAME }}' >> ${{ env.API_ENV_FILE }} &&
-
-            echo 'GUNICORN_LOG_DIR=${{ vars.GUNICORN_LOG_DIR }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'GUNICORN_LOG_ACCESS_FILENAME=${{ vars.GUNICORN_LOG_ACCESS_FILENAME }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'GUNICORN_LOG_ERROR_FILENAME=${{ vars.GUNICORN_LOG_ERROR_FILENAME }}' >> ${{ env.API_ENV_FILE }} &&
-
-            echo 'DB_CONTAINER_NAME=${{ vars.DB_CONTAINER_NAME }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'DB_PORT=${{ vars.DB_PORT }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'DB_CONNECTION_TEST_MAX_ATTEMPTS=10' >> ${{ env.API_ENV_FILE }} &&
-            echo 'DB_CONNECTION_TEST_SLEEP_INTERVAL=5' >> ${{ env.API_ENV_FILE }} &&
-            echo 'DB_SUPERUSER_NAME=${{ vars.DB_SUPERUSER_NAME }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'DB_SUPERUSER_PASSWORD='\''${{ secrets.DB_SUPERUSER_PASSWORD }}'\''' >> ${{ env.API_ENV_FILE }} &&
-            echo 'DB_BODZIFY_API_DB_NAME=${{ secrets.DB_BODZIFY_API_DB_NAME }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'DB_BODZIFY_API_USERNAME=${{ secrets.DB_BODZIFY_API_USERNAME }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'DB_BODZIFY_API_USER_PASSWORD='\''${{ secrets.DB_BODZIFY_API_USER_PASSWORD }}'\''' >> ${{ env.API_ENV_FILE }} &&
-
-            echo 'AFP_CONTAINER_NAME=${{ vars.AFP_CONTAINER_NAME }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'AFP_PORT=${{ vars.AFP_PORT }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'AFP_POST_ENDPOINT=${{ vars.AFP_POST_ENDPOINT }}' >> ${{ env.API_ENV_FILE }} &&
-
-            echo 'TMTA_USERNAME=${{ secrets.TMTA_USERNAME }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'SUPERADMIN_USERNAME=${{ secrets.SUPERADMIN_USERNAME }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'SUPERADMIN_EMAIL=${{ vars.SUPERADMIN_EMAIL }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'SUPERADMIN_PASSWORD='\''${{ secrets.SUPERADMIN_PASSWORD }}'\''' >> ${{ env.API_ENV_FILE }} &&
-            echo 'DEMO_USERNAME=${{ secrets.DEMO_USERNAME }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'DEMO_EMAIL=${{ vars.DEMO_EMAIL }}' >> ${{ env.API_ENV_FILE }} &&
-            echo 'DEMO_PASSWORD='\''${{ secrets.DEMO_PASSWORD }}'\''' >> ${{ env.API_ENV_FILE }} &&
-
-            chmod 600 ${{ env.API_ENV_FILE }}
-          EOF
-
-      - name: Set db environment variables on server
-        env:
-          DB_ENV_FILE: "${{ env.DOCKER_COMPOSE_DIR }}${{ vars.DB_ENV_FILENAME }}"
-        run: |
-          ssh ${{ env.SSH_DESTINATION }} "
-            rm -f ${{ env.DB_ENV_FILE }} &&
-            touch ${{ env.DB_ENV_FILE }} &&
-
-            echo 'ENV=TEST' >> ${{ env.DB_ENV_FILE }} &&
-
-            echo 'POSTGRES_DB=${{ secrets.DB_BODZIFY_API_DB_NAME }}' >> ${{ env.DB_ENV_FILE }} &&
-            echo 'POSTGRES_USER=${{ vars.DB_SUPERUSER_NAME }}' >> ${{ env.DB_ENV_FILE }} &&
-            echo 'POSTGRES_PASSWORD=${{ secrets.DB_SUPERUSER_PASSWORD }}' >> ${{ env.DB_ENV_FILE }} &&
-            echo 'POSTGRES_PORT=${{ vars.DB_PORT }}' >> ${{ env.DB_ENV_FILE }} &&
-
-            chmod 600 ${{ env.DB_ENV_FILE }}
-          "
-
-      - name: Set afp environment variables on server
-        env:
-          AFP_ENV_FILE: "${{ env.DOCKER_COMPOSE_DIR }}${{ vars.AFP_ENV_FILENAME }}"
-        run: |
-          ssh ${{ env.SSH_DESTINATION }} "
-            rm -f ${{ env.AFP_ENV_FILE }} &&
-            touch ${{ env.AFP_ENV_FILE }} &&
-
-            echo 'ENV=${{ vars.ENV }}' >> ${{ env.AFP_ENV_FILE }} &&
-            echo 'DEBUG=true' >> ${{ env.AFP_ENV_FILE }} &&
-            echo 'APP_PORT=${{ vars.AFP_PORT }}' >> ${{ env.AFP_ENV_FILE }} &&
-
-            chmod 600 ${{ env.AFP_ENV_FILE }}
-          "
-
-  set-partial-docker-compose-on-server:
-    name: Set compose files
-    needs: [check-vars-and-secrets]
-    runs-on: ubuntu-latest
-    environment:
-      name: TEST
-    env:
-      SERVER_DOCKER_COMPOSE_DIR: ${{ vars.WEBHOOK_DIR }}${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME }}/${{ vars.DOCKER_COMPOSE_DIR_NAME }}/
-      DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE: _part_compose.yml
-    steps:
-      - uses: actions/checkout@v4
-      - uses: webfactory/ssh-agent@v0.9.0
+      - name: Upload app-env-files artifact
+        uses: actions/upload-artifact@v4
         with:
-          ssh-private-key: ${{ secrets.SERVER_DEPLOY_SSH_PRIVATE_KEY }}
-
-      - name: Add host to known_hosts
-        run: |
-          mkdir -p ~/.ssh && ssh-keyscan -H ${{ vars.DOMAIN_NAME }} >> ~/.ssh/known_hosts
+          name: app-env-files
+          path: pool_compose_all/
 
       - name: Generate partial docker compose files
         env:
-          DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE: ${{ vars.DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE }}
+          DB_COMPOSE_PART_FILENAME: ${{ env.DB_COMPOSE_PART_FILENAME }}
+          AFP_COMPOSE_PART_FILENAME: ${{ env.AFP_COMPOSE_PART_FILENAME }}
+          APP_COMPOSE_PART_FILENAME: ${{ env.APP_COMPOSE_PART_FILENAME }}
+
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
           AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
           AFP_VERSION: ${{ vars.AFP_VERSION }}
-          AFP_CONTAINER_NAME: ${{ vars.AFP_CONTAINER_NAME }}
+          AFP_CONTAINER_NAME: ${{ steps.set_container_names.outputs.afp_container_name }}
           AFP_PORT: ${{ vars.AFP_PORT }}
-          AFP_ENV_FILENAME: ${{ vars.AFP_ENV_FILENAME }}
+          AFP_ENV_FILENAME: ${{ env.AFP_ENV_FILENAME }}
           AFP_POOL_DIR_EXTERNAL: ${{ vars.AFP_POOL_DIR_EXTERNAL }}
           AFP_FLASK_LOG_DIR_EXTERNAL: ${{ vars.AFP_FLASK_LOG_DIR_EXTERNAL }}
+          APP_ENV_FILENAME: ${{ env.APP_ENV_FILENAME }}
           AFP_GUNICORN_LOG_DIR_EXTERNAL: ${{ vars.AFP_GUNICORN_LOG_DIR_EXTERNAL }}
           APP_VERSION: ${{ inputs.app_version }}
           APP_ROOT_DIR: ${{ env.CONTAINER_ROOT_DIR }}
-          APP_SERVICE_NAME: ${{ vars.HTMT_API_SERVICE_NAME }}
+          APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
+          APP_SERVICE_NAME: ${{ vars.HTMT_API_APP_NAME }}
           APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
-          APP_CONTAINER_NAME: ${{ vars.APP_CONTAINER_NAME }}
-          APP_PORT: ${{ vars.HTMT_API_PORT }}
-          APP_ENV_FILENAME: ${{ env.DOCKERIZED_APP_ENV_FILENAME }}
+          APP_CONTAINER_NAME: ${{ steps.set_container_names.outputs.app_container_name }}
+          APP_PORT: ${{ vars.APP_PORT}}
           GUNICORN_LOG_DIR: ${{ vars.GUNICORN_LOG_DIR }}
           GUNICORN_LOG_ERROR_FILENAME: ${{ vars.GUNICORN_LOG_ERROR_FILENAME }}
           GUNICORN_LOG_ACCESS_FILENAME: ${{ vars.GUNICORN_LOG_ACCESS_FILENAME }}
+          DB_ENV_FILENAME: ${{ env.DB_ENV_FILENAME }}
           DB_IMAGE_REPO: ${{ vars.DB_IMAGE_REPO }}
           DB_VERSION: ${{ vars.DB_VERSION }}
-          DB_CONTAINER_NAME: ${{ vars.DB_CONTAINER_NAME }}
+          DB_CONTAINER_NAME: ${{ steps.set_container_names.outputs.db_container_name }}
           DB_DATA_DIR: ${{ vars.DB_DATA_DIR }}
           DB_PORT_HOST: ${{ vars.DB_PORT_HOST }}
-          DB_PORT: ${{ vars.DB_PORT }}
-          DB_ENV_FILENAME: ${{ vars.DB_ENV_FILENAME }}
+          DB_PORT_CONTAINER: ${{ vars.DB_PORT_CONTAINER }}
           DJANGO_LOG_DIR_EXTERNAL: ${{ vars.DJANGO_LOG_DIR_EXTERNAL }}
           MEDIA_DIR_EXTERNAL: ${{ vars.MEDIA_DIR_EXTERNAL }}
           STATIC_FILES_EXTERNAL: ${{ vars.STATIC_FILES_EXTERNAL }}
@@ -306,7 +389,41 @@ jobs:
         run: |
           bash scripts/generate-docker-compose-parts.sh
 
-      - name: SSH Transfer partial docker-compose files to server
+      - name: Prepare compose-parts
         run: |
-          scp scripts/*${{ vars.DOCKER_COMPOSE_PARTIAL_FILENAME_SUFFIXE }} ${{ env.SSH_DESTINATION }}:${{ env.SERVER_DOCKER_COMPOSE_DIR }}
+          mkdir -p compose_parts
+          cp "scripts/$DB_COMPOSE_PART_FILENAME" "scripts/$AFP_COMPOSE_PART_FILENAME" "scripts/$APP_COMPOSE_PART_FILENAME" compose_parts/
 
+      - name: Upload compose-parts artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: compose-parts
+          path: compose_parts/
+
+  deploy-nginx-env:
+    name: Deploy nginx env fragment
+    needs: [prepare]
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/deploy-nginx-env-fragment.yml@main
+    with:
+      env: ${{ inputs.env }}
+      app_name: ${{ vars.HTMT_API_APP_NAME }}
+    secrets: inherit
+
+  deploy-app-env-files:
+    name: Deploy app env files (API, DB, AFP)
+    needs: [prepare]
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/deploy-app-env-file.yml@main
+    with:
+      env: ${{ inputs.env }}
+      app_name: ${{ vars.HTMT_API_APP_NAME }}
+      artifact_name: app-env-files
+    secrets: inherit
+
+  deploy-compose:
+    name: Deploy compose parts
+    needs: [prepare]
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/deploy-docker-compose-part.yml@main
+    with:
+      env: ${{ inputs.env }}
+      app_version: ${{ inputs.app_version }}
+    secrets: inherit
