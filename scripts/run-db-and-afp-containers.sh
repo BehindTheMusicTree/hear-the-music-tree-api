@@ -42,6 +42,13 @@ main() {
     APP_ENV_FILE="${PROJECT_DIR}env/.env"
     source "${SCRIPTS_DIR}utils.sh"
 
+    if [ -f "$APP_ENV_FILE" ]; then
+        set -a
+        . "$APP_ENV_FILE"
+        set +a
+        log_with_script_prefixe "Loaded env from $APP_ENV_FILE"
+    fi
+
     log_with_script_prefixe "Running the database and audio fingerprinter containers..."
 
     check_script_vars_are_set

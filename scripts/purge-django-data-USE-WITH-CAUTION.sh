@@ -96,13 +96,10 @@ empty_db() {
 		force_close_db_connections_if_exist $db_name
 
 		log_with_script_prefixe "Checking if database $db_name exists..."
-		sql="SELECT 1 FROM pg_database WHERE datname='${!db_name}'"
 		output=$(timeout ${DB_TIMEOUT_SECONDS}s psql -h $DB_HOST -p $DB_PORT -U $DB_SUPERUSER_NAME -tAc \
 		"SELECT 1 FROM pg_database WHERE datname='${db_name}'" 2>&1)
 		exit_code=$?
 		handle_db_timeout $exit_code
-		log_with_script_prefixe "${!db_name}"
-		log_with_script_prefixe "${db_name}"
 		log_with_script_prefixe "$output"
 		if [ "$output" = "1" ]; then
 			log_with_script_prefixe "Database $db_name exists. Dropping database..."
