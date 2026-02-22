@@ -7,6 +7,10 @@ from spotipy.exceptions import SpotifyException as SpotipyException
 from spotipy.oauth2 import SpotifyOAuth
 
 from api.exception import spotify as spotify_exception
+from api.exception.spotify import (
+    SpotifyUserNotAllowlistedException,
+    SpotifyInvalidGrantException,
+)
 
 logger = logging.getLogger(settings.APP_NAME)
 
@@ -43,25 +47,32 @@ class SpotifyOAuthService:
 
     def get_access_token(self, code: str) -> TokenInfo:
         """
-        Exchange authorization code for access token
+        Exchange authorization code for access token.
 
-        Args:
-            code: The authorization code from Spotify
-
-        Returns:
-            Dictionary containing access token and refresh token
+        Uses check_cache=False so each login uses the provided code instead of
+        spotipy's default file cache, which would otherwise return the first
+        cached user's token for every request.
         """
         try:
-            token_info = self.oauth.get_access_token(code)
+            token_info = self.oauth.get_access_token(code, check_cache=False)
             if token_info is None:
                 raise spotify_exception.SpotifyAuthenticationException(
                     "Failed to get access token: No token info returned")
             return token_info
         except Exception as e:
-            logger.error(f"Failed to get access token: {str(e)}")
-            detail_code = "spotify_invalid_client" if "invalid_client" in str(e).lower() else None
+            err_str = str(e)
+            logger.error(f"Failed to get access token: {err_str}")
+            if (
+                "invalid_grant" in err_str.lower()
+                or "invalid authorization code" in err_str.lower()
+                or "authorization code expired" in err_str.lower()
+            ):
+                raise SpotifyInvalidGrantException(
+                    "Authorization code expired or already used. Please try connecting with Spotify again."
+                )
+            detail_code = "spotify_invalid_client" if "invalid_client" in err_str.lower() else None
             raise spotify_exception.SpotifyAuthenticationException(
-                f"Failed to get access token: {str(e)}", detail_code=detail_code
+                f"Failed to get access token: {err_str}", detail_code=detail_code
             )
 
     def refresh_access_token(self, refresh_token: str) -> TokenInfo:
@@ -86,6 +97,11 @@ class SpotifyOAuthService:
             raise spotify_exception.SpotifyAuthenticationException(
                 f"Failed to refresh access token: {str(e)}", detail_code=detail_code
             )
+
+    _SPOTIFY_DEV_MODE_MESSAGE = (
+        "Spotify app is in development mode. Your account must be added in the "
+        "Spotify Developer Dashboard (Users and Access) to sign in."
+    )
 
     def get_user_info(self, access_token: str) -> dict:
         """
@@ -114,6 +130,8 @@ class SpotifyOAuthService:
                 ) from e
             raise spotify_exception.SpotifyAuthenticationException(f"Failed to get user info: {e.msg or str(e)}") from e
         except Exception as e:
-            msg = str(e)
-            logger.error("Failed to get user info: %s", msg)
-            raise spotify_exception.SpotifyAuthenticationException(f"Failed to get user info: {msg}") from e
+            err_str = str(e)
+            logger.error("Failed to get user info: %s", err_str)
+            if "403" in err_str and ("user may not be registered" in err_str or "developer.spotify.com" in err_str):
+                raise SpotifyUserNotAllowlistedException(self._SPOTIFY_DEV_MODE_MESSAGE) from e
+            raise spotify_exception.SpotifyAuthenticationException(f"Failed to get user info: {err_str}") from e
