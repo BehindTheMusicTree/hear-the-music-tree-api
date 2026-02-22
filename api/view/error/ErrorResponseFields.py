@@ -36,6 +36,8 @@ class ErrorResponseFields:
         ApiErrorCodeNumeric.AUTH_INSUFFICIENT_PERMISSIONS: "Insufficient permissions for this operation",
         ApiErrorCodeNumeric.AUTH_SPOTIFY_NOT_AUTHENTICATED: "This resource requires Spotify authorization",
         ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED: "Authentication required",
+        ApiErrorCodeNumeric.AUTH_SPOTIFY_USER_NOT_ALLOWLISTED: "Spotify app is in development mode; your account must be added in the Spotify Developer Dashboard to sign in",
+        ApiErrorCodeNumeric.AUTH_SPOTIFY_CODE_EXPIRED_OR_USED: "Authorization code expired or already used. Please try connecting with Spotify again.",
 
         # Validation errors
         ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT: "One or more fields contain invalid data. Please check the error details for specific validation requirements",
@@ -92,6 +94,8 @@ class ErrorResponseFields:
         ApiErrorCodeNumeric.AUTH_INSUFFICIENT_PERMISSIONS: status.HTTP_403_FORBIDDEN,
         ApiErrorCodeNumeric.AUTH_SPOTIFY_NOT_AUTHENTICATED: status.HTTP_403_FORBIDDEN,
         ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED: status.HTTP_401_UNAUTHORIZED,
+        ApiErrorCodeNumeric.AUTH_SPOTIFY_USER_NOT_ALLOWLISTED: status.HTTP_401_UNAUTHORIZED,
+        ApiErrorCodeNumeric.AUTH_SPOTIFY_CODE_EXPIRED_OR_USED: status.HTTP_401_UNAUTHORIZED,
 
         # Validation errors -> 400
         ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT: status.HTTP_400_BAD_REQUEST,

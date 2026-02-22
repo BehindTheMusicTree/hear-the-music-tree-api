@@ -104,8 +104,9 @@ load_app_env_file_if_exists() {
     else
         log_with_utils_prefixe "Loading environment variables from ${ENV_FILE} ..."
         while IFS='=' read -r key value; do
-            # Skip comments and empty lines
-            if [ -z "$key" ]; then continue; fi
+            key="${key#"${key%%[![:space:]]*}"}"
+            key="${key%"${key##*[![:space:]]}"}"
+            if [ -z "$key" ] || [ "${key#\#}" != "$key" ]; then continue; fi
             export "$key=$value"
         done < "$ENV_FILE"
     fi
