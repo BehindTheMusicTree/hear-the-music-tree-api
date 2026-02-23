@@ -6,8 +6,8 @@ from rest_framework import status
 from api.model.play.Play import Play
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.serializer.model.play.input.schema.PostFields import Fields as PlayPostFields
-from api.test.tests.integration.view.play.PlayTestCase import PlayTestCase
-from api.test.tests.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.play.PlayTestCase import PlayTestCase
+from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 

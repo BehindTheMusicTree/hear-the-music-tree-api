@@ -1,7 +1,7 @@
 from rest_framework import status
 
 from api.serializer.model.user.base.input.Fields import Fields
-from api.test.tests.integration.view.user.UserTestCase import UserTestCase
+from api.test.tests.integration.user.UserTestCase import UserTestCase
 
 
 class TestCase(UserTestCase):

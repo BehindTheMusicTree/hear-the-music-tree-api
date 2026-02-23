@@ -1,7 +1,7 @@
 from rest_framework import status
 from django.urls import reverse
 
-from api.test.tests.integration.view.spotify_artist.SpotifyArtistTestCase import SpotifyArtistTestCase
+from api.test.tests.integration.spotify_artist.SpotifyArtistTestCase import SpotifyArtistTestCase
 
 
 class TestInvalidMethods(SpotifyArtistTestCase):

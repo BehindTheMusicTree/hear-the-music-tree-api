@@ -2,7 +2,7 @@ from rest_framework import status
 
 from api.model.album.Album import Album
 from api.model.artist.Artist import Artist
-from api.test.tests.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
 class TestCase(UploadedTrackTestCase):

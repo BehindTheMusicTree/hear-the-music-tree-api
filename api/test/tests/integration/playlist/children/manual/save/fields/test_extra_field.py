@@ -2,7 +2,7 @@ from rest_framework import status
 
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.serializer.model.criteria.input.post import Fields as PostFields
-from api.test.tests.integration.view.playlist.children.manual.ManualPlaylistTestCase import ManualPlaylistTestCase
+from api.test.tests.integration.playlist.children.manual.ManualPlaylistTestCase import ManualPlaylistTestCase
 
 
 class TestCase(ManualPlaylistTestCase):

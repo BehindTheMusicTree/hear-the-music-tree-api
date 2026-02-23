@@ -3,7 +3,7 @@ from rest_framework import status
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.serializer.model.criteria.output.Fields import Fields as ModelFields
 from api.test.utils.field.filter.char.NotNullableFreeCharFilterTestCase import NotNullableFreeCharFilterTestCase
-from api.test.tests.integration.view.criteria.GenreTestCase import GenreTestCase
+from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 from api.utils.data_transformer import to_camel_case
 
 

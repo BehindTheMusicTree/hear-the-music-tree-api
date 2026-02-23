@@ -2,7 +2,7 @@
 from rest_framework import status
 
 from api import settings
-from api.test.tests.integration.view.playlist.children.criteria.genre.GenrePlaylistTestCase import GenrePlaylistTestCase
+from api.test.tests.integration.playlist.children.criteria.genre.GenrePlaylistTestCase import GenrePlaylistTestCase
 
 
 class TestCase(GenrePlaylistTestCase):

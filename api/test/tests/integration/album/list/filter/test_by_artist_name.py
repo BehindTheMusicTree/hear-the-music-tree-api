@@ -2,7 +2,7 @@ from rest_framework import status
 
 from api.serializer.model.album.Fields import Fields as AlbumFields
 from api.test.utils.field.filter.char.NullableCharFilterTestCase import NullableCharFilterTestCase
-from api.test.tests.integration.view.album.AlbumTestCase import AlbumTestCase
+from api.test.tests.integration.album.AlbumTestCase import AlbumTestCase
 from api.filtering.set.album.Fields import Fields as FilterFields
 
 
