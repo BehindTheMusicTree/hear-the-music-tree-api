@@ -1,7 +1,7 @@
 from rest_framework import status
 
 from api.model.criteria.Criteria import Fields
-from api.test.tests.integration.view.criteria.GenreTestCase import GenreTestCase
+from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase):

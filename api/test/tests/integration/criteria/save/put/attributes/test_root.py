@@ -2,7 +2,7 @@ from rest_framework import status
 
 from api.model.criteria.Criteria import Criteria
 from api.serializer.model.criteria.input.put import Fields as PutFields
-from api.test.tests.integration.view.criteria.GenreTestCase import GenreTestCase
+from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase):

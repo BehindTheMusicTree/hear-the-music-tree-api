@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from api.test.tests.integration.view.spotify_lib_track.SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
+from api.test.tests.integration.spotify_lib_track.SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
 
 
 class TestGet(SpotifyLibTrackTestCase):

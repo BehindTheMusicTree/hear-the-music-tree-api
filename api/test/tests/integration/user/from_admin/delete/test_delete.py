@@ -11,7 +11,7 @@ from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlayli
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.model.user.User import User
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.test.tests.integration.view.user.UserTestCase import UserTestCase
+from api.test.tests.integration.user.UserTestCase import UserTestCase
 
 
 class TestCase(UserTestCase):

@@ -3,7 +3,7 @@ from rest_framework import status
 from api.serializer.model.album.detailed import Fields as RetrieveFields
 from api.serializer.model.uploaded_track.output.simple.simple_without_album import Fields as UploadedTrackOutputFields
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.test.tests.integration.view.album.AlbumTestCase import AlbumTestCase
+from api.test.tests.integration.album.AlbumTestCase import AlbumTestCase
 from api.utils.data_transformer import to_camel_case
 
 

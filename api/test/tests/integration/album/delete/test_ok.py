@@ -4,7 +4,7 @@ from api.model.album.Album import Album
 from api.model.artist.Artist import Artist
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.test.tests.integration.view.album.AlbumTestCase import AlbumTestCase
+from api.test.tests.integration.album.AlbumTestCase import AlbumTestCase
 
 
 class TestCase(AlbumTestCase):

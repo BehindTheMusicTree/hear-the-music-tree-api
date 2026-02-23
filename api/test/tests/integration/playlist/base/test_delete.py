@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from api.test.tests.integration.view.playlist.base.PlaylistTestCase import PlaylistTestCase
+from api.test.tests.integration.playlist.base.PlaylistTestCase import PlaylistTestCase
 
 
 class TestCase(PlaylistTestCase):

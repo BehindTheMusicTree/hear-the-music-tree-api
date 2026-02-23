@@ -5,7 +5,7 @@ from api import settings
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.model.criteria.children.genre.Genre import Genre
 from api.serializer.model.criteria.input.tree_import.Fields import Fields
-from api.test.tests.integration.view.criteria.GenreTestCase import GenreTestCase
+from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestNodeCount(GenreTestCase):

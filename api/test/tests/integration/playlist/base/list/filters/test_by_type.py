@@ -6,7 +6,7 @@ from api.model.playlist.children.criteria.CriterialessPlaylistNames import Crite
 from api.model.playlist.children.manual.ManualPlaylistTypeLabel import VALUE as MANUAL_PLAYLIST_TYPE_LABEL
 from api.serializer.model.playlist.base.output.detailed import Fields as PlaylistGetFields
 from api.test.utils.field.filter.char.EnumCharFilterTestCase import EnumCharFilterTestCase
-from api.test.tests.integration.view.playlist.base.PlaylistTestCase import PlaylistTestCase
+from api.test.tests.integration.playlist.base.PlaylistTestCase import PlaylistTestCase
 from api.utils.data_transformer import to_camel_case, to_snake_case
 
 
