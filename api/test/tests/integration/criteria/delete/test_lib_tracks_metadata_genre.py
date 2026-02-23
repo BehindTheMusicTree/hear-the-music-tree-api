@@ -18,7 +18,7 @@ class TestCase(GenreTestCase):
         response = self._delete_genre(uuid=punk.uuid)
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
-        metadata = audio_file_metadata.get_merged_app_metadata(file=uploaded_track.track_file.file)
+        metadata = audio_file_metadata.get_unified_metadata(file=uploaded_track.track_file.file)
 
         assert metadata[audio_file_metadata.AppMetadataKey.GENRE_NAME] == rock.name
 
@@ -29,11 +29,11 @@ class TestCase(GenreTestCase):
             genre=rock,
             test_uploaded_track_filename=UploadedTrackTestFilename.METADATA_LONG_A_ID3V2_SMALL_MP3)
 
-        metadata = audio_file_metadata.get_merged_app_metadata(file=uploaded_track.track_file.file)
+        metadata = audio_file_metadata.get_unified_metadata(file=uploaded_track.track_file.file)
         assert metadata.get(audio_file_metadata.AppMetadataKey.GENRE_NAME) is not None
 
         response = self._delete_genre(uuid=rock.uuid)
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
-        metadata = audio_file_metadata.get_merged_app_metadata(file=uploaded_track.track_file.file)
+        metadata = audio_file_metadata.get_unified_metadata(file=uploaded_track.track_file.file)
         assert metadata.get(audio_file_metadata.AppMetadataKey.GENRE_NAME) is None

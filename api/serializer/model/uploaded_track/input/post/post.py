@@ -35,7 +35,7 @@ class UploadedTrackPostSerializer(UploadedTrackInputSerializer):
 
     def _get_metadata_from_file(self, file) -> dict:
         try:
-            return audio_file_metadata.get_merged_app_metadata(
+            return audio_file_metadata.get_unified_metadata(
                 file=file, normalized_rating_max_value=settings.UPLOADED_TRACK_RATING_VALUE_MAX)
         except FileCorruptedError as exc:
             raise AppValidationException(field_name=PostFields.TRACK_FILE_PUBLIC,

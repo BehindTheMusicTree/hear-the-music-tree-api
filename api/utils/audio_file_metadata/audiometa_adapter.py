@@ -79,7 +79,7 @@ def _convert_app_to_unified_metadata(app_metadata: AppMetadata) -> dict:
     return unified_metadata
 
 
-def get_merged_app_metadata(file: FILE_TYPE, normalized_rating_max_value: int | None = None) -> AppMetadata:
+def get_unified_metadata(file: FILE_TYPE, normalized_rating_max_value: int | None = None) -> AppMetadata:
     """Get merged metadata from all available formats."""
     file_path = _get_file_path_util(file)
     try:
