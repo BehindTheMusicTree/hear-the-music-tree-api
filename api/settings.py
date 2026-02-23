@@ -674,6 +674,7 @@ def setup_django_constants():
         'DEFAULT_AUTHENTICATION_CLASSES': (
             'rest_framework_simplejwt.authentication.JWTAuthentication',
         ),
+        'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny', ],
         'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata',
         'DEFAULT_SCHEMA_CLASS': 'api.view.schema.AppAutoSchema.AppAutoSchema',
         'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
