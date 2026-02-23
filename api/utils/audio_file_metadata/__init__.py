@@ -1,7 +1,7 @@
 """Audio file metadata handling module."""
 
 from .audiometa_adapter import (
-    get_unified_metadata,
+    get_app_metadata,
     get_specific_metadata,
     get_full_metadata,
     delete_metadata,
@@ -21,7 +21,7 @@ __all__ = [
     "AppMetadataValue",
     "FileCorruptedError",
     "get_specific_metadata",
-    "get_unified_metadata",
+    "get_app_metadata",
     "get_full_metadata",
     "update_file_metadata",
     "delete_metadata",
