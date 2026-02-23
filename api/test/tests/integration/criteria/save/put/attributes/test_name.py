@@ -62,6 +62,6 @@ class TestCase(GenreTestCase, PutBodyDataTestCase):
         assert response.status_code == status.HTTP_200_OK
         updated_track: UploadedTrack = UploadedTrack.objects.get(uuid=track.uuid)
 
-        metadata = audio_file_metadata.get_merged_app_metadata(file=updated_track.track_file.file)
+        metadata = audio_file_metadata.get_unified_metadata(file=updated_track.track_file.file)
         assert AppMetadataKey.GENRE_NAME in metadata
         assert metadata[AppMetadataKey.GENRE_NAME] == genre_new_name
