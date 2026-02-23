@@ -34,7 +34,8 @@ class UploadedTrackTestCase(AppTestCase[UploadedTrack]):
                 kwargs = file_field_dict
 
             return self.api_client.post(
-                path=reverse('me-uploaded-track-list'), data=kwargs, format='multipart', handle_response=self._set_results)
+                path=reverse('me-uploaded-track-list'),
+                data=kwargs, format='multipart', handle_response=self._set_results)
 
     def _post_uploaded_track_without_file(self, **kwargs):
         return self.api_client.post(
@@ -51,4 +52,6 @@ class UploadedTrackTestCase(AppTestCase[UploadedTrack]):
                                    handle_response=self._set_results)
 
     def _list_uploaded_tracks(self, **kwargs):
-        return self.api_client.get(path=reverse('me-uploaded-track-list'), data=kwargs, handle_response=self._set_results)
+        return self.api_client.get(
+            path=reverse('me-uploaded-track-list'),
+            data=kwargs, handle_response=self._set_results)
