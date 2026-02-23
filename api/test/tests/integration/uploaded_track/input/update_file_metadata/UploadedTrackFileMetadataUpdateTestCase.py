@@ -1,7 +1,7 @@
 
 
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
 class UploadedTrackFileMetadataUpdateTestCase(UploadedTrackTestCase):

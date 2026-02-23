@@ -2,7 +2,7 @@ from rest_framework import status
 
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.serializer.model.criteria.input.put import Fields as PutFields
-from api.test.integration.view.criteria.GenreTestCase import GenreTestCase
+from api.test.tests.integration.view.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase):

@@ -3,7 +3,7 @@ from uuid import UUID
 import pytest
 from django.urls import NoReverseMatch, reverse
 
-from api.test.integration.view.search.SearchTestCase import SearchTestCase
+from api.test.tests.integration.view.search.SearchTestCase import SearchTestCase
 
 
 class TestCase(SearchTestCase):

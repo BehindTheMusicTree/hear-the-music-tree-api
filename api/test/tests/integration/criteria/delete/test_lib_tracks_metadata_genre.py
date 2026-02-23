@@ -2,7 +2,7 @@
 from rest_framework import status
 
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.test.integration.view.criteria.GenreTestCase import GenreTestCase
+from api.test.tests.integration.view.criteria.GenreTestCase import GenreTestCase
 from api.utils import audio_file_metadata
 
 

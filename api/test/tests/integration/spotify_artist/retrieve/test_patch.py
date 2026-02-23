@@ -2,7 +2,7 @@ from rest_framework import status
 from django.urls import reverse
 
 from api.model.spotify_resource.children.artist.Fields import Fields
-from api.test.integration.view.spotify_artist.SpotifyArtistTestCase import SpotifyArtistTestCase
+from api.test.tests.integration.view.spotify_artist.SpotifyArtistTestCase import SpotifyArtistTestCase
 
 
 class TestPatch(SpotifyArtistTestCase):

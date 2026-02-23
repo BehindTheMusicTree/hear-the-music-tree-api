@@ -1,6 +1,6 @@
 from api import settings
 from api.serializer.model.uploaded_track.input.post.Fields import Fields as PostFields
-from api.test.integration.view.uploaded_track.input.update_file_metadata.UploadedTrackFileMetadataUpdateStrTestCase import (
+from api.test.tests.integration.view.uploaded_track.input.update_file_metadata.UploadedTrackFileMetadataUpdateStrTestCase import (
     UploadedTrackFileMetadataUpdateStrTestCase)
 from api.utils.audio_file_metadata.AppMetadataKey import AppMetadataKey
 

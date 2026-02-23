@@ -2,7 +2,7 @@
 
 from rest_framework import status
 
-from api.test.integration.view.uploaded_track.input.update_file_metadata.UploadedTrackFileMetadataUpdateTestCase import UploadedTrackFileMetadataUpdateTestCase
+from api.test.tests.integration.view.uploaded_track.input.update_file_metadata.UploadedTrackFileMetadataUpdateTestCase import UploadedTrackFileMetadataUpdateTestCase
 
 
 class UploadedTrackFileMetadataUpdateStrTestCase(UploadedTrackFileMetadataUpdateTestCase):

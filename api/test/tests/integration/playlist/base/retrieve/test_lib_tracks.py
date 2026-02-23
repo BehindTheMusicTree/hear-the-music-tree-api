@@ -5,7 +5,7 @@ from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlayli
 from api.serializer.model.uploaded_track.output.simple.simple_without_album import Fields as UploadedTrackOutputFields
 from api.serializer.model.playlist.base.output.detailed import Fields as PlaylistOutputFields
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.test.integration.view.playlist.base.PlaylistTestCase import PlaylistTestCase
+from api.test.tests.integration.view.playlist.base.PlaylistTestCase import PlaylistTestCase
 from api.utils import data_transformer
 
 

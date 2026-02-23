@@ -5,7 +5,7 @@ from api.model.uploaded_track_playlist_rel.Fields import Fields as UploadedTrack
 from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
 from api.model.playlist.Playlist import Playlist
 from api.model.playlist.children.criteria.genre.GenrePlaylist import GenrePlaylist
-from api.test.integration.view.criteria.GenreTestCase import GenreTestCase
+from api.test.tests.integration.view.criteria.GenreTestCase import GenreTestCase
 from api.serializer.model.criteria.input.tree_import.Fields import Fields
 
 

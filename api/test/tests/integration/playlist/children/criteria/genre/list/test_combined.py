@@ -6,7 +6,7 @@ from api.model.criteria.type.CriteriaTypePks import CriteriaTypePks
 from api.model.playlist.Fields import Fields
 from api.model.playlist.children.criteria.genre.GenrePlaylist import GenrePlaylist
 from api.serializer.model.playlist.children.criteria.output.detailed import Fields as RietrieveFields
-from api.test.integration.view.playlist.children.criteria.genre.GenrePlaylistTestCase import GenrePlaylistTestCase
+from api.test.tests.integration.view.playlist.children.criteria.genre.GenrePlaylistTestCase import GenrePlaylistTestCase
 from api.filtering.set.private_unique_resource.Fields import Fields as PrivateUniqueResourceFields
 
 

@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from api.test.integration.view.all_uploaded_tracks_mixin.AllUploadedTracksMixinTestCase import AllUploadedTracksMixinTestCase
+from api.test.tests.integration.view.all_uploaded_tracks_mixin.AllUploadedTracksMixinTestCase import AllUploadedTracksMixinTestCase
 
 
 class TestCase(AllUploadedTracksMixinTestCase):

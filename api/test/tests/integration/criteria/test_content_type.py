@@ -3,7 +3,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from api import settings
-from api.test.integration.view.criteria.GenreTestCase import GenreTestCase
+from api.test.tests.integration.view.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase):

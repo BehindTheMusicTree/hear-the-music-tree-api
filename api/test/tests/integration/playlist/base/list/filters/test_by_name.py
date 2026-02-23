@@ -5,7 +5,7 @@ from api.filtering.set.playlist.Fields import Fields as Filters
 from api.model.playlist.children.criteria.CriterialessPlaylistNames import CriterialessPlaylistNames
 from api.model.playlist.Playlist import Playlist
 from api.test.utils.field.filter.char.NotNullableFreeCharFilterTestCase import NotNullableFreeCharFilterTestCase
-from api.test.integration.view.playlist.base.PlaylistTestCase import PlaylistTestCase
+from api.test.tests.integration.view.playlist.base.PlaylistTestCase import PlaylistTestCase
 
 
 class TestCase(PlaylistTestCase, NotNullableFreeCharFilterTestCase):
