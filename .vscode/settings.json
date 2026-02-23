@@ -31,6 +31,5 @@
 	// Use a workspace-relative path for the project venv: this is portable across developer machines
 	"python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
 	"cursorpyright.analysis.autoImportCompletions": true,
-	"cursorpyright.analysis.typeCheckingMode": "basic",
-	"python.pythonPath": "${workspaceFolder}/.venv/bin/python",
+	"cursorpyright.analysis.typeCheckingMode": "basic"
 }
