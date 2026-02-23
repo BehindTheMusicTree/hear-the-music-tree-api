@@ -15,7 +15,7 @@
 	],
 	"python.testing.pytestEnabled": true,
 	"python.testing.pytestArgs": [
-		"the_music_tree_api"
+		"api/test"
 	],
 	"python.analysis.autoImportCompletions": true,
 	"editor.defaultFormatter": "ms-python.autopep8",
@@ -31,5 +31,6 @@
 	// Use a workspace-relative path for the project venv: this is portable across developer machines
 	"python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
 	"cursorpyright.analysis.autoImportCompletions": true,
-	"cursorpyright.analysis.typeCheckingMode": "basic"
+	"cursorpyright.analysis.typeCheckingMode": "basic",
+	"python.pythonPath": "/Users/mignot/git/hear-the-music-tree-api/.venv/bin/python"
 }
