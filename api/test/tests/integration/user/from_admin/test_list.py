@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from api.test.integration.view.user.UserTestCase import UserTestCase
+from api.test.tests.integration.view.user.UserTestCase import UserTestCase
 
 
 class TestCase(UserTestCase):

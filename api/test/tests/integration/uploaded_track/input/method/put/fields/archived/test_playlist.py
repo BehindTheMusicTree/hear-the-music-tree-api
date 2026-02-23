@@ -8,7 +8,7 @@ from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import Uploa
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 from api.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
 from api.serializer.model.uploaded_track.input.put.Fields import Fields as PutFields
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
 class TestCase(UploadedTrackTestCase):

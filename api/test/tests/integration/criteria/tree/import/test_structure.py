@@ -2,7 +2,7 @@ from rest_framework import status
 
 from api.model.criteria.children.genre.Genre import Genre
 from api.serializer.model.criteria.input.tree_import.Fields import Fields
-from api.test.integration.view.criteria.GenreTestCase import GenreTestCase
+from api.test.tests.integration.view.criteria.GenreTestCase import GenreTestCase
 
 
 class TestStructure(GenreTestCase):

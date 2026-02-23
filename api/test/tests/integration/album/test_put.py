@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from api.test.integration.view.album.AlbumTestCase import AlbumTestCase
+from api.test.tests.integration.view.album.AlbumTestCase import AlbumTestCase
 
 
 class TestCase(AlbumTestCase):

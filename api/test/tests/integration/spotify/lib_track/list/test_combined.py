@@ -4,7 +4,7 @@ from django.utils import timezone
 from rest_framework import status
 
 from api.serializer.model.spotify.lib_track.output.Fields import Fields as SpotifyLibTrackFields
-from api.test.integration.view.spotify.lib_track.SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
+from api.test.tests.integration.view.spotify.lib_track.SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
 
 
 class TestCase(SpotifyLibTrackTestCase):

@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.utils import timezone
 
 from api.serializer.model.uploaded_track.output.Fields import Fields as UploadedTrackFields
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 from api.utils import data_transformer
 from api.filtering.set.private_unique_resource.Fields import Fields as PrivateUniqueResourceFields
 

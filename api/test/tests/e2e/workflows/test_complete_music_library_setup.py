@@ -7,10 +7,10 @@ from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.serializer.model.criteria.input.tree_import.Fields import Fields as TreeImportFields
 from api.serializer.model.playlist.children.manual.input.Fields import Fields as ManualPlaylistPostFields
 from api.serializer.model.uploaded_track.input.put.Fields import Fields as PutFields
-from api.test.integration.view.criteria.GenreTestCase import GenreTestCase
-from api.test.integration.view.playlist.base.PlaylistTestCase import PlaylistTestCase
-from api.test.integration.view.search.SearchTestCase import SearchTestCase
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
+from api.test.tests.integration.playlist.base.PlaylistTestCase import PlaylistTestCase
+from api.test.tests.integration.search.SearchTestCase import SearchTestCase
+from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
@@ -92,7 +92,7 @@ class TestCase(GenreTestCase, PlaylistTestCase, SearchTestCase, UploadedTrackTes
         assert self.results_overall_total >= 3
 
         from api.serializer.model.play.input.schema.PostFields import Fields as PlayPostFields
-        from api.test.integration.view.play.PlayTestCase import PlayTestCase
+        from api.test.tests.integration.play.PlayTestCase import PlayTestCase
         play_test_case = PlayTestCase()
         play_test_case.setUp()
         play_test_case.api_client = self.api_client

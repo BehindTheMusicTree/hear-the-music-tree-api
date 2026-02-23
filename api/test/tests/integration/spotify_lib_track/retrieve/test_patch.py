@@ -1,7 +1,7 @@
 from rest_framework import status
 from django.urls import reverse
 
-from api.test.integration.view.spotify_lib_track.SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
+from api.test.tests.integration.view.spotify_lib_track.SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
 
 
 class TestPatch(SpotifyLibTrackTestCase):

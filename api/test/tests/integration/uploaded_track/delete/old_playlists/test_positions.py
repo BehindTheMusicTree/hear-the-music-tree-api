@@ -1,7 +1,7 @@
 from rest_framework import status
 
 from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
 class TrackDeleteViewTestCase(UploadedTrackTestCase):
