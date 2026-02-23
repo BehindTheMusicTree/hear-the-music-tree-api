@@ -21,5 +21,4 @@ class AudioMetadataTestCase(AppTestCase):
                 kwargs = file_field_dict
 
             return self.api_client.post(
-                path=reverse('audio-metadata-full'),
-                data=kwargs, format='multipart', handle_response=self._set_results)
+                path=reverse('audio-metadata-full'), data=kwargs, format='multipart')
