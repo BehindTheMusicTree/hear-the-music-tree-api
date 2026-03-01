@@ -3,7 +3,7 @@ from unittest.mock import patch
 from rest_framework import status
 
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
-from api.test.integration.view.album.AlbumTestCase import AlbumTestCase
+from api.test.tests.integration.album.AlbumTestCase import AlbumTestCase
 
 
 class TestCase(AlbumTestCase):

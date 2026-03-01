@@ -2,7 +2,7 @@
 # See git-worktree-scripts documentation for format details
 
 # Copy Python virtual environment from env directory
-env/.venv
+env/venv
 
 # Copy env file
 env/.env

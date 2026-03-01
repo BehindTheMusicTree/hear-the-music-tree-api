@@ -6,7 +6,7 @@ from api.model.artist.Artist import Artist
 from api.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.filtering.set.search.Fields import Fields as SearchFields
-from api.test.integration.view.search.SearchTestCase import SearchTestCase
+from api.test.tests.integration.search.SearchTestCase import SearchTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 

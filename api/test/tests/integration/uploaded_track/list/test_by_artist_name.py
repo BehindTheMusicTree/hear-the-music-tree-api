@@ -2,7 +2,7 @@ from rest_framework import status
 
 from api.serializer.model.uploaded_track.output.Fields import Fields as UploadedTrackFields
 from api.test.utils.field.filter.char.NullableCharFilterTestCase import NullableCharFilterTestCase
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
 class TestCase(UploadedTrackTestCase, NullableCharFilterTestCase):

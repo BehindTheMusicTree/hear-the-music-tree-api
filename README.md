@@ -25,6 +25,7 @@
     - [Authentication](#authentication-1)
     - [Library Management](#library-management)
     - [Music Metadata](#music-metadata)
+    - [Audio metadata (read raw)](#audio-metadata-read-raw)
     - [Genres (me)](#genres-me)
     - [Reference Genres](#reference-genres)
     - [Tags (me)](#tags-me)
@@ -121,23 +122,23 @@ For detailed setup and installation instructions, please see the [Contributing G
 
 ### Developer environment (recommended)
 
-To keep a consistent, reproducible development environment across contributors, we recommend creating a workspace-local virtual environment named `.venv` in the project root and pointing Visual Studio Code to use that interpreter.
+To keep a consistent, reproducible development environment across contributors, we recommend creating a workspace-local virtual environment named `venv` in the project root and pointing Visual Studio Code to use that interpreter.
 
-1) Create a `.venv` in the project root:
+1) Create a `venv` in the project root:
 
 ```bash
-python3 -m venv .venv
+python3 -m venv venv
 ```
 
 2) Activate the virtualenv:
 
 - macOS / Linux:
 	```bash
-	source .venv/bin/activate
+	source venv/bin/activate
 	```
 - Windows (PowerShell):
 	```powershell
-	.\.venv\Scripts\Activate.ps1
+	.\venv\Scripts\Activate.ps1
 	```
 
 3) Install dependencies:
@@ -146,8 +147,8 @@ pip install -r requirements.txt
 ```
 
 4) VS Code setup
-- The repository workspace settings now reference `${workspaceFolder}/.venv/bin/python` (instead of a machine-local absolute path) so VS Code will automatically pick the correct interpreter if your `.venv` is in the project root.
-- Alternatively, run the VS Code command `Python: Select Interpreter` and choose `.venv/bin/python`.
+- The repository workspace settings now reference `${workspaceFolder}/venv/bin/python` (instead of a machine-local absolute path) so VS Code will automatically pick the correct interpreter if your `venv` is in the project root.
+- Alternatively, run the VS Code command `Python: Select Interpreter` and choose `venv/bin/python`.
 
 If you prefer a different venv name or layout, adjust your local VS Code interpreter selection. The repository stores a workspace-relative default to keep experience consistent for new contributors.
 
@@ -364,6 +365,14 @@ All endpoints are prefixed with the API base URL (`{version}/`). Most endpoints 
 | `DELETE` | `albums/{id}/` | Delete an album | 🔒 |
 | `GET` | `spotify-artists/` | List Spotify artists | 🔒 |
 | `GET` | `spotify-artists/{id}/` | Retrieve a specific Spotify artist | 🔒 |
+
+### Audio metadata (read raw)
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| `POST` | `audio/metadata/` | Extract raw metadata from an audio file (file not stored) | 🔓 |
+
+**Request**: `multipart/form-data` with `file` (audio file). Supported formats: `.mp3`, `.flac`, `.wav`. See [audio_metadata.md](docs/api/audio_metadata.md) for full request/response details.
 
 ### Genres (me)
 

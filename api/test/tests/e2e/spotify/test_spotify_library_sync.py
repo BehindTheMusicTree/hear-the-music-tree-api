@@ -3,7 +3,7 @@ from unittest import mock
 from rest_framework import status
 
 from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
-from api.test.integration.view.spotify/lib_track/SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
+from api.test.tests.integration.spotify/lib_track/SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
 from api.utils.spotify_api.ApiFields import ApiFields
 from api.utils.spotify_api.SpotifyClient import SpotifyClient
 from api.utils.spotify_api.managers.SpotifyApiLibTrackManager import SpotifyApiLibTrackManager
@@ -81,4 +81,3 @@ class TestCase(SpotifyLibTrackTestCase):
             retrieved_track = self.saved_object
             assert retrieved_track is not None
             assert retrieved_track.spotify_id == first_track.spotify_id
-

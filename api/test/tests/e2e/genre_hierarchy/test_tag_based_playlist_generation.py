@@ -23,7 +23,7 @@ class TestCase(AppTestCase):
 
     def test_tag_based_playlist_generation_then_ok(self):
         from api.test.tests.integration.criteria.TagTestCase import TagTestCase
-        from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+        from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
         tag_test_case = TagTestCase()
         tag_test_case.setUp()

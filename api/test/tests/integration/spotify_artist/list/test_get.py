@@ -1,7 +1,7 @@
 from rest_framework import status
 
 from api.model.spotify_resource.children.artist.Fields import Fields
-from api.test.integration.view.spotify_artist.SpotifyArtistTestCase import SpotifyArtistTestCase
+from api.test.tests.integration.spotify_artist.SpotifyArtistTestCase import SpotifyArtistTestCase
 from api.utils.data_transformer import to_camel_case
 
 

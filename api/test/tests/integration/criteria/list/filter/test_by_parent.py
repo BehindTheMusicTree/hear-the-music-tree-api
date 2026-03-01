@@ -6,7 +6,7 @@ from api.model.criteria.Fields import Fields as ModelFields
 from api.test.utils.field.filter.foreign_key.PrivateForeignKeyFilterTestCase import (
     PrivateForeignKeyFilterTestCase
 )
-from api.test.integration.view.criteria.GenreTestCase import GenreTestCase
+from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase, PrivateForeignKeyFilterTestCase):

@@ -6,9 +6,9 @@ from api.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.serializer.model.criteria.input.post import Fields as PostFields
 from api.serializer.model.playlist.children.manual.input.Fields import Fields as ManualPlaylistPostFields
-from api.test.integration.view.criteria.GenreTestCase import GenreTestCase
-from api.test.integration.view.playlist.base.PlaylistTestCase import PlaylistTestCase
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
+from api.test.tests.integration.playlist.base.PlaylistTestCase import PlaylistTestCase
+from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 

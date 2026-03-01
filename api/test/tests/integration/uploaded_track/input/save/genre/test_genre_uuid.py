@@ -4,7 +4,7 @@ from api.exception.validation.FieldValidationErrorCode import FieldValidationErr
 from api.serializer.model.uploaded_track.input.post.Fields import Fields as PostFields
 from api.test.utils.field.body_data.type.ForeignKeyBodyDataTestCase import ForeignKeyBodyDataTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
 class TestCase(ForeignKeyBodyDataTestCase, UploadedTrackTestCase):

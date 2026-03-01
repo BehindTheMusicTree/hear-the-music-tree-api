@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
 class TestCase(UploadedTrackTestCase):
