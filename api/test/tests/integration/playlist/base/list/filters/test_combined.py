@@ -8,7 +8,7 @@ from api.model.playlist.children.criteria.CriterialessPlaylistNames import Crite
 from api.model.playlist.PlaylistTypesLabel import PlaylistTypesLabel
 from api.model.playlist.children.criteria.tag.TagPlaylist import TagPlaylist
 from api.serializer.model.playlist.base.output.detailed import Fields as PlaylistGetFields
-from api.test.integration.view.playlist.base.PlaylistTestCase import PlaylistTestCase
+from api.test.tests.integration.playlist.base.PlaylistTestCase import PlaylistTestCase
 from api.filtering.set.private_unique_resource.Fields import Fields as PrivateUniqueResourceFields
 
 

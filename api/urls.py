@@ -6,6 +6,7 @@ from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from api.utils.AppStaticFileStates import StaticFileStates
+from api.view.AudioMetadataView import AudioMetadataView
 from api.view.viewset.model.AllUploadedTracksMixinViewSet import AllUploadedTracksViewSet
 from api.view.google_auth import google_auth
 from api.view.spotify_auth import spotify_auth
@@ -78,6 +79,7 @@ router.register(r'search', SearchViewSet, basename='search')
 
 urlpatterns = [
     path(settings.API_ROOT_BASE, include(router.urls)),
+    path(settings.API_ROOT_BASE + 'audio/metadata/full/', AudioMetadataView.as_view(), name='audio-metadata-full'),
 
     path('admin/', admin.site.urls),
     path('health/', HealthCheckView.as_view(), name='health-check'),

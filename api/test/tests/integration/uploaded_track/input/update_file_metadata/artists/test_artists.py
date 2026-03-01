@@ -1,7 +1,7 @@
 import pytest
 
 from api.test import conftest
-from api.test.integration.view.uploaded_track.input.update_file_metadata.artists.TestCase import (
+from api.test.tests.integration.uploaded_track.input.update_file_metadata.artists.TestCase import (
     FlacTestCase,
     Mp3TestCase,
     WavTestCase

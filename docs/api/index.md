@@ -23,3 +23,4 @@ The path prefix is the **major version** only (e.g. `v1`), derived from `APP_VER
 | Tag Playlists             | `/v1/me/tag-playlists/`, `/v1/reference/tag-playlists/` | Required / Optional | Tag playlists owned by authenticated user or system reference | [tag_playlists.md](tag_playlists.md)     |
 | All Tracks                | `/v1/all-tracks/`                  | TODO           | TODO        | [all_tracks.md](all_tracks.md)           |
 | Search                    | `/v1/search/`                      | TODO           | TODO        | [search.md](search.md)                   |
+| Audio metadata (read raw) | `/v1/audio/metadata/`             | None           | Public      | [audio_metadata.md](audio_metadata.md)  |

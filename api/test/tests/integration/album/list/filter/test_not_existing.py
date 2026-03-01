@@ -2,7 +2,7 @@
 from rest_framework import status
 
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
-from api.test.integration.view.album.AlbumTestCase import AlbumTestCase
+from api.test.tests.integration.album.AlbumTestCase import AlbumTestCase
 
 
 class TestCase(AlbumTestCase):

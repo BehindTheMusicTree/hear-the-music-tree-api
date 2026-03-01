@@ -5,7 +5,7 @@
 .gitignore
 .github/
 .pytest_cache/
-.venv/
+venv/
 .vscode/
 backup.postman_dump/
 api/test/

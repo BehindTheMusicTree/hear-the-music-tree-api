@@ -144,7 +144,7 @@ class AppTestCase(TestCase, Generic[T]):
 
     def _set_saved_uploaded_track_metadata(self):
         saved_uploaded_track = cast(UploadedTrack, self.saved_object)
-        self.saved_uploaded_track_metadata_with_raw_rating = audio_file_metadata.get_merged_app_metadata(
+        self.saved_uploaded_track_metadata_with_raw_rating = audio_file_metadata.get_app_metadata(
             file=saved_uploaded_track.track_file.file)
 
     # Defined here and not in UploadedTrackTestCase because other views needs sometimes to post a track for testing purposes

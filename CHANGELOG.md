@@ -59,6 +59,12 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v2.1.0] - 2026-02-23
+
+### Added
+
+- **Audio Metadata**: Added POST to get full raw metadata from a file
+
 ## [v2.0.1] - 2026-02-22
 
 ### Fixed

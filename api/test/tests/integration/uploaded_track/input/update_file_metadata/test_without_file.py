@@ -1,7 +1,7 @@
 from rest_framework import status
 
 from api.serializer.model.uploaded_track.input.post.Fields import Fields as PostFields
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
 class TestCase(UploadedTrackTestCase):

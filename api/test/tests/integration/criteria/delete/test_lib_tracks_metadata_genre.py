@@ -2,7 +2,7 @@
 from rest_framework import status
 
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.test.integration.view.criteria.GenreTestCase import GenreTestCase
+from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 from api.utils import audio_file_metadata
 
 
@@ -18,7 +18,7 @@ class TestCase(GenreTestCase):
         response = self._delete_genre(uuid=punk.uuid)
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
-        metadata = audio_file_metadata.get_merged_app_metadata(file=uploaded_track.track_file.file)
+        metadata = audio_file_metadata.get_app_metadata(file=uploaded_track.track_file.file)
 
         assert metadata[audio_file_metadata.AppMetadataKey.GENRE_NAME] == rock.name
 
@@ -29,11 +29,11 @@ class TestCase(GenreTestCase):
             genre=rock,
             test_uploaded_track_filename=UploadedTrackTestFilename.METADATA_LONG_A_ID3V2_SMALL_MP3)
 
-        metadata = audio_file_metadata.get_merged_app_metadata(file=uploaded_track.track_file.file)
+        metadata = audio_file_metadata.get_app_metadata(file=uploaded_track.track_file.file)
         assert metadata.get(audio_file_metadata.AppMetadataKey.GENRE_NAME) is not None
 
         response = self._delete_genre(uuid=rock.uuid)
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
-        metadata = audio_file_metadata.get_merged_app_metadata(file=uploaded_track.track_file.file)
+        metadata = audio_file_metadata.get_app_metadata(file=uploaded_track.track_file.file)
         assert metadata.get(audio_file_metadata.AppMetadataKey.GENRE_NAME) is None

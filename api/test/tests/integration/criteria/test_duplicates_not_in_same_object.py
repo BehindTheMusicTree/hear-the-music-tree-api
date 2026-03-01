@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from api.test.integration.view.criteria.GenreTestCase import GenreTestCase
+from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 from api.serializer.model.criteria.input.tree_import.Fields import Fields
 
 

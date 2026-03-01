@@ -6,9 +6,9 @@ from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.serializer.model.criteria.input.post import Fields as PostFields
 from api.serializer.model.search.input.Fields import Fields as SearchFields
 from api.serializer.model.uploaded_track.input.put.Fields import Fields as PutFields
-from api.test.integration.view.criteria.GenreTestCase import GenreTestCase
-from api.test.integration.view.search.SearchTestCase import SearchTestCase
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
+from api.test.tests.integration.search.SearchTestCase import SearchTestCase
+from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
@@ -38,7 +38,8 @@ class TestCase(GenreTestCase, SearchTestCase, UploadedTrackTestCase):
         assert response.status_code == status.HTTP_201_CREATED
         child_genre = self.saved_object
 
-        response = self._post_genre(**{PostFields.NAME_PUBLIC: grandchild_genre_name, PostFields.PARENT: child_genre.uuid})
+        response = self._post_genre(**{PostFields.NAME_PUBLIC: grandchild_genre_name,
+                                    PostFields.PARENT: child_genre.uuid})
         assert response.status_code == status.HTTP_201_CREATED
         grandchild_genre = self.saved_object
 
@@ -76,4 +77,3 @@ class TestCase(GenreTestCase, SearchTestCase, UploadedTrackTestCase):
             track_results = self.results[UploadedTrack.__name__]
             track_titles = [t.get('title') for t in track_results]
             assert track1.title in track_titles
-

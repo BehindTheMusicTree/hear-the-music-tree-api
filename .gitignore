@@ -3,7 +3,7 @@ env/.env_generated_paths
 log/
 media/
 tmp-uploaded-files/
-.venv/
+venv/
 .env
 .DS_Store
 api/fixtures/*
@@ -14,6 +14,10 @@ api/fixtures/genres/complete_genre_tree.json
 # Draft documents (internal planning, not version controlled)
 .github/pr-descriptions/*
 !.github/pr-descriptions/pr-description-template.md
+.github/descriptions/
+
+# General analysis and design docs (not version controlled)
+analysis/
 
 # Node modules
 node_modules/

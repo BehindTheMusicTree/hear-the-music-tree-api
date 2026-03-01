@@ -4,7 +4,7 @@ from django.db.models.query import QuerySet
 from api import settings
 from api.model.artist.Artist import Artist
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
 class TestCase(UploadedTrackTestCase):

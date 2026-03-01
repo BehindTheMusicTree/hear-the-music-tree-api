@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from api.test.integration.view.search.SearchTestCase import SearchTestCase
+from api.test.tests.integration.search.SearchTestCase import SearchTestCase
 
 
 class TestCase(SearchTestCase):
