@@ -3,7 +3,7 @@ env/.env_generated_paths
 log/
 media/
 tmp-uploaded-files/
-.venv/
+venv/
 .env
 .DS_Store
 api/fixtures/*

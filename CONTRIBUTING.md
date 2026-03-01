@@ -160,9 +160,9 @@ cd the-music-tree-api
 4. Create and activate a virtual environment:
 
    ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # (Linux/macOS)
-   .venv\Scripts\activate     # (Windows)
+   python -m venv venv
+   source venv/bin/activate  # (Linux/macOS)
+   venv\Scripts\activate     # (Windows)
    ```
 
 5. Install Python dependencies:
@@ -506,12 +506,12 @@ git push origin --delete v0.3.6-dev-improve-cicd
 
 We follow a structured commit format inspired by [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
-**IMPORTANT:** Always activate the project's virtual environment (`.venv`) before committing if you're using pre-commit hooks.
+**IMPORTANT:** Always activate the project's virtual environment (`venv`) before committing if you're using pre-commit hooks.
 
 **Quick reference:**
 
 - Format: `<type>(<scope>): <summary>`
-- Activate virtual environment: `source .venv/bin/activate` (Linux/macOS) or `.venv\Scripts\activate` (Windows)
+- Activate virtual environment: `source venv/bin/activate` (Linux/macOS) or `venv\Scripts\activate` (Windows)
 
 **Commit Types:**
 
