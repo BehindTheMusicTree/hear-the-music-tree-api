@@ -59,6 +59,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Changed
+
+- **Dependencies**: Bumped `audiometa-python` from 1.0.0 to 1.1.0.
+
 ## [v2.1.0] - 2026-02-23
 
 ### Added
