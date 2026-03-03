@@ -28,15 +28,8 @@ class TestCase(AppTestCase):
         from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
         from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
-        genre_test_case = GenreTestCase()
-        genre_test_case.setUp()
-        genre_test_case.api_client = self.api_client
-        genre_test_case._login_as_test_user1()
-
-        uploaded_track_test_case = UploadedTrackTestCase()
-        uploaded_track_test_case.setUp()
-        uploaded_track_test_case.api_client = self.api_client
-        uploaded_track_test_case._login_as_test_user1()
+        genre_test_case = self._domain_helper(GenreTestCase)
+        uploaded_track_test_case = self._domain_helper(UploadedTrackTestCase)
 
         tree_data = [
             {
@@ -79,7 +72,10 @@ class TestCase(AppTestCase):
         assert rock.parent is None
         assert metal.parent == rock
 
-        playlists = CriteriaPlaylist.objects.filter(user=self.test_user1)
+        imported_genre_names = {"Electronic Music", "Techno", "Minimal Techno", "House", "Rock", "Metal"}
+        playlists = CriteriaPlaylist.objects.filter(
+            user=self.test_user1, criteria__name__in=imported_genre_names
+        )
         assert playlists.count() == 6
 
         track1 = self.model_fixture_factory.create_uploaded_track_with_file(
