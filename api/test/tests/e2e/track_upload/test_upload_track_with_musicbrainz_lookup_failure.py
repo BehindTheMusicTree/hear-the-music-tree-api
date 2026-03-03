@@ -22,7 +22,7 @@ class TestCase(UploadedTrackTestCase):
     """
 
     def test_upload_track_with_musicbrainz_lookup_failure_then_ok(self):
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3)
+        response = self._post_uploaded_track(UploadedTrackTestFilename.RECORDING_TOKYO_DRIFT_NO_MB_RECORDING_MP3)
 
         assert response.status_code == status.HTTP_201_CREATED
 
