@@ -61,7 +61,7 @@ class TestCase(SpotifyLibTrackTestCase):
         SpotifyClient._initialized = False
 
         manager = SpotifyApiLibTrackManager()
-        tracks = manager.sync_user_library(self.spotify_test_user_1)
+        tracks = manager.full_sync(self.spotify_test_user_1)
 
         assert len(tracks) >= 0
 
