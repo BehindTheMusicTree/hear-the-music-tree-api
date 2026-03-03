@@ -16,19 +16,19 @@ env:
   CONTAINER_ROOT_DIR: /home/app/
   DB_CONNECTION_TEST_MAX_ATTEMPTS: 10
   DB_CONNECTION_TEST_SLEEP_INTERVAL: 5
-  # CI test defaults (only secrets and DOCKERHUB_USERNAME come from GitHub)
+  # CI test defaults (only secrets and a few vars come from GitHub)
   ENV: test
   APP_VERSION: 'test'
   DB_PORT: '5432'
   DB_URL: localhost
-  TMP_UPLOADED_FILES_EXTERNAL: ${{ runner.temp }}/uploaded
+  TMP_UPLOADED_FILES_EXTERNAL: /tmp/ci-uploaded
   MEDIA_DIR_INTERNAL: media
   LIBRARIES_DIR_NAME: libraries
   DB_DATA_DIR: /var/lib/postgresql/data
   DB_SUPERUSER_NAME: postgres
   AFP_URL: localhost
   AFP_PORT: '3002'
-  AFP_POOL_DIR_EXTERNAL: ${{ runner.temp }}/afp-pool
+  AFP_POOL_DIR_EXTERNAL: /tmp/ci-afp-pool
   AFP_POST_ENDPOINT: fingerprint-audio
 
 jobs:
