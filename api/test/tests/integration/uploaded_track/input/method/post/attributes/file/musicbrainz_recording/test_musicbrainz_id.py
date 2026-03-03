@@ -1,4 +1,5 @@
 import warnings
+from unittest.mock import patch
 
 import pytest
 from rest_framework import status
@@ -9,6 +10,28 @@ from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import Uplo
 
 @pytest.mark.usefixtures("enable_audio_metadata_analysis")
 class TestCase(UploadedTrackTestCase):
+
+    def test_drown_7m21_mp3_with_mocked_lookup_then_ok(self):
+        expected_id = "4a45b00b-273d-40ed-9ecd-42f387f59c22"
+        with patch('acoustid.lookup') as mock_lookup:
+            mock_lookup.return_value = {
+                'status': 'ok',
+                'results': [{
+                    'score': 1.0,
+                    'recordings': [{
+                        'id': expected_id,
+                        'title': 'Drown',
+                        'artists': [{'id': 'a1', 'name': 'Juan Hansen'}],
+                        'duration': 441
+                    }]
+                }]
+            }
+            response = self._post_uploaded_track(
+                UploadedTrackTestFilename.RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M21_MP3)
+        assert response.status_code == status.HTTP_201_CREATED
+        recording = self.saved_object.track_file.musicbrainz_recording
+        assert recording is not None
+        assert recording.musicbrainz_id == expected_id
 
     def test_not_found_then_none(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3)
