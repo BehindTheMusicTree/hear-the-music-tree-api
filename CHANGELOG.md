@@ -70,6 +70,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **Fingerprint integration test**: `test_audio_fingerprinter_service_down_then_corresponding_missing_cause` now mocks `post_fingerprint_audio` to simulate service down instead of stopping a Docker container; no Docker required, runs in CI/sandbox.
 - **MusicBrainz integration test**: `test_no_matching_recording_then_corresponding_missing_cause` now mocks `acoustid.lookup` to return an unknown error code so the test is deterministic; no network required, avoids flakiness when DNS/connection fails (code 8) instead of the expected unknown-response path (code 6).
 - **Track URL validation**: `TrackUrlValidator` now accepts both HTTP 200 and 206 when checking that a track URL is reachable (Range request). Many servers respond with 200 when they do not support Range or after redirects; added timeout and narrowed exception handling to `requests.RequestException`.
+- **Uploaded track title test**: `test_not_providing_title_nor_artist_and_original_filename_too_long_then_generate_with_app_prefixe` now mocks `requests.get` and `_download_file_from_url` so the test is deterministic and does not require network (runs in CI/sandbox). The real e2e test lives under `tests/e2e/track_upload/test_create_from_url_with_long_filename.py` and skips when the URL is unreachable.
+- **Pytest**: Registered `e2e` marker in conftest. Documented that e2e tests live in `tests/e2e/` (directory split by test level) and can be run with `pytest api/test/tests/e2e/` or `pytest -m e2e` (CONTRIBUTING and api/test/README.md).
 
 ### Documentation
 

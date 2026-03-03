@@ -436,6 +436,10 @@ pytest api/test/tests/integration/view/uploaded_track/test_specific.py
 
 For detailed information about test structure, organization, and conventions, see [Test README](api/test/README.md).
 
+**Mocked vs real (e2e) tests:**
+
+Integration tests that depend on external services (e.g. URLs, third-party APIs) use mocks by default so CI runs without network and stays deterministic. To avoid hiding real integration bugs, we add at least one **real** test for the same behaviour when feasible. That test lives under **`tests/e2e/`** (directory split by test level is the usual convention: unit / integration / e2e). It is marked `@pytest.mark.e2e`, performs the real request (e.g. real URL download), and **skips** when the external service is unreachable. Default CI runs pass; with network, the real path is exercised. Run all e2e tests by path or marker: `pytest api/test/tests/e2e/` or `pytest -m e2e`.
+
 **CI Testing:**
 
 - CI runs tests with fail-fast flag (`-x`) - stops on first failure for faster feedback
