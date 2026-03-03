@@ -9,7 +9,6 @@ from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLib
 from api.test.tests.integration.spotify.lib_track.SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
 from api.utils.spotify_api.ApiFields import ApiFields
 from api.utils.data_transformer import to_camel_case
-from api.utils.spotify_api.SpotifyClient import SpotifyClient
 from api.utils.spotify_api.managers.SpotifyApiLibTrackManager import SpotifyApiLibTrackManager
 
 
@@ -32,10 +31,7 @@ class TestCase(SpotifyLibTrackTestCase):
 
     def setUp(self):
         super().setUp()
-        self.mock_spotify_patcher = mock.patch('spotipy.Spotify')
-        self.mock_spotify = self.mock_spotify_patcher.start()
-        self.mock_spotify_instance = self.mock_spotify.return_value
-
+        self.mock_spotify_client = mock.MagicMock()
         self.mock_track_data = {
             ApiFields.Names.ID: "spotify_track_456",
             ApiFields.Names.NAME: "Searched Track",
@@ -49,28 +45,23 @@ class TestCase(SpotifyLibTrackTestCase):
                 ApiFields.Names.NAME: "Searched Album"
             }
         }
-
-        self.mock_spotify_instance.search.return_value = {
+        self.mock_spotify_client.search_track.return_value = {
             ApiFields.Names.TRACKS: {
                 ApiFields.Names.ITEMS: [self.mock_track_data]
             }
         }
 
-    def tearDown(self):
-        self.mock_spotify_patcher.stop()
-        super().tearDown()
-
     def test_spotify_track_search_and_import_then_ok(self):
-        SpotifyClient._instance = None
-        SpotifyClient._initialized = False
-
         search_query = "Test Track"
-        manager = SpotifyApiLibTrackManager()
-        tracks = manager.search_spotify_lib_tracks(self.spotify_test_user_1, search_query)
+        with mock.patch(
+            "api.utils.spotify_api.managers.SpotifyApiLibTrackManager.SpotifyClient",
+            return_value=self.mock_spotify_client,
+        ):
+            manager = SpotifyApiLibTrackManager()
+            tracks = manager.search_spotify_lib_tracks(self.spotify_test_user_1, search_query)
 
         assert len(tracks) >= 0
-
-        self.mock_spotify_instance.search.assert_called()
+        self.mock_spotify_client.search_track.assert_called()
 
         if tracks:
             track = tracks[0]

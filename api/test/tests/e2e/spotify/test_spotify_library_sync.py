@@ -5,7 +5,6 @@ from rest_framework import status
 from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
 from api.test.tests.integration.spotify.lib_track.SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
 from api.utils.spotify_api.ApiFields import ApiFields
-from api.utils.spotify_api.SpotifyClient import SpotifyClient
 from api.utils.spotify_api.managers.SpotifyApiLibTrackManager import SpotifyApiLibTrackManager
 
 
@@ -28,10 +27,7 @@ class TestCase(SpotifyLibTrackTestCase):
 
     def setUp(self):
         super().setUp()
-        self.mock_spotify_patcher = mock.patch('spotipy.Spotify')
-        self.mock_spotify = self.mock_spotify_patcher.start()
-        self.mock_spotify_instance = self.mock_spotify.return_value
-
+        self.mock_spotify_client = mock.MagicMock()
         self.mock_track_data = {
             ApiFields.Names.ID: "spotify_track_123",
             ApiFields.Names.NAME: "Test Spotify Track",
@@ -45,23 +41,19 @@ class TestCase(SpotifyLibTrackTestCase):
                 ApiFields.Names.NAME: "Test Album"
             }
         }
-
-        self.mock_spotify_instance.current_user_saved_tracks.return_value = {
+        self.mock_spotify_client.get_user_saved_tracks.return_value = {
             ApiFields.Names.ITEMS: [{
                 ApiFields.Names.TRACK: self.mock_track_data
             }]
         }
 
-    def tearDown(self):
-        self.mock_spotify_patcher.stop()
-        super().tearDown()
-
     def test_spotify_library_sync_then_ok(self):
-        SpotifyClient._instance = None
-        SpotifyClient._initialized = False
-
-        manager = SpotifyApiLibTrackManager()
-        tracks = manager.full_sync(self.spotify_test_user_1)
+        with mock.patch(
+            "api.utils.spotify_api.managers.SpotifyApiLibTrackManager.SpotifyClient",
+            return_value=self.mock_spotify_client,
+        ):
+            manager = SpotifyApiLibTrackManager()
+            tracks = manager.full_sync(self.spotify_test_user_1)
 
         assert len(tracks) >= 0
 
