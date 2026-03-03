@@ -97,6 +97,8 @@ End-to-end tests test complete user workflows and critical paths.
 - May include external service integrations
 - Slower execution
 
+Tests that need real external services (URLs, APIs) have a **mocked** version under `tests/integration/` (no network) and a **real** version under **`tests/e2e/`**. E2E tests are marked `@pytest.mark.e2e` and skip when the service is unreachable. Run e2e by directory or marker: `pytest api/test/tests/e2e/` or `pytest -m e2e`.
+
 ## Running Tests
 
 Run all tests:

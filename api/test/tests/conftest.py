@@ -41,6 +41,7 @@ def base_childinstance(request, db):
 def pytest_configure(config):
     config.addinivalue_line("markers", "critical: mark test as critical to pass")
     config.addinivalue_line("markers", "slow: mark test as long-running")
+    config.addinivalue_line("markers", "e2e: mark test as end-to-end (may require network or external services)")
 
 
 def pytest_runtest_makereport(item, call):
