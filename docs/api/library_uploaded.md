@@ -20,6 +20,10 @@ Manage uploaded tracks in user library.
 #### Create
 `POST {base}`
 
+**Request**
+- **File or URL**: Send the track as a multipart file upload or as a URL string (same field). Supported formats: `.mp3`, `.flac`, `.wav`. URL must be reachable (HTTP 200 or 206).
+- **Title** (optional): If omitted, the title is derived from the file name (extension stripped, after removing configured substrings). If the file name exceeds the server filename length limit, a generated title with the configured prefix is used instead.
+
 #### Update
 `PUT {base}{id}/`
 

@@ -74,7 +74,7 @@ class TrackFileValidator:
             if field and hasattr(field, 'fail'):
                 field.fail(FieldValidationErrorCode.FILE_TOO_SMALL, message)
             else:
-                from api.n.validation.app.AppValidationException import AppValidationException
+                from api.exception.validation.app.AppValidationException import AppValidationException
                 raise AppValidationException(
                     field_name=Fields.TRACK_FILE_PUBLIC,
                     message=message,

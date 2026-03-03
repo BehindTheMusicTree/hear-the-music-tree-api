@@ -29,6 +29,5 @@ class TestCase(UploadedTrackTestCase):
     def test_not_providing_title_nor_artist_and_original_filename_too_long_then_generate_with_app_prefixe(self):
         response = self._post_uploaded_track_from_url(UploadedTrackDownloadTestUrl.LONG_MP3)
 
-        assert True
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.title.startswith(settings.UPLOADED_TRACK_GENERATED_TITLE_PREFIXE)
