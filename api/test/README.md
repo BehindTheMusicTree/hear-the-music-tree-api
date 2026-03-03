@@ -14,6 +14,7 @@ All test files are located in the `tests/` subdirectory to keep the test directo
 - [Test Naming Convention](#test-naming-convention)
 - [Test Configuration](#test-configuration)
   - [OAuth mocking](#oauth-mocking)
+  - [MusicBrainz mocking](#musicbrainz-mocking)
   - [Warning Filters](#warning-filters)
 
 ## Test Categories
@@ -145,6 +146,7 @@ The test configuration is located in `api/test/tests/conftest.py` and includes:
 - Audio metadata analysis fixture
 - Test user directory cleanup
 - OAuth mocking (Spotify and Google): see [OAuth mocking](#oauth-mocking)
+- MusicBrainz (AcoustID) mocking: see [MusicBrainz mocking](#musicbrainz-mocking)
 
 ### OAuth mocking
 
@@ -154,6 +156,15 @@ Spotify and Google OAuth are mocked at the view layer via an autouse fixture so 
 - **In dev**: OAuth is mocked only for **non-e2e** tests. E2E tests are not mocked so you can run them with real OAuth or per-test mocks locally.
 
 E2E tests that need a specific OAuth response can patch the view’s service class as usual; in CI they will still see the global mock unless they override it.
+
+### MusicBrainz mocking
+
+AcoustID/MusicBrainz lookup is mocked via an autouse fixture (`acoustid.lookup` returns no results) so tests do not call the real API by default. Uses the same rule as OAuth.
+
+- **When ENV=CI_TEST**: MusicBrainz is mocked for **all** tests.
+- **In dev**: Mocked only for **non-e2e** tests; e2e tests can use real lookup or their own mocks.
+
+Tests that need a specific lookup response (e.g. a recording) already patch `acoustid.lookup` or the service; their patch overrides this fixture.
 
 ### Warning Filters
 

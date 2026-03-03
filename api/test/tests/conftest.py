@@ -19,6 +19,13 @@ def set_debug_for_tests():
         yield
 
 
+def _should_mock_external_services(request) -> bool:
+    """True when external services (OAuth, MusicBrainz) should be mocked: CI or non-e2e."""
+    is_ci = os.environ.get("ENV") == "CI_TEST"
+    is_e2e = request.node.get_closest_marker("e2e") or "/tests/e2e/" in str(request.fspath)
+    return is_ci or not is_e2e
+
+
 @pytest.fixture(autouse=True)
 def mock_oauth_outside_e2e(request):
     """Mock Spotify and Google OAuth at the view layer.
@@ -27,13 +34,27 @@ def mock_oauth_outside_e2e(request):
     - In dev (other ENV): mock only for non-e2e tests; e2e tests are not mocked so they can
       use real OAuth or their own mocks when run locally.
     """
-    is_ci = os.environ.get("ENV") == "CI_TEST"
-    is_e2e = request.node.get_closest_marker("e2e") or "/tests/e2e/" in str(request.fspath)
-    should_mock = is_ci or not is_e2e
-    if should_mock:
+    if _should_mock_external_services(request):
         with (
             patch("api.view.spotify_auth.SpotifyOAuthService"),
             patch("api.view.google_auth.GoogleOAuthService"),
+        ):
+            yield
+    else:
+        yield
+
+
+@pytest.fixture(autouse=True)
+def mock_musicbrainz_outside_e2e(request):
+    """Mock AcoustID/MusicBrainz lookup so no real API calls are made.
+
+    - When ENV=CI_TEST: always mock for all tests, including e2e.
+    - In dev: mock only for non-e2e tests; e2e tests can use real lookup or their own mocks.
+    """
+    if _should_mock_external_services(request):
+        with patch(
+            "api.utils.musicbrainz.service.acoustid.lookup",
+            return_value={"status": "ok", "results": []},
         ):
             yield
     else:
