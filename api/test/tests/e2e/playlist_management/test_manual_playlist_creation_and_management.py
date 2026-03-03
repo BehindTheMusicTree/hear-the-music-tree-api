@@ -21,16 +21,13 @@ class TestCase(AppTestCase):
     5. User retrieves playlist and verifies tracks
     6. User removes a track from playlist
     7. User updates playlist name
-    8. User deletes playlist
+    8. DELETE manual playlist returns 405 (not supported)
     """
 
     def test_manual_playlist_creation_and_management_then_ok(self):
         from api.serializer.model.playlist.children.manual.input.Fields import Fields as ManualPlaylistFields
 
-        manual_playlist_test_case = ManualPlaylistTestCase()
-        manual_playlist_test_case.setUp()
-        manual_playlist_test_case.api_client = self.api_client
-        manual_playlist_test_case._login_as_test_user1()
+        manual_playlist_test_case = self._domain_helper(ManualPlaylistTestCase)
 
         track1 = self.model_fixture_factory.create_uploaded_track_with_file(
             title="Track 1", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3)
@@ -88,6 +85,4 @@ class TestCase(AppTestCase):
         assert playlist.name == new_playlist_name
 
         response = manual_playlist_test_case._delete_manual_playlist(playlist.uuid)
-        assert response.status_code == status.HTTP_204_NO_CONTENT
-
-        assert not ManualPlaylist.objects.filter(uuid=playlist.uuid, user=self.test_user1).exists()
+        assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
