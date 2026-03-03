@@ -42,23 +42,24 @@ class TestTrackFileValidator:
 
             assert exc_info.value.field_validation_error_code == FieldValidationErrorCode.FILE_TOO_LARGE
 
-    def test_file_too_small_then_raises_app_validation_exception(self):
+    @patch("api.validator.TrackFileValidator.settings")
+    def test_file_too_small_then_raises_app_validation_exception(self, mock_settings):
         from api import settings
+        mock_settings.UPLOADED_TRACK_FILE_EXTENSIONS = settings.UPLOADED_TRACK_FILE_EXTENSIONS
+        mock_settings.UPLOADED_TRACK_FILE_SIZE_MAX_IN_MO = settings.UPLOADED_TRACK_FILE_SIZE_MAX_IN_MO
+        mock_settings.UPLOADED_TRACK_FILE_SIZE_MIN_IN_MO = 0.01
         validator = TrackFileValidator()
-        min_size_bytes = settings.UPLOADED_TRACK_FILE_SIZE_MIN_IN_MO * 1000000
-        if min_size_bytes > 0:
-            tiny_content = b"x" * (min_size_bytes - 1)
-            file = SimpleUploadedFile("test.mp3", tiny_content, content_type="audio/mpeg")
+        min_size_bytes = int(mock_settings.UPLOADED_TRACK_FILE_SIZE_MIN_IN_MO * 1000000)
+        tiny_content = b"x" * (min_size_bytes - 1)
+        file = SimpleUploadedFile("test.mp3", tiny_content, content_type="audio/mpeg")
 
-            with patch.object(validator, "_validate_extension"), patch.object(
-                validator, "_validate_content_type_is_audio_from_magic_bytes_and_content"
-            ):
-                with pytest.raises(AppValidationException) as exc_info:
-                    validator(file)
+        with patch.object(validator, "_validate_extension"), patch.object(
+            validator, "_validate_content_type_is_audio_from_magic_bytes_and_content"
+        ):
+            with pytest.raises(AppValidationException) as exc_info:
+                validator(file)
 
-                assert exc_info.value.field_validation_error_code == FieldValidationErrorCode.FILE_TOO_SMALL
-        else:
-            pytest.skip("Minimum file size is 0, cannot test 'too small' scenario")
+            assert exc_info.value.field_validation_error_code == FieldValidationErrorCode.FILE_TOO_SMALL
 
     def test_id3_magic_bytes_then_passes(self):
         validator = TrackFileValidator()
