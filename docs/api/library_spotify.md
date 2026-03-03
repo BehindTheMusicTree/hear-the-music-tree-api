@@ -1,13 +1,12 @@
 # Library Spotify
 
 ## Overview
-Manage Spotify library tracks in user library.
+Manage Spotify library tracks in the authenticated user's library. Each user must link their own Spotify account; there is no shared or system-owned Spotify library (see [Spotify compliance](../integrations/spotify.md#no-shared-system-spotify-account)).
 
-## Contexts
+## Context
 | Context | Base Path | Authentication | Description |
 |--------|----------|----------------|-------------|
 | `me` | `/v1/me/library/spotify/` | Required | Spotify tracks in the authenticated user's library |
-| `reference` | `/v1/reference/library/spotify/` | Optional / Public | System-owned reference Spotify resources |
 
 ## Endpoints
 
@@ -27,14 +26,7 @@ Performs a quick sync of the user's Spotify library. This only fetches new addit
 
 Performs a full sync of the user's Spotify library. This checks for both additions and removals, but is more resource-intensive.
 
-### Context Differences
-
-#### Reference
-- Read-only
-- Public access
-- Owned by system account
-
-#### Me
+### Me context
 - Read-only for tracks
 - Sync operations available
 - Scoped to authenticated user

@@ -10,7 +10,8 @@
 5. [User Consent Requirements](#user-consent-requirements)
 6. [Data Deletion Requirements](#data-deletion-requirements)
 7. [Recommended Backend Architecture](#recommended-backend-architecture)
-8. [Official Spotify Documentation Links](#official-spotify-documentation-links)
+8. [No Shared/System Spotify Account](#no-shared-system-spotify-account)
+9. [Official Spotify Documentation Links](#official-spotify-documentation-links)
 
 ---
 
@@ -122,7 +123,17 @@ Spotify requires periodic refresh to ensure data accuracy and user consent.
 
 ---
 
-# 8. Official Spotify Documentation Links
+# 8. No Shared/System Spotify Account
+
+To comply with Spotify’s [User Guidelines](https://www.spotify.com/legal/user-guidelines) and [Developer Policy](https://developer.spotify.com/policy):
+
+- **One account per user.** You must not use a single “system” or “reference” Spotify account whose library or data is exposed to or shared with all users of your application. That would constitute account sharing.
+- **Per-user linking.** Each end user must link their own Spotify account via OAuth (Authorization Code flow). Your app must use that user’s tokens only for that user and must allow them to disconnect at any time.
+- **No reference Spotify library.** This API does not expose a shared “reference” Spotify library endpoint. Only the authenticated user’s own library is available under `me/library/spotify/`. Other reference endpoints (e.g. reference albums, genres, uploaded tracks) use app-owned data, not a shared Spotify account.
+
+---
+
+# 9. Official Spotify Documentation Links
 
 ### Spotify Developer Terms  
 https://developer.spotify.com/terms
