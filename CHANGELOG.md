@@ -67,6 +67,11 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Dependencies**: Bumped `audiometa-python` from 1.0.0 to 1.1.0.
 - **E2E tests**: Refactored to one inheritance per domain with composition: added `_domain_helper()` on `AppTestCase`, introduced `SearchMixin`, and refactored multi-inheritance E2E tests to use a single domain base plus composed helpers. Corrected `ManualPlaylistTestCase` URL names to `me-manual-playlist-list` / `me-manual-playlist-detail`.
+- **Fingerprint integration test**: `test_audio_fingerprinter_service_down_then_corresponding_missing_cause` now mocks `post_fingerprint_audio` to simulate service down instead of stopping a Docker container; no Docker required, runs in CI/sandbox.
+
+### Documentation
+
+- **API docs**: Aligned audio metadata endpoint in `docs/api/index.md` and `docs/api/audio_metadata.md` with actual path `/v1/audio/metadata/full/`.
 
 ## [v2.1.0] - 2026-02-23
 
