@@ -15,6 +15,7 @@ All test files are located in the `tests/` subdirectory to keep the test directo
 - [Test Configuration](#test-configuration)
   - [OAuth mocking](#oauth-mocking)
   - [MusicBrainz mocking](#musicbrainz-mocking)
+  - [Spotify API client mocking](#spotify-api-client-mocking)
   - [Warning Filters](#warning-filters)
 
 ## Test Categories
@@ -165,6 +166,15 @@ AcoustID/MusicBrainz lookup is mocked via an autouse fixture (`acoustid.lookup` 
 - **In dev**: Mocked only for **non-e2e** tests; e2e tests can use real lookup or their own mocks.
 
 Tests that need a specific lookup response (e.g. a recording) already patch `acoustid.lookup` or the service; their patch overrides this fixture.
+
+### Spotify API client mocking
+
+The Spotify Web API client (`SpotifyClient` used for library, search, playlists, artist batch) is mocked via an autouse fixture so tests do not call the real Spotify API. Uses the same rule as OAuth and MusicBrainz.
+
+- **When ENV=CI_TEST**: Spotify client is mocked for **all** tests.
+- **In dev**: Mocked only for **non-e2e** tests; e2e tests can use the real API or their own mocks.
+
+The mock returns empty lists/items for search, saved tracks, playlists, and artist batch. Tests that need specific responses patch `SpotifyClient` (or the manager) in their scope.
 
 ### Warning Filters
 
