@@ -30,23 +30,20 @@ class TestCase(AppTestCase):
     configure actual Spotify OAuth credentials.
     """
 
-    @mock.patch('api.utils.spotify_api.oauth.spotipy.Spotify')
-    @mock.patch('api.utils.spotify_api.oauth.SpotifyOAuth')
-    def test_spotify_oauth_authentication_flow_then_ok(self, mock_oauth_class, mock_spotify_class):
+    @mock.patch('api.view.spotify_auth.SpotifyOAuthService')
+    def test_spotify_oauth_authentication_flow_then_ok(self, mock_oauth_class):
         authorization_code = "test_authorization_code"
         spotify_id = "test_spotify_user_id"
         email = "test@example.com"
         display_name = "Test User"
 
-        mock_oauth = mock_oauth_class.return_value
-        mock_oauth.get_access_token.return_value = {
+        mock_service = mock_oauth_class.return_value
+        mock_service.get_access_token.return_value = {
             TokenFields.ACCESS_TOKEN: "test_access_token",
             TokenFields.REFRESH_TOKEN: "test_refresh_token",
             TokenFields.EXPIRES_IN: 3600
         }
-
-        mock_spotify = mock_spotify_class.return_value
-        mock_spotify.current_user.return_value = {
+        mock_service.get_user_info.return_value = {
             SpotifyUserFields.ID: spotify_id,
             SpotifyUserFields.EMAIL: email,
             SpotifyUserFields.DISPLAY_NAME: display_name,

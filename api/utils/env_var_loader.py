@@ -18,6 +18,18 @@ def load_required_str_env_var(var_name: str, must_print_value: bool = True) -> s
     return var_value
 
 
+def load_optional_str_env_var(var_name: str, default: str = "") -> str:
+    var_value = os.getenv(var_name)
+    return var_value if var_value is not None and var_value != "" else default
+
+
+def load_optional_secret_env_var(var_name: str, default: str = "") -> str:
+    var_value = load_optional_str_env_var(var_name, default)
+    if var_value and var_value.startswith('"') and var_value.endswith('"'):
+        return var_value[1:-1]
+    return var_value
+
+
 def load_required_bool_env_var(var_name: str) -> bool:
     var_value = load_required_str_env_var(var_name).lower()
     if var_value not in ['true', 'false']:
