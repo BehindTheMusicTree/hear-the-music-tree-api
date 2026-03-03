@@ -59,6 +59,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Removed
+
+- **Reference Spotify library**: Removed reference Spotify library API (`/v1/reference/library/spotify/`) and `ReferenceSpotifyLibTrackViewSet`. Exposing one Spotify account’s library to all users would violate Spotify’s User Guidelines and Developer Policy (no account sharing; each user must link their own account). Per-user Spotify library remains under `me/library/spotify/`. Documented in [Spotify compliance](docs/integrations/spotify.md#no-shared-system-spotify-account).
+
 ### Changed
 
 - **Dependencies**: Bumped `audiometa-python` from 1.0.0 to 1.1.0.

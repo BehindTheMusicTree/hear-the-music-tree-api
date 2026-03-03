@@ -37,7 +37,6 @@ from .view.viewset.model.playlist.children.ReferenceManualPlaylistViewSet import
 from .view.viewset.model.playlist.PlaylistViewSet import PlaylistViewSet
 from .view.viewset.model.playlist.ReferencePlaylistViewSet import ReferencePlaylistViewSet
 from .view.viewset.model.SpotifyLibTrackViewSet import SpotifyLibTrackViewSet
-from .view.viewset.model.ReferenceSpotifyLibTrackViewSet import ReferenceSpotifyLibTrackViewSet
 from .view.viewset.model.user.BaseUserViewSet import BaseUserViewSet
 from .view.viewset.SearchViewSet import SearchViewSet
 
@@ -50,7 +49,6 @@ router.register(r'spotify-artists', SpotifyArtistViewSet, basename='spotify-arti
 # Do not move PlaylistViewSet after GenrePlaylistViewSet or ManualPlaylistViewSet or it will cause confusion resolving
 # reverse urls.
 router.register(r'reference/library/uploaded', ReferenceUploadedTrackViewSet, basename='reference-uploaded-track')
-router.register(r'reference/library/spotify', ReferenceSpotifyLibTrackViewSet, basename='reference-spotify-lib-track')
 router.register(r'reference/artists', ReferenceArtistViewSet, basename='reference-artist')
 router.register(r'reference/albums', ReferenceAlbumViewSet, basename='reference-album')
 router.register(r'reference/genres', ReferenceGenreViewSet, basename='reference-genre')
