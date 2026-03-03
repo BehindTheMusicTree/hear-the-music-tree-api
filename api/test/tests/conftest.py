@@ -1,7 +1,7 @@
 import os
 import shutil
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from _pytest.main import Session
@@ -20,7 +20,7 @@ def set_debug_for_tests():
 
 
 def _should_mock_external_services(request) -> bool:
-    """True when external services (OAuth, MusicBrainz) should be mocked: CI or non-e2e."""
+    """True when external services (OAuth, MusicBrainz, Spotify API) should be mocked: CI or non-e2e."""
     is_ci = os.environ.get("ENV") == "CI_TEST"
     is_e2e = request.node.get_closest_marker("e2e") or "/tests/e2e/" in str(request.fspath)
     return is_ci or not is_e2e
@@ -55,6 +55,48 @@ def mock_musicbrainz_outside_e2e(request):
         with patch(
             "api.utils.musicbrainz.service.acoustid.lookup",
             return_value={"status": "ok", "results": []},
+        ):
+            yield
+    else:
+        yield
+
+
+def _make_spotify_client_mock():
+    """Return a MagicMock configured as SpotifyClient with safe no-op responses."""
+    m = MagicMock()
+    m.search_track.return_value = {"tracks": {"items": []}}
+    m.retrieve_track_by_id.return_value = {}
+    m.get_user_saved_tracks.return_value = {"items": []}
+    m.get_user_playlists.return_value = {"items": []}
+    m.get_playlist_tracks.return_value = {"items": []}
+    m.get_track.return_value = {}
+    m.get_user_profile.return_value = {}
+    m.spotify.artists.return_value = {"artists": []}
+    return m
+
+
+@pytest.fixture(autouse=True)
+def mock_spotify_client_outside_e2e(request):
+    """Mock Spotify API client (library, search, playlists) so no real Spotify Web API calls are made.
+
+    - When ENV=CI_TEST: always mock for all tests, including e2e.
+    - In dev: mock only for non-e2e tests; e2e tests can use real Spotify API or their own mocks.
+    """
+    if _should_mock_external_services(request):
+        mock_instance = _make_spotify_client_mock()
+        with (
+            patch(
+                "api.utils.spotify_api.managers.SpotifyApiLibTrackManager.SpotifyClient",
+                return_value=mock_instance,
+            ),
+            patch(
+                "api.utils.spotify_api.managers.SpotifyApiArtistManager.SpotifyClient",
+                return_value=mock_instance,
+            ),
+            patch(
+                "api.view.viewset.model.SpotifyArtistViewSet.SpotifyClient",
+                return_value=mock_instance,
+            ),
         ):
             yield
     else:
