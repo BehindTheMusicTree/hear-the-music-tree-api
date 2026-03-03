@@ -4,7 +4,7 @@
 Extract raw metadata from an audio file without storing it. The file is read only; no resource is created and the file is not persisted.
 
 ## Base URL
-/v1/audio/metadata/
+/v1/audio/metadata/full/
 
 ## Authentication
 None (public endpoint)
