@@ -72,6 +72,9 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **Track URL validation**: `TrackUrlValidator` now accepts both HTTP 200 and 206 when checking that a track URL is reachable (Range request). Many servers respond with 200 when they do not support Range or after redirects; added timeout and narrowed exception handling to `requests.RequestException`.
 - **Uploaded track title test**: `test_not_providing_title_nor_artist_and_original_filename_too_long_then_generate_with_app_prefixe` now mocks `requests.get` and `_download_file_from_url` so the test is deterministic and does not require network (runs in CI/sandbox). The real e2e test lives under `tests/e2e/track_upload/test_create_from_url_with_long_filename.py` and skips when the URL is unreachable.
 - **Pytest**: Registered `e2e` marker in conftest. Documented that e2e tests live in `tests/e2e/` (directory split by test level) and can be run with `pytest api/test/tests/e2e/` or `pytest -m e2e` (CONTRIBUTING and api/test/README.md).
+- **E2E tests**: Additional tests now use `_domain_helper()` for composed test cases (criteria playlist, manual playlist, genre hierarchy, tag-based playlist) to avoid duplicate user creation and `IntegrityError`. Manual playlist e2e expects 405 for DELETE (API does not support delete). Spotify OAuth e2e assertions use camelCase response keys and `to_camel_case`; final step uses `me-playlist-list`. MusicBrainz lookup failure e2e uses `RECORDING_TOKYO_DRIFT_NO_MB_RECORDING_MP3` and updated allowed missing-cause codes.
+- **Unit (TrackFileValidator)**: `test_file_too_small_then_raises_app_validation_exception` now mocks min file size so it always runs in CI (no skip when config min is 0).
+- **Integration (MusicBrainz)**: Added `test_drown_7m21_mp3_with_mocked_lookup_then_ok` with mocked `acoustid.lookup` so the recording-ID success path is covered in CI without network.
 
 ### Documentation
 
