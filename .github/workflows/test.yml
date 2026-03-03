@@ -46,6 +46,7 @@ jobs:
 
       - name: Check required vars and secrets
         env:
+          API_DIR_NAME: ${{ vars.API_DIR_NAME }}
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
           DB_IMAGE_REPO: ${{ vars.DB_IMAGE_REPO }}
           DB_VERSION: ${{ vars.DB_VERSION }}
@@ -59,7 +60,7 @@ jobs:
           DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
           DB_APP_USERNAME: ${{ secrets.DB_APP_USERNAME }}
           DB_APP_USER_PASSWORD: ${{ secrets.DB_APP_USER_PASSWORD }}
-        run: bash scripts/check-workflow-env.sh DOCKERHUB_USERNAME DB_IMAGE_REPO DB_VERSION DB_CONTAINER_NAME AFP_CONTAINER_NAME AFP_IMAGE_REPO AFP_VERSION APP_NAME ACOUSTID_API_KEY DB_SUPERUSER_PASSWORD DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD
+        run: bash scripts/check-workflow-env.sh API_DIR_NAME DOCKERHUB_USERNAME DB_IMAGE_REPO DB_VERSION DB_CONTAINER_NAME AFP_CONTAINER_NAME AFP_IMAGE_REPO AFP_VERSION APP_NAME ACOUSTID_API_KEY DB_SUPERUSER_PASSWORD DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD
 
   pytest:
     name: Pytest
@@ -68,6 +69,7 @@ jobs:
     environment:
       name: CI_TEST
     env:
+      API_DIR_NAME: ${{ vars.API_DIR_NAME }}
       APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
       DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
       DB_IMAGE_REPO: ${{ vars.DB_IMAGE_REPO }}
@@ -134,7 +136,7 @@ jobs:
 
       - name: Set up fixtures files
         run: |
-          FIXTURES_DIR=api/fixtures/
+          FIXTURES_DIR=${{ env.API_DIR_NAME }}/fixtures/
           if [ -d "${FIXTURES_DIR}app" ]; then
             cp ${FIXTURES_DIR}app/*.json ${FIXTURES_DIR} 2>/dev/null || true
           fi
@@ -153,7 +155,7 @@ jobs:
           if [ -n "${{ inputs.test_path || '' }}" ]; then
             pytest -v --tb=short -x --junitxml=test-results.xml "${{ inputs.test_path }}"
           else
-            pytest -v --tb=short -x --junitxml=test-results.xml api/test/
+            pytest -v --tb=short -x --junitxml=test-results.xml ${{ env.API_DIR_NAME }}/test/
           fi
 
       - name: Publish Test Results
