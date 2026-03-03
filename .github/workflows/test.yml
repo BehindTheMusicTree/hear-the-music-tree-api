@@ -16,6 +16,20 @@ env:
   CONTAINER_ROOT_DIR: /home/app/
   DB_CONNECTION_TEST_MAX_ATTEMPTS: 10
   DB_CONNECTION_TEST_SLEEP_INTERVAL: 5
+  # CI test defaults (only secrets and DOCKERHUB_USERNAME come from GitHub)
+  ENV: test
+  APP_VERSION: 'test'
+  DB_PORT: '5432'
+  DB_URL: localhost
+  TMP_UPLOADED_FILES_EXTERNAL: ${{ runner.temp }}/uploaded
+  MEDIA_DIR_INTERNAL: media
+  LIBRARIES_DIR_NAME: libraries
+  DB_DATA_DIR: /var/lib/postgresql/data
+  DB_SUPERUSER_NAME: postgres
+  AFP_URL: localhost
+  AFP_PORT: '3002'
+  AFP_POOL_DIR_EXTERNAL: ${{ runner.temp }}/afp-pool
+  AFP_POST_ENDPOINT: fingerprint-audio
 
 jobs:
   check-vars-and-secrets:
@@ -32,33 +46,20 @@ jobs:
 
       - name: Check required vars and secrets
         env:
-          ENV: ${{ vars.ENV }}
-          APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
-          APP_VERSION: 'test'
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
-          TMP_UPLOADED_FILES_EXTERNAL: ${{ vars.TMP_UPLOADED_FILES_EXTERNAL }}
-          MEDIA_DIR_INTERNAL: ${{ vars.MEDIA_DIR_INTERNAL }}
-          LIBRARIES_DIR_NAME: ${{ vars.LIBRARIES_DIR_NAME }}
           DB_IMAGE_REPO: ${{ vars.DB_IMAGE_REPO }}
           DB_VERSION: ${{ vars.DB_VERSION }}
           DB_CONTAINER_NAME: ${{ vars.DB_APP_NAME }}
-          DB_DATA_DIR: ${{ vars.DB_DATA_DIR }}
-          DB_SUPERUSER_NAME: ${{ vars.DB_SUPERUSER_NAME }}
-          DB_URL: ${{ vars.DB_URL }}
-          DB_PORT: ${{ vars.DB_PORT }}
-          AFP_URL: ${{ vars.AFP_URL }}
           AFP_CONTAINER_NAME: ${{ vars.AFP_APP_NAME }}
           AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
           AFP_VERSION: ${{ vars.AFP_VERSION }}
-          AFP_PORT: ${{ vars.AFP_PORT }}
-          AFP_POOL_DIR_EXTERNAL: ${{ vars.AFP_POOL_DIR_EXTERNAL }}
-          AFP_POST_ENDPOINT: ${{ vars.AFP_POST_ENDPOINT }}
+          APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
           ACOUSTID_API_KEY: ${{ secrets.ACOUSTID_API_KEY }}
           DB_SUPERUSER_PASSWORD: ${{ secrets.DB_SUPERUSER_PASSWORD }}
           DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
           DB_APP_USERNAME: ${{ secrets.DB_APP_USERNAME }}
           DB_APP_USER_PASSWORD: ${{ secrets.DB_APP_USER_PASSWORD }}
-        run: bash scripts/check-workflow-env.sh ENV APP_NAME APP_VERSION DOCKERHUB_USERNAME TMP_UPLOADED_FILES_EXTERNAL MEDIA_DIR_INTERNAL LIBRARIES_DIR_NAME DB_IMAGE_REPO DB_VERSION DB_CONTAINER_NAME DB_DATA_DIR DB_SUPERUSER_NAME DB_URL DB_PORT AFP_URL AFP_CONTAINER_NAME AFP_IMAGE_REPO AFP_VERSION AFP_PORT AFP_POOL_DIR_EXTERNAL AFP_POST_ENDPOINT ACOUSTID_API_KEY DB_SUPERUSER_PASSWORD DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD
+        run: bash scripts/check-workflow-env.sh DOCKERHUB_USERNAME DB_IMAGE_REPO DB_VERSION DB_CONTAINER_NAME AFP_CONTAINER_NAME AFP_IMAGE_REPO AFP_VERSION APP_NAME ACOUSTID_API_KEY DB_SUPERUSER_PASSWORD DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD
 
   pytest:
     name: Pytest
@@ -67,37 +68,24 @@ jobs:
     environment:
       name: CI_TEST
     env:
-      ENV: ${{ vars.ENV }}
       APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
-      APP_VERSION: 'test'
       DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
-      DEBUG: true
-      DB_IS_NEEDED: true
-      APP_IS_EXPOSED: false
-      TMP_UPLOADED_FILES_EXTERNAL: ${{ vars.TMP_UPLOADED_FILES_EXTERNAL }}
-      ACOUSTID_API_KEY: ${{ secrets.ACOUSTID_API_KEY }}
-      SPOTIFY_CLIENT_ID: test_client_id
-      SPOTIFY_CLIENT_SECRET: test_client_secret
-      MEDIA_DIR_INTERNAL: ${{ vars.MEDIA_DIR_INTERNAL }}
-      LIBRARIES_DIR_NAME: ${{ vars.LIBRARIES_DIR_NAME }}
       DB_IMAGE_REPO: ${{ vars.DB_IMAGE_REPO }}
       DB_VERSION: ${{ vars.DB_VERSION }}
       DB_CONTAINER_NAME: ${{ vars.DB_APP_NAME }}
-      DB_DATA_DIR: ${{ vars.DB_DATA_DIR }}
-      DB_SUPERUSER_NAME: ${{ vars.DB_SUPERUSER_NAME }}
+      AFP_CONTAINER_NAME: ${{ vars.AFP_APP_NAME }}
+      AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
+      AFP_VERSION: ${{ vars.AFP_VERSION }}
+      DEBUG: true
+      DB_IS_NEEDED: true
+      APP_IS_EXPOSED: false
+      ACOUSTID_API_KEY: ${{ secrets.ACOUSTID_API_KEY }}
+      SPOTIFY_CLIENT_ID: test_client_id
+      SPOTIFY_CLIENT_SECRET: test_client_secret
       DB_SUPERUSER_PASSWORD: ${{ secrets.DB_SUPERUSER_PASSWORD }}
       DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
       DB_APP_USERNAME: ${{ secrets.DB_APP_USERNAME }}
       DB_APP_USER_PASSWORD: ${{ secrets.DB_APP_USER_PASSWORD }}
-      DB_URL: ${{ vars.DB_URL }}
-      DB_PORT: ${{ vars.DB_PORT }}
-      AFP_URL: ${{ vars.AFP_URL }}
-      AFP_CONTAINER_NAME: ${{ vars.AFP_APP_NAME }}
-      AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
-      AFP_VERSION: ${{ vars.AFP_VERSION }}
-      AFP_PORT: ${{ vars.AFP_PORT }}
-      AFP_POOL_DIR_EXTERNAL: ${{ vars.AFP_POOL_DIR_EXTERNAL }}
-      AFP_POST_ENDPOINT: ${{ vars.AFP_POST_ENDPOINT }}
 
     steps:
       - name: Checkout code
