@@ -26,5 +26,5 @@ class AudioMetadataView(APIView):
         serializer.is_valid(raise_exception=True)
         file: audiometa_adapter.FILE_TYPE = serializer.validated_data.get(
             Fields.FILE)   # pyright: ignore[reportAssignmentType]
-        full_metadata = audiometa_adapter.get_full_metadata(file, include_cover=False)
+        full_metadata = audiometa_adapter.get_full_metadata(file, include_raw_binary_data=False)
         return Response(data=full_metadata, status=status.HTTP_200_OK)

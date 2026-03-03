@@ -142,11 +142,11 @@ def get_duration_in_sec(file: FILE_TYPE) -> float:
         raise FileCorruptedError(str(e)) from e
 
 
-def get_full_metadata(file: FILE_TYPE, include_cover: bool) -> dict:
+def get_full_metadata(file: FILE_TYPE, include_raw_binary_data: bool) -> dict:
     """Get full metadata."""
     file_path = _get_file_path_util(file)
     try:
-        return audiometa.get_full_metadata(file=file_path, include_cover=include_cover)
+        return audiometa.get_full_metadata(file=file_path, include_raw_binary_data=include_raw_binary_data)
     except AudiometaFileCorruptedError as e:
         raise FileCorruptedError(str(e)) from e
 
