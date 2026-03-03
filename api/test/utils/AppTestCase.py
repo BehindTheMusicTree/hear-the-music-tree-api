@@ -18,6 +18,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework_simplejwt.tokens import AccessToken
 
+from api import settings
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.model.user.User import User
 from api.model.uuid.Fields import Fields as UuidModelFields
@@ -153,6 +154,7 @@ class AppTestCase(TestCase, Generic[T]):
                              **kwargs) -> Union[JsonResponse, HttpResponse]:
         file_abs_path = self.TEST_FILES_BASE_DIR / test_uploaded_track_filename.value
 
+        self._used_upload_in_test = True
         with open(file_abs_path, "rb") as sample_file:
             file_field_dict = {UploadedTrackPostFields.TRACK_FILE_PUBLIC: sample_file}
             if kwargs:
@@ -234,10 +236,26 @@ class AppTestCase(TestCase, Generic[T]):
                     raise NotImplementedError(f"Subclasses must implement the '{method_name}' method")
 
         self.api_client = AppApiClient(test_case=self)
+        self._used_upload_in_test = False
         self._login_as_test_user1()
 
     def tearDown(self):
-        # Restore TMTA_USERNAME environment variable if it was modified during setup
+        if getattr(settings, 'FILE_UPLOAD_TEMP_DIR', None):
+            temp_dir = settings.FILE_UPLOAD_TEMP_DIR
+            if os.path.isdir(temp_dir):
+                if getattr(self, '_used_upload_in_test', False):
+                    contents = os.listdir(temp_dir)
+                    assert contents == [], (
+                        "Temp dir not empty after test; endpoint likely did not close TemporaryUploadedFile. Left: %s"
+                        % contents
+                    )
+                for name in os.listdir(temp_dir):
+                    path = os.path.join(temp_dir, name)
+                    try:
+                        if os.path.isfile(path):
+                            os.unlink(path)
+                    except OSError:
+                        pass
         if hasattr(self, '_original_tmta_username'):
             if self._original_tmta_username is not None:
                 os.environ["TMTA_USERNAME"] = self._original_tmta_username

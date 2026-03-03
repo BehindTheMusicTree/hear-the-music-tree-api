@@ -11,6 +11,7 @@ class AudioMetadataTestCase(AppTestCase):
                                 UploadedTrackTestFilename = UploadedTrackTestFilename.
                                 RECORDING_QUEEN_25_MATCHES_BUT_ONE_WITH_BEST_DURATION_AND_MOST_FIELDS_AND_MOST_RELEASE_GROUPS_MP3,
                                 **kwargs):
+        self._used_upload_in_test = True
         file_abs_path = self.TEST_FILES_BASE_DIR / test_uploaded_track_filename.value
 
         with open(file_abs_path, "rb") as sample_file:
