@@ -26,6 +26,10 @@ def _should_mock_external_services(request) -> bool:
     return is_ci or not is_e2e
 
 
+# External service mocks below use empty/minimal responses. Tests that need non-empty data
+# (e.g. a recording, token, search results) should patch the same target and set return values.
+
+
 @pytest.fixture(autouse=True)
 def mock_oauth_outside_e2e(request):
     """Mock Spotify and Google OAuth at the view layer.
@@ -65,7 +69,7 @@ def _make_spotify_client_mock():
     """Return a MagicMock configured as SpotifyClient with safe no-op responses."""
     m = MagicMock()
     m.search_track.return_value = {"tracks": {"items": []}}
-    m.retrieve_track_by_id.return_value = {}
+    m.retrieve_track_by_id.return_value = {"id": ""}
     m.get_user_saved_tracks.return_value = {"items": []}
     m.get_user_playlists.return_value = {"items": []}
     m.get_playlist_tracks.return_value = {"items": []}

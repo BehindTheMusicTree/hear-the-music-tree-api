@@ -22,7 +22,8 @@ class TestCase(SpotifyLibTrackTestCase):
     6. User searches for tracks in library
 
     Note: This test uses mocks for Spotify API. For real E2E testing,
-    configure actual Spotify OAuth credentials.
+    configure actual Spotify OAuth credentials. In CI, conftest mocks the
+    Spotify client; this test overrides with its own mock so the flow is deterministic.
     """
 
     def setUp(self):

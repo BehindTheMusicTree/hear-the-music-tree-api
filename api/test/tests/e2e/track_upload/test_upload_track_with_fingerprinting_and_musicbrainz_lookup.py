@@ -1,10 +1,28 @@
 import pytest
+from unittest.mock import patch
 from rest_framework import status
 
 from api.model.musicbrainz_resource.children.artist.MbArtist import MbArtist
 from api.model.musicbrainz_resource.children.recording.MbRecording import MbRecording
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
+
+ACOUSTID_LOOKUP_RECORDING_PAYLOAD = {
+    "status": "ok",
+    "results": [
+        {
+            "score": 1.0,
+            "recordings": [
+                {
+                    "id": "e2e-mock-recording-id",
+                    "title": "E2E Mock Recording",
+                    "artists": [{"id": "e2e-mock-artist-id", "name": "E2E Mock Artist"}],
+                    "duration": 441,
+                }
+            ],
+        }
+    ],
+}
 
 
 @pytest.mark.e2e
@@ -21,11 +39,18 @@ class TestCase(UploadedTrackTestCase):
     5. System retrieves and stores MusicBrainz recording metadata
     6. System creates/updates MusicBrainz artist records
     7. User retrieves the uploaded track and verifies metadata is populated
+
+    In CI, conftest mocks MusicBrainz with empty results; this test overrides with a mock
+    recording so the success path is asserted deterministically.
     """
 
     def test_upload_track_with_fingerprinting_and_musicbrainz_lookup_then_ok(self):
-        response = self._post_uploaded_track(
-            UploadedTrackTestFilename.RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M21_MP3)
+        with patch(
+            "api.utils.musicbrainz.service.acoustid.lookup",
+            return_value=ACOUSTID_LOOKUP_RECORDING_PAYLOAD,
+        ):
+            response = self._post_uploaded_track(
+                UploadedTrackTestFilename.RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M21_MP3)
 
         assert response.status_code == status.HTTP_201_CREATED
 
@@ -65,10 +90,8 @@ class TestCase(UploadedTrackTestCase):
 
         assert musicbrainz_recording is not None
         assert isinstance(musicbrainz_recording, MbRecording)
-        assert musicbrainz_recording.musicbrainz_id is not None
-        assert len(musicbrainz_recording.musicbrainz_id) > 0
-        assert musicbrainz_recording.title is not None
-        assert len(musicbrainz_recording.title) > 0
+        assert musicbrainz_recording.musicbrainz_id == "e2e-mock-recording-id"
+        assert musicbrainz_recording.title == "E2E Mock Recording"
 
         musicbrainz_artists = musicbrainz_recording.musicbrainz_artists.all()
         assert musicbrainz_artists.exists()
