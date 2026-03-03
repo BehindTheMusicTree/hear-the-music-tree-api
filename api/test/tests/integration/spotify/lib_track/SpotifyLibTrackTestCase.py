@@ -6,6 +6,9 @@ from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLib
 
 
 class SpotifyLibTrackTestCase(AppTestCase[SpotifyLibTrack]):
+    model_class = SpotifyLibTrack
+    saved_object: SpotifyLibTrack
+
     def setUp(self):
         super().setUp()
         self._login_as_spotify_test_user_1()
