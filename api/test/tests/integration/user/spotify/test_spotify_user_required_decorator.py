@@ -37,7 +37,7 @@ class TestSpotifyUserRequiredDecoratorIntegration(AppTestCase):
 
         assert response.status_code == status.HTTP_200_OK
         data = response.json()
-        assert data['count'] == 1
+        assert data['overallTotal'] == 1
         assert len(data['results']) == 1
         assert data['results'][0]['spotifyId'] == self.spotify_test_user_1.spotify_id
 
