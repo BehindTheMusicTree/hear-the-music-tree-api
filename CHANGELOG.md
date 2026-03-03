@@ -75,6 +75,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **E2E tests**: Additional tests now use `_domain_helper()` for composed test cases (criteria playlist, manual playlist, genre hierarchy, tag-based playlist) to avoid duplicate user creation and `IntegrityError`. Manual playlist e2e expects 405 for DELETE (API does not support delete). Spotify OAuth e2e assertions use camelCase response keys and `to_camel_case`; final step uses `me-playlist-list`. MusicBrainz lookup failure e2e uses `RECORDING_TOKYO_DRIFT_NO_MB_RECORDING_MP3` and updated allowed missing-cause codes.
 - **Unit (TrackFileValidator)**: `test_file_too_small_then_raises_app_validation_exception` now mocks min file size so it always runs in CI (no skip when config min is 0).
 - **Integration (MusicBrainz)**: Added `test_drown_7m21_mp3_with_mocked_lookup_then_ok` with mocked `acoustid.lookup` so the recording-ID success path is covered in CI without network.
+- **OAuth mocking**: When `ENV=CI_TEST`, Spotify and Google OAuth are mocked for all tests (including e2e). In dev, they are mocked only for non-e2e tests so e2e can use real OAuth locally. Documented in `api/test/README.md` and CONTRIBUTING.
+- **OAuth optional in CI**: `SPOTIFY_OAUTH_ENABLED` and `GOOGLE_OAUTH_ENABLED` (default false) control whether Spotify/Google OAuth env vars are required. When false or unset, credentials are loaded optionally; auth views return 503 with "not configured" if called. CI test workflow sets both to false so OAuth vars are not needed. Added `load_optional_str_env_var` and `load_optional_secret_env_var` in env_var_loader.
 
 ### Documentation
 

@@ -13,6 +13,7 @@ All test files are located in the `tests/` subdirectory to keep the test directo
 - [Running Tests](#running-tests)
 - [Test Naming Convention](#test-naming-convention)
 - [Test Configuration](#test-configuration)
+  - [OAuth mocking](#oauth-mocking)
   - [Warning Filters](#warning-filters)
 
 ## Test Categories
@@ -143,6 +144,16 @@ The test configuration is located in `api/test/tests/conftest.py` and includes:
 - Critical test failure handling
 - Audio metadata analysis fixture
 - Test user directory cleanup
+- OAuth mocking (Spotify and Google): see [OAuth mocking](#oauth-mocking)
+
+### OAuth mocking
+
+Spotify and Google OAuth are mocked at the view layer via an autouse fixture so tests do not call real providers by default.
+
+- **When ENV=CI_TEST**: OAuth is mocked for **all** tests (unit, integration, and e2e). No real credentials or network calls.
+- **In dev**: OAuth is mocked only for **non-e2e** tests. E2E tests are not mocked so you can run them with real OAuth or per-test mocks locally.
+
+E2E tests that need a specific OAuth response can patch the view’s service class as usual; in CI they will still see the global mock unless they override it.
 
 ### Warning Filters
 

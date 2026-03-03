@@ -1,6 +1,7 @@
 import os
 import shutil
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 from _pytest.main import Session
@@ -15,6 +16,27 @@ def set_debug_for_tests():
     Individual tests can use @override_settings(DEBUG=False) when needed.
     """
     with override_settings(DEBUG=True):
+        yield
+
+
+@pytest.fixture(autouse=True)
+def mock_oauth_outside_e2e(request):
+    """Mock Spotify and Google OAuth at the view layer.
+
+    - When ENV=CI_TEST: always mock for all tests, including e2e, so no real provider calls.
+    - In dev (other ENV): mock only for non-e2e tests; e2e tests are not mocked so they can
+      use real OAuth or their own mocks when run locally.
+    """
+    is_ci = os.environ.get("ENV") == "CI_TEST"
+    is_e2e = request.node.get_closest_marker("e2e") or "/tests/e2e/" in str(request.fspath)
+    should_mock = is_ci or not is_e2e
+    if should_mock:
+        with (
+            patch("api.view.spotify_auth.SpotifyOAuthService"),
+            patch("api.view.google_auth.GoogleOAuthService"),
+        ):
+            yield
+    else:
         yield
 
 

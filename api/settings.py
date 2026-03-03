@@ -10,6 +10,8 @@ from api.utils.AppStaticFileStates import StaticFileStates
 from api.utils.env_var_loader import (
     load_calculated_env_paths,
     load_env_vars_from_file_if_exists,
+    load_optional_secret_env_var,
+    load_optional_str_env_var,
     load_required_bool_env_var,
     load_required_path_env_var,
     load_required_secret_env_var,
@@ -718,31 +720,45 @@ def setup_media_dirs():
     global ACOUSTID_API_KEY
     ACOUSTID_API_KEY = load_required_secret_env_var('ACOUSTID_API_KEY')
 
-    # Load Spotify API credentials
     global SPOTIFY_CLIENT_ID
     global SPOTIFY_CLIENT_SECRET
     global SPOTIFY_REDIRECT_URI
     global SPOTIFY_SCOPES
-    SPOTIFY_CLIENT_ID = load_required_str_env_var('SPOTIFY_CLIENT_ID')
-    print_django(f"SPOTIFY_CLIENT_ID = {SPOTIFY_CLIENT_ID}")
-    SPOTIFY_CLIENT_SECRET = load_required_secret_env_var('SPOTIFY_CLIENT_SECRET')
-    print_django(f"SPOTIFY_CLIENT_SECRET = {SPOTIFY_CLIENT_SECRET}")
-    SPOTIFY_REDIRECT_URI = load_required_str_env_var('SPOTIFY_REDIRECT_URI',)
-    print_django(f"SPOTIFY_REDIRECT_URI = {SPOTIFY_REDIRECT_URI}")
-    SPOTIFY_SCOPES = load_required_str_env_var('SPOTIFY_SCOPES',)
-    print_django(f"SPOTIFY_SCOPES = {SPOTIFY_SCOPES}")
-    print_django("Spotify API credentials loaded.")
+    spotify_oauth_enabled = os.environ.get('SPOTIFY_OAUTH_ENABLED', 'false').lower() == 'true'
+    if spotify_oauth_enabled:
+        SPOTIFY_CLIENT_ID = load_required_str_env_var('SPOTIFY_CLIENT_ID')
+        print_django(f"SPOTIFY_CLIENT_ID = {SPOTIFY_CLIENT_ID}")
+        SPOTIFY_CLIENT_SECRET = load_required_secret_env_var('SPOTIFY_CLIENT_SECRET')
+        print_django(f"SPOTIFY_CLIENT_SECRET = {SPOTIFY_CLIENT_SECRET}")
+        SPOTIFY_REDIRECT_URI = load_required_str_env_var('SPOTIFY_REDIRECT_URI')
+        print_django(f"SPOTIFY_REDIRECT_URI = {SPOTIFY_REDIRECT_URI}")
+        SPOTIFY_SCOPES = load_required_str_env_var('SPOTIFY_SCOPES')
+        print_django(f"SPOTIFY_SCOPES = {SPOTIFY_SCOPES}")
+        print_django("Spotify API credentials loaded.")
+    else:
+        SPOTIFY_CLIENT_ID = load_optional_str_env_var('SPOTIFY_CLIENT_ID')
+        SPOTIFY_CLIENT_SECRET = load_optional_secret_env_var('SPOTIFY_CLIENT_SECRET')
+        SPOTIFY_REDIRECT_URI = load_optional_str_env_var('SPOTIFY_REDIRECT_URI')
+        SPOTIFY_SCOPES = load_optional_str_env_var('SPOTIFY_SCOPES')
+        print_django("Spotify OAuth disabled; credentials not loaded.")
 
     global GOOGLE_CLIENT_ID
     global GOOGLE_CLIENT_SECRET
     global GOOGLE_REDIRECT_URI
-    GOOGLE_CLIENT_ID = load_required_str_env_var('GOOGLE_CLIENT_ID')
-    print_django(f"GOOGLE_CLIENT_ID = {GOOGLE_CLIENT_ID}")
-    GOOGLE_CLIENT_SECRET = load_required_secret_env_var('GOOGLE_CLIENT_SECRET')
-    print_django(f"GOOGLE_CLIENT_SECRET = {GOOGLE_CLIENT_SECRET}")
-    GOOGLE_REDIRECT_URI = load_required_str_env_var('GOOGLE_REDIRECT_URI')
-    print_django(f"GOOGLE_REDIRECT_URI = {GOOGLE_REDIRECT_URI}")
-    print_django("Google OAuth credentials loaded.")
+    google_oauth_enabled = os.environ.get('GOOGLE_OAUTH_ENABLED', 'false').lower() == 'true'
+    if google_oauth_enabled:
+        GOOGLE_CLIENT_ID = load_required_str_env_var('GOOGLE_CLIENT_ID')
+        print_django(f"GOOGLE_CLIENT_ID = {GOOGLE_CLIENT_ID}")
+        GOOGLE_CLIENT_SECRET = load_required_secret_env_var('GOOGLE_CLIENT_SECRET')
+        print_django(f"GOOGLE_CLIENT_SECRET = {GOOGLE_CLIENT_SECRET}")
+        GOOGLE_REDIRECT_URI = load_required_str_env_var('GOOGLE_REDIRECT_URI')
+        print_django(f"GOOGLE_REDIRECT_URI = {GOOGLE_REDIRECT_URI}")
+        print_django("Google OAuth credentials loaded.")
+    else:
+        GOOGLE_CLIENT_ID = load_optional_str_env_var('GOOGLE_CLIENT_ID')
+        GOOGLE_CLIENT_SECRET = load_optional_secret_env_var('GOOGLE_CLIENT_SECRET')
+        GOOGLE_REDIRECT_URI = load_optional_str_env_var('GOOGLE_REDIRECT_URI')
+        print_django("Google OAuth disabled; credentials not loaded.")
 
     global MEDIA_ROOT  # Django constant, do not rename.
     MEDIA_ROOT = load_required_path_env_var('MEDIA_DIR')

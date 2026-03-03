@@ -1,6 +1,8 @@
+from django.conf import settings as django_settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
+from rest_framework import status
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from django.contrib.auth import login
@@ -35,6 +37,12 @@ def spotify_auth(request):
             field_name='code',
             message='No code provided',
             field_validation_error_code=FieldValidationErrorCode.REQUIRED
+        )
+
+    if not (getattr(django_settings, 'SPOTIFY_CLIENT_ID', None) or '').strip():
+        return Response(
+            {'detail': 'Spotify OAuth is not configured.'},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE
         )
 
     oauth_service = SpotifyOAuthService()

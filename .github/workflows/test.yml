@@ -70,6 +70,7 @@ jobs:
     environment:
       name: CI_TEST
     env:
+      ENV: CI_TEST
       API_DIR_NAME: ${{ vars.API_DIR_NAME }}
       APP_TITLE: ${{ vars.APP_TITLE }}
       APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
@@ -83,9 +84,9 @@ jobs:
       DEBUG: true
       DB_IS_NEEDED: true
       APP_IS_EXPOSED: false
+      SPOTIFY_OAUTH_ENABLED: false
+      GOOGLE_OAUTH_ENABLED: false
       ACOUSTID_API_KEY: ${{ secrets.ACOUSTID_API_KEY }}
-      SPOTIFY_CLIENT_ID: test_client_id
-      SPOTIFY_CLIENT_SECRET: test_client_secret
       DB_SUPERUSER_PASSWORD: ${{ secrets.DB_SUPERUSER_PASSWORD }}
       DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
       DB_APP_USERNAME: ${{ secrets.DB_APP_USERNAME }}
