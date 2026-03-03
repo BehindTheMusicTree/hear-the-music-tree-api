@@ -19,6 +19,9 @@ class TestCase(UploadedTrackTestCase):
     4. MusicBrainz lookup fails (no matching recording found)
     5. System handles failure gracefully
     6. Track is created with metadata from file tags only
+
+    In CI, conftest mocks MusicBrainz with empty results, so this test's expectations
+    (no recording, missing cause set) are met deterministically.
     """
 
     def test_upload_track_with_musicbrainz_lookup_failure_then_ok(self):
