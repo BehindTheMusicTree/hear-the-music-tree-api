@@ -718,13 +718,19 @@ def setup_media_dirs():
     print_django("FILE_UPLOAD_TEMP_DIR is set. Setting up the media variables...")
 
     global ACOUSTID_API_KEY
-    ACOUSTID_API_KEY = load_required_secret_env_var('ACOUSTID_API_KEY')
+    musicbrainz_lookup_enabled = load_required_bool_env_var('MUSICBRAINZ_LOOKUP_ENABLED')
+    if musicbrainz_lookup_enabled:
+        ACOUSTID_API_KEY = load_required_secret_env_var('ACOUSTID_API_KEY')
+        print_django("MusicBrainz lookup enabled; ACOUSTID_API_KEY loaded.")
+    else:
+        ACOUSTID_API_KEY = load_optional_secret_env_var('ACOUSTID_API_KEY')
+        print_django("MusicBrainz lookup disabled; ACOUSTID_API_KEY not required.")
 
     global SPOTIFY_CLIENT_ID
     global SPOTIFY_CLIENT_SECRET
     global SPOTIFY_REDIRECT_URI
     global SPOTIFY_SCOPES
-    spotify_oauth_enabled = os.environ.get('SPOTIFY_OAUTH_ENABLED', 'false').lower() == 'true'
+    spotify_oauth_enabled = load_required_bool_env_var('SPOTIFY_OAUTH_ENABLED')
     if spotify_oauth_enabled:
         SPOTIFY_CLIENT_ID = load_required_str_env_var('SPOTIFY_CLIENT_ID')
         print_django(f"SPOTIFY_CLIENT_ID = {SPOTIFY_CLIENT_ID}")
@@ -745,7 +751,7 @@ def setup_media_dirs():
     global GOOGLE_CLIENT_ID
     global GOOGLE_CLIENT_SECRET
     global GOOGLE_REDIRECT_URI
-    google_oauth_enabled = os.environ.get('GOOGLE_OAUTH_ENABLED', 'false').lower() == 'true'
+    google_oauth_enabled = load_required_bool_env_var('GOOGLE_OAUTH_ENABLED')
     if google_oauth_enabled:
         GOOGLE_CLIENT_ID = load_required_str_env_var('GOOGLE_CLIENT_ID')
         print_django(f"GOOGLE_CLIENT_ID = {GOOGLE_CLIENT_ID}")
