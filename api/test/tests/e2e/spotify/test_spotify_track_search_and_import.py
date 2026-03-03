@@ -1,10 +1,14 @@
 import pytest
 from unittest import mock
+
+from django.urls import reverse
 from rest_framework import status
 
+from api.model.spotify_resource.children.track.Fields import Fields as SpotifyLibTrackFields
 from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
-from api.test.tests.integration.spotify/lib_track/SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
+from api.test.tests.integration.spotify.lib_track.SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
 from api.utils.spotify_api.ApiFields import ApiFields
+from api.utils.data_transformer import to_camel_case
 from api.utils.spotify_api.SpotifyClient import SpotifyClient
 from api.utils.spotify_api.managers.SpotifyApiLibTrackManager import SpotifyApiLibTrackManager
 
@@ -74,10 +78,11 @@ class TestCase(SpotifyLibTrackTestCase):
             assert track.spotify_id is not None
             assert track.name is not None
 
-            response = self._retrieve_spotify_lib_track(track.spotify_id)
+            response = self.api_client.get(
+                reverse("me-spotify-lib-track-detail", kwargs={"pk": track.spotify_id})
+            )
             assert response.status_code == status.HTTP_200_OK
 
-            retrieved_track = self.saved_object
-            assert retrieved_track is not None
-            assert retrieved_track.spotify_id == track.spotify_id
-            assert retrieved_track.name == track.name
+            data = response.json()
+            assert data.get(to_camel_case(SpotifyLibTrackFields.SPOTIFY_ID)) == track.spotify_id
+            assert data.get(SpotifyLibTrackFields.NAME) == track.name
