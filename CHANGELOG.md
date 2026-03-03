@@ -62,6 +62,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ### Changed
 
 - **Dependencies**: Bumped `audiometa-python` from 1.0.0 to 1.1.0.
+- **E2E tests**: Refactored to one inheritance per domain with composition: added `_domain_helper()` on `AppTestCase`, introduced `SearchMixin`, and refactored multi-inheritance E2E tests to use a single domain base plus composed helpers. Corrected `ManualPlaylistTestCase` URL names to `me-manual-playlist-list` / `me-manual-playlist-detail`.
 
 ## [v2.1.0] - 2026-02-23
 

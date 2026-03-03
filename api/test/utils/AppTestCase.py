@@ -169,18 +169,31 @@ class AppTestCase(TestCase, Generic[T]):
     # Defined here and not in UploadedTrackTestCase because other views needs sometimes to put a track for testing purposes
     # (testing Genre deletion for example)
     def _put_uploaded_track(self, uuid, **kwargs):
-        if self.is_from_uploaded_track_test_case:
+        if self.is_from_uploaded_track_test_case and self.model_class == UploadedTrack:
             return self.api_client.put(
                 path=reverse('me-uploaded-track-detail', kwargs={'pk': uuid}),
                 data=kwargs, format='multipart', handle_response=self._set_results)
-        else:
-            return self.api_client.put(
-                path=reverse('me-uploaded-track-detail', kwargs={'pk': uuid}), data=kwargs)
+        return self.api_client.put(
+            path=reverse('me-uploaded-track-detail', kwargs={'pk': uuid}),
+            data=kwargs, format='multipart')
 
     def _post_uploaded_track_being_logged_out(self):
         self._logout()
         return self.api_client.post(
             path=reverse('me-uploaded-track-list'), data={}, format='multipart', handle_response=self._set_results)
+
+    def _domain_helper(self, helper_class: type) -> "AppTestCase":
+        """Return a domain test case instance bound to this test's api_client and users for composition in E2E tests.
+        Does not call setUp() on the helper to avoid duplicate DB fixtures (users, loaddata).
+        """
+        inst = helper_class()
+        inst.api_client = self.api_client
+        inst.test_user1 = self.test_user1
+        inst.test_user2 = self.test_user2
+        inst.model_fixture_factory = self.model_fixture_factory
+        inst.TEST_FILES_BASE_DIR = self.TEST_FILES_BASE_DIR
+        inst._login_as_test_user1()
+        return inst
 
     def _setup_system_user_for_reference_tests(self, system_username: str = "test_reference_system_user"):
         """Set up system user for reference endpoint tests and configure TMTA_USERNAME environment variable."""
