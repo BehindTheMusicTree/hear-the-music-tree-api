@@ -268,11 +268,14 @@ jobs:
             echo 'DEBUG=true'
             echo 'APP_IS_EXPOSED=true'
             echo "DJANGO_SECRET_KEY='${{ secrets.DJANGO_SECRET_KEY }}'"
+            echo "MUSICBRAINZ_LOOKUP_ENABLED=true"
             echo "ACOUSTID_API_KEY='${{ secrets.ACOUSTID_API_KEY }}'"
+            echo "SPOTIFY_OAUTH_ENABLED=true"
             echo "SPOTIFY_CLIENT_ID=${SPOTIFY_ID}"
             echo "SPOTIFY_CLIENT_SECRET='${{ secrets.SPOTIFY_CLIENT_SECRET }}'"
             echo "SPOTIFY_REDIRECT_URI='https://${FRONT_HOST}.${{ vars.DOMAIN_NAME }}/${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}'"
             echo "SPOTIFY_SCOPES='${{ vars.SPOTIFY_SCOPES }}'"
+            echo "GOOGLE_OAUTH_ENABLED=true"
             echo "GOOGLE_CLIENT_ID=${GOOGLE_ID}"
             echo "GOOGLE_CLIENT_SECRET='${{ secrets.GOOGLE_CLIENT_SECRET }}'"
             echo "GOOGLE_REDIRECT_URI='https://${FRONT_HOST}.${{ vars.DOMAIN_NAME }}/${{ vars.GOOGLE_REDIRECT_RELATIVE_URI }}'"
