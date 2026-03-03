@@ -77,6 +77,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **Integration (MusicBrainz)**: Added `test_drown_7m21_mp3_with_mocked_lookup_then_ok` with mocked `acoustid.lookup` so the recording-ID success path is covered in CI without network.
 - **OAuth mocking**: When `ENV=CI_TEST`, Spotify and Google OAuth are mocked for all tests (including e2e). In dev, they are mocked only for non-e2e tests so e2e can use real OAuth locally. Documented in `api/test/README.md` and CONTRIBUTING.
 - **OAuth optional in CI**: `SPOTIFY_OAUTH_ENABLED` and `GOOGLE_OAUTH_ENABLED` (default false) control whether Spotify/Google OAuth env vars are required. When false or unset, credentials are loaded optionally; auth views return 503 with "not configured" if called. CI test workflow sets both to false so OAuth vars are not needed. Added `load_optional_str_env_var` and `load_optional_secret_env_var` in env_var_loader.
+- **MusicBrainz lookup optional in CI**: `MUSICBRAINZ_LOOKUP_ENABLED` (default false) controls whether `ACOUSTID_API_KEY` is required. When false or unset, the key is loaded optionally; `get_musicbrainz_recording_lookup_result` skips the AcoustID API call and returns no recording (same missing-cause as "no match"). CI test workflow sets `MUSICBRAINZ_LOOKUP_ENABLED: false` and no longer requires `ACOUSTID_API_KEY`.
 
 ### Documentation
 
