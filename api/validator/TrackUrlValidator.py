@@ -39,13 +39,16 @@ class TrackUrlValidator(BaseValidator):
                 field_validation_error_code=FieldValidationErrorCode.TRACK_FILE_EXTENSION_INVALID)
 
     def _validate_remote_file_exists(self, value: str):
+        """HEAD/GET with Range to check reachability. Accept 200 or 206 (many servers return 200 for Range or after redirects)."""
         try:
-            response = requests.get(value, headers={'Range': 'bytes=0-10'}, allow_redirects=True)
-            if response.status_code != 206:
+            response = requests.get(
+                value, headers={'Range': 'bytes=0-10'}, allow_redirects=True, timeout=10
+            )
+            if response.status_code not in (200, 206):
                 raise AppValidationException(field_name=self.field_name,
                                              message='Invalid audio file URL',
                                              field_validation_error_code=FieldValidationErrorCode.URL_NOT_FOUND)
-        except Exception as e:
+        except requests.RequestException:
             raise AppValidationException(field_name=self.field_name,
                                          message='Invalid audio file URL',
                                          field_validation_error_code=FieldValidationErrorCode.URL_NOT_FOUND)
