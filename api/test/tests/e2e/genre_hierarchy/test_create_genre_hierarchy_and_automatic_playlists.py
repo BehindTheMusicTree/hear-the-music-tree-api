@@ -25,19 +25,11 @@ class TestCase(AppTestCase):
     """
 
     def test_create_genre_hierarchy_and_automatic_playlists_then_ok(self):
-        from django.urls import reverse
         from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
         from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
-        genre_test_case = GenreTestCase()
-        genre_test_case.setUp()
-        genre_test_case.api_client = self.api_client
-        genre_test_case._login_as_test_user1()
-
-        uploaded_track_test_case = UploadedTrackTestCase()
-        uploaded_track_test_case.setUp()
-        uploaded_track_test_case.api_client = self.api_client
-        uploaded_track_test_case._login_as_test_user1()
+        genre_test_case = self._domain_helper(GenreTestCase)
+        uploaded_track_test_case = self._domain_helper(UploadedTrackTestCase)
 
         parent_genre_name = "Electronic Music"
         child_genre_name = "Techno"
