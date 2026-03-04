@@ -53,18 +53,23 @@ main() {
 
     check_script_vars_are_set
 
-    log_with_script_prefixe "Pulling the database and audio fingerprinter images..."
-    log_with_script_prefixe $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION
-    timeout 300 docker pull $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION
-    if [ $? -ne 0 ]; then
-        log_with_script_prefixe "ERROR: Failed to pull the database image (timeout or error)." >&2
+    DOCKER_PULL_TIMEOUT=120
+    log_with_script_prefixe "Pulling images (timeout ${DOCKER_PULL_TIMEOUT}s each)..."
+
+    log_with_script_prefixe "Pulling DB image: $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION"
+    if ! timeout $DOCKER_PULL_TIMEOUT docker pull $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION; then
+        log_with_script_prefixe "ERROR: Failed to pull DB image (timeout ${DOCKER_PULL_TIMEOUT}s or network error)." >&2
         exit 1
     fi
-    timeout 300 docker pull $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION
-    if [ $? -ne 0 ]; then
-        log_with_script_prefixe "ERROR: Failed to pull the audio fingerprinter image (timeout or error)." >&2
+    log_with_script_prefixe "DB image pulled."
+
+    log_with_script_prefixe "Pulling AFP image: $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION"
+    if ! timeout $DOCKER_PULL_TIMEOUT docker pull $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION; then
+        log_with_script_prefixe "ERROR: Failed to pull AFP image (timeout ${DOCKER_PULL_TIMEOUT}s or network error)." >&2
         exit 1
     fi
+    log_with_script_prefixe "AFP image pulled."
+
     log_with_script_prefixe "Images pulled successfully."
 
     if timeout 10 docker ps -a --format '{{.Names}}' | grep -q "^${DB_CONTAINER_NAME}$"; then
