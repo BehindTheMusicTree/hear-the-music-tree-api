@@ -48,7 +48,8 @@ def post_fingerprint_audio(filename: str, title: str, user_id: str) -> tuple[byt
             PostFields.USER_ID: user_id
         }
         headers = {'Content-Type': 'application/json'}
-        response = requests.post(settings.AFP_POST_FULL_URL, json=json_data, headers=headers)
+        url = f"http://{settings.AFP_BASE_URL}:{settings.AFP_PORT}/{settings.AFP_POST_ENDPOINT}"
+        response = requests.post(url, json=json_data, headers=headers)
 
         response_json = response.json()
         if response.status_code == 200:
