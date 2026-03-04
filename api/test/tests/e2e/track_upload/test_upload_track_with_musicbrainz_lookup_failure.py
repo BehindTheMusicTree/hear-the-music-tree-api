@@ -61,6 +61,7 @@ class TestCase(UploadedTrackTestCase):
                     MbRecordingMissingCauseCode.Codes.LOOKUP_FOUND_NO_MATCHING_RECORDING,
                     MbRecordingMissingCauseCode.Codes.TRACK_FILE_FINGERPRINTING_FAILED,
                     MbRecordingMissingCauseCode.Codes.AUDIO_META_AMALYSIS_DISABLED,
+                    MbRecordingMissingCauseCode.Codes.MUSICBRAINZ_LOOKUP_DISABLED,
                     MbRecordingMissingCauseCode.Codes.LOOKUP_FAILED_DUE_TO_INVALID_FINGERPRINT,
                     MbRecordingMissingCauseCode.Codes.LOOKUP_FAILED_DNS_RESOLUTION_ERROR,
                     MbRecordingMissingCauseCode.Codes.LOOKUP_FAILED_WITH_INTERNAL_ERROR,

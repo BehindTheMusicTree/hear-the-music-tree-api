@@ -440,13 +440,13 @@ For detailed information about test structure, organization, and conventions, se
 
 Integration tests that depend on external services (URLs, third-party APIs) use mocks by default so CI runs without network and stays deterministic.
 
-**Mockable services:** Spotify and Google OAuth (view layer); MusicBrainz (AcoustID) lookup and Spotify API client (service layer); AFP / audio fingerprinting (service layer).
+**Mockable services:** Spotify and Google OAuth (view layer); MusicBrainz (AcoustID) lookup and Spotify API client (service layer); AFP / audio fingerprinting (service layer). AFP and MusicBrainz can be toggled independently (`AUDIO_META_ANALYSIS_ENABLED`, `MUSICBRAINZ_LOOKUP_ENABLED`); CI runs with AFP enabled and MusicBrainz disabled.
 
 - **Unit and integration tests:** All mocked.
 - **E2e tests:**
-  - Dev: nothing mocked; e2e can use real providers locally when the corresponding services are enabled (env / feature flags).
-  - CI (`ENV=CI_TEST`): all mocked **except AFP** (e2e can hit the real AFP service).
-- Details: [api/test/README.md](api/test/README.md) (OAuth, Spotify API client, Audio meta analysis).
+  - Dev: nothing mocked; e2e can use real providers locally when the corresponding services are enabled (env / feature flags). When the run includes e2e tests, every enabled service must be reachable or the session fails early.
+  - CI (`ENV=CI_TEST`): all mocked **except AFP** (e2e can hit the real AFP service). AFP must be enabled and reachable or the session fails early.
+- Details: [api/test/README.md](api/test/README.md) (OAuth, Spotify API client, Audio meta analysis, fail early).
 
 Add at least one **real** e2e test when the service can be exercised without blocking CI (see [api/test/README.md](api/test/README.md) § E2E tests: when to add, when they hit real services, and how to run them).
 
