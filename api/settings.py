@@ -93,6 +93,7 @@ SIMPLE_JWT: dict[str, Any] = {}
 
 # Media
 ACOUSTID_API_KEY: str
+AUDIO_FINGERPRINTING_ENABLED: bool
 MUSICBRAINZ_LOOKUP_ENABLED: bool
 MEDIA_ROOT: Path
 MEDIA_URL: str
@@ -716,15 +717,15 @@ def setup_django_constants():
 
 
 def _load_service_feature_flags():
-    global AUDIO_META_ANALYSIS_ENABLED
+    global AUDIO_FINGERPRINTING_ENABLED
     global MUSICBRAINZ_LOOKUP_ENABLED
-    AUDIO_META_ANALYSIS_ENABLED = load_required_bool_env_var('AUDIO_META_ANALYSIS_ENABLED')
+    AUDIO_FINGERPRINTING_ENABLED = load_required_bool_env_var('AUDIO_FINGERPRINTING_ENABLED')
     MUSICBRAINZ_LOOKUP_ENABLED = load_required_bool_env_var('MUSICBRAINZ_LOOKUP_ENABLED')
-    if MUSICBRAINZ_LOOKUP_ENABLED and not AUDIO_META_ANALYSIS_ENABLED:
+    if MUSICBRAINZ_LOOKUP_ENABLED and not AUDIO_FINGERPRINTING_ENABLED:
         raise EnvironmentError(
-            "MUSICBRAINZ_LOOKUP_ENABLED cannot be true when AUDIO_META_ANALYSIS_ENABLED is false (MusicBrainz lookup requires fingerprinting)."
+            "MUSICBRAINZ_LOOKUP_ENABLED cannot be true when AUDIO_FINGERPRINTING_ENABLED is false (MusicBrainz lookup requires fingerprinting)."
         )
-    print_django("The audio meta analysis is enabled." if AUDIO_META_ANALYSIS_ENABLED else "The audio meta analysis is disabled.")
+    print_django("Audio fingerprinting is enabled." if AUDIO_FINGERPRINTING_ENABLED else "Audio fingerprinting is disabled.")
     print_django("MusicBrainz lookup is enabled." if MUSICBRAINZ_LOOKUP_ENABLED else "MusicBrainz lookup is disabled.")
 
 
