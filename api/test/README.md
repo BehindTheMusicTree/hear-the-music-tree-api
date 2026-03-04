@@ -109,7 +109,7 @@ Tests that need real external services (URLs, APIs) have a **mocked** version un
 
 **Fail early:** When the run includes e2e tests, the session checks that required services are reachable and exits immediately if not. In **CI** (`ENV=CI_TEST`), AFP must be enabled and reachable. In **dev**, every service that is enabled in config (Spotify, Google OAuth, AFP, MusicBrainz) must be reachable; if any is unreachable, the run fails with a clear message. Disabled services are not checked. This avoids running many tests only to have e2e fail later.
 
-**AFP vs MusicBrainz:** AFP (fingerprinting) and MusicBrainz (AcoustID) lookup can be toggled independently via `AUDIO_META_ANALYSIS_ENABLED` and `MUSICBRAINZ_LOOKUP_ENABLED`. CI runs with AFP enabled and MusicBrainz disabled so e2e can hit real AFP without requiring ACOUSTID credentials or MB mocks for that path.
+**AFP vs MusicBrainz:** AFP (fingerprinting) and MusicBrainz (AcoustID) lookup can be toggled independently via `AUDIO_FINGERPRINTING_ENABLED` and `MUSICBRAINZ_LOOKUP_ENABLED`. CI runs with AFP enabled and MusicBrainz disabled so e2e can hit real AFP without requiring ACOUSTID credentials or MB mocks for that path.
 
 **Run e2e:** `pytest api/test/tests/e2e/` or `pytest -m e2e`.
 
@@ -183,12 +183,12 @@ The mock returns empty lists/items for search, saved tracks, playlists, and arti
 
 #### Audio meta analysis mocking
 
-Audio meta analysis is the flow that uses AFP (fingerprinting) and MusicBrainz (AcoustID) lookup. AFP and MusicBrainz can be enabled independently (`AUDIO_META_ANALYSIS_ENABLED`, `MUSICBRAINZ_LOOKUP_ENABLED`). Both are mocked so non-e2e tests run that path without real external calls. E2E tests are not mocked and can use real AFP in CI.
+Audio meta analysis is the flow that uses AFP (fingerprinting) and MusicBrainz (AcoustID) lookup. AFP and MusicBrainz can be enabled independently (`AUDIO_FINGERPRINTING_ENABLED`, `MUSICBRAINZ_LOOKUP_ENABLED`). Both are mocked so non-e2e tests run that path without real external calls. E2E tests are not mocked and can use real AFP in CI.
 
 - **MusicBrainz**: `acoustid.lookup` is mocked (returns no results). Same rule as OAuth: when `ENV=CI_TEST`, mocked for all tests; in dev, mocked only for non-e2e so e2e can use real lookup. When `MUSICBRAINZ_LOOKUP_ENABLED=false`, the app does not call the MB service (e.g. in CI); no mock needed for that path.
-- **AFP (non-e2e only)**: `override_settings(AUDIO_META_ANALYSIS_ENABLED=True)` is applied so the path runs regardless of .env, and `get_fingerprinting_result` is mocked to return a successful result. E2e: no override, no AFP mock (real AFP allowed, e.g. in CI).
+- **AFP (non-e2e only)**: `override_settings(AUDIO_FINGERPRINTING_ENABLED=True)` is applied so the path runs regardless of .env, and `get_fingerprinting_result` is mocked to return a successful result. E2e: no override, no AFP mock (real AFP allowed, e.g. in CI).
 - **Tests that need real AFP** (e.g. critical AFP connection test): use `@pytest.mark.requires_real_afp` so the AFP mock is skipped.
-- **Tests that need the disabled path**: use `@pytest.mark.parametrize('enable_audio_metadata_analysis', [False], indirect=True)` and request the `enable_audio_metadata_analysis` fixture; it uses `override_settings(AUDIO_META_ANALYSIS_ENABLED=False)` so the disabled branch is taken.
+- **Tests that need the disabled path**: use `@pytest.mark.parametrize('enable_audio_metadata_analysis', [False], indirect=True)` and request the `enable_audio_metadata_analysis` fixture; it uses `override_settings(AUDIO_FINGERPRINTING_ENABLED=False)` so the disabled branch is taken.
 - **Tests that need AFP enabled but MB disabled**: use `@override_settings(MUSICBRAINZ_LOOKUP_ENABLED=False)`; the app will run fingerprinting and set `MUSICBRAINZ_LOOKUP_DISABLED` as the MB missing cause.
 
 ### Warning Filters

@@ -61,7 +61,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Added
 
-- **Audio meta analysis**: AFP and MB lookup toggled by `AUDIO_META_ANALYSIS_ENABLED` and `MUSICBRAINZ_LOOKUP_ENABLED`. New MB missing cause `MUSICBRAINZ_LOOKUP_DISABLED` (code 9) when AFP on and MB off. CI: AFP on, MB off.
+- **Audio meta analysis**: AFP and MB lookup toggled by `AUDIO_FINGERPRINTING_ENABLED` and `MUSICBRAINZ_LOOKUP_ENABLED`. New MB missing cause `MUSICBRAINZ_LOOKUP_DISABLED` (code 9) when AFP on and MB off. CI: AFP on, MB off.
 
 ### Removed
 
@@ -70,9 +70,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ### Changed
 
 - **E2E fail early**: Session checks required services when e2e run; CI requires AFP enabled and reachable; dev requires all enabled services reachable. See `api/test/README.md` and CONTRIBUTING.
-- **Settings**: `MUSICBRAINZ_LOOKUP_ENABLED` global; TrackFile calls MB only when both it and `AUDIO_META_ANALYSIS_ENABLED` are true. Startup fails if `MUSICBRAINZ_LOOKUP_ENABLED=true` and `AUDIO_META_ANALYSIS_ENABLED=false` (MB needs fingerprint).
-- **Tests**: OAuth/MB/Spotify client mocked per conftest (CI or non-e2e). Audio meta: `override_settings(AUDIO_META_ANALYSIS_ENABLED=...)`, no test-only env override. E2e refactor with `_domain_helper()` and SearchMixin; markers and docs in api/test/README.md.
-- **Service flags**: `SPOTIFY_ENABLED`, `GOOGLE_OAUTH_ENABLED`, `AUDIO_META_ANALYSIS_ENABLED`, `MUSICBRAINZ_LOOKUP_ENABLED` required (no defaults). CI sets Spotify/Google/MB false; deploy sets all true.
+- **Settings**: `MUSICBRAINZ_LOOKUP_ENABLED` global; TrackFile calls MB only when both it and `AUDIO_FINGERPRINTING_ENABLED` are true. Startup fails if `MUSICBRAINZ_LOOKUP_ENABLED=true` and `AUDIO_FINGERPRINTING_ENABLED=false` (MB needs fingerprint).
+- **Tests**: OAuth/MB/Spotify client mocked per conftest (CI or non-e2e). Audio meta: `override_settings(AUDIO_FINGERPRINTING_ENABLED=...)`, no test-only env override. E2e refactor with `_domain_helper()` and SearchMixin; markers and docs in api/test/README.md.
+- **Service flags**: `SPOTIFY_ENABLED`, `GOOGLE_OAUTH_ENABLED`, `AUDIO_FINGERPRINTING_ENABLED`, `MUSICBRAINZ_LOOKUP_ENABLED` required (no defaults). CI sets Spotify/Google/MB false; deploy sets all true.
+- **Settings**: Renamed `AUDIO_META_ANALYSIS_ENABLED` to `AUDIO_FINGERPRINTING_ENABLED` (env, settings, workflows, docs). Update `.env` and CI/deploy config to use the new name.
 
 ### Documentation
 

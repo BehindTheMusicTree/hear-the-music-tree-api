@@ -440,7 +440,7 @@ For detailed information about test structure, organization, and conventions, se
 
 Integration tests that depend on external services (URLs, third-party APIs) use mocks by default so CI runs without network and stays deterministic.
 
-**Mockable services:** Spotify and Google OAuth (view layer); MusicBrainz (AcoustID) lookup and Spotify API client (service layer); AFP / audio fingerprinting (service layer). AFP and MusicBrainz can be toggled independently (`AUDIO_META_ANALYSIS_ENABLED`, `MUSICBRAINZ_LOOKUP_ENABLED`); CI runs with AFP enabled and MusicBrainz disabled.
+**Mockable services:** Spotify and Google OAuth (view layer); MusicBrainz (AcoustID) lookup and Spotify API client (service layer); AFP / audio fingerprinting (service layer). AFP and MusicBrainz can be toggled independently (`AUDIO_FINGERPRINTING_ENABLED`, `MUSICBRAINZ_LOOKUP_ENABLED`); CI runs with AFP enabled and MusicBrainz disabled.
 
 - **Unit and integration tests:** All mocked.
 - **E2e tests:**
