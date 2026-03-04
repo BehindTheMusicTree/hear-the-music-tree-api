@@ -438,7 +438,17 @@ For detailed information about test structure, organization, and conventions, se
 
 **Mocked vs real (e2e) tests:**
 
-Integration tests that depend on external services (e.g. URLs, third-party APIs) use mocks by default so CI runs without network and stays deterministic. Spotify and Google OAuth are mocked at the view layer; MusicBrainz (AcoustID) lookup and the Spotify API client (library, search, playlists) are mocked at the service layer: when `ENV=CI_TEST` they are mocked for all tests (including e2e); in dev they are mocked only for non-e2e tests so e2e can use real providers locally (see `api/test/README.md` § OAuth mocking, § MusicBrainz mocking, § Spotify API client mocking). To avoid hiding real integration bugs, we add at least one **real** test for the same behaviour when feasible. That test lives under **`tests/e2e/`** (directory split by test level is the usual convention: unit / integration / e2e). It is marked `@pytest.mark.e2e`, performs the real request (e.g. real URL download), and **skips** when the external service is unreachable. Default CI runs pass; with network, the real path is exercised. Run all e2e tests by path or marker: `pytest api/test/tests/e2e/` or `pytest -m e2e`.
+Integration tests that depend on external services (URLs, third-party APIs) use mocks by default so CI runs without network and stays deterministic.
+
+**Mockable services:** Spotify and Google OAuth (view layer); MusicBrainz (AcoustID) lookup and Spotify API client (service layer); AFP / audio fingerprinting (service layer).
+
+- **Unit and integration tests:** All mocked.
+- **E2e tests:**
+  - Dev: nothing mocked; e2e can use real providers locally when the corresponding services are enabled (env / feature flags).
+  - CI (`ENV=CI_TEST`): all mocked **except AFP** (e2e can hit the real AFP service).
+- Details: [api/test/README.md](api/test/README.md) (OAuth, Spotify API client, Audio meta analysis).
+
+Add at least one **real** e2e test for the same behaviour when the service can be exercised in a test run without blocking CI: e.g. the service is under our control (AFP in CI) or the test **skips** when the third-party service is unreachable so CI still passes. Put it under **`tests/e2e/`**, mark it `@pytest.mark.e2e`, perform the real request (e.g. real URL), and skip when the service is unreachable. Run e2e: `pytest api/test/tests/e2e/` or `pytest -m e2e`.
 
 **CI Testing:**
 
