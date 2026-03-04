@@ -182,40 +182,41 @@ def _run_has_e2e_tests(session: Session) -> bool:
     return False
 
 
-def _check_url_reachable(url: str) -> bool:
+def _check_url_reachable(url: str) -> tuple[bool, str]:
     try:
         req = urllib.request.Request(url, method="HEAD")
         urllib.request.urlopen(req, timeout=E2E_REACHABILITY_TIMEOUT_SEC)
-        return True
-    except Exception:
+        return True, ""
+    except Exception as e:
         try:
             urllib.request.urlopen(url, timeout=E2E_REACHABILITY_TIMEOUT_SEC)
-            return True
-        except Exception:
-            return False
+            return True, ""
+        except Exception as e2:
+            reason = str(e2) or type(e2).__name__
+            return False, reason
 
 
-def _check_afp_reachable() -> bool:
+def _check_afp_reachable() -> tuple[bool, str]:
+    url = getattr(settings, "AFP_POST_FULL_URL", None)
+    if not url:
+        return False, "AFP_POST_FULL_URL not set (AFP disabled or not configured)"
     try:
-        url = getattr(settings, "AFP_POST_FULL_URL", None)
-        if not url:
-            return False
         req = urllib.request.Request(url, method="GET")
         urllib.request.urlopen(req, timeout=E2E_REACHABILITY_TIMEOUT_SEC)
-        return True
-    except Exception:
-        return False
+        return True, ""
+    except Exception as e:
+        return False, str(e) or type(e).__name__
 
 
-def _check_spotify_reachable() -> bool:
+def _check_spotify_reachable() -> tuple[bool, str]:
     return _check_url_reachable("https://accounts.spotify.com")
 
 
-def _check_google_reachable() -> bool:
+def _check_google_reachable() -> tuple[bool, str]:
     return _check_url_reachable("https://accounts.google.com")
 
 
-def _check_musicbrainz_reachable() -> bool:
+def _check_musicbrainz_reachable() -> tuple[bool, str]:
     return _check_url_reachable("https://api.acoustid.org")
 
 
@@ -229,24 +230,34 @@ def pytest_collection_finish(session: Session) -> None:
                 "E2E tests require AFP. In CI (ENV=CI_TEST), AFP_ENABLED must be true.",
                 returncode=2,
             )
-        if not _check_afp_reachable():
+        ok, reason = _check_afp_reachable()
+        if not ok:
             pytest.exit(
-                "E2E tests require AFP. In CI (ENV=CI_TEST), the AFP service is unreachable.",
+                f"E2E tests require AFP. In CI (ENV=CI_TEST), the AFP service is unreachable. Reason: {reason}",
                 returncode=2,
             )
         return
-    failures = []
-    if getattr(settings, "SPOTIFY_ENABLED", False) and not _check_spotify_reachable():
-        failures.append("Spotify")
-    if getattr(settings, "GOOGLE_OAUTH_ENABLED", False) and not _check_google_reachable():
-        failures.append("Google OAuth")
-    if getattr(settings, "AFP_ENABLED", False) and not _check_afp_reachable():
-        failures.append("AFP")
-    if getattr(settings, "MUSICBRAINZ_LOOKUP_ENABLED", False) and not _check_musicbrainz_reachable():
-        failures.append("MusicBrainz (AcoustID)")
+    failures: list[str] = []
+    if getattr(settings, "SPOTIFY_ENABLED", False):
+        ok, reason = _check_spotify_reachable()
+        if not ok:
+            failures.append(f"Spotify ({reason})")
+    if getattr(settings, "GOOGLE_OAUTH_ENABLED", False):
+        ok, reason = _check_google_reachable()
+        if not ok:
+            failures.append(f"Google OAuth ({reason})")
+    if getattr(settings, "AFP_ENABLED", False):
+        ok, reason = _check_afp_reachable()
+        if not ok:
+            failures.append(f"AFP ({reason})")
+    if getattr(settings, "MUSICBRAINZ_LOOKUP_ENABLED", False):
+        ok, reason = _check_musicbrainz_reachable()
+        if not ok:
+            failures.append(f"MusicBrainz (AcoustID) ({reason})")
     if failures:
         pytest.exit(
-            f"E2E run requires all enabled services to be reachable. Unreachable: {', '.join(failures)}.",
+            "E2E run requires all enabled services to be reachable. Unreachable: "
+            + "; ".join(failures),
             returncode=2,
         )
 
