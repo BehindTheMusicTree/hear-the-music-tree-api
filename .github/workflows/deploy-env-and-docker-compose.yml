@@ -267,7 +267,7 @@ jobs:
             echo "APP_PORT=${{ vars.APP_PORT }}"
             echo 'DEBUG=true'
             echo 'APP_IS_EXPOSED=true'
-            echo 'AUDIO_FINGERPRINTING_ENABLED=true'
+            echo 'AFP_ENABLED=true'
             echo "DJANGO_SECRET_KEY='${{ secrets.DJANGO_SECRET_KEY }}'"
             echo "MUSICBRAINZ_LOOKUP_ENABLED=true"
             echo "ACOUSTID_API_KEY='${{ secrets.ACOUSTID_API_KEY }}'"

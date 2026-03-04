@@ -124,7 +124,7 @@ def _make_success_fingerprinting_result():
 def mock_audio_meta_analysis_outside_e2e(request):
     """Run audio meta analysis path with mocked AFP in non-e2e tests; e2e tests use real AFP (e.g. in CI).
 
-    - Non-e2e: override_settings(AUDIO_FINGERPRINTING_ENABLED=True) so the path runs regardless of
+    - Non-e2e: override_settings(AFP_ENABLED=True) so the path runs regardless of
       .env; mock get_fingerprinting_result so no real AFP calls. Tests that need real AFP (e.g.
       critical AFP connection test) must use @pytest.mark.requires_real_afp to skip the AFP mock.
     - E2e: no override, no mock; e2e can use real AFP in CI.
@@ -134,7 +134,7 @@ def mock_audio_meta_analysis_outside_e2e(request):
         yield
         return
 
-    with override_settings(AUDIO_FINGERPRINTING_ENABLED=True):
+    with override_settings(AFP_ENABLED=True):
         if request.node.get_closest_marker("requires_real_afp"):
             yield
         else:
@@ -224,9 +224,9 @@ def pytest_collection_finish(session: Session) -> None:
         return
     is_ci = os.environ.get("ENV") == "CI_TEST"
     if is_ci:
-        if not getattr(settings, "AUDIO_FINGERPRINTING_ENABLED", False):
+        if not getattr(settings, "AFP_ENABLED", False):
             pytest.exit(
-                "E2E tests require AFP. In CI (ENV=CI_TEST), AUDIO_FINGERPRINTING_ENABLED must be true.",
+                "E2E tests require AFP. In CI (ENV=CI_TEST), AFP_ENABLED must be true.",
                 returncode=2,
             )
         if not _check_afp_reachable():
@@ -240,7 +240,7 @@ def pytest_collection_finish(session: Session) -> None:
         failures.append("Spotify")
     if getattr(settings, "GOOGLE_OAUTH_ENABLED", False) and not _check_google_reachable():
         failures.append("Google OAuth")
-    if getattr(settings, "AUDIO_FINGERPRINTING_ENABLED", False) and not _check_afp_reachable():
+    if getattr(settings, "AFP_ENABLED", False) and not _check_afp_reachable():
         failures.append("AFP")
     if getattr(settings, "MUSICBRAINZ_LOOKUP_ENABLED", False) and not _check_musicbrainz_reachable():
         failures.append("MusicBrainz (AcoustID)")
@@ -321,13 +321,13 @@ def pytest_collection_modifyitems(config, items):
 def enable_audio_metadata_analysis(request):
     """Override audio meta analysis for this test via override_settings (inner override wins over autouse).
 
-    Non-e2e tests get AUDIO_FINGERPRINTING_ENABLED=True and mocked AFP from mock_audio_meta_analysis_outside_e2e.
+    Non-e2e tests get AFP_ENABLED=True and mocked AFP from mock_audio_meta_analysis_outside_e2e.
     Use this fixture with parametrize(..., [False], indirect=True) when a test needs the disabled path;
-    request it in the test so override_settings(AUDIO_FINGERPRINTING_ENABLED=False) applies. E2e can request
+    request it in the test so override_settings(AFP_ENABLED=False) applies. E2e can request
     this fixture (default True) if needed.
     """
     enable = getattr(request, "param", True)
-    with override_settings(AUDIO_FINGERPRINTING_ENABLED=enable):
+    with override_settings(AFP_ENABLED=enable):
         yield
 
 

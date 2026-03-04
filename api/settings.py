@@ -93,7 +93,7 @@ SIMPLE_JWT: dict[str, Any] = {}
 
 # Media
 ACOUSTID_API_KEY: str
-AUDIO_FINGERPRINTING_ENABLED: bool
+AFP_ENABLED: bool
 MUSICBRAINZ_LOOKUP_ENABLED: bool
 MEDIA_ROOT: Path
 MEDIA_URL: str
@@ -717,15 +717,15 @@ def setup_django_constants():
 
 
 def _load_service_feature_flags():
-    global AUDIO_FINGERPRINTING_ENABLED
+    global AFP_ENABLED
     global MUSICBRAINZ_LOOKUP_ENABLED
-    AUDIO_FINGERPRINTING_ENABLED = load_required_bool_env_var('AUDIO_FINGERPRINTING_ENABLED')
+    AFP_ENABLED = load_required_bool_env_var('AFP_ENABLED')
     MUSICBRAINZ_LOOKUP_ENABLED = load_required_bool_env_var('MUSICBRAINZ_LOOKUP_ENABLED')
-    if MUSICBRAINZ_LOOKUP_ENABLED and not AUDIO_FINGERPRINTING_ENABLED:
+    if MUSICBRAINZ_LOOKUP_ENABLED and not AFP_ENABLED:
         raise EnvironmentError(
-            "MUSICBRAINZ_LOOKUP_ENABLED cannot be true when AUDIO_FINGERPRINTING_ENABLED is false (MusicBrainz lookup requires fingerprinting)."
+            "MUSICBRAINZ_LOOKUP_ENABLED cannot be true when AFP_ENABLED is false (MusicBrainz lookup requires fingerprinting)."
         )
-    print_django("Audio fingerprinting is enabled." if AUDIO_FINGERPRINTING_ENABLED else "Audio fingerprinting is disabled.")
+    print_django("AFP is enabled." if AFP_ENABLED else "AFP is disabled.")
     print_django("MusicBrainz lookup is enabled." if MUSICBRAINZ_LOOKUP_ENABLED else "MusicBrainz lookup is disabled.")
 
 
@@ -875,7 +875,8 @@ else:
     if not FILE_UPLOAD_TEMP_DIR:
         print_django("TMP_UPLOADED_FILES/FILE_UPLOAD_TEMP_DIR is not set. The app will not handle media files.")
         FILE_UPLOAD_ENABLED = False
-        for var_name in ['AFP_PORT',
+        for var_name in ['AFP_ENABLED',
+                         'AFP_PORT',
                          'AFP_CONTAINER_NAME',
                          'AFP_POST_ENDPOINT',
                          'ACOUSTID_API_KEY',
@@ -886,8 +887,12 @@ else:
                     TMP_UPLOADED_FILES/FILE_UPLOAD_TEMP_DIR is not.")
     else:
         FILE_UPLOAD_ENABLED = True
-        AFP_CONTAINER_NAME = load_required_str_env_var('AFP_CONTAINER_NAME')
         setup_media_dirs()
-        setup_afp_connection()
+        if AFP_ENABLED:
+            AFP_CONTAINER_NAME = load_required_str_env_var('AFP_CONTAINER_NAME')
+            setup_afp_connection()
+        else:
+            global AFP_POST_FULL_URL
+            AFP_POST_FULL_URL = ""
 
 print_django("Finished loading settings.")
