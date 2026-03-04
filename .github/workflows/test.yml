@@ -83,7 +83,7 @@ jobs:
       DEBUG: true
       DB_IS_NEEDED: true
       APP_IS_EXPOSED: false
-      AUDIO_FINGERPRINTING_ENABLED: true
+      AFP_ENABLED: true
       SPOTIFY_ENABLED: false
       GOOGLE_OAUTH_ENABLED: false
       MUSICBRAINZ_LOOKUP_ENABLED: false
