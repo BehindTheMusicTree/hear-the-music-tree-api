@@ -13,9 +13,10 @@ All test files are located in the `tests/` subdirectory to keep the test directo
 - [Running Tests](#running-tests)
 - [Test Naming Convention](#test-naming-convention)
 - [Test Configuration](#test-configuration)
-  - [OAuth mocking](#oauth-mocking)
-  - [Spotify API client mocking](#spotify-api-client-mocking)
-  - [Audio meta analysis mocking](#audio-meta-analysis-mocking)
+  - [Mocking](#mocking)
+    - [OAuth mocking](#oauth-mocking)
+    - [Spotify API client mocking](#spotify-api-client-mocking)
+    - [Audio meta analysis mocking](#audio-meta-analysis-mocking)
   - [Warning Filters](#warning-filters)
 
 ## Test Categories
@@ -100,7 +101,13 @@ End-to-end tests test complete user workflows and critical paths.
 - May include external service integrations
 - Slower execution
 
-Tests that need real external services (URLs, APIs) have a **mocked** version under `tests/integration/` (no network) and a **real** version under **`tests/e2e/`**. E2E tests are marked `@pytest.mark.e2e` and skip when the service is unreachable. Run e2e by directory or marker: `pytest api/test/tests/e2e/` or `pytest -m e2e`.
+Tests that need real external services (URLs, APIs) have a **mocked** version under `tests/integration/` (no network) and a **real** version under **`tests/e2e/`**. E2E tests are marked `@pytest.mark.e2e`. When run locally with the intent to hit real services, they **fail** (do not skip) when the service is unreachable so we investigate (config, network, service health). To avoid running e2e tests that need a service you have not configured, run a subset (e.g. `pytest api/test/tests/integration/`) or exclude the e2e tests that require that service.
+
+**When to add a real e2e test:** Add at least one **real** e2e test for the same behaviour when the service can be exercised without blocking CI: e.g. the service is under our control (AFP in CI) or the test fails when the third-party service is unreachable (so we investigate). Put it under **`tests/e2e/`**, mark it `@pytest.mark.e2e`, perform the real request, and **fail** (do not skip) when the service is unreachable when run in an environment where the service is expected to be available.
+
+**When do e2e tests hit real services?** In CI (`ENV=CI_TEST`), Spotify, Google OAuth, and MusicBrainz are mocked for all tests (including e2e), so those e2e tests only hit real providers when run **locally** with the corresponding services enabled. AFP is not mocked for e2e, so AFP e2e can run for real in CI if the AFP service is available.
+
+**Run e2e:** `pytest api/test/tests/e2e/` or `pytest -m e2e`.
 
 ## Running Tests
 
@@ -145,19 +152,23 @@ The test configuration is located in `api/test/tests/conftest.py` and includes:
 - Test execution ordering (critical → unit → integration → e2e)
 - Critical test failure handling
 - Test user directory cleanup
-- OAuth mocking (Spotify and Google): see [OAuth mocking](#oauth-mocking)
-- Audio meta analysis mocking: see [Audio meta analysis mocking](#audio-meta-analysis-mocking)
+- Mocking (OAuth, Spotify API client, audio meta analysis): see [Mocking](#mocking)
+- Warning filters: see [Warning Filters](#warning-filters)
 
-### OAuth mocking
+### Mocking
 
-Spotify and Google OAuth are mocked at the view layer via an autouse fixture so tests do not call real providers by default. CI sets `SPOTIFY_ENABLED=false` so Spotify credentials are not required.
+External services are mocked so CI and non-e2e tests do not call real providers. See below for each.
+
+#### OAuth mocking
+
+Spotify and Google OAuth are mocked at the view layer via an autouse fixture so tests do not call real providers by default. CI sets `SPOTIFY_ENABLED=false` and `GOOGLE_OAUTH_ENABLED=false` so Spotify and Google credentials are not required.
 
 - **When ENV=CI_TEST**: OAuth is mocked for **all** tests (unit, integration, and e2e). No real credentials or network calls.
 - **In dev**: OAuth is mocked only for **non-e2e** tests. E2E tests are not mocked so you can run them with real Spotify/Google or per-test mocks locally.
 
 E2E tests that need a specific OAuth response can patch the view’s service class as usual; in CI they will still see the global mock unless they override it.
 
-### Spotify API client mocking
+#### Spotify API client mocking
 
 The Spotify Web API client (`SpotifyClient` used for library, search, playlists, artist batch) is mocked via an autouse fixture so tests do not call the real Spotify API. Uses the same rule as OAuth.
 
@@ -166,7 +177,7 @@ The Spotify Web API client (`SpotifyClient` used for library, search, playlists,
 
 The mock returns empty lists/items for search, saved tracks, playlists, and artist batch. Tests that need specific responses patch `SpotifyClient` (or the manager) in their scope.
 
-### Audio meta analysis mocking
+#### Audio meta analysis mocking
 
 Audio meta analysis is the flow that uses AFP (fingerprinting) and MusicBrainz (AcoustID) lookup. Both are mocked so non-e2e tests run that path without real external calls. E2E tests are not mocked and can use real AFP in CI.
 
