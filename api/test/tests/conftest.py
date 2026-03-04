@@ -1,5 +1,6 @@
 import os
 import shutil
+import urllib.error
 import urllib.request
 from pathlib import Path
 from unittest.mock import MagicMock, patch
@@ -187,21 +188,30 @@ def _check_url_reachable(url: str) -> tuple[bool, str]:
         req = urllib.request.Request(url, method="HEAD")
         urllib.request.urlopen(req, timeout=E2E_REACHABILITY_TIMEOUT_SEC)
         return True, ""
+    except urllib.error.HTTPError as e:
+        if 400 <= e.code < 500:
+            return True, ""
+        return False, str(e) or type(e).__name__
     except Exception as e:
         try:
             urllib.request.urlopen(url, timeout=E2E_REACHABILITY_TIMEOUT_SEC)
             return True, ""
+        except urllib.error.HTTPError as e2:
+            if 400 <= e2.code < 500:
+                return True, ""
+            return False, str(e2) or type(e2).__name__
         except Exception as e2:
-            reason = str(e2) or type(e2).__name__
-            return False, reason
+            return False, str(e2) or type(e2).__name__
 
 
 def _check_afp_reachable() -> tuple[bool, str]:
-    url = getattr(settings, "AFP_POST_FULL_URL", None)
-    if not url:
-        return False, "AFP_POST_FULL_URL not set (AFP disabled or not configured)"
+    base = getattr(settings, "AFP_BASE_URL", None)
+    port = getattr(settings, "AFP_PORT", None)
+    if not base or not port:
+        return False, "AFP_BASE_URL/AFP_PORT not set (AFP disabled or not configured)"
+    health_url = f"http://{base}:{port}/health/"
     try:
-        req = urllib.request.Request(url, method="GET")
+        req = urllib.request.Request(health_url, method="GET")
         urllib.request.urlopen(req, timeout=E2E_REACHABILITY_TIMEOUT_SEC)
         return True, ""
     except Exception as e:

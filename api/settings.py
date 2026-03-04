@@ -67,7 +67,9 @@ CRITERIA_TREE_IMPORT_MAX_ROOT_COUNT: int
 CRITERIA_TREE_IMPORT_MAX_TOTAL_COUNT: int
 
 # AFP Connection
-AFP_POST_FULL_URL: str
+AFP_PORT: str
+AFP_BASE_URL: str
+AFP_POST_ENDPOINT: str
 
 # Static Files
 STATIC_ROOT: Path
@@ -496,6 +498,9 @@ def setup_app_constants():
 
 
 def setup_afp_connection():
+    global AFP_BASE_URL
+    global AFP_PORT
+    global AFP_POST_ENDPOINT
     if APP_IS_EXPOSED:
         print_django("The app is exposed. The AFP host is the AFP container name.")
         AFP_BASE_URL = AFP_CONTAINER_NAME
@@ -506,9 +511,7 @@ def setup_afp_connection():
     AFP_PORT = load_required_str_env_var('AFP_PORT')
     AFP_POST_ENDPOINT = load_required_str_env_var('AFP_POST_ENDPOINT')
 
-    global AFP_POST_FULL_URL
-    AFP_POST_FULL_URL = "http://" + AFP_BASE_URL + ":" + AFP_PORT + '/' + AFP_POST_ENDPOINT
-    print_django(f"AFP_POST_FULL_URL: {AFP_POST_FULL_URL}")
+    print_django(f"AFP: http://{AFP_BASE_URL}:{AFP_PORT}/{AFP_POST_ENDPOINT}")
 
 
 def setup_data_dir():
@@ -891,7 +894,5 @@ else:
         if AFP_ENABLED:  # pyright: ignore[reportUnboundVariable]
             AFP_CONTAINER_NAME = load_required_str_env_var('AFP_CONTAINER_NAME')
             setup_afp_connection()
-        else:
-            AFP_POST_FULL_URL = ""
 
 print_django("Finished loading settings.")
