@@ -151,10 +151,10 @@ The test configuration is located in `api/test/tests/conftest.py` and includes:
 
 ### OAuth mocking
 
-Spotify and Google OAuth are mocked at the view layer via an autouse fixture so tests do not call real providers by default.
+Spotify and Google OAuth are mocked at the view layer via an autouse fixture so tests do not call real providers by default. CI sets `SPOTIFY_ENABLED=false` so Spotify credentials are not required.
 
 - **When ENV=CI_TEST**: OAuth is mocked for **all** tests (unit, integration, and e2e). No real credentials or network calls.
-- **In dev**: OAuth is mocked only for **non-e2e** tests. E2E tests are not mocked so you can run them with real OAuth or per-test mocks locally.
+- **In dev**: OAuth is mocked only for **non-e2e** tests. E2E tests are not mocked so you can run them with real Spotify/Google or per-test mocks locally.
 
 E2E tests that need a specific OAuth response can patch the view’s service class as usual; in CI they will still see the global mock unless they override it.
 

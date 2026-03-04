@@ -730,8 +730,8 @@ def setup_media_dirs():
     global SPOTIFY_CLIENT_SECRET
     global SPOTIFY_REDIRECT_URI
     global SPOTIFY_SCOPES
-    spotify_oauth_enabled = load_required_bool_env_var('SPOTIFY_OAUTH_ENABLED')
-    if spotify_oauth_enabled:
+    spotify_enabled = load_required_bool_env_var('SPOTIFY_ENABLED')
+    if spotify_enabled:
         SPOTIFY_CLIENT_ID = load_required_str_env_var('SPOTIFY_CLIENT_ID')
         print_django(f"SPOTIFY_CLIENT_ID = {SPOTIFY_CLIENT_ID}")
         SPOTIFY_CLIENT_SECRET = load_required_secret_env_var('SPOTIFY_CLIENT_SECRET')
@@ -746,7 +746,7 @@ def setup_media_dirs():
         SPOTIFY_CLIENT_SECRET = load_optional_secret_env_var('SPOTIFY_CLIENT_SECRET')
         SPOTIFY_REDIRECT_URI = load_optional_str_env_var('SPOTIFY_REDIRECT_URI')
         SPOTIFY_SCOPES = load_optional_str_env_var('SPOTIFY_SCOPES')
-        print_django("Spotify OAuth disabled; credentials not loaded.")
+        print_django("Spotify disabled; credentials not loaded.")
 
     global GOOGLE_CLIENT_ID
     global GOOGLE_CLIENT_SECRET

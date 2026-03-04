@@ -270,7 +270,7 @@ jobs:
             echo "DJANGO_SECRET_KEY='${{ secrets.DJANGO_SECRET_KEY }}'"
             echo "MUSICBRAINZ_LOOKUP_ENABLED=true"
             echo "ACOUSTID_API_KEY='${{ secrets.ACOUSTID_API_KEY }}'"
-            echo "SPOTIFY_OAUTH_ENABLED=true"
+            echo "SPOTIFY_ENABLED=true"
             echo "SPOTIFY_CLIENT_ID=${SPOTIFY_ID}"
             echo "SPOTIFY_CLIENT_SECRET='${{ secrets.SPOTIFY_CLIENT_SECRET }}'"
             echo "SPOTIFY_REDIRECT_URI='https://${FRONT_HOST}.${{ vars.DOMAIN_NAME }}/${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}'"
