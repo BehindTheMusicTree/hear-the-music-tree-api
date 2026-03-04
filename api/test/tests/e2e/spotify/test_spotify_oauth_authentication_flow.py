@@ -26,9 +26,9 @@ class TestCase(AppTestCase):
     6. System returns JWT tokens for API authentication
     7. User uses JWT token to access API
 
-    Note: This test uses mocks for Spotify OAuth. For real E2E testing,
-    configure actual Spotify OAuth credentials. In CI, conftest mocks OAuth;
-    this test overrides with its own mock so the flow is deterministic.
+    Note: This test uses mocks for Spotify (OAuth + API). For real E2E testing,
+    set SPOTIFY_ENABLED=true and configure actual Spotify credentials. In CI,
+    conftest mocks Spotify; this test overrides with its own mock so the flow is deterministic.
     """
 
     @mock.patch('api.view.spotify_auth.SpotifyOAuthService')

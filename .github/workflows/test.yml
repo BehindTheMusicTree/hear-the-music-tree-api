@@ -83,7 +83,7 @@ jobs:
       DEBUG: true
       DB_IS_NEEDED: true
       APP_IS_EXPOSED: false
-      SPOTIFY_OAUTH_ENABLED: false
+      SPOTIFY_ENABLED: false
       GOOGLE_OAUTH_ENABLED: false
       MUSICBRAINZ_LOOKUP_ENABLED: false
       DB_SUPERUSER_PASSWORD: ${{ secrets.DB_SUPERUSER_PASSWORD }}
