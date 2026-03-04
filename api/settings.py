@@ -815,14 +815,14 @@ APP_IS_EXPOSED = load_required_bool_env_var('APP_IS_EXPOSED')
 
 set_secret_key()
 
+load_calculated_env_paths(BASE_DIR)
+
 if 'pytest' in sys.argv[0]:
     print_django("settings.py is being executed because of a pytest command.")
-    load_calculated_env_paths(BASE_DIR)
     PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']  # Less secured to speed up tests
 
 if 'loaddata' in sys.argv:
     print_django("settings.py is being executed because of a loaddata command.")
-    load_calculated_env_paths(BASE_DIR)
     STATIC_FILES_STATE = StaticFileStates.NOT_NEEDED
     setup_app_constants()
     setup_data_dir()
@@ -833,7 +833,6 @@ if 'loaddata' in sys.argv:
     setup_templates()  # Needed to use the admin application
     setup_media_dirs()  # Needed for the User model library path field
 else:
-    load_calculated_env_paths(BASE_DIR)
     _load_service_feature_flags()
     setup_app_exposure_if_needed()
     setup_app_constants()
