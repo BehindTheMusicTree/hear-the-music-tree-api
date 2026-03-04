@@ -93,6 +93,7 @@ SIMPLE_JWT: dict[str, Any] = {}
 
 # Media
 ACOUSTID_API_KEY: str
+MUSICBRAINZ_LOOKUP_ENABLED: bool
 MEDIA_ROOT: Path
 MEDIA_URL: str
 LIBRARIES_DIR_NAME: str
@@ -716,8 +717,15 @@ def setup_django_constants():
 
 def _load_service_feature_flags():
     global AUDIO_META_ANALYSIS_ENABLED
+    global MUSICBRAINZ_LOOKUP_ENABLED
     AUDIO_META_ANALYSIS_ENABLED = load_required_bool_env_var('AUDIO_META_ANALYSIS_ENABLED')
+    MUSICBRAINZ_LOOKUP_ENABLED = load_required_bool_env_var('MUSICBRAINZ_LOOKUP_ENABLED')
+    if MUSICBRAINZ_LOOKUP_ENABLED and not AUDIO_META_ANALYSIS_ENABLED:
+        raise EnvironmentError(
+            "MUSICBRAINZ_LOOKUP_ENABLED cannot be true when AUDIO_META_ANALYSIS_ENABLED is false (MusicBrainz lookup requires fingerprinting)."
+        )
     print_django("The audio meta analysis is enabled." if AUDIO_META_ANALYSIS_ENABLED else "The audio meta analysis is disabled.")
+    print_django("MusicBrainz lookup is enabled." if MUSICBRAINZ_LOOKUP_ENABLED else "MusicBrainz lookup is disabled.")
 
 
 def setup_media_dirs():
@@ -726,8 +734,7 @@ def setup_media_dirs():
     _load_service_feature_flags()
 
     global ACOUSTID_API_KEY
-    musicbrainz_lookup_enabled = load_required_bool_env_var('MUSICBRAINZ_LOOKUP_ENABLED')
-    if musicbrainz_lookup_enabled:
+    if MUSICBRAINZ_LOOKUP_ENABLED:
         ACOUSTID_API_KEY = load_required_secret_env_var('ACOUSTID_API_KEY')
         print_django("MusicBrainz lookup enabled; ACOUSTID_API_KEY loaded.")
     else:

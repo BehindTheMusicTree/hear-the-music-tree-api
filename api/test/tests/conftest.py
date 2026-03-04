@@ -1,5 +1,6 @@
 import os
 import shutil
+import urllib.request
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -7,6 +8,8 @@ import pytest
 from _pytest.main import Session
 from django.test import override_settings
 from api import settings
+
+E2E_REACHABILITY_TIMEOUT_SEC = 5
 
 
 @pytest.fixture(autouse=True)
@@ -170,6 +173,82 @@ def pytest_configure(config):
         "markers",
         "requires_real_afp: skip AFP mock so the test calls the real audio fingerprinting service",
     )
+
+
+def _run_has_e2e_tests(session: Session) -> bool:
+    for item in session.items:
+        if item.get_closest_marker("e2e") or "/tests/e2e/" in str(item.fspath):
+            return True
+    return False
+
+
+def _check_url_reachable(url: str) -> bool:
+    try:
+        req = urllib.request.Request(url, method="HEAD")
+        urllib.request.urlopen(req, timeout=E2E_REACHABILITY_TIMEOUT_SEC)
+        return True
+    except Exception:
+        try:
+            urllib.request.urlopen(url, timeout=E2E_REACHABILITY_TIMEOUT_SEC)
+            return True
+        except Exception:
+            return False
+
+
+def _check_afp_reachable() -> bool:
+    try:
+        url = getattr(settings, "AFP_POST_FULL_URL", None)
+        if not url:
+            return False
+        req = urllib.request.Request(url, method="GET")
+        urllib.request.urlopen(req, timeout=E2E_REACHABILITY_TIMEOUT_SEC)
+        return True
+    except Exception:
+        return False
+
+
+def _check_spotify_reachable() -> bool:
+    return _check_url_reachable("https://accounts.spotify.com")
+
+
+def _check_google_reachable() -> bool:
+    return _check_url_reachable("https://accounts.google.com")
+
+
+def _check_musicbrainz_reachable() -> bool:
+    return _check_url_reachable("https://api.acoustid.org")
+
+
+def pytest_collection_finish(session: Session) -> None:
+    if not _run_has_e2e_tests(session):
+        return
+    is_ci = os.environ.get("ENV") == "CI_TEST"
+    if is_ci:
+        if not getattr(settings, "AUDIO_META_ANALYSIS_ENABLED", False):
+            pytest.exit(
+                "E2E tests require AFP. In CI (ENV=CI_TEST), AUDIO_META_ANALYSIS_ENABLED must be true.",
+                returncode=2,
+            )
+        if not _check_afp_reachable():
+            pytest.exit(
+                "E2E tests require AFP. In CI (ENV=CI_TEST), the AFP service is unreachable.",
+                returncode=2,
+            )
+        return
+    failures = []
+    if getattr(settings, "SPOTIFY_ENABLED", False) and not _check_spotify_reachable():
+        failures.append("Spotify")
+    if getattr(settings, "GOOGLE_OAUTH_ENABLED", False) and not _check_google_reachable():
+        failures.append("Google OAuth")
+    if getattr(settings, "AUDIO_META_ANALYSIS_ENABLED", False) and not _check_afp_reachable():
+        failures.append("AFP")
+    if getattr(settings, "MUSICBRAINZ_LOOKUP_ENABLED", False) and not _check_musicbrainz_reachable():
+        failures.append("MusicBrainz (AcoustID)")
+    if failures:
+        pytest.exit(
+            f"E2E run requires all enabled services to be reachable. Unreachable: {', '.join(failures)}.",
+            returncode=2,
+        )
 
 
 def pytest_runtest_makereport(item, call):

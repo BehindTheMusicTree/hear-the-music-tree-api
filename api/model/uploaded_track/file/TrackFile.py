@@ -141,6 +141,10 @@ class TrackFile(PrivateStandardResource):
                     user=self.user,
                     code=MbRecordingMissingCauseCode.Codes.TRACK_FILE_FINGERPRINTING_FAILED,
                     message=f"Fingerprinting failed.")
+        elif not settings.MUSICBRAINZ_LOOKUP_ENABLED:
+            self.musicbrainz_recording_missing_cause = MbRecordingMissingCause.objects.create(
+                user=self.user,
+                code=MbRecordingMissingCauseCode.Codes.MUSICBRAINZ_LOOKUP_DISABLED)
         else:
             fingerprinting_result: FingerprintingResult = fingerprinting_result_nullable  # type: ignore
             musicbrainz_recording_lookup_result = \

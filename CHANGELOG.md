@@ -59,36 +59,24 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Added
+
+- **Audio meta analysis**: AFP and MB lookup toggled by `AUDIO_META_ANALYSIS_ENABLED` and `MUSICBRAINZ_LOOKUP_ENABLED`. New MB missing cause `MUSICBRAINZ_LOOKUP_DISABLED` (code 9) when AFP on and MB off. CI: AFP on, MB off.
+
 ### Removed
 
-- **Reference Spotify library**: Removed reference Spotify library API (`/v1/reference/library/spotify/`) and `ReferenceSpotifyLibTrackViewSet`. Exposing one Spotify account’s library to all users would violate Spotify’s User Guidelines and Developer Policy (no account sharing; each user must link their own account). Per-user Spotify library remains under `me/library/spotify/`. Documented in [Spotify compliance](docs/integrations/spotify.md#no-shared-system-spotify-account).
+- **Reference Spotify library**: Removed reference API `/v1/reference/library/spotify/` and `ReferenceSpotifyLibTrackViewSet`. Exposing one Spotify account’s library to all users would violate Spotify’s User Guidelines and Developer Policy (no account sharing; each user must link their own account). Per-user library under `me/library/spotify/`. See [Spotify compliance](docs/integrations/spotify.md#no-shared-system-spotify-account).
 
 ### Changed
 
-- **Audio meta analysis in tests**: Replaced test-only env var `AUDIO_META_ANALYSIS_ENABLED_OVERRIDE` with Django `override_settings(AUDIO_META_ANALYSIS_ENABLED=...)` in conftest. `TrackFile` now uses only `settings.AUDIO_META_ANALYSIS_ENABLED`; tests control the flag via `override_settings` so behavior is consistent regardless of .env and app code stays free of test-only logic. Non-e2e autouse applies `True` and AFP mock; disabled-path tests use the fixture with `parametrize(..., [False])` to apply `False`. Documented in `api/test/README.md`.
-- **Dependencies**: Bumped `audiometa-python` from 1.0.0 to 1.1.0.
-- **E2E tests**: Refactored to one inheritance per domain with composition: added `_domain_helper()` on `AppTestCase`, introduced `SearchMixin`, and refactored multi-inheritance E2E tests to use a single domain base plus composed helpers. Corrected `ManualPlaylistTestCase` URL names to `me-manual-playlist-list` / `me-manual-playlist-detail`.
-- **Fingerprint integration test**: `test_audio_fingerprinter_service_down_then_corresponding_missing_cause` now mocks `post_fingerprint_audio` to simulate service down instead of stopping a Docker container; no Docker required, runs in CI/sandbox.
-- **MusicBrainz integration test**: `test_no_matching_recording_then_corresponding_missing_cause` now mocks `acoustid.lookup` to return an unknown error code so the test is deterministic; no network required, avoids flakiness when DNS/connection fails (code 8) instead of the expected unknown-response path (code 6).
-- **Track URL validation**: `TrackUrlValidator` now accepts both HTTP 200 and 206 when checking that a track URL is reachable (Range request). Many servers respond with 200 when they do not support Range or after redirects; added timeout and narrowed exception handling to `requests.RequestException`.
-- **Uploaded track title test**: `test_not_providing_title_nor_artist_and_original_filename_too_long_then_generate_with_app_prefixe` now mocks `requests.get` and `_download_file_from_url` so the test is deterministic and does not require network (runs in CI/sandbox). The real e2e test lives under `tests/e2e/track_upload/test_create_from_url_with_long_filename.py` and skips when the URL is unreachable.
-- **Pytest**: Registered `e2e` marker in conftest. Documented that e2e tests live in `tests/e2e/` (directory split by test level) and can be run with `pytest api/test/tests/e2e/` or `pytest -m e2e` (CONTRIBUTING and api/test/README.md).
-- **E2E tests**: Additional tests now use `_domain_helper()` for composed test cases (criteria playlist, manual playlist, genre hierarchy, tag-based playlist) to avoid duplicate user creation and `IntegrityError`. Manual playlist e2e expects 405 for DELETE (API does not support delete). Spotify OAuth e2e assertions use camelCase response keys and `to_camel_case`; final step uses `me-playlist-list`. MusicBrainz lookup failure e2e uses `RECORDING_TOKYO_DRIFT_NO_MB_RECORDING_MP3` and updated allowed missing-cause codes.
-- **Unit (TrackFileValidator)**: `test_file_too_small_then_raises_app_validation_exception` now mocks min file size so it always runs in CI (no skip when config min is 0).
-- **Integration (MusicBrainz)**: Added `test_drown_7m21_mp3_with_mocked_lookup_then_ok` with mocked `acoustid.lookup` so the recording-ID success path is covered in CI without network.
-- **OAuth mocking**: When `ENV=CI_TEST`, Spotify and Google OAuth are mocked for all tests (including e2e). In dev, they are mocked only for non-e2e tests so e2e can use real OAuth locally. Documented in `api/test/README.md` and CONTRIBUTING.
-- **MusicBrainz mocking**: AcoustID/MusicBrainz lookup is mocked the same way (conftest autouse fixture; CI or non-e2e). `acoustid.lookup` returns no results when mocked. Documented in `api/test/README.md` and CONTRIBUTING.
-- **Spotify API client mocking**: `SpotifyClient` (library, search, playlists, artist batch) is mocked via conftest when CI or non-e2e; mock returns empty lists/items. Same rule as OAuth and MusicBrainz. Documented in `api/test/README.md` and CONTRIBUTING. Unit and e2e tests that use `SpotifyApiLibTrackManager` now patch the manager's `SpotifyClient` so they work with the conftest fixture.
-- **AUDIO_META_ANALYSIS_ENABLED**: Now required in all environments (no default). Loaded via `load_required_bool_env_var` in pytest, loaddata, and normal run (after env is loaded). Gates the full pipeline (AFP fingerprinting + MusicBrainz lookup). Set in test workflow, deploy workflow, and env examples.
-- **Deploy workflow**: App env file now sets `AUDIO_META_ANALYSIS_ENABLED=true`, `SPOTIFY_ENABLED=true`, `GOOGLE_OAUTH_ENABLED=true`, and `MUSICBRAINZ_LOOKUP_ENABLED=true` so Django settings load on deployment (these vars are required, no defaults).
-- **Settings**: Renamed `SPOTIFY_OAUTH_ENABLED` to `SPOTIFY_ENABLED` to reflect that it gates the full Spotify integration (OAuth + API). Workflows, env example, test README, and e2e docstrings updated.
-- **Tests**: MusicBrainz e2e success test (`test_upload_track_with_fingerprinting_and_musicbrainz_lookup_then_ok`) now patches `acoustid.lookup` with a mock recording so it runs and asserts in CI instead of skipping. Conftest comment added: tests that need non-empty data should patch the same target. Spotify client mock uses minimal track dict `{"id": ""}` for `retrieve_track_by_id` to avoid KeyError. E2e docstrings (Spotify OAuth, library sync, track search, MusicBrainz success/failure) note that in CI conftest mocks are active and tests override for deterministic flow.
-- **Optional integration in CI**: `SPOTIFY_ENABLED` and `GOOGLE_OAUTH_ENABLED` (required, no default) control whether Spotify/Google credentials are loaded. When false, credentials are optional; auth views return 503 if called. CI test workflow sets `SPOTIFY_ENABLED=false` so Spotify vars are not needed. Added `load_optional_str_env_var` and `load_optional_secret_env_var` in env_var_loader.
-- **MusicBrainz lookup optional in CI**: `MUSICBRAINZ_LOOKUP_ENABLED` (default false) controls whether `ACOUSTID_API_KEY` is required. When false or unset, the key is loaded optionally; `get_musicbrainz_recording_lookup_result` skips the AcoustID API call and returns no recording (same missing-cause as "no match"). CI test workflow sets `MUSICBRAINZ_LOOKUP_ENABLED: false` and no longer requires `ACOUSTID_API_KEY`.
+- **E2E fail early**: Session checks required services when e2e run; CI requires AFP enabled and reachable; dev requires all enabled services reachable. See `api/test/README.md` and CONTRIBUTING.
+- **Settings**: `MUSICBRAINZ_LOOKUP_ENABLED` global; TrackFile calls MB only when both it and `AUDIO_META_ANALYSIS_ENABLED` are true. Startup fails if `MUSICBRAINZ_LOOKUP_ENABLED=true` and `AUDIO_META_ANALYSIS_ENABLED=false` (MB needs fingerprint).
+- **Tests**: OAuth/MB/Spotify client mocked per conftest (CI or non-e2e). Audio meta: `override_settings(AUDIO_META_ANALYSIS_ENABLED=...)`, no test-only env override. E2e refactor with `_domain_helper()` and SearchMixin; markers and docs in api/test/README.md.
+- **Service flags**: `SPOTIFY_ENABLED`, `GOOGLE_OAUTH_ENABLED`, `AUDIO_META_ANALYSIS_ENABLED`, `MUSICBRAINZ_LOOKUP_ENABLED` required (no defaults). CI sets Spotify/Google/MB false; deploy sets all true.
 
 ### Documentation
 
-- **API docs**: Aligned audio metadata endpoint in `docs/api/index.md` and `docs/api/audio_metadata.md` with actual path `/v1/audio/metadata/full/`.
+- **API docs**: Audio metadata endpoint path aligned in `docs/api/index.md` and `docs/api/audio_metadata.md`.
 
 ## [v2.1.0] - 2026-02-23
 
