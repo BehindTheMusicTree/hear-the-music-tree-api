@@ -714,8 +714,16 @@ def setup_django_constants():
     }
 
 
+def _load_service_feature_flags():
+    global AUDIO_META_ANALYSIS_ENABLED
+    AUDIO_META_ANALYSIS_ENABLED = load_required_bool_env_var('AUDIO_META_ANALYSIS_ENABLED')
+    print_django("The audio meta analysis is enabled." if AUDIO_META_ANALYSIS_ENABLED else "The audio meta analysis is disabled.")
+
+
 def setup_media_dirs():
     print_django("FILE_UPLOAD_TEMP_DIR is set. Setting up the media variables...")
+
+    _load_service_feature_flags()
 
     global ACOUSTID_API_KEY
     musicbrainz_lookup_enabled = load_required_bool_env_var('MUSICBRAINZ_LOOKUP_ENABLED')
@@ -809,18 +817,8 @@ set_secret_key()
 
 if 'pytest' in sys.argv[0]:
     print_django("settings.py is being executed because of a pytest command.")
-
-    if os.environ.get('AUDIO_META_ANALYSIS_ENABLED', 'False').lower() == 'true':
-        AUDIO_META_ANALYSIS_ENABLED = True
-        print_django("The audio meta analysis is enabled.")
-    else:
-        AUDIO_META_ANALYSIS_ENABLED = False
-        print_django("The audio meta analysis is disabled.")
-
+    load_calculated_env_paths(BASE_DIR)
     PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']  # Less secured to speed up tests
-else:
-    AUDIO_META_ANALYSIS_ENABLED = True
-    print_django("settings.py is not being executed because of a pytest command. The audio meta analysis is enabled.")
 
 if 'loaddata' in sys.argv:
     print_django("settings.py is being executed because of a loaddata command.")
@@ -836,6 +834,7 @@ if 'loaddata' in sys.argv:
     setup_media_dirs()  # Needed for the User model library path field
 else:
     load_calculated_env_paths(BASE_DIR)
+    _load_service_feature_flags()
     setup_app_exposure_if_needed()
     setup_app_constants()
     setup_data_dir()
