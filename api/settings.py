@@ -888,11 +888,10 @@ else:
     else:
         FILE_UPLOAD_ENABLED = True
         setup_media_dirs()
-        if AFP_ENABLED:
+        if AFP_ENABLED:  # pyright: ignore[reportUnboundVariable]
             AFP_CONTAINER_NAME = load_required_str_env_var('AFP_CONTAINER_NAME')
             setup_afp_connection()
         else:
-            global AFP_POST_FULL_URL
             AFP_POST_FULL_URL = ""
 
 print_django("Finished loading settings.")
