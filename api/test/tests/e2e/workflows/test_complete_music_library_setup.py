@@ -23,7 +23,6 @@ from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrac
 
 @pytest.mark.e2e
 @pytest.mark.slow
-@pytest.mark.usefixtures("enable_audio_metadata_analysis")
 class TestCase(UploadedTrackTestCase, SearchMixin):
     """
     E2E test for complete music library setup workflow.

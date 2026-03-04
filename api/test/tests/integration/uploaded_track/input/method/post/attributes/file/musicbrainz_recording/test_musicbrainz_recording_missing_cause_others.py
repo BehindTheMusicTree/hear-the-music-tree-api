@@ -13,7 +13,6 @@ from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrac
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
-@pytest.mark.usefixtures("enable_audio_metadata_analysis")
 class TestCase(UploadedTrackTestCase):
 
     @patch('acoustid.lookup')

@@ -65,6 +65,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Changed
 
+- **Audio meta analysis in tests**: Replaced test-only env var `AUDIO_META_ANALYSIS_ENABLED_OVERRIDE` with Django `override_settings(AUDIO_META_ANALYSIS_ENABLED=...)` in conftest. `TrackFile` now uses only `settings.AUDIO_META_ANALYSIS_ENABLED`; tests control the flag via `override_settings` so behavior is consistent regardless of .env and app code stays free of test-only logic. Non-e2e autouse applies `True` and AFP mock; disabled-path tests use the fixture with `parametrize(..., [False])` to apply `False`. Documented in `api/test/README.md`.
 - **Dependencies**: Bumped `audiometa-python` from 1.0.0 to 1.1.0.
 - **E2E tests**: Refactored to one inheritance per domain with composition: added `_domain_helper()` on `AppTestCase`, introduced `SearchMixin`, and refactored multi-inheritance E2E tests to use a single domain base plus composed helpers. Corrected `ManualPlaylistTestCase` URL names to `me-manual-playlist-list` / `me-manual-playlist-detail`.
 - **Fingerprint integration test**: `test_audio_fingerprinter_service_down_then_corresponding_missing_cause` now mocks `post_fingerprint_audio` to simulate service down instead of stopping a Docker container; no Docker required, runs in CI/sandbox.

@@ -107,6 +107,41 @@ def mock_spotify_client_outside_e2e(request):
         yield
 
 
+def _is_e2e(request) -> bool:
+    """True when the test is an e2e test (e2e marker or under tests/e2e/)."""
+    return bool(request.node.get_closest_marker("e2e")) or "/tests/e2e/" in str(request.fspath)
+
+
+def _make_success_fingerprinting_result():
+    from api.model.uploaded_track.file.fingerprinting.FingerprintingResult import FingerprintingResult
+    return FingerprintingResult(fingerprint=b"\x00" * 20, duration_in_sec=120, error=None)
+
+
+@pytest.fixture(autouse=True)
+def mock_audio_meta_analysis_outside_e2e(request):
+    """Run audio meta analysis path with mocked AFP in non-e2e tests; e2e tests use real AFP (e.g. in CI).
+
+    - Non-e2e: override_settings(AUDIO_META_ANALYSIS_ENABLED=True) so the path runs regardless of
+      .env; mock get_fingerprinting_result so no real AFP calls. Tests that need real AFP (e.g.
+      critical AFP connection test) must use @pytest.mark.requires_real_afp to skip the AFP mock.
+    - E2e: no override, no mock; e2e can use real AFP in CI.
+    """
+    is_e2e = _is_e2e(request)
+    if is_e2e:
+        yield
+        return
+
+    with override_settings(AUDIO_META_ANALYSIS_ENABLED=True):
+        if request.node.get_closest_marker("requires_real_afp"):
+            yield
+        else:
+            with patch(
+                "api.utils.audio_fingerprinter.service.get_fingerprinting_result",
+                return_value=_make_success_fingerprinting_result(),
+            ):
+                yield
+
+
 critical_test_failed = False
 
 
@@ -131,6 +166,10 @@ def pytest_configure(config):
     config.addinivalue_line("markers", "critical: mark test as critical to pass")
     config.addinivalue_line("markers", "slow: mark test as long-running")
     config.addinivalue_line("markers", "e2e: mark test as end-to-end (may require network or external services)")
+    config.addinivalue_line(
+        "markers",
+        "requires_real_afp: skip AFP mock so the test calls the real audio fingerprinting service",
+    )
 
 
 def pytest_runtest_makereport(item, call):
@@ -201,33 +240,16 @@ def pytest_collection_modifyitems(config, items):
 
 @pytest.fixture()
 def enable_audio_metadata_analysis(request):
-    """Control audio metadata analysis state in tests.
+    """Override audio meta analysis for this test via override_settings (inner override wins over autouse).
 
-    This fixture allows tests to control whether audio metadata analysis is enabled or disabled.
-    It can be used in two ways:
-
-    1. As a simple fixture:
-       @pytest.fixture(enable_audio_metadata_analysis)
-       def test_something():
-           # Audio metadata analysis will be enabled
-
-    2. With parametrize to control the state:
-       @pytest.mark.parametrize('enable_audio_metadata_analysis', [True, False], indirect=True)
-       def test_something():
-           # Will run twice - once with analysis enabled, once disabled
-
-    Args:
-        request: The pytest request object containing the parametrized value if used with parametrize
-
-    Yields:
-        None: The fixture handles environment setup/teardown
+    Non-e2e tests get AUDIO_META_ANALYSIS_ENABLED=True and mocked AFP from mock_audio_meta_analysis_outside_e2e.
+    Use this fixture with parametrize(..., [False], indirect=True) when a test needs the disabled path;
+    request it in the test so override_settings(AUDIO_META_ANALYSIS_ENABLED=False) applies. E2e can request
+    this fixture (default True) if needed.
     """
-
-    # Get the enable value from parametrize or default to True
-    enable = getattr(request, 'param', True)
-    os.environ['AUDIO_META_ANALYSIS_ENABLED_OVERRIDE'] = str(enable).lower()
-    yield
-    os.environ['AUDIO_META_ANALYSIS_ENABLED_OVERRIDE'] = 'false'
+    enable = getattr(request, "param", True)
+    with override_settings(AUDIO_META_ANALYSIS_ENABLED=enable):
+        yield
 
 
 def _cleanup_test_user_directories() -> None:

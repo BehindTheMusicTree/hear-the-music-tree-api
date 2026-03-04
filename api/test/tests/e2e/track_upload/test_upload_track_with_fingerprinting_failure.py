@@ -7,7 +7,6 @@ from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrac
 
 
 @pytest.mark.e2e
-@pytest.mark.usefixtures("enable_audio_metadata_analysis")
 class TestCase(UploadedTrackTestCase):
     """
     E2E test for track upload with fingerprinting failure handling.

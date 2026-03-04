@@ -98,15 +98,9 @@ class TrackFile(PrivateStandardResource):
         return ""
 
     def _manage_fingerprint(self) -> FingerprintingResult | None:
-        audio_meta_analysis_enabled_override_env_var = os.environ.get('AUDIO_META_ANALYSIS_ENABLED_OVERRIDE', None)
-        if audio_meta_analysis_enabled_override_env_var:
-            is_audio_meta_analysis_enabled_override = audio_meta_analysis_enabled_override_env_var.lower()
-        else:
-            is_audio_meta_analysis_enabled_override = 'false'
-
         fingerprinting_result: FingerprintingResult | None = None
 
-        if is_audio_meta_analysis_enabled_override == 'true' or settings.AUDIO_META_ANALYSIS_ENABLED:
+        if settings.AUDIO_META_ANALYSIS_ENABLED:
             fingerprinting_result = audio_fingerprinter.get_fingerprinting_result(
                 user=self.user, track_file=self.file, title=self.uploaded_track.title)
 
