@@ -14,8 +14,8 @@ All test files are located in the `tests/` subdirectory to keep the test directo
 - [Test Naming Convention](#test-naming-convention)
 - [Test Configuration](#test-configuration)
   - [OAuth mocking](#oauth-mocking)
-  - [MusicBrainz mocking](#musicbrainz-mocking)
   - [Spotify API client mocking](#spotify-api-client-mocking)
+  - [Audio meta analysis mocking](#audio-meta-analysis-mocking)
   - [Warning Filters](#warning-filters)
 
 ## Test Categories
@@ -144,10 +144,9 @@ The test configuration is located in `api/test/tests/conftest.py` and includes:
 
 - Test execution ordering (critical → unit → integration → e2e)
 - Critical test failure handling
-- Audio metadata analysis fixture
 - Test user directory cleanup
 - OAuth mocking (Spotify and Google): see [OAuth mocking](#oauth-mocking)
-- MusicBrainz (AcoustID) mocking: see [MusicBrainz mocking](#musicbrainz-mocking)
+- Audio meta analysis mocking: see [Audio meta analysis mocking](#audio-meta-analysis-mocking)
 
 ### OAuth mocking
 
@@ -158,23 +157,23 @@ Spotify and Google OAuth are mocked at the view layer via an autouse fixture so 
 
 E2E tests that need a specific OAuth response can patch the view’s service class as usual; in CI they will still see the global mock unless they override it.
 
-### MusicBrainz mocking
-
-AcoustID/MusicBrainz lookup is mocked via an autouse fixture (`acoustid.lookup` returns no results) so tests do not call the real API by default. Uses the same rule as OAuth.
-
-- **When ENV=CI_TEST**: MusicBrainz is mocked for **all** tests.
-- **In dev**: Mocked only for **non-e2e** tests; e2e tests can use real lookup or their own mocks.
-
-Tests that need a specific lookup response (e.g. a recording) already patch `acoustid.lookup` or the service; their patch overrides this fixture.
-
 ### Spotify API client mocking
 
-The Spotify Web API client (`SpotifyClient` used for library, search, playlists, artist batch) is mocked via an autouse fixture so tests do not call the real Spotify API. Uses the same rule as OAuth and MusicBrainz.
+The Spotify Web API client (`SpotifyClient` used for library, search, playlists, artist batch) is mocked via an autouse fixture so tests do not call the real Spotify API. Uses the same rule as OAuth.
 
 - **When ENV=CI_TEST**: Spotify client is mocked for **all** tests.
 - **In dev**: Mocked only for **non-e2e** tests; e2e tests can use the real API or their own mocks.
 
 The mock returns empty lists/items for search, saved tracks, playlists, and artist batch. Tests that need specific responses patch `SpotifyClient` (or the manager) in their scope.
+
+### Audio meta analysis mocking
+
+Audio meta analysis is the flow that uses AFP (fingerprinting) and MusicBrainz (AcoustID) lookup. Both are mocked so non-e2e tests run that path without real external calls. E2E tests are not mocked and can use real AFP in CI.
+
+- **MusicBrainz**: `acoustid.lookup` is mocked (returns no results). Same rule as OAuth: when `ENV=CI_TEST`, mocked for all tests; in dev, mocked only for non-e2e so e2e can use real lookup. Tests that need a specific recording patch `acoustid.lookup` or the service.
+- **AFP (non-e2e only)**: `override_settings(AUDIO_META_ANALYSIS_ENABLED=True)` is applied so the path runs regardless of .env, and `get_fingerprinting_result` is mocked to return a successful result. E2e: no override, no AFP mock (real AFP allowed, e.g. in CI).
+- **Tests that need real AFP** (e.g. critical AFP connection test): use `@pytest.mark.requires_real_afp` so the AFP mock is skipped.
+- **Tests that need the disabled path**: use `@pytest.mark.parametrize('enable_audio_metadata_analysis', [False], indirect=True)` and request the `enable_audio_metadata_analysis` fixture; it uses `override_settings(AUDIO_META_ANALYSIS_ENABLED=False)` so the disabled branch is taken.
 
 ### Warning Filters
 

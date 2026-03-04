@@ -11,7 +11,6 @@ from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import Uplo
 from api.utils.audio_fingerprinter import exception as audio_fingerprinter_exc
 
 
-@pytest.mark.usefixtures("enable_audio_metadata_analysis")
 class TestCase(UploadedTrackTestCase):
 
     @patch("api.utils.audio_fingerprinter.utils.post_fingerprint_audio")

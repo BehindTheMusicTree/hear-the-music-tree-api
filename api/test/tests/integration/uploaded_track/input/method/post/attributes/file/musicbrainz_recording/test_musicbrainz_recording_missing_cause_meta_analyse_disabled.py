@@ -1,4 +1,4 @@
-
+import pytest
 from rest_framework import status
 
 from api.model.musicbrainz_resource.children.recording.missing_cause.code.MbRecordingMissingCauseCode import (
@@ -8,9 +8,9 @@ from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrac
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
-# Meta audio analysis is disabled by default for tests
+@pytest.mark.parametrize('enable_audio_metadata_analysis', [False], indirect=True)
 class TestCase(UploadedTrackTestCase):
-    def test_audio_meta_analysis_disabled_then_corresponding_missing_cause(self):
+    def test_audio_meta_analysis_disabled_then_corresponding_missing_cause(self, enable_audio_metadata_analysis):
         response = self._post_uploaded_track(UploadedTrackTestFilename.RECORDING_SHOWMUSTGOON_MP3)
 
         assert response.status_code == status.HTTP_201_CREATED
