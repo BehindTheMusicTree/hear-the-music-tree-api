@@ -448,7 +448,7 @@ Integration tests that depend on external services (URLs, third-party APIs) use 
   - CI (`ENV=CI_TEST`): all mocked **except AFP** (e2e can hit the real AFP service).
 - Details: [api/test/README.md](api/test/README.md) (OAuth, Spotify API client, Audio meta analysis).
 
-Add at least one **real** e2e test for the same behaviour when the service can be exercised in a test run without blocking CI: e.g. the service is under our control (AFP in CI) or the test **skips** when the third-party service is unreachable so CI still passes. Put it under **`tests/e2e/`**, mark it `@pytest.mark.e2e`, perform the real request (e.g. real URL), and skip when the service is unreachable. Run e2e: `pytest api/test/tests/e2e/` or `pytest -m e2e`.
+Add at least one **real** e2e test when the service can be exercised without blocking CI (see [api/test/README.md](api/test/README.md) § E2E tests: when to add, when they hit real services, and how to run them).
 
 **CI Testing:**
 
