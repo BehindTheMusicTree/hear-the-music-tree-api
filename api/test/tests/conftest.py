@@ -153,8 +153,8 @@ IGNORED_TEST_DIRS = [
 ]
 
 
-def pytest_ignore_collect(path, config):
-    str_path = str(path)
+def pytest_ignore_collect(collection_path: Path, config):
+    str_path = str(collection_path)
     return any(ignored_dir in str_path for ignored_dir in IGNORED_TEST_DIRS)
 
 
