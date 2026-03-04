@@ -57,15 +57,27 @@ main() {
     log_with_script_prefixe "Pulling images (timeout ${DOCKER_PULL_TIMEOUT}s each)..."
 
     log_with_script_prefixe "Pulling DB image: $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION"
-    if ! timeout $DOCKER_PULL_TIMEOUT docker pull $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION; then
-        log_with_script_prefixe "ERROR: Failed to pull DB image (timeout ${DOCKER_PULL_TIMEOUT}s or network error)." >&2
+    timeout $DOCKER_PULL_TIMEOUT docker pull $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION
+    pull_exit=$?
+    if [ $pull_exit -ne 0 ]; then
+        if [ $pull_exit -eq 124 ]; then
+            log_with_script_prefixe "ERROR: DB image pull timed out after ${DOCKER_PULL_TIMEOUT}s." >&2
+        else
+            log_with_script_prefixe "ERROR: DB image pull failed (exit $pull_exit). Check: docker login, network, image $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION." >&2
+        fi
         exit 1
     fi
     log_with_script_prefixe "DB image pulled."
 
     log_with_script_prefixe "Pulling AFP image: $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION"
-    if ! timeout $DOCKER_PULL_TIMEOUT docker pull $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION; then
-        log_with_script_prefixe "ERROR: Failed to pull AFP image (timeout ${DOCKER_PULL_TIMEOUT}s or network error)." >&2
+    timeout $DOCKER_PULL_TIMEOUT docker pull $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION
+    pull_exit=$?
+    if [ $pull_exit -ne 0 ]; then
+        if [ $pull_exit -eq 124 ]; then
+            log_with_script_prefixe "ERROR: AFP image pull timed out after ${DOCKER_PULL_TIMEOUT}s." >&2
+        else
+            log_with_script_prefixe "ERROR: AFP image pull failed (exit $pull_exit). Check: docker login, network, image $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION." >&2
+        fi
         exit 1
     fi
     log_with_script_prefixe "AFP image pulled."
