@@ -188,7 +188,7 @@ Audio meta analysis is the flow that uses AFP (fingerprinting) and MusicBrainz (
 - **MusicBrainz**: `acoustid.lookup` is mocked (returns no results). Same rule as OAuth: when `ENV=CI_TEST`, mocked for all tests; in dev, mocked only for non-e2e so e2e can use real lookup. When `MUSICBRAINZ_LOOKUP_ENABLED=false`, the app does not call the MB service (e.g. in CI); no mock needed for that path.
 - **AFP (non-e2e only)**: `override_settings(AFP_ENABLED=True)` is applied so the path runs regardless of .env, and `get_fingerprinting_result` is mocked to return a successful result. E2e: no override, no AFP mock (real AFP allowed, e.g. in CI).
 - **Tests that need real AFP** (e.g. critical AFP connection test): use `@pytest.mark.requires_real_afp` so the AFP mock is skipped.
-- **Tests that need the disabled path**: use `@pytest.mark.parametrize('enable_audio_metadata_analysis', [False], indirect=True)` and request the `enable_audio_metadata_analysis` fixture; it uses `override_settings(AFP_ENABLED=False)` so the disabled branch is taken.
+- **Tests that need the disabled path**: use `with override_settings(AFP_ENABLED=False):` around the code that triggers the path (e.g. the upload call) so the disabled branch is taken.
 - **Tests that need AFP enabled but MB disabled**: use `@override_settings(MUSICBRAINZ_LOOKUP_ENABLED=False)`; the app will run fingerprinting and set `MUSICBRAINZ_LOOKUP_DISABLED` as the MB missing cause.
 
 ### Warning Filters
