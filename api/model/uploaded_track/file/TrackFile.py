@@ -205,4 +205,7 @@ def handle_pre_save(sender, instance: TrackFile, **kwargs):
 
 @receiver(pre_delete, sender=TrackFile)
 def handle_pre_delete(sender, instance: TrackFile, using, **kwargs):
+    lib_file_path = instance.user.lib_abs_path / instance.filename
+    if lib_file_path.exists():
+        lib_file_path.unlink()
     instance.file.delete(False)  # type: ignore
