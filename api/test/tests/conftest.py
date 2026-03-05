@@ -1,5 +1,6 @@
 import os
 import shutil
+import subprocess
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -167,10 +168,24 @@ def base_childinstance(request, db):
 
 
 def pytest_sessionstart(session: Session) -> None:
-    if shutil.which("ffprobe") is None:
+    ffprobe = shutil.which("ffprobe")
+    if ffprobe is None:
         pytest.exit(
             "ffprobe is required for tests (e.g. WAV duration) but was not found. "
             "Install ffmpeg (e.g. apt install ffmpeg or brew install ffmpeg).",
+            returncode=2,
+        )
+    result = subprocess.run(
+        [ffprobe, "-version"],
+        capture_output=True,
+        timeout=5,
+    )
+    if result.returncode != 0:
+        err = (result.stderr or result.stdout or b"").decode("utf-8", errors="replace").strip()
+        pytest.exit(
+            "ffprobe is required for tests but failed to run (missing or broken dependencies, e.g. libvpx). "
+            "On macOS with Homebrew, try: brew reinstall ffmpeg. "
+            f"ffprobe output: {err or result.returncode}",
             returncode=2,
         )
 
