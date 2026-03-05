@@ -78,6 +78,11 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ### Documentation
 
 - **API docs**: Audio metadata endpoint path aligned in `docs/api/index.md` and `docs/api/audio_metadata.md`.
+- **CONTRIBUTING**: Note that ffprobe (ffmpeg) must be installed and working for WAV-based tests; troubleshooting for broken install (e.g. `brew reinstall ffmpeg` on macOS).
+
+### Improved
+
+- **Tests**: Pytest fails fast when ffprobe is missing or broken: session-start runs `ffprobe -version` and probes the WAV fixture `duration=472s.wav`; clear exit message if probe fails. `test_duration` (album retrieve) uses WAV again (DURATION_472S_WAV, expected 277 + 472).
 
 ## [v2.1.0] - 2026-02-23
 
