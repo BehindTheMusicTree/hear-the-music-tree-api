@@ -1,6 +1,6 @@
 import logging
+from unittest.mock import patch
 
-import pytest
 from rest_framework import status
 
 from api.model.uploaded_track.file.fingerprinting.missing_cause.code.FingerprintMissingCauseCode import (
@@ -13,10 +13,10 @@ from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import Uplo
 logging.basicConfig(level=logging.DEBUG, format='%(levelname)s    %(name)s:%(filename)s:%(lineno)d %(message)s')
 
 
-@pytest.mark.parametrize('enable_audio_metadata_analysis', [False], indirect=True)
 class TestCase(UploadedTrackTestCase):
 
-    def test_audio_meta_analysis_not_enabled_then_corresponding_missing_cause(self, enable_audio_metadata_analysis):
+    @patch("api.settings.AFP_ENABLED", False)
+    def test_audio_meta_analysis_not_enabled_then_corresponding_missing_cause(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.RECORDING_SHOWMUSTGOON_MP3)
 
         assert response.status_code == status.HTTP_201_CREATED
