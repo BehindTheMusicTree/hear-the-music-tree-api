@@ -183,6 +183,32 @@ def _run_has_e2e_tests(session: Session) -> bool:
     return False
 
 
+def _is_e2e_item(item) -> bool:
+    return bool(item.get_closest_marker("e2e") or "/tests/e2e/" in str(item.fspath))
+
+
+def _e2e_reachability_failures() -> list[str]:
+    """Return list of unreachable service messages, or empty if all reachable."""
+    failures: list[str] = []
+    if getattr(settings, "SPOTIFY_ENABLED", False):
+        ok, reason = _check_spotify_reachable()
+        if not ok:
+            failures.append(f"Spotify ({reason})")
+    if getattr(settings, "GOOGLE_OAUTH_ENABLED", False):
+        ok, reason = _check_google_reachable()
+        if not ok:
+            failures.append(f"Google OAuth ({reason})")
+    if getattr(settings, "AFP_ENABLED", False):
+        ok, reason = _check_afp_reachable()
+        if not ok:
+            failures.append(f"AFP ({reason})")
+    if getattr(settings, "MUSICBRAINZ_LOOKUP_ENABLED", False):
+        ok, reason = _check_musicbrainz_reachable()
+        if not ok:
+            failures.append(f"MusicBrainz (AcoustID) ({reason})")
+    return failures
+
+
 def _check_url_reachable(url: str) -> tuple[bool, str]:
     try:
         req = urllib.request.Request(url, method="HEAD")
@@ -250,30 +276,13 @@ def pytest_collection_finish(session: Session) -> None:
                 f"E2E tests require AFP. In CI (ENV=CI_TEST), the AFP service is unreachable. Reason: {reason}",
                 returncode=2,
             )
-        return
-    failures: list[str] = []
-    if getattr(settings, "SPOTIFY_ENABLED", False):
-        ok, reason = _check_spotify_reachable()
-        if not ok:
-            failures.append(f"Spotify ({reason})")
-    if getattr(settings, "GOOGLE_OAUTH_ENABLED", False):
-        ok, reason = _check_google_reachable()
-        if not ok:
-            failures.append(f"Google OAuth ({reason})")
-    if getattr(settings, "AFP_ENABLED", False):
-        ok, reason = _check_afp_reachable()
-        if not ok:
-            failures.append(f"AFP ({reason})")
-    if getattr(settings, "MUSICBRAINZ_LOOKUP_ENABLED", False):
-        ok, reason = _check_musicbrainz_reachable()
-        if not ok:
-            failures.append(f"MusicBrainz (AcoustID) ({reason})")
-    if failures:
-        pytest.exit(
-            "E2E run requires all enabled services to be reachable. Unreachable: "
-            + "; ".join(failures),
-            returncode=2,
-        )
+        failures = _e2e_reachability_failures()
+        if failures:
+            pytest.exit(
+                "E2E run requires all enabled services to be reachable. Unreachable: "
+                + "; ".join(failures),
+                returncode=2,
+            )
 
 
 def pytest_runtest_makereport(item, call):
@@ -339,7 +348,18 @@ def pytest_collection_modifyitems(config, items):
     normal_tests.sort(key=_get_test_directory_order)
     slow_tests.sort(key=_get_test_directory_order)
 
-    items[:] = critical_tests + normal_tests + slow_tests
+    ordered = critical_tests + normal_tests + slow_tests
+    is_ci = os.environ.get("ENV") == "CI_TEST"
+    if not is_ci and any(_is_e2e_item(it) for it in ordered):
+        failures = _e2e_reachability_failures()
+        if failures:
+            ordered = [it for it in ordered if not _is_e2e_item(it)]
+            print(
+                "\nE2E tests deselected (services unreachable): "
+                + "; ".join(failures)
+                + "\n"
+            )
+    items[:] = ordered
 
 
 @pytest.fixture()
