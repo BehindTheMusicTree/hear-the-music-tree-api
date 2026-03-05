@@ -102,7 +102,7 @@ class TrackFile(PrivateStandardResource):
     def _manage_fingerprint(self) -> FingerprintingResult | None:
         fingerprinting_result: FingerprintingResult | None = None
 
-        if settings.AFP_ENABLED:
+        if django_settings.AFP_ENABLED:
             fingerprinting_result = audio_fingerprinter.get_fingerprinting_result(
                 user=self.user, track_file=self.file, title=self.uploaded_track.title)
 

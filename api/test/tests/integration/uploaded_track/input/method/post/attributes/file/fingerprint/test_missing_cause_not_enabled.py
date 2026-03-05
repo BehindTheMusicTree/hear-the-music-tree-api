@@ -1,6 +1,6 @@
 import logging
-from unittest.mock import patch
 
+from django.test import override_settings
 from rest_framework import status
 
 from api.model.uploaded_track.file.fingerprinting.missing_cause.code.FingerprintMissingCauseCode import (
@@ -15,9 +15,9 @@ logging.basicConfig(level=logging.DEBUG, format='%(levelname)s    %(name)s:%(fil
 
 class TestCase(UploadedTrackTestCase):
 
-    @patch("api.settings.AFP_ENABLED", False)
     def test_audio_meta_analysis_not_enabled_then_corresponding_missing_cause(self):
-        response = self._post_uploaded_track(UploadedTrackTestFilename.RECORDING_SHOWMUSTGOON_MP3)
+        with override_settings(AFP_ENABLED=False):
+            response = self._post_uploaded_track(UploadedTrackTestFilename.RECORDING_SHOWMUSTGOON_MP3)
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.track_file
