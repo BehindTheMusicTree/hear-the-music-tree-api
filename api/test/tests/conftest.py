@@ -166,6 +166,15 @@ def base_childinstance(request, db):
     test_case.tearDown
 
 
+def pytest_sessionstart(session: Session) -> None:
+    if shutil.which("ffprobe") is None:
+        pytest.exit(
+            "ffprobe is required for tests (e.g. WAV duration) but was not found. "
+            "Install ffmpeg (e.g. apt install ffmpeg or brew install ffmpeg).",
+            returncode=2,
+        )
+
+
 def pytest_configure(config):
     config.addinivalue_line("markers", "critical: mark test as critical to pass")
     config.addinivalue_line("markers", "slow: mark test as long-running")
