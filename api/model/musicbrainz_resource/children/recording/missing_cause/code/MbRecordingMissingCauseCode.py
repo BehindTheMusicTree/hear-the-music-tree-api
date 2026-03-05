@@ -7,7 +7,7 @@ from api.model.field.AppCharField import AppCharField
 
 class MbRecordingMissingCauseCode(BaseModel):
     class Codes(models.IntegerChoices):
-        AUDIO_META_AMALYSIS_DISABLED = 0
+        AFP_DISABLED = 0
         TRACK_FILE_FINGERPRINTING_FAILED = 1
         DURATION_BELOW_OR_EQUAL_1_SEC = 2
         LOOKUP_FOUND_NO_MATCHING_RECORDING = 3

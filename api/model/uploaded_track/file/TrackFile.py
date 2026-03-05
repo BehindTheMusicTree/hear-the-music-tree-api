@@ -42,6 +42,7 @@ from api.validator.TrackFileValidator import TrackFileValidator
 from .Fields import Fields
 from .fingerprinting.FingerprintingResult import FingerprintingResult
 from .fingerprinting.missing_cause.FingerprintMissingCause import FingerprintMissingCause
+from .fingerprinting.missing_cause.code.FingerprintMissingCauseCode import FingerprintMissingCauseCode
 
 
 class TrackFile(PrivateStandardResource):
@@ -124,7 +125,7 @@ class TrackFile(PrivateStandardResource):
                 self.fingerprint_missing_cause = fingerprinting_result.missing_cause
         else:
             self.fingerprint_missing_cause = FingerprintMissingCause.objects.create(
-                user=self.user, code=MbRecordingMissingCauseCode.Codes.AUDIO_META_AMALYSIS_DISABLED)
+                user=self.user, code=FingerprintMissingCauseCode.Codes.AFP_DISABLED)
 
         return fingerprinting_result
 
@@ -134,10 +135,10 @@ class TrackFile(PrivateStandardResource):
 
         if self.fingerprint_missing_cause:
             if self.fingerprint_missing_cause.code.code == \
-                    MbRecordingMissingCauseCode.Codes.AUDIO_META_AMALYSIS_DISABLED:
+                    FingerprintMissingCauseCode.Codes.AFP_DISABLED:
                 self.musicbrainz_recording_missing_cause = MbRecordingMissingCause.objects.create(
                     user=self.user,
-                    code=MbRecordingMissingCauseCode.Codes.AUDIO_META_AMALYSIS_DISABLED)
+                    code=MbRecordingMissingCauseCode.Codes.AFP_DISABLED)
             else:
                 self.musicbrainz_recording_missing_cause = MbRecordingMissingCause.objects.create(
                     user=self.user,

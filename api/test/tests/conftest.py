@@ -400,20 +400,6 @@ def pytest_collection_modifyitems(config, items):
     items[:] = ordered
 
 
-@pytest.fixture()
-def enable_audio_metadata_analysis(request):
-    """Override audio meta analysis for this test via override_settings (inner override wins over autouse).
-
-    Non-e2e tests get AFP_ENABLED=True and mocked AFP from mock_audio_meta_analysis_outside_e2e.
-    Use this fixture with parametrize(..., [False], indirect=True) when a test needs the disabled path;
-    request it in the test so override_settings(AFP_ENABLED=False) applies. E2e can request
-    this fixture (default True) if needed.
-    """
-    enable = getattr(request, "param", True)
-    with override_settings(AFP_ENABLED=enable):
-        yield
-
-
 def _cleanup_test_user_directories() -> None:
     """Cleanup test user library directories.
 

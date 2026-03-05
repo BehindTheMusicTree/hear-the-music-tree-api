@@ -23,4 +23,4 @@ class TestCase(UploadedTrackTestCase):
         assert self.saved_object.track_file
         assert self.saved_object.track_file.fingerprint_missing_cause
         assert self.saved_object.track_file.fingerprint_missing_cause.code.code == \
-            FingerprintMissingCauseCode.Codes.AUDIO_META_AMALYSIS_DISABLED
+            FingerprintMissingCauseCode.Codes.AFP_DISABLED

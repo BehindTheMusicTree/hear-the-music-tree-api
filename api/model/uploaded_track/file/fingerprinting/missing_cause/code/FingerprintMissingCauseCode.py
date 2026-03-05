@@ -7,7 +7,7 @@ from api.model.field.AppCharField import AppCharField
 
 class FingerprintMissingCauseCode(BaseModel):
     class Codes(models.IntegerChoices):
-        AUDIO_META_AMALYSIS_DISABLED = 0
+        AFP_DISABLED = 0
         SERVICE_NOT_FOUND = 1
         FPCALC_ERROR_WITH_STATUS_2 = 2
         WRONG_FILE_EXTENSION = 3

@@ -69,6 +69,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Changed
 
+- **Missing cause codes**: Renamed `AUDIO_META_AMALYSIS_DISABLED` to `AFP_DISABLED` (code 0) in `FingerprintMissingCauseCode` and `MbRecordingMissingCauseCode`; label updated to "AFP (fingerprinting) is disabled." Migration `0012_rename_audio_meta_analysis_disabled_to_afp_disabled` updates existing rows. API code value remains 0.
 - **E2E fail early**: Session checks required services when e2e run; CI requires AFP enabled and reachable; dev requires all enabled services reachable. See `api/test/README.md` and CONTRIBUTING.
 - **Settings**: `MUSICBRAINZ_LOOKUP_ENABLED` global; TrackFile calls MB only when both it and `AFP_ENABLED` are true. Startup fails if `MUSICBRAINZ_LOOKUP_ENABLED=true` and `AFP_ENABLED=false` (MB needs fingerprint).
 - **Tests**: OAuth/MB/Spotify client mocked per conftest (CI or non-e2e). Audio meta: `override_settings(AFP_ENABLED=...)`, no test-only env override. E2e refactor with `_domain_helper()` and SearchMixin; markers and docs in api/test/README.md.
