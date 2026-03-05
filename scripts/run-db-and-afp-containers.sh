@@ -4,6 +4,19 @@ log_with_script_prefixe () {
     log "[AFP and DB runner] $1"
 }
 
+log_pull_debug () {
+    local image_label="$1"
+    local debug_timeout=10
+    log_with_script_prefixe "--- debug: $image_label pull failed ---"
+    log_with_script_prefixe "docker version (timeout ${debug_timeout}s):"
+    timeout $debug_timeout docker version 2>&1 | sed 's/^/[AFP and DB runner]   /' || log_with_script_prefixe "   (timed out or failed)"
+    hub_code=$(curl -sS --connect-timeout 5 -o /dev/null -w "%{http_code}" https://registry-1.docker.io/v2/ 2>/dev/null) || hub_code="failed"
+    log_with_script_prefixe "Docker Hub reachable (registry-1.docker.io): HTTP $hub_code"
+    log_with_script_prefixe "docker info excerpt (timeout ${debug_timeout}s):"
+    timeout $debug_timeout docker info 2>&1 | grep -E "^(Server Version|Operating System|Docker Root Dir|HTTP Proxy|HTTPS Proxy|No Proxy)" | sed 's/^/[AFP and DB runner]   /' || log_with_script_prefixe "   (timed out or no match)"
+    log_with_script_prefixe "--- end debug ---"
+}
+
 check_script_vars_are_set () {
     load_app_env_file_if_exists
     load_project_calculated_paths_env_vars
@@ -53,6 +66,11 @@ main() {
 
     check_script_vars_are_set
 
+    if ! docker info &>/dev/null; then
+        log_with_script_prefixe "ERROR: Cannot connect to the Docker daemon. Is Docker running? Start Docker Desktop (or the Docker daemon) and try again." >&2
+        exit 1
+    fi
+
     DOCKER_PULL_TIMEOUT=120
     log_with_script_prefixe "Pulling images (timeout ${DOCKER_PULL_TIMEOUT}s each)..."
 
@@ -65,6 +83,7 @@ main() {
         else
             log_with_script_prefixe "ERROR: DB image pull failed (exit $pull_exit). Check: docker login, network, image $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION." >&2
         fi
+        log_pull_debug "DB"
         exit 1
     fi
     log_with_script_prefixe "DB image pulled."
@@ -78,6 +97,7 @@ main() {
         else
             log_with_script_prefixe "ERROR: AFP image pull failed (exit $pull_exit). Check: docker login, network, image $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION." >&2
         fi
+        log_pull_debug "AFP"
         exit 1
     fi
     log_with_script_prefixe "AFP image pulled."
