@@ -31,8 +31,6 @@ from api.model.playlist.Playlist import Playlist
 from api.model.playlist.children.manual.Fields import Fields as ManualPlayListFields
 from api.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
 from api.model.playlist.Fields import Fields as PlayListFields
-from api.model.uploaded_track.file.TrackFile import Fields as TrackFileFields
-from api.model.uploaded_track.file.TrackFile import TrackFile
 from api.model.uploaded_track.Fields import Fields as UploadedTrackFields
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.model.trackable_play_count.TrackablePlayCount import TrackablePlayCount
@@ -83,18 +81,6 @@ class ModelFixtureFactory:
         }
         model_fields.update(kwargs)
         return model_class.objects.create(**model_fields)
-
-    def _create_file(
-            self, user: User, uploaded_track: UploadedTrack, track_file_path_in_lib: Path | None, **kwargs) -> TrackFile:
-        model_fields = {
-            TrackFileFields.CREATED_ON: timezone.make_aware(datetime.now()),
-            TrackFileFields.UPDATED_ON: timezone.make_aware(datetime.now()),
-            TrackFileFields.USER: user,
-            TrackFileFields.UPLOADED_TRACK: uploaded_track,
-            TrackFileFields.FILE: str(track_file_path_in_lib)
-        }
-        model_fields.update(kwargs)
-        return G(TrackFile, **model_fields)
 
     def _create_uploaded_track(self, user: User, title: str | None = None, **kwargs) -> UploadedTrack:
         now = timezone.make_aware(datetime.now())
@@ -158,16 +144,17 @@ class ModelFixtureFactory:
                 ) from e
             raise
 
-        if use_manager_for_genre_playlist_adding:
-            with open(track_file_path_in_lib, 'rb') as f:
-                django_file = File(f, name=str(track_file_path_in_lib))
-                model_fields.update({UploadedTrackFields.TRACK_FILE_INTERNAL: django_file})
-                uploaded_track = UploadedTrack.objects.create(**model_fields)
-        else:
-            with transaction.atomic():
-                uploaded_track = self._create_uploaded_track(user=user, title=title, **kwargs)
-                self._create_file(user=user, uploaded_track=uploaded_track,
-                                  track_file_path_in_lib=track_file_path_in_lib)
+        with open(track_file_path_in_lib, 'rb') as f:
+            django_file = File(f, name=str(track_file_path_in_lib))
+            model_fields.update({UploadedTrackFields.TRACK_FILE_INTERNAL: django_file})
+            uploaded_track = UploadedTrack.objects.create(**model_fields)
+        if not use_manager_for_genre_playlist_adding:
+            from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import (
+                UploadedTrackPlaylistRel,
+            )
+            UploadedTrackPlaylistRel.objects.filter(
+                user=user, uploaded_track=uploaded_track
+            ).delete()
 
         return uploaded_track
 
