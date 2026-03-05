@@ -188,6 +188,20 @@ def pytest_sessionstart(session: Session) -> None:
             f"ffprobe output: {err or result.returncode}",
             returncode=2,
         )
+    wav_fixture = Path(__file__).parent.parent / "utils" / "uploaded_track" / "files" / "duration=472s.wav"
+    if wav_fixture.exists():
+        probe_result = subprocess.run(
+            [ffprobe, "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", str(wav_fixture)],
+            capture_output=True,
+            timeout=30,
+        )
+        if probe_result.returncode != 0:
+            err = (probe_result.stderr or probe_result.stdout or b"").decode("utf-8", errors="replace").strip()
+            pytest.exit(
+                "ffprobe could not probe the WAV fixture (duration=472s.wav). Fix ffmpeg or the fixture. "
+                f"ffprobe output: {err or probe_result.returncode}",
+                returncode=2,
+            )
 
 
 def pytest_configure(config):

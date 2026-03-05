@@ -157,6 +157,8 @@ cd the-music-tree-api
 
    This installs required system tools: `flac`, `ffmpeg`, `libchromaprint-tools`, `jq`, `postgresql-client`
 
+   **Note:** Tests that use WAV files require `ffprobe` (from ffmpeg) to be installed and working. If pytest exits with "ffprobe failed to run" or you see "File corrupted" when running audio tests, ffmpeg may be broken (e.g. missing libvpx on macOS). Fix by reinstalling: `brew reinstall ffmpeg` (macOS) or re-run `scripts/install-dependencies.sh` (Linux).
+
 4. Create and activate a virtual environment:
 
    ```bash
