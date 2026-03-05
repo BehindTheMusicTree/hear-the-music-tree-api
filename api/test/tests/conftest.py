@@ -212,8 +212,12 @@ def _check_afp_reachable() -> tuple[bool, str]:
     health_url = f"http://{base}:{port}/health/"
     try:
         req = urllib.request.Request(health_url, method="GET")
-        urllib.request.urlopen(req, timeout=E2E_REACHABILITY_TIMEOUT_SEC)
-        return True, ""
+        with urllib.request.urlopen(req, timeout=E2E_REACHABILITY_TIMEOUT_SEC) as resp:
+            if 200 <= resp.status < 300:
+                return True, ""
+            return False, f"HTTP {resp.status}"
+    except urllib.error.HTTPError as e:
+        return False, str(e) or type(e).__name__
     except Exception as e:
         return False, str(e) or type(e).__name__
 
