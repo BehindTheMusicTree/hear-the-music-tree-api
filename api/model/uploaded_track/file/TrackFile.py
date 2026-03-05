@@ -12,6 +12,8 @@ from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
 from django.utils.translation import gettext as _
 
+from django.conf import settings as django_settings
+
 from api import settings
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.exception.validation.app.AppValidationException import AppValidationException
@@ -141,7 +143,7 @@ class TrackFile(PrivateStandardResource):
                     user=self.user,
                     code=MbRecordingMissingCauseCode.Codes.TRACK_FILE_FINGERPRINTING_FAILED,
                     message=f"Fingerprinting failed.")
-        elif not settings.MUSICBRAINZ_LOOKUP_ENABLED:
+        elif not django_settings.MUSICBRAINZ_LOOKUP_ENABLED:
             self.musicbrainz_recording_missing_cause = MbRecordingMissingCause.objects.create(
                 user=self.user,
                 code=MbRecordingMissingCauseCode.Codes.MUSICBRAINZ_LOOKUP_DISABLED)
