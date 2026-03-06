@@ -138,7 +138,8 @@ setup_media_dirs () {
         log_with_script_prefixe "TMP_UPLOADED_FILES is set. Setting up temp uploaded files directory and media direcroties..."
         create_directory_if_not_exists_or_exit "$TMP_UPLOADED_FILES"
         set_read_write_permissions_and_owner_or_exit "$TMP_UPLOADED_FILES"
-        log_with_script_prefixe "Temp uploaded files directory is set up."
+        chmod a+rwx "$TMP_UPLOADED_FILES"
+        log_with_script_prefixe "Temp uploaded files directory is set up (world-writable so AFP container and runner can both write)."
 
         log_with_script_prefixe "Setting up media directory..."
         create_directory_if_not_exists_or_exit "$MEDIA_DIR"
