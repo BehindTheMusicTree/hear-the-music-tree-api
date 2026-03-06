@@ -133,6 +133,7 @@ jobs:
       - name: Run database and Audio Fingerprint containers
         env:
           DB_DATA_MUST_PERSIST: false
+          RUN_AFP_AS_HOST_USER: true
         run: bash scripts/run-db-and-afp-containers.sh
 
       - name: Wait for database service to start
