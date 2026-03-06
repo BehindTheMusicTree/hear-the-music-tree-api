@@ -60,6 +60,13 @@ main (){
     fi
     log_with_script_prefixe "Database is ready"
 
+    log_with_script_prefixe "Running Django system checks..."
+    python3 ${PROJECT_DIR}manage.py check
+    if [ $? -ne 0 ]; then
+        log_with_script_prefixe "ERROR: Django system check failed." >&2
+        exit 1
+    fi
+
     log_with_script_prefixe "Checking if Django data is initialized..."
     bash ${SCRIPTS_DIR}check-django-initialized.sh
     if [ $? -ne 0 ]; then
