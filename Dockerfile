@@ -41,13 +41,7 @@ RUN apt update && \
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
-RUN chmod +x scripts/entrypoint.sh && \
-    FIXTURES_DIR="${PROJECT_DIR}${API_DIR_NAME}/fixtures/" && \
-    for subdir in app genres users/test users/umg; do \
-        if [ -d "$${FIXTURES_DIR}$${subdir}" ] && [ -n "$$(ls -A "$${FIXTURES_DIR}$${subdir}" 2>/dev/null)" ]; then \
-            cp "$${FIXTURES_DIR}$${subdir}"/* "$${FIXTURES_DIR}"; \
-        fi; \
-    done
+RUN chmod +x scripts/entrypoint.sh
 
 # Set the entrypoint using shell form to allow environment variable expansion
 ENTRYPOINT ["bash", "-c", "${PROJECT_DIR}scripts/entrypoint.sh"]

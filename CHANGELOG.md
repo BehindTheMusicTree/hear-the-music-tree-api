@@ -65,6 +65,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Removed
 
+- **Fixture files**: Removed all JSON fixtures from `api/fixtures/` (users, genres, app). Reference data is provided by data migrations; test data is created in code via `ModelFixtureFactory` and `AppTestCase.setUp()`. Removed fixture loading from `init-django-data.sh`, the "Set up fixtures files" CI step, and Dockerfile fixture copy. `api/fixtures/` kept with `.gitkeep` for optional local use.
 - **Reference Spotify library**: Removed reference API `/v1/reference/library/spotify/` and `ReferenceSpotifyLibTrackViewSet`. Exposing one Spotify account’s library to all users would violate Spotify’s User Guidelines and Developer Policy (no account sharing; each user must link their own account). Per-user library under `me/library/spotify/`. See [Spotify compliance](docs/integrations/spotify.md#no-shared-system-spotify-account).
 
 ### Changed
