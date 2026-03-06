@@ -139,6 +139,9 @@ jobs:
       - name: Wait for database service to start
         run: bash scripts/wait-for-postgres-db.sh ${{ env.DB_URL }} ${{ env.DB_PORT }} ${{ env.DB_CONNECTION_TEST_MAX_ATTEMPTS }} ${{ env.DB_CONNECTION_TEST_SLEEP_INTERVAL }}
 
+      - name: Wait for AFP service to start
+        run: bash scripts/wait-for-afp.sh ${{ env.AFP_URL }} ${{ env.AFP_PORT }} 12 5
+
       - name: Init django data
         run: bash scripts/init-django-data.sh
 
