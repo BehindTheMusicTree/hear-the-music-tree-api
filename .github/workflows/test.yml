@@ -8,21 +8,31 @@ env:
   CONTAINER_ROOT_DIR: /home/app/
   DB_CONNECTION_TEST_MAX_ATTEMPTS: 10
   DB_CONNECTION_TEST_SLEEP_INTERVAL: 5
-  # CI test defaults (only secrets and a few vars come from GitHub)
   ENV: test
+
   APP_VERSION: 'test'
-  DB_PORT: '5432'
-  DB_URL: localhost
   TMP_UPLOADED_FILES_EXTERNAL: /tmp/ci-uploaded/
   MEDIA_DIR_INTERNAL: media/
   LIBRARIES_DIR_NAME: libraries
+
+  DB_IS_NEEDED: true
+  DB_URL: localhost
   DB_DATA_DIR: /var/lib/postgresql/data
   DB_SUPERUSER_NAME: postgres
+  DB_PORT: '5432'
+
   AFP_URL: localhost
   AFP_PORT: '3002'
   AFP_POOL_DIR_EXTERNAL: /tmp/ci-afp-pool/
   AFP_POST_ENDPOINT: fingerprint-audio
   TMTA_USERNAME: tmta
+
+  SUPERADMIN_USERNAME: ci_superadmin
+  SUPERADMIN_PASSWORD: ci_superadmin_test
+  SUPERADMIN_EMAIL: ci_superadmin@example.com
+  DEMO_USERNAME: ci_demo
+  DEMO_PASSWORD: ci_demo_test
+  DEMO_EMAIL: ci_demo@example.com
 
 jobs:
   check-vars-and-secrets:
@@ -41,6 +51,7 @@ jobs:
         env:
           API_DIR_NAME: ${{ vars.API_DIR_NAME }}
           APP_TITLE: ${{ vars.APP_TITLE }}
+          APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
           DB_IMAGE_REPO: ${{ vars.DB_IMAGE_REPO }}
           DB_VERSION: ${{ vars.DB_VERSION }}
@@ -48,12 +59,11 @@ jobs:
           AFP_CONTAINER_NAME: ${{ vars.AFP_APP_NAME }}
           AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
           AFP_VERSION: ${{ vars.AFP_VERSION }}
-          APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
           DB_SUPERUSER_PASSWORD: ${{ secrets.DB_SUPERUSER_PASSWORD }}
           DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
           DB_APP_USERNAME: ${{ secrets.DB_APP_USERNAME }}
           DB_APP_USER_PASSWORD: ${{ secrets.DB_APP_USER_PASSWORD }}
-        run: bash scripts/check-workflow-env.sh API_DIR_NAME APP_TITLE DOCKERHUB_USERNAME DB_IMAGE_REPO DB_VERSION DB_CONTAINER_NAME AFP_CONTAINER_NAME AFP_IMAGE_REPO AFP_VERSION APP_NAME DB_SUPERUSER_PASSWORD DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD
+        run: bash scripts/check-workflow-env.sh API_DIR_NAME APP_TITLE APP_NAME DOCKERHUB_USERNAME DB_IMAGE_REPO DB_VERSION DB_CONTAINER_NAME AFP_CONTAINER_NAME AFP_IMAGE_REPO AFP_VERSION DB_SUPERUSER_PASSWORD DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD
 
   pytest:
     name: Pytest
