@@ -92,5 +92,6 @@ class User(AbstractUser, BaseModel):
         return self.username
 
     class Meta:
+        db_table = 'htmt_api_user'
         verbose_name = 'User'
         verbose_name_plural = 'Users'
