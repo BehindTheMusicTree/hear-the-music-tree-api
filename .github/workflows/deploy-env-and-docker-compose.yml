@@ -336,6 +336,9 @@ jobs:
             echo 'ENV=${{ inputs.env }}'
             echo 'DEBUG=true'
             echo "APP_PORT=${{ vars.AFP_PORT }}"
+            echo "POOL_DIR_EXTERNAL=${{ vars.AFP_POOL_DIR_EXTERNAL }}"
+            echo "GUNICORN_LOG_DIR=${{ vars.AFP_GUNICORN_LOG_DIR_EXTERNAL }}"
+            echo "FLASK_LOG_DIR_EXTERNAL=${{ vars.AFP_FLASK_LOG_DIR_EXTERNAL }}"
           } > pool_compose_afp/${{ env.AFP_ENV_FILENAME }}
 
       - name: Prepare combined app-env-files and upload

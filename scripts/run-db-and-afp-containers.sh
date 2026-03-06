@@ -158,17 +158,27 @@ main() {
     log_with_script_prefixe "Database container running successfully."
 
     log_with_script_prefixe "Running the audio fingerprinter container..."
-    # Run as host user so the shared pool volume is writable by both AFP and the host (CI runner / local dev).
-    timeout 60 docker run \
-        --name=$AFP_CONTAINER_NAME \
-        --user "$(id -u):$(id -g)" \
-        --volume=$TMP_UPLOADED_FILES:$AFP_POOL_DIR_EXTERNAL \
-        -p $AFP_PORT:$AFP_PORT \
-        -e ENV=$ENV \
-        -e DEBUG=$DEBUG \
-        -e APP_PORT=$AFP_PORT \
-        -e POOL_DIR_EXTERNAL=$AFP_POOL_DIR_EXTERNAL \
-        -d $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION
+    AFP_RUN_ARGS=(
+        --name="$AFP_CONTAINER_NAME"
+        --volume="$TMP_UPLOADED_FILES:$AFP_POOL_DIR_EXTERNAL"
+        -p "$AFP_PORT:$AFP_PORT"
+        -e "ENV=$ENV"
+        -e "DEBUG=$DEBUG"
+        -e "APP_PORT=$AFP_PORT"
+        -e "POOL_DIR_EXTERNAL=$AFP_POOL_DIR_EXTERNAL"
+        -d "$DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION"
+    )
+    if [ "${RUN_AFP_AS_HOST_USER:-false}" = true ]; then
+        # Run as host user so the shared pool volume is writable by both AFP and the host (CI runner / local dev).
+        # Requires AFP image that supports non-root; point log dirs to container paths that are writable by any UID.
+        AFP_RUN_ARGS=(
+            --user "$(id -u):$(id -g)"
+            -e "GUNICORN_LOG_DIR=/app/log/gunicorn/"
+            -e "FLASK_LOG_DIR_EXTERNAL=/app/log/flask"
+            "${AFP_RUN_ARGS[@]}"
+        )
+    fi
+    timeout 60 docker run "${AFP_RUN_ARGS[@]}"
     if [ $? -ne 0 ]; then
         log_with_script_prefixe "ERROR: Failed to run audio fingerprinter container (timeout or error)." >&2
         exit 1
