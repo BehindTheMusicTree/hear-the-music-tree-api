@@ -22,6 +22,7 @@ env:
   AFP_PORT: '3002'
   AFP_POOL_DIR_EXTERNAL: /tmp/ci-afp-pool/
   AFP_POST_ENDPOINT: fingerprint-audio
+  TMTA_USERNAME: tmta
 
 jobs:
   check-vars-and-secrets:
