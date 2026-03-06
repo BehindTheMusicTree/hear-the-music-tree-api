@@ -165,6 +165,7 @@ main() {
         -e ENV=$ENV \
         -e DEBUG=$DEBUG \
         -e APP_PORT=$AFP_PORT \
+        -e POOL_DIR_EXTERNAL=$AFP_POOL_DIR_EXTERNAL \
         -d $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION
     if [ $? -ne 0 ]; then
         log_with_script_prefixe "ERROR: Failed to run audio fingerprinter container (timeout or error)." >&2
