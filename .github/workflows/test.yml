@@ -40,8 +40,6 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: CI_TEST
-    outputs:
-      app_version: 'test'
     steps:
       - uses: actions/checkout@v4
         with:
