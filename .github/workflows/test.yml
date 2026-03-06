@@ -13,14 +13,14 @@ env:
   APP_VERSION: 'test'
   DB_PORT: '5432'
   DB_URL: localhost
-  TMP_UPLOADED_FILES_EXTERNAL: /tmp/ci-uploaded
-  MEDIA_DIR_INTERNAL: media
+  TMP_UPLOADED_FILES_EXTERNAL: /tmp/ci-uploaded/
+  MEDIA_DIR_INTERNAL: media/
   LIBRARIES_DIR_NAME: libraries
   DB_DATA_DIR: /var/lib/postgresql/data
   DB_SUPERUSER_NAME: postgres
   AFP_URL: localhost
   AFP_PORT: '3002'
-  AFP_POOL_DIR_EXTERNAL: /tmp/ci-afp-pool
+  AFP_POOL_DIR_EXTERNAL: /tmp/ci-afp-pool/
   AFP_POST_ENDPOINT: fingerprint-audio
 
 jobs:
@@ -72,9 +72,6 @@ jobs:
       AFP_CONTAINER_NAME: ${{ vars.AFP_APP_NAME }}
       AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
       AFP_VERSION: ${{ vars.AFP_VERSION }}
-      TMP_UPLOADED_FILES_EXTERNAL: /tmp/ci-uploaded
-      MEDIA_DIR_INTERNAL: media
-      LIBRARIES_DIR_NAME: libraries
       DEBUG: true
       DB_IS_NEEDED: true
       APP_IS_EXPOSED: false
