@@ -158,8 +158,10 @@ main() {
     log_with_script_prefixe "Database container running successfully."
 
     log_with_script_prefixe "Running the audio fingerprinter container..."
+    # Run as host user so the shared pool volume is writable by both AFP and the host (CI runner / local dev).
     timeout 60 docker run \
         --name=$AFP_CONTAINER_NAME \
+        --user "$(id -u):$(id -g)" \
         --volume=$TMP_UPLOADED_FILES:$AFP_POOL_DIR_EXTERNAL \
         -p $AFP_PORT:$AFP_PORT \
         -e ENV=$ENV \
