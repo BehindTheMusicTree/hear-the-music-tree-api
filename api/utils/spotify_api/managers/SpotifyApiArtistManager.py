@@ -1,13 +1,13 @@
 from django.core.exceptions import ObjectDoesNotExist
 
 from api.model.spotify_resource.children.artist.SpotifyArtist import SpotifyArtist
-from api.utils.spotify_api.SpotifyClient import SpotifyClient
+from api.utils.spotify_api.SpotifyClient import get_spotify_client
 from api.utils.spotify_api.ApiFields import ApiFields
 
 
 class SpotifyApiArtistManager:
     def __init__(self):
-        self.spotify_client = SpotifyClient()
+        self.spotify_client = get_spotify_client()
 
     def batch_fetch_artist_details(self, artist_ids: list[str], user) -> dict[str, dict]:
         """
@@ -21,13 +21,13 @@ class SpotifyApiArtistManager:
             Dictionary mapping artist IDs to their full details
         """
         artist_details = {}
+        if self.spotify_client is None:
+            return artist_details
 
-        # Process in batches of 50 (Spotify's limit)
         batch_size = 50
         for i in range(0, len(artist_ids), batch_size):
             batch = artist_ids[i:i + batch_size]
             try:
-                # Fetch all artists in the batch
                 results = self.spotify_client.spotify.artists(batch)
                 if results and 'artists' in results:
                     for artist in results['artists']:

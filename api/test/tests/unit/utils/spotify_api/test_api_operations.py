@@ -18,6 +18,18 @@ class TestSpotifyAPIOperations(AppTestCase):
         super().setUp()
         self._login_as_spotify_test_user_1()
 
+        mock_cred = mock.patch('api.utils.spotify_api.SpotifyClient.SpotifyCredentialManager')
+        self.mock_cred_patcher = mock_cred.start()
+        self.addCleanup(mock_cred.stop)
+        cred_instance = self.mock_cred_patcher.return_value
+        cred_instance.validate_credentials.return_value = None
+        cred_instance.get_client_credentials.return_value = {
+            "client_id": "test_id",
+            "client_secret": "test_secret",
+            "redirect_uri": "http://test.com",
+            "scope": "test_scope"
+        }
+
         # Set up spotipy mock
         self.mock_spotify_patcher = mock.patch('spotipy.Spotify')
         self.mock_spotify = self.mock_spotify_patcher.start()
@@ -186,7 +198,7 @@ class TestSpotifyAPIOperations(AppTestCase):
         mock_client = mock.MagicMock()
         mock_client.search_track.return_value = mock_search_result
         with mock.patch(
-            "api.utils.spotify_api.managers.SpotifyApiLibTrackManager.SpotifyClient",
+            "api.utils.spotify_api.SpotifyClient.get_spotify_client",
             return_value=mock_client,
         ):
             manager = SpotifyApiLibTrackManager()
@@ -212,7 +224,7 @@ class TestSpotifyAPIOperations(AppTestCase):
         mock_create_track.return_value = mock_track_instance
 
         with mock.patch(
-            "api.utils.spotify_api.managers.SpotifyApiLibTrackManager.SpotifyClient",
+            "api.utils.spotify_api.SpotifyClient.get_spotify_client",
             return_value=mock_client,
         ):
             manager = SpotifyApiLibTrackManager()
@@ -240,7 +252,7 @@ class TestSpotifyAPIOperations(AppTestCase):
         assert result == mock_track
 
     @mock.patch('api.utils.spotify_api.utils.create_spotify_lib_track_instance_from_dict')
-    @mock.patch('api.utils.spotify_api.managers.SpotifyApiLibTrackManager.SpotifyClient')
+    @mock.patch('api.utils.spotify_api.SpotifyClient.get_spotify_client')
     def test_get_or_create_spotify_lib_track_with_new_track_then_creates_and_returns_track(
             self, mock_spotify_client_class, mock_create_track):
         mock_spotify_client = mock.MagicMock()

@@ -6,7 +6,7 @@ from django.utils import timezone
 from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
 from api.model.user.User import User
 from api.exception import spotify as spotify_exception
-from ..SpotifyClient import SpotifyClient
+from ..SpotifyClient import get_spotify_client
 from ..ApiFields import ApiFields
 from .. import utils
 
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 class SpotifyApiLibTrackManager:
     def __init__(self):
-        self.spotify_client = SpotifyClient()
+        self.spotify_client = get_spotify_client()
 
     def get_or_create_spotify_lib_track(self, user: User, track_id: str) -> SpotifyLibTrack | None:
         """
@@ -28,12 +28,12 @@ class SpotifyApiLibTrackManager:
         Returns:
             SpotifyLibTrack instance or None if track not found
         """
+        if self.spotify_client is None:
+            return None
         try:
-            # Check if the track already exists in our database
             try:
                 return SpotifyLibTrack.objects.get(spotify_id=track_id)
             except ObjectDoesNotExist:
-                # Track doesn't exist, fetch from Spotify API
                 try:
                     track_data = self.spotify_client.retrieve_track_by_id(track_id)
                     if track_data:
@@ -63,6 +63,8 @@ class SpotifyApiLibTrackManager:
             List of SpotifyLibTrack instances
         """
         tracks = []
+        if self.spotify_client is None:
+            return tracks
         try:
             try:
                 results = self.spotify_client.search_track(query, limit)
@@ -95,6 +97,8 @@ class SpotifyApiLibTrackManager:
         Returns:
             SpotifyLibTrack instance or None if track not found
         """
+        if self.spotify_client is None:
+            return None
         try:
             results = self.spotify_client.search_track(f"isrc:{isrc}", limit=1)
             if results and ApiFields.Names.TRACKS in results and ApiFields.Names.ITEMS in results[ApiFields.Names.TRACKS]:
@@ -116,8 +120,10 @@ class SpotifyApiLibTrackManager:
         Returns:
             list[SpotifyLibTrack]: List of newly synced track instances
         """
-        logger.info(f"Starting quick sync for user {user.spotify_id}")
         tracks = []
+        if self.spotify_client is None:
+            return tracks
+        logger.info(f"Starting quick sync for user {user.spotify_id}")
         offset = 0
         limit = 50
         now = timezone.now()
@@ -237,6 +243,8 @@ class SpotifyApiLibTrackManager:
             list[SpotifyLibTrack]: List of synced track instances
         """
         tracks = []
+        if self.spotify_client is None:
+            return tracks
         offset = 0
         limit = 50
         now = timezone.now()
@@ -244,10 +252,7 @@ class SpotifyApiLibTrackManager:
         if not user.spotify_access_token:
             return tracks
 
-        # Get all existing track IDs
         existing_tracks = set(SpotifyLibTrack.objects.values_list('spotify_id', flat=True))
-
-        # Track which Spotify tracks we've seen
         seen_track_ids = set()
 
         while True:
