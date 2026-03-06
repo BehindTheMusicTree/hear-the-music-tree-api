@@ -265,8 +265,9 @@ The HearTheMusicTree API requires a PostgreSQL database to function. The databas
 
 #### Audio Fingerprinting Requirement
 
-For audio fingerprinting, the HearTheMusicTree API requires an app called Audio Fingerprinter. You can find the Audio Fingerprinter app on GitHub at the following link: [Audio Fingerprinter](https://github.com/BehindTheMusicTree/bodzify-audio-fingerprinter-flask)
+For audio fingerprinting, the HearTheMusicTree API requires an app called Audio Fingerprinter. You can find the Audio Fingerprinter app on GitHub at the following link: [Audio Fingerprinter](https://github.com/BehindTheMusicTree/audio-fingerprinter)
 
+The AFP image’s setup-filesystem creates the Flask app log from `FLASK_LOG_APP_FILENAME` (e.g. `app.log`). The image build must set that so the file matches what `settings.py` expects (`LOG_APP_FILE`). For CI and local runs with `--user`, the AFP image must support non-root: writable `/app/log` and `/app/env/calculated_paths` in the image; log dir overrides are documented in the AFP README.
 
 ### 2. Branching
 

@@ -151,6 +151,14 @@ jobs:
           echo ""
           echo "=== AFP container logs ==="
           docker logs "${{ env.AFP_CONTAINER_NAME }}" 2>&1 || true
+          echo ""
+          echo "=== Diagnostic: run setup in same image as non-root and list /app/log/flask/ ==="
+          docker run --rm --user "$(id -u):$(id -g)" \
+            -e ENV=CI_TEST -e DEBUG=true -e APP_PORT=${{ env.AFP_PORT }} -e POOL_DIR_EXTERNAL=/tmp/pool \
+            -e GUNICORN_LOG_DIR=/app/log/gunicorn/ -e FLASK_LOG_DIR_EXTERNAL=/app/log/flask \
+            -v /tmp/ci-uploaded:/tmp/pool \
+            ${{ env.DOCKERHUB_USERNAME }}/${{ env.AFP_IMAGE_REPO }}:${{ env.AFP_VERSION }} \
+            bash -c 'echo "FLASK_LOG_APP_FILENAME=${FLASK_LOG_APP_FILENAME:-not set}"; bash scripts/setup-filesystem.sh 2>&1; echo "---"; ls -la /app/log/flask/ 2>&1'
 
       - name: Init django data
         run: bash scripts/init-django-data.sh
