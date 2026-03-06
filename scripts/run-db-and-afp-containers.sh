@@ -174,7 +174,7 @@ main() {
         AFP_RUN_ARGS=(
             --user "$(id -u):$(id -g)"
             -e "GUNICORN_LOG_DIR=/app/log/gunicorn/"
-            -e "FLASK_LOG_DIR_EXTERNAL=/app/log/flask"
+            -e "FLASK_LOG_DIR_EXTERNAL=/app/log/flask/"
             "${AFP_RUN_ARGS[@]}"
         )
     fi
