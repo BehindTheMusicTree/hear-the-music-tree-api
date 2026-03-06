@@ -62,43 +62,6 @@ apply_migrations() {
   log_with_script_prefixe "Migrations applied successfully."
 }
 
-load_initial_fixtures() {
-  log_with_script_prefixe "Loading initial data."
-  case "${API_DIR_NAME}" in
-    /*)
-      log_with_script_prefixe "ERROR: API_DIR_NAME must be a relative directory name (e.g. api), got absolute path: ${API_DIR_NAME}" >&2
-      exit 1
-      ;;
-  esac
-  fixtures_dir="${PROJECT_DIR}${API_DIR_NAME}/fixtures"
-
-  if [ ! -d "$fixtures_dir" ]; then
-    log_with_script_prefixe "No fixtures directory found at $fixtures_dir. Skipping fixture loading."
-    return 0
-  fi
-
-  for fixture in "$fixtures_dir"/*.json;
-  do
-    if [ ! -f "$fixture" ]; then
-      continue
-    fi
-    
-    if ! python3 -c "import json, sys; data = json.load(open('$fixture')); sys.exit(0 if (isinstance(data, list) and len(data) > 0 and isinstance(data[0], dict) and 'model' in data[0]) else 1)" 2>/dev/null; then
-      log_with_script_prefixe "Skipping $fixture (not a Django fixture format)"
-      continue
-    fi
-    
-    log_with_script_prefixe "Loading fixture $fixture ..."
-    python3 $MANAGE_SCRIPT loaddata $fixture
-    if [ $? -ne 0 ]; then
-        log_with_script_prefixe "ERROR: Failed to load initial data from $fixture" >&2
-        exit 1
-    fi
-    log_with_script_prefixe "Fixture $fixture loaded."
-  done
-  log_with_script_prefixe "Initial data loaded successfully."
-}
-
 main (){
   SCRIPTS_DIR=$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)/
   PROJECT_DIR=$(realpath "${SCRIPTS_DIR}..")/
@@ -119,7 +82,6 @@ main (){
 
   create_initial_migration_if_needed
   apply_migrations
-  load_initial_fixtures
 
   unset PGPASSWORD
 

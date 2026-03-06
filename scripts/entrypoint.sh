@@ -70,7 +70,7 @@ main (){
     log_with_script_prefixe "Checking if Django data is initialized..."
     bash ${SCRIPTS_DIR}check-django-initialized.sh
     if [ $? -ne 0 ]; then
-        log_with_script_prefixe "Django is not initialized. Initializing (DB/role, migrate, fixtures)..." >&2
+        log_with_script_prefixe "Django is not initialized. Initializing (DB/role, migrate)..." >&2
         bash ${SCRIPTS_DIR}init-django-data.sh
         if [ $? -ne 0 ]; then
             log_with_script_prefixe "ERROR: Failed to initialize Django data." >&2

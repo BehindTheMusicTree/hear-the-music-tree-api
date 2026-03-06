@@ -6,10 +6,6 @@ tmp-uploaded-files/
 venv/
 .env
 .DS_Store
-api/fixtures/*
-!api/fixtures/*/
-
-api/fixtures/genres/complete_genre_tree.json
 
 # Draft documents (internal planning, not version controlled)
 .github/pr-descriptions/*
