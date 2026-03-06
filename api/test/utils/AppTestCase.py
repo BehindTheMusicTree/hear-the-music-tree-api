@@ -4,7 +4,6 @@ import os
 from uuid import UUID
 
 from django.contrib.auth.hashers import make_password
-from django.core.management import call_command
 from django.db import models
 from django.http import HttpResponse, JsonResponse
 from django.test import TestCase
@@ -184,7 +183,7 @@ class AppTestCase(TestCase, Generic[T]):
 
     def _domain_helper(self, helper_class: type) -> "AppTestCase":
         """Return a domain test case instance bound to this test's api_client and users for composition in E2E tests.
-        Does not call setUp() on the helper to avoid duplicate DB fixtures (users, loaddata).
+        Does not call setUp() on the helper to avoid duplicate DB fixtures (users).
         """
         inst = helper_class()
         inst.api_client = self.api_client
@@ -218,7 +217,6 @@ class AppTestCase(TestCase, Generic[T]):
 
     def setUp(self, methods_names_to_implement: list[str] | None = None) -> None:
 
-        call_command('loaddata', 'app')
         self.test_admin_user = User.objects.create_superuser(
             username='test_admin', password='test_admin', email='test_admin@example.com', is_test_user=True)
 
