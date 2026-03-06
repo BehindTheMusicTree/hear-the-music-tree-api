@@ -12,6 +12,7 @@ class CriteriaType(BaseModel):
         return f"{self.pk} | {self.label}"
 
     class Meta:
+        db_table = 'htmt_api_criteria_type'
         constraints = [models.CheckConstraint(condition=~models.Q(label=""), name="criteria_non_empty_label")]
         verbose_name = 'Criteria Type'
         verbose_name_plural = 'Criteria Types'

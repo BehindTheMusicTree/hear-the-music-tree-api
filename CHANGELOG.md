@@ -75,6 +75,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **Tests**: OAuth/MB/Spotify client mocked per conftest (CI or non-e2e). Audio meta: `override_settings(AFP_ENABLED=...)`, no test-only env override. E2e refactor with `_domain_helper()` and SearchMixin; markers and docs in api/test/README.md.
 - **Service flags**: `SPOTIFY_ENABLED`, `GOOGLE_OAUTH_ENABLED`, `AFP_ENABLED`, `MUSICBRAINZ_LOOKUP_ENABLED` required (no defaults). CI sets Spotify/Google/MB false; deploy sets all true.
 - **Settings**: Renamed to `AFP_ENABLED`; added to example env. AFP vars (`AFP_CONTAINER_NAME`, `AFP_URL`, `AFP_PORT`, `AFP_POST_ENDPOINT`) are required only when `AFP_ENABLED=true`; when false they must be unset (file upload disabled) or optional.
+- **Model table names**: Table-prefix metaclass removed. Every concrete model now sets `db_table` explicitly in `Meta` (e.g. `db_table = 'htmt_api_user'`), matching migration and raw SQL names. Aligns with Django best practice and "explicit is better than implicit"; model renames no longer affect table names unless `db_table` is changed. `TablePrefixModelBase` and `PolymorphicTablePrefixModelBase` deleted; `DB_TABLE_PREFIX` removed from settings.
 
 ### Documentation
 

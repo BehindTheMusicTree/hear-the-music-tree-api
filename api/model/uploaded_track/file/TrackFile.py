@@ -76,6 +76,7 @@ class TrackFile(PrivateStandardResource):
         uploaded_track: UploadedTrack
 
     class Meta:
+        db_table = 'htmt_api_track_file'
         verbose_name = 'Track File'
         verbose_name_plural = 'Track Files'
 

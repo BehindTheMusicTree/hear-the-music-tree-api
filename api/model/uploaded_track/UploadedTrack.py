@@ -62,6 +62,7 @@ class UploadedTrack(TrackablePlayCount):
     objects: UploadedTrackManager = UploadedTrackManager()
 
     class Meta:
+        db_table = 'htmt_api_uploaded_track'
         verbose_name = 'Uploaded Track'
         verbose_name_plural = 'Uploaded Tracks'
         indexes = [models.Index(fields=[Fields.USER, Fields.TITLE]),

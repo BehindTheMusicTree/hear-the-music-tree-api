@@ -21,5 +21,6 @@ class FingerprintMissingCause(PrivateUniqueResource):
         return f"{self.code} | {self.message}"
 
     class Meta:
+        db_table = 'htmt_api_fingerprint_missing_cause'
         verbose_name = 'Fingerprinting Error'
         verbose_name_plural = 'Fingerprinting Errors'
