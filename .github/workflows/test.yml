@@ -23,7 +23,7 @@ env:
 
   AFP_URL: localhost
   AFP_PORT: '3002'
-  AFP_POOL_DIR_EXTERNAL: /tmp/ci-afp-pool/
+  AFP_POOL_DIR_EXTERNAL: /tmp/pool/
   AFP_POST_ENDPOINT: fingerprint-audio
   TMTA_USERNAME: tmta
 
@@ -144,8 +144,10 @@ jobs:
       - name: Run pytest
         run: |
           set -a
-          source env/calculated_paths/.env
+          # shellcheck source=env/calculated_paths/.env
+          . env/calculated_paths/.env
           set +a
+          export TMP_UPLOADED_FILES
           if [ -n "${{ inputs.test_path || '' }}" ]; then
             pytest -v --tb=short -x --junitxml=test-results.xml "${{ inputs.test_path }}"
           else
