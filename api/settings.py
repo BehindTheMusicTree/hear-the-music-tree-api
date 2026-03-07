@@ -887,8 +887,12 @@ else:
     if not FILE_UPLOAD_TEMP_DIR:
         print_django("TMP_UPLOADED_FILES/FILE_UPLOAD_TEMP_DIR is not set. The app will not handle media files.")
         FILE_UPLOAD_ENABLED = False
-        for var_name in ['AFP_ENABLED',
-                         'AFP_PORT',
+        if os.getenv('AFP_ENABLED', '').lower() == 'true':
+            raise EnvironmentError(
+                "The AFP_ENABLED env variable cannot be true when "
+                "TMP_UPLOADED_FILES/FILE_UPLOAD_TEMP_DIR is not set."
+            )
+        for var_name in ['AFP_PORT',
                          'AFP_CONTAINER_NAME',
                          'AFP_POST_ENDPOINT',
                          'ACOUSTID_API_KEY',
