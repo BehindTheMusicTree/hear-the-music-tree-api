@@ -15,7 +15,7 @@ check_script_vars_are_set () {
 
 setup_static_files_for_collection() {
     check_required_vars_are_set STATIC_FILES_DEFAULT 
-    log_with_script_prefixe "ENV is set to COLLECT_STATIC. Setting up the filesystem..."
+    log_with_script_prefixe "ENV is set to collect_static. Setting up the filesystem..."
     create_directory_if_not_exists_or_exit "$STATIC_FILES_DEFAULT"
     log_with_script_prefixe "Checking if files exist in $STATIC_FILES_DEFAULT..."
     if [ -z "$(ls -A $STATIC_FILES_DEFAULT)" ]; then
@@ -33,9 +33,9 @@ setup_static_files_for_collection() {
 
 setup_static_files_for_serving() {
     if [ -z "$STATIC_FILES_DEFAULT" ]; then
-        log_with_script_prefixe "ENV is not set to COLLECT_STATIC and STATIC_FILES_DEFAULT is not set. Static files are not needed."
+        log_with_script_prefixe "ENV is not set to collect_static and STATIC_FILES_DEFAULT is not set. Static files are not needed."
     else 
-        log_with_script_prefixe "ENV is not set to COLLECT_STATIC and STATIC_FILES_DEFAULT is set. Static files are needed. "\
+        log_with_script_prefixe "ENV is not set to collect_static and STATIC_FILES_DEFAULT is set. Static files are needed. "\
             "Setting up the filesystem..."
         log_with_script_prefixe "Checking if the directory $STATIC_FILES_DEFAULT exists..."
         if [ ! -d "$STATIC_FILES_DEFAULT" ]; then
@@ -161,7 +161,7 @@ main (){
     check_script_vars_are_set
     check_required_vars_are_set ENV
 
-    if [ $ENV = "COLLECT_STATIC" ]; then
+    if [ $ENV = "collect_static" ]; then
         setup_static_files_for_collection
     else
         setup_static_files_for_serving

@@ -19,7 +19,7 @@ jobs:
     name: Static files
     runs-on: ubuntu-latest
     environment:
-      name: COLLECT_STATIC
+      name: collect_static
     env:
       API_DIR_NAME: ${{ vars.API_DIR_NAME }}
       ENV: ${{ vars.ENV }}

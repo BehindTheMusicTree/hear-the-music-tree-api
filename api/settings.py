@@ -859,7 +859,7 @@ else:
     setup_data_dir()
 
     STATIC_FILES = os.getenv('STATIC_FILES')
-    if ENV == 'COLLECT_STATIC':
+    if ENV == 'collect_static':
         STATIC_FILES_STATE = StaticFileStates.COLLECTING
         LIBRARIES_DIR_NAME = ''  # Needed to setup the database (User model)
         setup_static_files()
