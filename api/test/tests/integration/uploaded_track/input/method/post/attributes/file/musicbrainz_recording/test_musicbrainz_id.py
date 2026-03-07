@@ -8,11 +8,12 @@ from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrac
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
+@pytest.mark.patches_musicbrainz_lookup
 class TestCase(UploadedTrackTestCase):
 
     def test_drown_7m21_mp3_with_mocked_lookup_then_ok(self):
         expected_id = "4a45b00b-273d-40ed-9ecd-42f387f59c22"
-        with patch('acoustid.lookup') as mock_lookup:
+        with patch("api.utils.musicbrainz.service.acoustid.lookup") as mock_lookup:
             mock_lookup.return_value = {
                 'status': 'ok',
                 'results': [{
