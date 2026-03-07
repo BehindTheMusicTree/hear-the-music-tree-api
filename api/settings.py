@@ -106,12 +106,14 @@ LIBRARIES_DIR: Path
 DATA_DIR: Path
 
 # Spotify
+SPOTIFY_ENABLED: bool
 SPOTIFY_CLIENT_ID: str
 SPOTIFY_CLIENT_SECRET: str
 SPOTIFY_REDIRECT_URI: str
 SPOTIFY_SCOPES: str
 
 # Google OAuth
+GOOGLE_OAUTH_ENABLED: bool
 GOOGLE_CLIENT_ID: str
 GOOGLE_CLIENT_SECRET: str
 GOOGLE_REDIRECT_URI: str
@@ -732,12 +734,19 @@ def _load_service_feature_flags():
     print_django("MusicBrainz lookup is enabled." if MUSICBRAINZ_LOOKUP_ENABLED else "MusicBrainz lookup is disabled.")
 
 
-def setup_media_dirs():
-    print_django("FILE_UPLOAD_TEMP_DIR is set. Setting up the media variables...")
-
-    _load_service_feature_flags()
-
+def _load_optional_service_credentials():
+    """Load ACOUSTID, Spotify and Google OAuth env; call after _load_service_feature_flags()."""
     global ACOUSTID_API_KEY
+    global SPOTIFY_ENABLED
+    global SPOTIFY_CLIENT_ID
+    global SPOTIFY_CLIENT_SECRET
+    global SPOTIFY_REDIRECT_URI
+    global SPOTIFY_SCOPES
+    global GOOGLE_OAUTH_ENABLED
+    global GOOGLE_CLIENT_ID
+    global GOOGLE_CLIENT_SECRET
+    global GOOGLE_REDIRECT_URI
+
     if MUSICBRAINZ_LOOKUP_ENABLED:
         ACOUSTID_API_KEY = load_required_secret_env_var('ACOUSTID_API_KEY')
         print_django("MusicBrainz lookup enabled; ACOUSTID_API_KEY loaded.")
@@ -745,12 +754,8 @@ def setup_media_dirs():
         ACOUSTID_API_KEY = load_optional_secret_env_var('ACOUSTID_API_KEY')
         print_django("MusicBrainz lookup disabled; ACOUSTID_API_KEY not required.")
 
-    global SPOTIFY_CLIENT_ID
-    global SPOTIFY_CLIENT_SECRET
-    global SPOTIFY_REDIRECT_URI
-    global SPOTIFY_SCOPES
-    spotify_enabled = load_required_bool_env_var('SPOTIFY_ENABLED')
-    if spotify_enabled:
+    SPOTIFY_ENABLED = load_required_bool_env_var('SPOTIFY_ENABLED')
+    if SPOTIFY_ENABLED:
         SPOTIFY_CLIENT_ID = load_required_str_env_var('SPOTIFY_CLIENT_ID')
         print_django(f"SPOTIFY_CLIENT_ID = {SPOTIFY_CLIENT_ID}")
         SPOTIFY_CLIENT_SECRET = load_required_secret_env_var('SPOTIFY_CLIENT_SECRET')
@@ -767,11 +772,8 @@ def setup_media_dirs():
         SPOTIFY_SCOPES = load_optional_str_env_var('SPOTIFY_SCOPES')
         print_django("Spotify disabled; credentials not loaded.")
 
-    global GOOGLE_CLIENT_ID
-    global GOOGLE_CLIENT_SECRET
-    global GOOGLE_REDIRECT_URI
-    google_oauth_enabled = load_required_bool_env_var('GOOGLE_OAUTH_ENABLED')
-    if google_oauth_enabled:
+    GOOGLE_OAUTH_ENABLED = load_required_bool_env_var('GOOGLE_OAUTH_ENABLED')
+    if GOOGLE_OAUTH_ENABLED:
         GOOGLE_CLIENT_ID = load_required_str_env_var('GOOGLE_CLIENT_ID')
         print_django(f"GOOGLE_CLIENT_ID = {GOOGLE_CLIENT_ID}")
         GOOGLE_CLIENT_SECRET = load_required_secret_env_var('GOOGLE_CLIENT_SECRET')
@@ -784,6 +786,10 @@ def setup_media_dirs():
         GOOGLE_CLIENT_SECRET = load_optional_secret_env_var('GOOGLE_CLIENT_SECRET')
         GOOGLE_REDIRECT_URI = load_optional_str_env_var('GOOGLE_REDIRECT_URI')
         print_django("Google OAuth disabled; credentials not loaded.")
+
+
+def setup_media_dirs():
+    print_django("FILE_UPLOAD_TEMP_DIR is set. Setting up the media variables...")
 
     global MEDIA_ROOT  # Django constant, do not rename.
     MEDIA_ROOT = load_required_path_env_var('MEDIA_DIR')
@@ -835,6 +841,8 @@ if 'pytest' in sys.argv[0]:
 if 'loaddata' in sys.argv:
     print_django("settings.py is being executed because of a loaddata command.")
     STATIC_FILES_STATE = StaticFileStates.NOT_NEEDED
+    _load_service_feature_flags()
+    _load_optional_service_credentials()
     setup_app_constants()
     setup_data_dir()
     setup_installed_apps_and_caches()
@@ -845,6 +853,7 @@ if 'loaddata' in sys.argv:
     setup_media_dirs()  # Needed for the User model library path field
 else:
     _load_service_feature_flags()
+    _load_optional_service_credentials()
     setup_app_exposure_if_needed()
     setup_app_constants()
     setup_data_dir()
