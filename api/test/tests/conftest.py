@@ -161,14 +161,24 @@ def base_childinstance(request, db):
     test_case.tearDown
 
 
+def _is_optional_service_enabled(attr_name: str) -> bool:
+    """True if the flag is enabled on settings or in os.environ (e.g. from .env before setup_media_dirs runs)."""
+    val = getattr(settings, attr_name, None)
+    if val is None:
+        val = os.environ.get(attr_name, "")
+    if isinstance(val, bool):
+        return val
+    return str(val).strip().lower() in ("true", "1", "yes")
+
+
 def _require_optional_services_enabled() -> None:
     """All optional services must be enabled to run tests; fail fast if any is disabled."""
     disabled: list[str] = []
-    if not getattr(settings, "SPOTIFY_ENABLED", False):
+    if not _is_optional_service_enabled("SPOTIFY_ENABLED"):
         disabled.append("SPOTIFY_ENABLED")
-    if not getattr(settings, "GOOGLE_OAUTH_ENABLED", False):
+    if not _is_optional_service_enabled("GOOGLE_OAUTH_ENABLED"):
         disabled.append("GOOGLE_OAUTH_ENABLED")
-    if not getattr(settings, "MUSICBRAINZ_LOOKUP_ENABLED", False):
+    if not _is_optional_service_enabled("MUSICBRAINZ_LOOKUP_ENABLED"):
         disabled.append("MUSICBRAINZ_LOOKUP_ENABLED")
     if disabled:
         pytest.exit(
