@@ -26,6 +26,7 @@ ACOUSTID_LOOKUP_RECORDING_PAYLOAD = {
 
 
 @pytest.mark.e2e
+@pytest.mark.patches_musicbrainz_lookup
 class TestCase(UploadedTrackTestCase):
     """
     E2E test for complete track upload workflow with audio fingerprinting and MusicBrainz lookup.

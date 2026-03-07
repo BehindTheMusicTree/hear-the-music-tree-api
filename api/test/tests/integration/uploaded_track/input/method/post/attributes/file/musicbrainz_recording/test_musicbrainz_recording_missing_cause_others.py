@@ -35,7 +35,7 @@ class TestCase(UploadedTrackTestCase):
         assert response.status_code == status.HTTP_201_CREATED
         assert not self.saved_object.track_file.musicbrainz_recording_missing_cause
 
-    @patch('acoustid.lookup')
+    @patch("api.utils.musicbrainz.service.acoustid.lookup")
     def test_no_matching_recording_then_corresponding_missing_cause(self, mock_lookup):
         mock_lookup.return_value = {
             'status': 'error',
@@ -60,7 +60,7 @@ class TestCase(UploadedTrackTestCase):
                 MbRecordingMissingCauseCode.Codes.DURATION_BELOW_OR_EQUAL_1_SEC)
 
     def test_invalid_fingerprint_then_corresponding_missing_cause(self):
-        with patch('acoustid.lookup') as mock_lookup:
+        with patch("api.utils.musicbrainz.service.acoustid.lookup") as mock_lookup:
             error_code = 3  # MusicBrainz error code for invalid fingerprint.
             error_message = "Invalid fingerprint sent"
             mock_lookup.return_value = {
@@ -127,7 +127,7 @@ class TestCase(UploadedTrackTestCase):
             assert self.saved_object.track_file.musicbrainz_recording_missing_cause.message is not None
 
     def test_unknown_error_code_then_corresponding_missing_cause(self):
-        with patch('acoustid.lookup') as mock_lookup:
+        with patch("api.utils.musicbrainz.service.acoustid.lookup") as mock_lookup:
             error_code = 7  # Using error code 7 (not 3 or 5)
             error_message = "Some other error"
             mock_lookup.return_value = {
@@ -162,7 +162,7 @@ class TestCase(UploadedTrackTestCase):
             assert self.saved_object.track_file.musicbrainz_recording_missing_cause.message is not None
 
     def test_musicbrainz_returns_empty_results_then_corresponding_missing_cause(self):
-        with patch('acoustid.lookup') as mock_lookup:
+        with patch("api.utils.musicbrainz.service.acoustid.lookup") as mock_lookup:
             mock_lookup.return_value = {
                 'status': 'ok',
                 'results': []

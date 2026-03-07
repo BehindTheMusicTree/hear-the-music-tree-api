@@ -7,6 +7,7 @@ from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrac
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
+@pytest.mark.patches_musicbrainz_lookup
 class TestCase(UploadedTrackTestCase):
 
     def test_no_matching_recording_then_none(self):
@@ -17,7 +18,7 @@ class TestCase(UploadedTrackTestCase):
         assert not self.saved_object.track_file.musicbrainz_recording
 
     def test_with_9_matches_then_the_one_with_duration_field(self):
-        with patch('acoustid.lookup') as mock_lookup:
+        with patch("api.utils.musicbrainz.service.acoustid.lookup") as mock_lookup:
             mock_lookup.return_value = {
                 'status': 'ok',
                 'results': [
@@ -48,7 +49,7 @@ class TestCase(UploadedTrackTestCase):
                 '9f3c3b61-41a6-4bb9-a49c-33606f536784'
 
     def test_with_2_matches_then_the_one_with_closest_duration(self):
-        with patch('acoustid.lookup') as mock_lookup:
+        with patch("api.utils.musicbrainz.service.acoustid.lookup") as mock_lookup:
             mock_lookup.return_value = {
                 'status': 'ok',
                 'results': [
@@ -79,7 +80,7 @@ class TestCase(UploadedTrackTestCase):
                 '76e1d5e6-9713-4c6b-8238-9d7983fd4497'
 
     def test_with_2_matches_with_same_duration_and_same_number_of_fields_then_the_one_with_the_most_release_groups(self):
-        with patch('acoustid.lookup') as mock_lookup:
+        with patch("api.utils.musicbrainz.service.acoustid.lookup") as mock_lookup:
             mock_lookup.return_value = {
                 'status': 'ok',
                 'results': [
