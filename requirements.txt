@@ -3,6 +3,7 @@ audiometa-python==1.1.0
 autoflake==2.3.1
 bcrypt==3.1.7
 blinker==1.4
+bump2version==1.0.1
 certifi==2019.11.28
 chardet==3.0.4
 Click==7.0
