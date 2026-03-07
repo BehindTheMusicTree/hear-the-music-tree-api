@@ -24,6 +24,7 @@ class SpotifyLibTrackViewSet(AppModelViewSet[SpotifyLibTrack]):
                          detailed_serializer_class=SpotifyLibTrackDetailedSerializer,
                          simple_serializer_class=SpotifyLibTrackSimpleSerializer,
                          is_private_resource=False,
+                         is_pk_uuid=False,
                          **kwargs)
 
     def get_queryset(self):

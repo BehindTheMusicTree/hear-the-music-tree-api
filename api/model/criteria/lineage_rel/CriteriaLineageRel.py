@@ -17,6 +17,7 @@ class CriteriaLineageRel(PrivateStandardResource):
         return f'Descendant {self.descendant.uuid} | Degree {self.degree} | Ascendant {self.ascendant.uuid}'
 
     class Meta:
+        db_table = 'htmt_api_criteria_lineage_rel'
         verbose_name = 'Criteria Lineage Relation'
         verbose_name_plural = 'Criteria Lineage Relations'
         indexes = [models.Index(fields=[Fields.USER], name='crit_lineage_rel_user_idx')]

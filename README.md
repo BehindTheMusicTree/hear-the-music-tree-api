@@ -345,8 +345,6 @@ All endpoints are prefixed with the API base URL (`{version}/`). Most endpoints 
 | `GET` | `reference/library/uploaded/{id}/` | Retrieve a specific reference uploaded track | 🔓 |
 | `GET` | `me/library/spotify/` | List user's Spotify library tracks | 🔒 |
 | `GET` | `me/library/spotify/{id}/` | Retrieve a specific Spotify track | 🔒 |
-| `GET` | `reference/library/spotify/` | List reference Spotify library tracks | 🔓 |
-| `GET` | `reference/library/spotify/{id}/` | Retrieve a specific reference Spotify track | 🔓 |
 | `GET` | `all-tracks/` | Get all tracks (uploaded and Spotify) | 🔒 |
 
 ### Music Metadata

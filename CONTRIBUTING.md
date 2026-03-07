@@ -157,6 +157,8 @@ cd the-music-tree-api
 
    This installs required system tools: `flac`, `ffmpeg`, `libchromaprint-tools`, `jq`, `postgresql-client`
 
+   **Note:** Tests that use WAV files require `ffprobe` (from ffmpeg) to be installed and working. If pytest exits with "ffprobe failed to run" or you see "File corrupted" when running audio tests, ffmpeg may be broken (e.g. missing libvpx on macOS). Fix by reinstalling: `brew reinstall ffmpeg` (macOS) or re-run `scripts/install-dependencies.sh` (Linux).
+
 4. Create and activate a virtual environment:
 
    ```bash
@@ -263,8 +265,9 @@ The HearTheMusicTree API requires a PostgreSQL database to function. The databas
 
 #### Audio Fingerprinting Requirement
 
-For audio fingerprinting, the HearTheMusicTree API requires an app called Audio Fingerprinter. You can find the Audio Fingerprinter app on GitHub at the following link: [Audio Fingerprinter](https://github.com/BehindTheMusicTree/bodzify-audio-fingerprinter-flask)
+For audio fingerprinting, the HearTheMusicTree API requires an app called Audio Fingerprinter. You can find the Audio Fingerprinter app on GitHub at the following link: [Audio Fingerprinter](https://github.com/BehindTheMusicTree/audio-fingerprinter)
 
+The AFP image creates the Flask app log from `FLASK_LOG_APP_FILENAME` (e.g. `app.log`), which must match what `settings.py` expects (`LOG_APP_FILE`). Path variables (`GUNICORN_LOG_DIR`, `FLASK_LOG_DIR_EXTERNAL`, `POOL_DIR_EXTERNAL`) are runtime-only and required when running the container; the AFP entrypoint fails fast if any is missing. For CI and local runs with `--user`, the AFP image must support non-root (writable `/app/log` and `/app/env/calculated_paths`). See the AFP README.
 
 ### 2. Branching
 
@@ -435,6 +438,21 @@ pytest api/test/tests/integration/view/uploaded_track/test_specific.py
 - Each test should focus on a single scenario
 
 For detailed information about test structure, organization, and conventions, see [Test README](api/test/README.md).
+
+**Mocked vs real (e2e) tests:**
+
+Integration tests that depend on external services (URLs, third-party APIs) use mocks by default so CI runs without network and stays deterministic.
+
+**Mockable services:** Spotify and Google OAuth (view layer); MusicBrainz (AcoustID) lookup and Spotify API client (service layer); AFP / audio fingerprinting (service layer). AFP and MusicBrainz can be toggled independently (`AFP_ENABLED`, `MUSICBRAINZ_LOOKUP_ENABLED`).
+
+- **Unit and integration tests:** All mocked.
+- **E2e tests:**
+  - Dev: nothing mocked; e2e can use real providers locally when the corresponding services are enabled (env / feature flags). When the run includes e2e tests, every enabled service must be reachable or the session fails early.
+  - All runs: `SPOTIFY_ENABLED`, `GOOGLE_OAUTH_ENABLED`, and `MUSICBRAINZ_LOOKUP_ENABLED` must be true or the test run fails at collection. Use fake credentials in CI; conftest only mocks at the boundary.
+  - CI (`ENV=ci_test`): only AFP must be reachable for e2e; other services are mocked.
+- Details: [api/test/README.md](api/test/README.md) (OAuth, Spotify API client, Audio meta analysis, fail early).
+
+Add at least one **real** e2e test when the service can be exercised without blocking CI (see [api/test/README.md](api/test/README.md) § E2E tests: when to add, when they hit real services, and how to run them).
 
 **CI Testing:**
 

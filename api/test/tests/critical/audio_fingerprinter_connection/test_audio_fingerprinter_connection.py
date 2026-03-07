@@ -11,7 +11,7 @@ from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrac
 from api.utils.audio_fingerprinter import utils as audio_fingerprinter_utils
 
 
-@pytest.mark.usefixtures("enable_audio_metadata_analysis")
+@pytest.mark.requires_real_afp
 class TestCase(AppTestCase):
 
     @pytest.mark.critical

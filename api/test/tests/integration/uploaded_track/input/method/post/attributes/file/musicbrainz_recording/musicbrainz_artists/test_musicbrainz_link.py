@@ -7,11 +7,11 @@ from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrac
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
-@pytest.mark.usefixtures("enable_audio_metadata_analysis")
+@pytest.mark.patches_musicbrainz_lookup
 class TestCase(UploadedTrackTestCase):
 
     def test_musicbrainz_link(self):
-        with patch('acoustid.lookup') as mock_lookup:
+        with patch("api.utils.musicbrainz.service.acoustid.lookup") as mock_lookup:
             mock_lookup.return_value = {
                 'status': 'ok',
                 'results': [

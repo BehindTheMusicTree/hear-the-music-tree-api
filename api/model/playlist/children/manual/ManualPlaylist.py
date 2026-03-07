@@ -29,6 +29,7 @@ class ManualPlaylist(Playlist):
         return self._name
 
     class Meta:
+        db_table = 'htmt_api_manual_playlist'
         constraints = [models.CheckConstraint(condition=~models.Q(_name=""), name="manual_playlist_non_empty_name")]
         verbose_name = 'Manual Playlist'
         verbose_name_plural = 'Manual Playlists'
