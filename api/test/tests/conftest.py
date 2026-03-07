@@ -42,9 +42,23 @@ def mock_oauth_outside_e2e(request):
     - When ENV=CI_TEST: always mock for all tests, including e2e, so no real provider calls.
     - In dev (other ENV): mock only for non-e2e tests; e2e tests are not mocked so they can
       use real OAuth or their own mocks when run locally.
+    - When mocking: override_settings(SPOTIFY_ENABLED=True, SPOTIFY_CLIENT_ID='test', ...)
+      and GOOGLE_OAUTH_ENABLED=True, GOOGLE_CLIENT_ID='test', ... so the auth view paths run
+      (same pattern as AFP/MusicBrainz). Tests that need the disabled branch use
+      @override_settings(SPOTIFY_ENABLED=False) or GOOGLE_OAUTH_ENABLED=False.
     """
     if _should_mock_external_services(request):
-        with (
+        with override_settings(
+            SPOTIFY_ENABLED=True,
+            SPOTIFY_CLIENT_ID="test",
+            SPOTIFY_CLIENT_SECRET="test",
+            SPOTIFY_REDIRECT_URI="http://test/callback",
+            SPOTIFY_SCOPES="test",
+            GOOGLE_OAUTH_ENABLED=True,
+            GOOGLE_CLIENT_ID="test",
+            GOOGLE_CLIENT_SECRET="test",
+            GOOGLE_REDIRECT_URI="http://test/callback",
+        ), (
             patch("api.view.spotify_auth.SpotifyOAuthService"),
             patch("api.view.google_auth.GoogleOAuthService"),
         ):
@@ -59,9 +73,12 @@ def mock_musicbrainz_outside_e2e(request):
 
     - When ENV=CI_TEST: always mock for all tests, including e2e.
     - In dev: mock only for non-e2e tests; e2e tests can use real lookup or their own mocks.
+    - When mocking: override_settings(MUSICBRAINZ_LOOKUP_ENABLED=True) so the lookup path
+      runs (same pattern as AFP); tests that need the disabled branch use
+      @override_settings(MUSICBRAINZ_LOOKUP_ENABLED=False).
     """
     if _should_mock_external_services(request):
-        with patch(
+        with override_settings(MUSICBRAINZ_LOOKUP_ENABLED=True), patch(
             "api.utils.musicbrainz.service.acoustid.lookup",
             return_value={"status": "ok", "results": []},
         ):
