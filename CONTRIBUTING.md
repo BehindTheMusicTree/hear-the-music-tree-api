@@ -801,9 +801,17 @@ Quick release process:
 
 3. **On the release branch, prepare the release:**
 
+   - Bump the version with [bump2version](https://github.com/c4urself/bump2version) (patch / minor / major):
+     ```bash
+     bump2version patch   # 2.1.0 -> 2.1.1
+     # or: bump2version minor   # 2.1.0 -> 2.2.0
+     # or: bump2version major   # 2.1.0 -> 3.0.0
+     ```
+     This updates `VERSION`, `package.json`, and `schema.yml`. Then commit the changes.
+
    - Review and finalize `CHANGELOG.md`:
      - Review changes in the `[Unreleased]` section
-     - Move content from `[Unreleased]` section to new version entry with date (e.g., `## [v0.2.1] - 2025-01-15`)
+     - Move content from `[Unreleased]` section to new version entry with date (e.g., `## [v0.2.1] - 2025-01-15`). The version must match the one in `VERSION` (with a `v` prefix).
      - Review and consolidate entries if needed
      - Leave the `[Unreleased]` section empty (or with a placeholder) for future PRs
 
@@ -826,7 +834,7 @@ Quick release process:
    git push origin v0.2.1
    ```
 
-   **Important:** The tag version must match the version in `CHANGELOG.md` (with the `v` prefix).
+   **Important:** The tag version must match the version in `VERSION` and `CHANGELOG.md` (use the `v` prefix, e.g. `v2.1.1`).
 
 6. **Clean up pre-release tags**
 
