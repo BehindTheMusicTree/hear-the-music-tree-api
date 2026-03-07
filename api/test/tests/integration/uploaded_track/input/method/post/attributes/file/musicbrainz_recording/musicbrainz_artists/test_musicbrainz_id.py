@@ -33,10 +33,14 @@ QUEEN_MOCK_LOOKUP_RESPONSE = {
 @pytest.mark.patches_musicbrainz_lookup
 class TestCase(UploadedTrackTestCase):
 
-    @pytest.mark.patches_musicbrainz_lookup
-    @patch("api.utils.musicbrainz.service.acoustid.lookup", return_value=QUEEN_MOCK_LOOKUP_RESPONSE)
-    def test_one_then_ok(self, mock_lookup):
-        response = self._post_uploaded_track(UploadedTrackTestFilename.RECORDING_QUEEN_WEARETHECHAMPIONS_MP3)
+    def test_one_then_ok(self):
+        with patch(
+            "api.utils.musicbrainz.service.acoustid.lookup",
+            return_value=QUEEN_MOCK_LOOKUP_RESPONSE,
+        ):
+            response = self._post_uploaded_track(
+                UploadedTrackTestFilename.RECORDING_QUEEN_WEARETHECHAMPIONS_MP3
+            )
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.track_file.musicbrainz_recording
         musicbrainz_artists: QuerySet[MbArtist] = (
@@ -62,10 +66,14 @@ class TestCase(UploadedTrackTestCase):
         else:
             warnings.warn("Musicbrainz recording not found for test_multiple_then_ok")
 
-    @pytest.mark.patches_musicbrainz_lookup
-    @patch("api.utils.musicbrainz.service.acoustid.lookup", return_value=QUEEN_MOCK_LOOKUP_RESPONSE)
-    def test_same_artist_then_same_uuid(self, mock_lookup):
-        response = self._post_uploaded_track(UploadedTrackTestFilename.RECORDING_QUEEN_WEARETHECHAMPIONS_MP3)
+    def test_same_artist_then_same_uuid(self):
+        with patch(
+            "api.utils.musicbrainz.service.acoustid.lookup",
+            return_value=QUEEN_MOCK_LOOKUP_RESPONSE,
+        ):
+            response = self._post_uploaded_track(
+                UploadedTrackTestFilename.RECORDING_QUEEN_WEARETHECHAMPIONS_MP3
+            )
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.track_file.musicbrainz_recording
         musicbrainz_artists: QuerySet[MbArtist] = (
@@ -73,7 +81,13 @@ class TestCase(UploadedTrackTestCase):
         )
         first_track_musicbrainz_artist_id = musicbrainz_artists[0].musicbrainz_id
 
-        response = self._post_uploaded_track(UploadedTrackTestFilename.RECORDING_QUEEN_WEARETHECHAMPIONS_MP3)
+        with patch(
+            "api.utils.musicbrainz.service.acoustid.lookup",
+            return_value=QUEEN_MOCK_LOOKUP_RESPONSE,
+        ):
+            response = self._post_uploaded_track(
+                UploadedTrackTestFilename.RECORDING_QUEEN_WEARETHECHAMPIONS_MP3
+            )
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.track_file.musicbrainz_recording
         musicbrainz_artists = self.saved_object.track_file.musicbrainz_recording.musicbrainz_artists.all()

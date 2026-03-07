@@ -59,6 +59,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### CI
+
+- **Test strategy**: CI now enables all optional services (Spotify, Google OAuth, MusicBrainz) with fake/placeholder credentials and mocks at the boundary. Only AFP is required to be reachable for e2e; third-party reachability is not checked in CI. See api/test/README.md and CONTRIBUTING.
+
 ### Added
 
 - **Audio meta analysis**: AFP and MB lookup toggled by `AFP_ENABLED` and `MUSICBRAINZ_LOOKUP_ENABLED`. New MB missing cause `MUSICBRAINZ_LOOKUP_DISABLED` (code 9) when AFP on and MB off. CI: AFP on, MB off.

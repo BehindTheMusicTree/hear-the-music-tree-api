@@ -24,11 +24,14 @@ def set_debug_for_tests():
         yield
 
 
+def _is_ci() -> bool:
+    return os.environ.get("ENV") == "ci_test"
+
+
 def _should_mock_external_services(request) -> bool:
     """True when external services (OAuth, MusicBrainz, Spotify API) should be mocked: CI or non-e2e."""
-    is_ci = os.environ.get("ENV") == "CI_TEST"
     is_e2e = request.node.get_closest_marker("e2e") or "/tests/e2e/" in str(request.fspath)
-    return is_ci or not is_e2e
+    return _is_ci() or not is_e2e
 
 
 # External service mocks below use empty/minimal responses. Tests that need non-empty data
@@ -39,30 +42,16 @@ def _should_mock_external_services(request) -> bool:
 def mock_oauth_outside_e2e(request):
     """Mock Spotify and Google OAuth at the view layer.
 
-    - When ENV=CI_TEST: always mock for all tests, including e2e, so no real provider calls.
-    - In dev (other ENV): mock only for non-e2e tests; e2e tests are not mocked so they can
-      use real OAuth or their own mocks when run locally.
-    - When mocking: override_settings(SPOTIFY_ENABLED=True, SPOTIFY_CLIENT_ID='test', ...)
-      and GOOGLE_OAUTH_ENABLED=True, GOOGLE_CLIENT_ID='test', ... so the auth view paths run
-      (same pattern as AFP/MusicBrainz). Tests that need the disabled branch use
-      @override_settings(SPOTIFY_ENABLED=False) or GOOGLE_OAUTH_ENABLED=False.
+    Env must have all optional services enabled; this fixture only applies boundary patches.
+    Tests that need the disabled branch use @override_settings(SPOTIFY_ENABLED=False) or
+    GOOGLE_OAUTH_ENABLED=False.
     """
-    if _should_mock_external_services(request):
-        with override_settings(
-            SPOTIFY_ENABLED=True,
-            SPOTIFY_CLIENT_ID="test",
-            SPOTIFY_CLIENT_SECRET="test",
-            SPOTIFY_REDIRECT_URI="http://test/callback",
-            SPOTIFY_SCOPES="test",
-            GOOGLE_OAUTH_ENABLED=True,
-            GOOGLE_CLIENT_ID="test",
-            GOOGLE_CLIENT_SECRET="test",
-            GOOGLE_REDIRECT_URI="http://test/callback",
-        ), patch("api.view.spotify_auth.SpotifyOAuthService"), patch(
-            "api.view.google_auth.GoogleOAuthService"
-        ):
-            yield
-    else:
+    if not _should_mock_external_services(request):
+        yield
+        return
+    with patch("api.view.spotify_auth.SpotifyOAuthService"), patch(
+        "api.view.google_auth.GoogleOAuthService"
+    ):
         yield
 
 
@@ -70,25 +59,20 @@ def mock_oauth_outside_e2e(request):
 def mock_musicbrainz_outside_e2e(request):
     """Mock AcoustID/MusicBrainz lookup so no real API calls are made.
 
-    - When ENV=CI_TEST: always mock for all tests, including e2e.
-    - In dev: mock only for non-e2e tests; e2e tests can use real lookup or their own mocks.
-    - When mocking: override_settings(MUSICBRAINZ_LOOKUP_ENABLED=True) so the lookup path
-      runs (same pattern as AFP); tests that need the disabled branch use
-      @override_settings(MUSICBRAINZ_LOOKUP_ENABLED=False).
-    - Tests that patch acoustid.lookup with a custom response use @pytest.mark.patches_musicbrainz_lookup
-      so this fixture only enables the path and does not patch (the test's patch is the only one).
+    Env must have MUSICBRAINZ_LOOKUP_ENABLED true; this fixture only applies the boundary patch
+    (or none when the test uses @pytest.mark.patches_musicbrainz_lookup).
+    Tests that need the disabled branch use @override_settings(MUSICBRAINZ_LOOKUP_ENABLED=False).
     """
-    if _should_mock_external_services(request):
-        if request.node.get_closest_marker("patches_musicbrainz_lookup"):
-            with override_settings(MUSICBRAINZ_LOOKUP_ENABLED=True):
-                yield
-        else:
-            with override_settings(MUSICBRAINZ_LOOKUP_ENABLED=True), patch(
-                "api.utils.musicbrainz.service.acoustid.lookup",
-                return_value={"status": "ok", "results": []},
-            ):
-                yield
-    else:
+    if not _should_mock_external_services(request):
+        yield
+        return
+    if request.node.get_closest_marker("patches_musicbrainz_lookup"):
+        yield
+        return
+    with patch(
+        "api.utils.musicbrainz.service.acoustid.lookup",
+        return_value={"status": "ok", "results": []},
+    ):
         yield
 
 
@@ -110,7 +94,7 @@ def _make_spotify_client_mock():
 def mock_spotify_client_outside_e2e(request):
     """Mock Spotify API client (library, search, playlists) so no real Spotify Web API calls are made.
 
-    - When ENV=CI_TEST: always mock for all tests, including e2e.
+    - When ENV=ci_test: always mock for all tests, including e2e.
     - In dev: mock only for non-e2e tests; e2e tests can use real Spotify API or their own mocks.
     """
     if _should_mock_external_services(request):
@@ -136,27 +120,25 @@ def _make_success_fingerprinting_result():
 
 @pytest.fixture(autouse=True)
 def mock_audio_meta_analysis_outside_e2e(request):
-    """Run audio meta analysis path with mocked AFP in non-e2e tests; e2e tests use real AFP (e.g. in CI).
+    """Run audio meta analysis path with mocked AFP in non-e2e tests; e2e tests use real AFP.
 
-    - Non-e2e: override_settings(AFP_ENABLED=True) so the path runs regardless of
-      .env; mock get_fingerprinting_result so no real AFP calls. Tests that need real AFP (e.g.
-      critical AFP connection test) must use @pytest.mark.requires_real_afp to skip the AFP mock.
-    - E2e: no override, no mock; e2e can use real AFP in CI.
+    Env must have AFP_ENABLED true; this fixture only mocks get_fingerprinting_result for non-e2e.
+    Tests that need real AFP use @pytest.mark.requires_real_afp to skip the mock.
     """
     is_e2e = _is_e2e(request)
     if is_e2e:
         yield
         return
 
-    with override_settings(AFP_ENABLED=True):
-        if request.node.get_closest_marker("requires_real_afp"):
-            yield
-        else:
-            with patch(
-                "api.utils.audio_fingerprinter.service.get_fingerprinting_result",
-                return_value=_make_success_fingerprinting_result(),
-            ):
-                yield
+    if request.node.get_closest_marker("requires_real_afp"):
+        yield
+        return
+
+    with patch(
+        "api.utils.audio_fingerprinter.service.get_fingerprinting_result",
+        return_value=_make_success_fingerprinting_result(),
+    ):
+        yield
 
 
 critical_test_failed = False
@@ -177,6 +159,23 @@ def base_childinstance(request, db):
     test_case.setUp()
     yield test_case
     test_case.tearDown
+
+
+def _require_optional_services_enabled() -> None:
+    """All optional services must be enabled to run tests; fail fast if any is disabled."""
+    disabled: list[str] = []
+    if not getattr(settings, "SPOTIFY_ENABLED", False):
+        disabled.append("SPOTIFY_ENABLED")
+    if not getattr(settings, "GOOGLE_OAUTH_ENABLED", False):
+        disabled.append("GOOGLE_OAUTH_ENABLED")
+    if not getattr(settings, "MUSICBRAINZ_LOOKUP_ENABLED", False):
+        disabled.append("MUSICBRAINZ_LOOKUP_ENABLED")
+    if disabled:
+        pytest.exit(
+            f"All optional services must be enabled to run tests. Disabled: {', '.join(disabled)}. "
+            f"Set them to true in env (CI: workflow env; dev: .env) and use fake credentials if not calling real APIs.",
+            returncode=2,
+        )
 
 
 def pytest_sessionstart(session: Session) -> None:
@@ -315,28 +314,29 @@ def _check_musicbrainz_reachable() -> tuple[bool, str]:
 
 
 def pytest_collection_finish(session: Session) -> None:
+    _require_optional_services_enabled()
     if not _run_has_e2e_tests(session):
         return
-    is_ci = os.environ.get("ENV") == "CI_TEST"
-    if is_ci:
+    if _is_ci():
         if not getattr(settings, "AFP_ENABLED", False):
             pytest.exit(
-                "E2E tests require AFP. In CI (ENV=CI_TEST), AFP_ENABLED must be true.",
+                "E2E tests require AFP. In CI (ENV=ci_test), AFP_ENABLED must be true.",
                 returncode=2,
             )
         ok, reason = _check_afp_reachable()
         if not ok:
             pytest.exit(
-                f"E2E tests require AFP. In CI (ENV=CI_TEST), the AFP service is unreachable. Reason: {reason}",
+                f"E2E tests require AFP. In CI (ENV=ci_test), the AFP service is unreachable. Reason: {reason}",
                 returncode=2,
             )
-        failures = _e2e_reachability_failures()
-        if failures:
-            pytest.exit(
-                "E2E run requires all enabled services to be reachable. Unreachable: "
-                + "; ".join(failures),
-                returncode=2,
-            )
+        return
+    failures = _e2e_reachability_failures()
+    if failures:
+        pytest.exit(
+            "E2E run requires all enabled services to be reachable. Unreachable: "
+            + "; ".join(failures),
+            returncode=2,
+        )
 
 
 def pytest_runtest_makereport(item, call):
@@ -403,7 +403,7 @@ def pytest_collection_modifyitems(config, items):
     slow_tests.sort(key=_get_test_directory_order)
 
     ordered = critical_tests + normal_tests + slow_tests
-    is_ci = os.environ.get("ENV") == "CI_TEST"
+    is_ci = os.environ.get("ENV") == "ci_test"
     if not is_ci and any(_is_e2e_item(it) for it in ordered):
         failures = _e2e_reachability_failures()
         if failures:

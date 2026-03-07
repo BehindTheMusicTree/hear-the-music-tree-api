@@ -33,7 +33,7 @@ Runs the full test suite with pytest.
 
 **Jobs:** **check-vars-and-secrets** (Check vars and secrets) – validates required env vars and secrets; **pytest** (Pytest) – Checkout → set up Python 3.14 → install system deps → install pip deps → setup filesystem → run DB and AFP containers → wait for DB → copy fixtures → init Django data → run pytest → publish test results (JUnit XML).
 
-**Environment:** `CI_TEST` (uses repo vars and secrets for DB, AFP, AcousticID, etc.).
+**Environment:** `ci_test` (uses repo vars and secrets for DB, AFP, AcousticID, etc.).
 
 **Versioning:** Always uses "test" as the version (tests don't require real version numbers).
 

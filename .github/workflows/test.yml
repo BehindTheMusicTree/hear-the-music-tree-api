@@ -8,7 +8,7 @@ env:
   CONTAINER_ROOT_DIR: /home/app/
   DB_CONNECTION_TEST_MAX_ATTEMPTS: 10
   DB_CONNECTION_TEST_SLEEP_INTERVAL: 5
-  ENV: test
+  ENV: ci_test
 
   APP_VERSION: 'test'
   TMP_UPLOADED_FILES_EXTERNAL: /tmp/ci-uploaded/
@@ -39,7 +39,7 @@ jobs:
     name: Check vars and secrets
     runs-on: ubuntu-latest
     environment:
-      name: CI_TEST
+      name: ci_test
     steps:
       - uses: actions/checkout@v4
         with:
@@ -68,9 +68,9 @@ jobs:
     needs: [check-vars-and-secrets]
     runs-on: ubuntu-latest
     environment:
-      name: CI_TEST
+      name: ci_test
     env:
-      ENV: CI_TEST
+      ENV: ci_test
       API_DIR_NAME: ${{ vars.API_DIR_NAME }}
       APP_TITLE: ${{ vars.APP_TITLE }}
       APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
@@ -85,9 +85,17 @@ jobs:
       DB_IS_NEEDED: true
       APP_IS_EXPOSED: false
       AFP_ENABLED: true
-      SPOTIFY_ENABLED: false
-      GOOGLE_OAUTH_ENABLED: false
-      MUSICBRAINZ_LOOKUP_ENABLED: false
+      SPOTIFY_ENABLED: true
+      SPOTIFY_CLIENT_ID: test
+      SPOTIFY_CLIENT_SECRET: test
+      SPOTIFY_REDIRECT_URI: http://test/callback
+      SPOTIFY_SCOPES: test
+      GOOGLE_OAUTH_ENABLED: true
+      GOOGLE_CLIENT_ID: test
+      GOOGLE_CLIENT_SECRET: test
+      GOOGLE_REDIRECT_URI: http://test/callback
+      MUSICBRAINZ_LOOKUP_ENABLED: true
+      ACOUSTID_API_KEY: ci-fake-acoustid-key
       DB_SUPERUSER_PASSWORD: ${{ secrets.DB_SUPERUSER_PASSWORD }}
       DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
       DB_APP_USERNAME: ${{ secrets.DB_APP_USERNAME }}
@@ -154,7 +162,7 @@ jobs:
           echo ""
           echo "=== Diagnostic: run setup in same image as non-root and list /app/log/flask/ ==="
           docker run --rm --user "$(id -u):$(id -g)" \
-            -e ENV=CI_TEST -e DEBUG=true -e APP_PORT=${{ env.AFP_PORT }} -e POOL_DIR_EXTERNAL=/tmp/pool/ \
+            -e ENV=ci_test -e DEBUG=true -e APP_PORT=${{ env.AFP_PORT }} -e POOL_DIR_EXTERNAL=/tmp/pool/ \
             -e GUNICORN_LOG_DIR=/app/log/gunicorn/ -e FLASK_LOG_DIR_EXTERNAL=/app/log/flask/ \
             -v /tmp/ci-uploaded:/tmp/pool \
             ${{ env.DOCKERHUB_USERNAME }}/${{ env.AFP_IMAGE_REPO }}:${{ env.AFP_VERSION }} \

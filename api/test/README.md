@@ -105,11 +105,11 @@ Tests that need real external services (URLs, APIs) have a **mocked** version un
 
 **When to add a real e2e test:** Add at least one **real** e2e test for the same behaviour when the service can be exercised without blocking CI: e.g. the service is under our control (AFP in CI) or the test fails when the third-party service is unreachable (so we investigate). Put it under **`tests/e2e/`**, mark it `@pytest.mark.e2e`, perform the real request, and **fail** (do not skip) when the service is unreachable when run in an environment where the service is expected to be available.
 
-**When do e2e tests hit real services?** In CI (`ENV=CI_TEST`), Spotify, Google OAuth, and MusicBrainz are mocked for all tests (including e2e), so those e2e tests only hit real providers when run **locally** with the corresponding services enabled. AFP is not mocked for e2e, so AFP e2e can run for real in CI if the AFP service is available.
+**When do e2e tests hit real services?** In CI (`ENV=ci_test`), all optional services (Spotify, Google OAuth, MusicBrainz) are **enabled with fake/placeholder credentials** and **mocked at the boundary** for all tests (including e2e), so no real provider calls are made. AFP is not mocked for e2e, so AFP e2e runs against the real AFP service in CI. E2e tests that need real Spotify/Google/MusicBrainz only hit those providers when run **locally** with real credentials.
 
-**Fail early:** When the run includes e2e tests, the session checks that required services are reachable and exits immediately if not. In **CI** (`ENV=CI_TEST`), AFP must be enabled and reachable. In **dev**, every service that is enabled in config (Spotify, Google OAuth, AFP, MusicBrainz) must be reachable; if any is unreachable, the run fails with a clear message. Disabled services are not checked. This avoids running many tests only to have e2e fail later.
+**All optional services must be enabled:** The test run fails at collection if any of `SPOTIFY_ENABLED`, `GOOGLE_OAUTH_ENABLED`, or `MUSICBRAINZ_LOOKUP_ENABLED` is false. Set them to true in env (CI: workflow; dev: .env) and use fake credentials if not calling real APIs. Conftest only applies boundary mocks; it does not override env to enable services.
 
-**AFP vs MusicBrainz:** AFP (fingerprinting) and MusicBrainz (AcoustID) lookup can be toggled independently via `AFP_ENABLED` and `MUSICBRAINZ_LOOKUP_ENABLED`. CI runs with AFP enabled and MusicBrainz disabled so e2e can hit real AFP without requiring ACOUSTID credentials or MB mocks for that path.
+**Fail early (e2e):** When the run includes e2e tests, the session also checks that required services are reachable. In **CI**, only AFP must be reachable (others are mocked). In **dev**, every enabled service must be reachable.
 
 **Run e2e:** `pytest api/test/tests/e2e/` or `pytest -m e2e`.
 
@@ -165,9 +165,9 @@ External services are mocked so CI and non-e2e tests do not call real providers.
 
 #### OAuth mocking
 
-Spotify and Google OAuth are mocked at the view layer via an autouse fixture. When mocking, conftest also applies `override_settings(SPOTIFY_ENABLED=True, SPOTIFY_CLIENT_ID='test', ...)` and `GOOGLE_OAUTH_ENABLED=True, GOOGLE_CLIENT_ID='test', ...)` so the auth view paths run (same pattern as AFP/MusicBrainz). Tests that need the disabled branch use `@override_settings(SPOTIFY_ENABLED=False)` or `GOOGLE_OAUTH_ENABLED=False`. CI sets these to false in env so credentials are not required; the overrides apply only while the mock fixture is active.
+Spotify and Google OAuth are mocked at the view layer via an autouse fixture. Env must have both enabled; the fixture only applies the boundary mock (no override). Tests that need the disabled branch use `@override_settings(SPOTIFY_ENABLED=False)` or `GOOGLE_OAUTH_ENABLED=False`.
 
-- **When ENV=CI_TEST**: OAuth is mocked for **all** tests (unit, integration, and e2e). No real credentials or network calls.
+- **When ENV=ci_test**: OAuth is mocked for **all** tests (unit, integration, and e2e). No real credentials or network calls.
 - **In dev**: OAuth is mocked only for **non-e2e** tests. E2E tests are not mocked so you can run them with real Spotify/Google or per-test mocks locally.
 
 E2E tests that need a specific OAuth response can patch the view’s service class as usual; in CI they will still see the global mock unless they override it.
@@ -176,7 +176,7 @@ E2E tests that need a specific OAuth response can patch the view’s service cla
 
 The Spotify Web API client (`SpotifyClient` used for library, search, playlists, artist batch) is mocked via an autouse fixture so tests do not call the real Spotify API. Uses the same rule as OAuth.
 
-- **When ENV=CI_TEST**: Spotify client is mocked for **all** tests.
+- **When ENV=ci_test**: Spotify client is mocked for **all** tests.
 - **In dev**: Mocked only for **non-e2e** tests; e2e tests can use the real API or their own mocks.
 
 The mock returns empty lists/items for search, saved tracks, playlists, and artist batch. Tests that need specific responses patch `SpotifyClient` (or the manager) in their scope.
@@ -185,8 +185,8 @@ The mock returns empty lists/items for search, saved tracks, playlists, and arti
 
 Audio meta analysis is the flow that uses AFP (fingerprinting) and MusicBrainz (AcoustID) lookup. AFP and MusicBrainz can be enabled independently (`AFP_ENABLED`, `MUSICBRAINZ_LOOKUP_ENABLED`). Both are mocked so non-e2e tests run that path without real external calls. E2E tests are not mocked and can use real AFP in CI.
 
-- **MusicBrainz**: When mocking (CI or non-e2e), `override_settings(MUSICBRAINZ_LOOKUP_ENABLED=True)` is applied so the lookup path runs, and `acoustid.lookup` is mocked (returns no results). Same pattern as AFP: enable + mock in conftest. Tests that need the disabled branch use `@override_settings(MUSICBRAINZ_LOOKUP_ENABLED=False)`. Tests that patch `acoustid.lookup` with a custom response must use `@pytest.mark.patches_musicbrainz_lookup` and patch `api.utils.musicbrainz.service.acoustid.lookup` so the conftest does not override their mock.
-- **AFP (non-e2e only)**: `override_settings(AFP_ENABLED=True)` is applied so the path runs regardless of .env, and `get_fingerprinting_result` is mocked to return a successful result. E2e: no override, no AFP mock (real AFP allowed, e.g. in CI).
+- **MusicBrainz**: Env must have `MUSICBRAINZ_LOOKUP_ENABLED` true; conftest mocks `acoustid.lookup` (returns no results). Tests that need the disabled branch use `@override_settings(MUSICBRAINZ_LOOKUP_ENABLED=False)`. Tests that patch `acoustid.lookup` with a custom response use `@pytest.mark.patches_musicbrainz_lookup` and patch `api.utils.musicbrainz.service.acoustid.lookup`.
+- **AFP (non-e2e only)**: Env must have `AFP_ENABLED` true; conftest only mocks `get_fingerprinting_result` for non-e2e. E2e: no mock (real AFP).
 - **Tests that need real AFP** (e.g. critical AFP connection test): use `@pytest.mark.requires_real_afp` so the AFP mock is skipped.
 - **Tests that need the disabled path**: use `with override_settings(AFP_ENABLED=False):` around the code that triggers the path (e.g. the upload call) so the disabled branch is taken.
 - **Tests that need AFP enabled but MB disabled**: use `@override_settings(MUSICBRAINZ_LOOKUP_ENABLED=False)`; the app will run fingerprinting and set `MUSICBRAINZ_LOOKUP_DISABLED` as the MB missing cause.
