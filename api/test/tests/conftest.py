@@ -75,13 +75,19 @@ def mock_musicbrainz_outside_e2e(request):
     - When mocking: override_settings(MUSICBRAINZ_LOOKUP_ENABLED=True) so the lookup path
       runs (same pattern as AFP); tests that need the disabled branch use
       @override_settings(MUSICBRAINZ_LOOKUP_ENABLED=False).
+    - Tests that patch acoustid.lookup with a custom response use @pytest.mark.patches_musicbrainz_lookup
+      so this fixture only enables the path and does not patch (the test's patch is the only one).
     """
     if _should_mock_external_services(request):
-        with override_settings(MUSICBRAINZ_LOOKUP_ENABLED=True), patch(
-            "api.utils.musicbrainz.service.acoustid.lookup",
-            return_value={"status": "ok", "results": []},
-        ):
-            yield
+        if request.node.get_closest_marker("patches_musicbrainz_lookup"):
+            with override_settings(MUSICBRAINZ_LOOKUP_ENABLED=True):
+                yield
+        else:
+            with override_settings(MUSICBRAINZ_LOOKUP_ENABLED=True), patch(
+                "api.utils.musicbrainz.service.acoustid.lookup",
+                return_value={"status": "ok", "results": []},
+            ):
+                yield
     else:
         yield
 
@@ -217,6 +223,10 @@ def pytest_configure(config):
     config.addinivalue_line(
         "markers",
         "requires_real_afp: skip AFP mock so the test calls the real audio fingerprinting service",
+    )
+    config.addinivalue_line(
+        "markers",
+        "patches_musicbrainz_lookup: test patches acoustid.lookup itself; conftest only enables MB path",
     )
 
 

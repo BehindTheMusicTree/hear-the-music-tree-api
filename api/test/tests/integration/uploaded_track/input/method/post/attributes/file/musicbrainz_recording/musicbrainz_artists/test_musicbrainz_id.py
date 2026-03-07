@@ -10,6 +10,7 @@ from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrac
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
+@pytest.mark.patches_musicbrainz_lookup
 class TestCase(UploadedTrackTestCase):
 
     def test_one_then_ok(self):
