@@ -58,9 +58,8 @@ def mock_oauth_outside_e2e(request):
             GOOGLE_CLIENT_ID="test",
             GOOGLE_CLIENT_SECRET="test",
             GOOGLE_REDIRECT_URI="http://test/callback",
-        ), (
-            patch("api.view.spotify_auth.SpotifyOAuthService"),
-            patch("api.view.google_auth.GoogleOAuthService"),
+        ), patch("api.view.spotify_auth.SpotifyOAuthService"), patch(
+            "api.view.google_auth.GoogleOAuthService"
         ):
             yield
     else:
