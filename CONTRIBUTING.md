@@ -263,6 +263,10 @@ The HearTheMusicTree API requires a PostgreSQL database to function. The databas
 - **Migrations run automatically on deploy**: The container entrypoint (`scripts/entrypoint.sh`) runs `migrate` after the database is ready, so every deployment applies pending migrations before starting the app.
 - **Keep migrations backward-compatible**: Prefer additive changes (e.g. nullable columns or defaults) so the previous app version keeps working until the new one has run.
 
+#### One-time and maintenance scripts
+
+One-off DB or data fix scripts (e.g. table renames, one-time backfills) live in **`scripts/one-time/`**, grouped by domain (e.g. `db/`, `data/`). They are versioned for audit, for re-running on other environments, and for use after restoring from backup. Each script (or the folder README) describes when and how to run it; run them only when the situation applies.
+
 #### Audio Fingerprinting Requirement
 
 For audio fingerprinting, the HearTheMusicTree API requires an app called Audio Fingerprinter. You can find the Audio Fingerprinter app on GitHub at the following link: [Audio Fingerprinter](https://github.com/BehindTheMusicTree/audio-fingerprinter)
