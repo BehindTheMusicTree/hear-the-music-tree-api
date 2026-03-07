@@ -59,6 +59,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Documentation
+
+- **Scripts**: One-time DB/maintenance scripts moved to `scripts/one-time/` with README; CONTRIBUTING.md updated with "One-time and maintenance scripts" subsection.
+
 ### CI
 
 - **Test strategy**: CI now enables all optional services (Spotify, Google OAuth, MusicBrainz) with fake/placeholder credentials and mocks at the boundary. Only AFP is required to be reachable for e2e; third-party reachability is not checked in CI. See api/test/README.md and CONTRIBUTING.
