@@ -71,7 +71,7 @@ main() {
         exit 1
     fi
 
-    DOCKER_PULL_TIMEOUT=120
+    DOCKER_PULL_TIMEOUT=200
     log_with_script_prefixe "Pulling images (timeout ${DOCKER_PULL_TIMEOUT}s each)..."
 
     log_with_script_prefixe "Pulling DB image: $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION"
