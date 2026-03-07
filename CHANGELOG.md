@@ -61,6 +61,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Documentation
 
+- **Release tooling**: bump2version added to keep `VERSION`, `package.json`, and `schema.yml` in sync; release steps in CONTRIBUTING.md updated to use `bump2version patch|minor|major` before finalizing CHANGELOG and tagging.
 - **Scripts**: One-time DB/maintenance scripts moved to `scripts/one-time/` with README; CONTRIBUTING.md updated with "One-time and maintenance scripts" subsection.
 
 ### CI
