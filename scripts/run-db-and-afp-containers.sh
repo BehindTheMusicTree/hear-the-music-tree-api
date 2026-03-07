@@ -166,6 +166,8 @@ main() {
         -e "DEBUG=$DEBUG"
         -e "APP_PORT=$AFP_PORT"
         -e "POOL_DIR_EXTERNAL=$AFP_POOL_DIR_EXTERNAL"
+        -e "FLASK_LOG_DIR_EXTERNAL=${AFP_FLASK_LOG_DIR_EXTERNAL:-/app/log/flask/}"
+        -e "GUNICORN_LOG_DIR=${AFP_GUNICORN_LOG_DIR_EXTERNAL:-/app/log/gunicorn/}"
         -d "$DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION"
     )
     if [ "${RUN_AFP_AS_HOST_USER:-false}" = true ]; then
@@ -173,8 +175,6 @@ main() {
         # Requires AFP image that supports non-root; point log dirs to container paths that are writable by any UID.
         AFP_RUN_ARGS=(
             --user "$(id -u):$(id -g)"
-            -e "GUNICORN_LOG_DIR=/app/log/gunicorn/"
-            -e "FLASK_LOG_DIR_EXTERNAL=/app/log/flask/"
             "${AFP_RUN_ARGS[@]}"
         )
     fi
@@ -184,6 +184,39 @@ main() {
         exit 1
     fi
     log_with_script_prefixe "Audio fingerprinter container running successfully."
+
+    DB_HEALTH_MAX_ATTEMPTS=${DB_HEALTH_MAX_ATTEMPTS:-24}
+    DB_HEALTH_SLEEP=${DB_HEALTH_SLEEP:-2}
+    log_with_script_prefixe "Waiting for DB to be ready (max ${DB_HEALTH_MAX_ATTEMPTS} attempts, ${DB_HEALTH_SLEEP}s apart)..."
+    db_attempts=0
+    while ! timeout 5 docker exec "$DB_CONTAINER_NAME" pg_isready -h localhost -p "$DB_PORT" -U "$DB_SUPERUSER_NAME" &>/dev/null; do
+        if [ "$db_attempts" -ge "$DB_HEALTH_MAX_ATTEMPTS" ]; then
+            log_with_script_prefixe "ERROR: DB did not become ready within the expected time." >&2
+            log_with_script_prefixe "--- DB container logs ---" >&2
+            docker logs "$DB_CONTAINER_NAME" 2>&1 | sed 's/^/[AFP and DB runner]   /' >&2
+            exit 1
+        fi
+        sleep "$DB_HEALTH_SLEEP"
+        db_attempts=$((db_attempts + 1))
+    done
+    log_with_script_prefixe "DB is ready."
+
+    AFP_HEALTH_MAX_ATTEMPTS=${AFP_HEALTH_MAX_ATTEMPTS:-24}
+    AFP_HEALTH_SLEEP=${AFP_HEALTH_SLEEP:-2}
+    AFP_HEALTH_URL="http://localhost:${AFP_PORT}/health/"
+    log_with_script_prefixe "Waiting for AFP to be ready (max ${AFP_HEALTH_MAX_ATTEMPTS} attempts, ${AFP_HEALTH_SLEEP}s apart)..."
+    afp_attempts=0
+    while ! curl -sf -o /dev/null --connect-timeout 3 "$AFP_HEALTH_URL"; do
+        if [ "$afp_attempts" -ge "$AFP_HEALTH_MAX_ATTEMPTS" ]; then
+            log_with_script_prefixe "ERROR: AFP did not become ready within the expected time." >&2
+            log_with_script_prefixe "--- AFP container logs ---" >&2
+            docker logs "$AFP_CONTAINER_NAME" 2>&1 | sed 's/^/[AFP and DB runner]   /' >&2
+            exit 1
+        fi
+        sleep "$AFP_HEALTH_SLEEP"
+        afp_attempts=$((afp_attempts + 1))
+    done
+    log_with_script_prefixe "AFP is ready."
 
     log_with_script_prefixe "Containers running successfully."
 
