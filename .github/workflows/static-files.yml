@@ -29,6 +29,10 @@ jobs:
       DB_IS_NEEDED: false
       APP_IS_EXPOSED: false
       STATIC_FILES_INTERNAL: ${{ vars.STATIC_FILES_INTERNAL }}
+      AFP_ENABLED: "false"
+      MUSICBRAINZ_LOOKUP_ENABLED: "false"
+      SPOTIFY_ENABLED: "false"
+      GOOGLE_OAUTH_ENABLED: "false"
     outputs:
       collect_static_files_commit_hash: ${{ steps.set-commit-hash.outputs.collect_static_files_commit_hash }}
     steps:
