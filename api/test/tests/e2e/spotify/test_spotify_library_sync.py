@@ -50,7 +50,7 @@ class TestCase(SpotifyLibTrackTestCase):
 
     def test_spotify_library_sync_then_ok(self):
         with mock.patch(
-            "api.utils.spotify_api.SpotifyClient.get_spotify_client",
+            "api.utils.spotify_api.managers.SpotifyApiLibTrackManager.get_spotify_client",
             return_value=self.mock_spotify_client,
         ):
             manager = SpotifyApiLibTrackManager()
