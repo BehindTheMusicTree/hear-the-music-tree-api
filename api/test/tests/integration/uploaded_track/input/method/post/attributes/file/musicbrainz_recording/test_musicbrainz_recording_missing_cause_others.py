@@ -13,9 +13,10 @@ from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrac
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
+@pytest.mark.patches_musicbrainz_lookup
 class TestCase(UploadedTrackTestCase):
 
-    @patch('acoustid.lookup')
+    @patch("api.utils.musicbrainz.service.acoustid.lookup")
     def test_ok_then_no_missing_cause(self, mock_lookup):
         mock_lookup.return_value = {
             'status': 'ok',
