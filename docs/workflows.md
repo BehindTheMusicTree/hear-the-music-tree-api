@@ -33,7 +33,7 @@ Runs the full test suite with pytest.
 
 **Jobs:** **check-vars-and-secrets** (Check vars and secrets) – validates required env vars and secrets; **pytest** (Pytest) – Checkout → set up Python 3.14 → install system deps → install pip deps → setup filesystem → run DB and AFP containers → wait for DB → copy fixtures → init Django data → run pytest → publish test results (JUnit XML).
 
-**Environment:** `CI_TEST` (uses repo vars and secrets for DB, AFP, AcousticID, etc.).
+**Environment:** `ci_test` (uses repo vars and secrets for DB, AFP, AcousticID, etc.).
 
 **Versioning:** Always uses "test" as the version (tests don't require real version numbers).
 
@@ -106,7 +106,7 @@ Collects Django static files and commits/pushes them back to the repo.
 
 **Jobs:** **check-vars-and-secrets** (Check vars and secrets) – determines version from git tags and validates required env vars and secrets; **collect-and-push-static-files** (Static files) – Checkout → set up Python 3.14 → install deps → setup filesystem → `manage.py collectstatic --noinput` with version from job 1 → git config → commit and push changes → output `collect_static_files_commit_hash` and `app_version` for downstream workflows.
 
-**Environment:** `COLLECT_STATIC`. Outputs are used by Publish so Build uses the commit that includes collected static files and the correct version.
+**Environment:** `collect_static`. Outputs are used by Publish so Build uses the commit that includes collected static files and the correct version.
 
 ## Branch Protection
 

@@ -7,7 +7,6 @@ from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrac
 
 
 @pytest.mark.e2e
-@pytest.mark.usefixtures("enable_audio_metadata_analysis")
 class TestCase(UploadedTrackTestCase):
     """
     E2E test for track upload with fingerprinting failure handling.
@@ -39,7 +38,7 @@ class TestCase(UploadedTrackTestCase):
             if fingerprint_missing_cause:
                 code = fingerprint_missing_cause.code.code
                 assert code in [
-                    FingerprintMissingCauseCode.Codes.AUDIO_META_AMALYSIS_DISABLED,
+                    FingerprintMissingCauseCode.Codes.AFP_DISABLED,
                     FingerprintMissingCauseCode.Codes.SERVICE_NOT_FOUND,
                     FingerprintMissingCauseCode.Codes.WRONG_FILE_EXTENSION,
                     FingerprintMissingCauseCode.Codes.WRONG_FILE_TYPE,

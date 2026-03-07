@@ -3,9 +3,8 @@ from unittest import mock
 from rest_framework import status
 
 from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
-from api.test.tests.integration.spotify/lib_track/SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
+from api.test.tests.integration.spotify.lib_track.SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
 from api.utils.spotify_api.ApiFields import ApiFields
-from api.utils.spotify_api.SpotifyClient import SpotifyClient
 from api.utils.spotify_api.managers.SpotifyApiLibTrackManager import SpotifyApiLibTrackManager
 
 
@@ -22,16 +21,14 @@ class TestCase(SpotifyLibTrackTestCase):
     5. User retrieves library tracks via API
     6. User searches for tracks in library
 
-    Note: This test uses mocks for Spotify API. For real E2E testing,
-    configure actual Spotify OAuth credentials.
+    Note: This test uses mocks for the Spotify API client. For real E2E testing,
+    set SPOTIFY_ENABLED=true and configure actual Spotify credentials. In CI,
+    conftest mocks the Spotify client; this test overrides with its own mock so the flow is deterministic.
     """
 
     def setUp(self):
         super().setUp()
-        self.mock_spotify_patcher = mock.patch('spotipy.Spotify')
-        self.mock_spotify = self.mock_spotify_patcher.start()
-        self.mock_spotify_instance = self.mock_spotify.return_value
-
+        self.mock_spotify_client = mock.MagicMock()
         self.mock_track_data = {
             ApiFields.Names.ID: "spotify_track_123",
             ApiFields.Names.NAME: "Test Spotify Track",
@@ -45,23 +42,19 @@ class TestCase(SpotifyLibTrackTestCase):
                 ApiFields.Names.NAME: "Test Album"
             }
         }
-
-        self.mock_spotify_instance.current_user_saved_tracks.return_value = {
+        self.mock_spotify_client.get_user_saved_tracks.return_value = {
             ApiFields.Names.ITEMS: [{
                 ApiFields.Names.TRACK: self.mock_track_data
             }]
         }
 
-    def tearDown(self):
-        self.mock_spotify_patcher.stop()
-        super().tearDown()
-
     def test_spotify_library_sync_then_ok(self):
-        SpotifyClient._instance = None
-        SpotifyClient._initialized = False
-
-        manager = SpotifyApiLibTrackManager()
-        tracks = manager.sync_user_library(self.spotify_test_user_1)
+        with mock.patch(
+            "api.utils.spotify_api.managers.SpotifyApiLibTrackManager.get_spotify_client",
+            return_value=self.mock_spotify_client,
+        ):
+            manager = SpotifyApiLibTrackManager()
+            tracks = manager.full_sync(self.spotify_test_user_1)
 
         assert len(tracks) >= 0
 

@@ -1,7 +1,5 @@
 from unittest import mock
 
-from django.test import override_settings
-
 from api.exception.spotify import SpotifyAPIException
 from api.test.utils.AppTestCase import AppTestCase
 from api.utils.spotify_api.SpotifyClient import SpotifyClient

@@ -12,7 +12,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
     def test_not_provided_then_unchanged(self):
         rap_criteria = self.model_fixture_factory.create_genre(name="Rap")
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(
-            **{UploadedTrackFields.TITLE: "Love", UploadedTrackFields.GENRE: rap_criteria.uuid})
+            **{UploadedTrackFields.TITLE: "Love", UploadedTrackFields.GENRE: rap_criteria})
 
         response = self._put_uploaded_track(uploaded_track.uuid, **{PutFields.TITLE: "koko"})
 

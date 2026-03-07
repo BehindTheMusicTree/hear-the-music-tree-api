@@ -28,6 +28,7 @@ class SpotifyArtist(SpotifyResource, PublicStandardResource):
         return self.name
 
     class Meta:
+        db_table = 'htmt_api_spotify_artist'
         verbose_name = 'Spotify Artist'
         verbose_name_plural = 'Spotify Artists'
         indexes = [models.Index(fields=[Fields.SPOTIFY_ID], name='sp_artist_id_idx')]

@@ -18,7 +18,7 @@ class TestPost(SpotifyLibTrackTestCase):
 
     def test_post_spotify_lib_track_then_405_method_not_allowed(self):
         response = self.api_client.post(
-            path=reverse('spotify-lib-track-detail', kwargs={'pk': self.track.spotify_id}),
+            path=reverse('me-spotify-lib-track-detail', kwargs={'pk': self.track.spotify_id}),
             data={'name': 'Updated Track'}
         )
         assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED

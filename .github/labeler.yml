@@ -44,7 +44,6 @@ genre:
         - 'api/serializer/model/criteria/**'
         - 'api/view/viewset/model/criteria/**'
         - 'api/test/view/genre/**'
-        - 'api/fixtures/genres/**'
 
 tag:
   - any:
@@ -83,7 +82,6 @@ user:
         - 'api/serializer/model/user/**'
         - 'api/view/viewset/model/UserViewSet.py'
         - 'api/test/view/user/**'
-        - 'api/fixtures/users/**'
 
 spotify:
   - any:
@@ -229,12 +227,6 @@ admin:
     - changed-files:
       - any-glob-to-any-file:
         - 'api/admin.py'
-
-fixtures:
-  - any:
-    - changed-files:
-      - any-glob-to-any-file:
-        - 'api/fixtures/**'
 
 logging:
   - any:

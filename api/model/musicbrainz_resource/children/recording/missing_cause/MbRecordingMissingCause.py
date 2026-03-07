@@ -17,6 +17,7 @@ class MbRecordingMissingCause(PrivateStandardResource):
     objects: MbRecordingMissingCauseManager = MbRecordingMissingCauseManager()
 
     class Meta:
+        db_table = 'htmt_api_mb_recording_missing_cause'
         verbose_name = 'MusicBrainz Recording Missing Cause'
         verbose_name_plural = 'MusicBrainz Recording Missing Causes'
 

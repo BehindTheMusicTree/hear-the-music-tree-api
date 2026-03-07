@@ -1,9 +1,16 @@
+from typing import Any
+
 from django.urls import reverse
 
 from api.test.utils.AppTestCase import AppTestCase
 
 
-class SearchTestCase(AppTestCase):
+class SearchMixin:
+    """Mixin that adds search API helpers. Use with any AppTestCase subclass for E2E tests that need search."""
+
+    api_client: Any
+    _set_results: Any
+
     def _search(self, **kwargs):
         return self.api_client.get(path=reverse('search-list'), data=kwargs, handle_response=self._set_results)
 
@@ -18,3 +25,7 @@ class SearchTestCase(AppTestCase):
                                    data=kwargs,
                                    content_type='application/json',
                                    handle_response=self._set_results)
+
+
+class SearchTestCase(SearchMixin, AppTestCase):
+    pass
