@@ -13,7 +13,7 @@ from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import Uplo
 class TestCase(UploadedTrackTestCase):
 
     def test_one_then_ok(self):
-        with patch('acoustid.lookup') as mock_lookup:
+        with patch("api.utils.musicbrainz.service.acoustid.lookup") as mock_lookup:
             mock_lookup.return_value = {
                 'status': 'ok',
                 'results': [
@@ -61,7 +61,7 @@ class TestCase(UploadedTrackTestCase):
             warnings.warn("Musicbrainz recording not found for test_multiple_then_ok")
 
     def test_same_artist_then_same_uuid(self):
-        with patch('acoustid.lookup') as mock_lookup:
+        with patch("api.utils.musicbrainz.service.acoustid.lookup") as mock_lookup:
             mock_lookup.return_value = {
                 'status': 'ok',
                 'results': [
