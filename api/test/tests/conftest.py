@@ -99,9 +99,19 @@ def mock_spotify_client_outside_e2e(request):
     """
     if _should_mock_external_services(request):
         mock_instance = _make_spotify_client_mock()
-        with patch(
-            "api.utils.spotify_api.SpotifyClient.get_spotify_client",
-            return_value=mock_instance,
+        with (
+            patch(
+                "api.utils.spotify_api.managers.SpotifyApiLibTrackManager.get_spotify_client",
+                return_value=mock_instance,
+            ),
+            patch(
+                "api.utils.spotify_api.managers.SpotifyApiArtistManager.get_spotify_client",
+                return_value=mock_instance,
+            ),
+            patch(
+                "api.view.viewset.model.SpotifyArtistViewSet.get_spotify_client",
+                return_value=mock_instance,
+            ),
         ):
             yield
     else:
