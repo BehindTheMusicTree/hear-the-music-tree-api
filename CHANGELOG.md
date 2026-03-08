@@ -59,6 +59,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v2.1.1] - 2026-03-08
+
 ### Documentation
 
 - **Release tooling**: bump2version added to keep `VERSION`, `package.json`, and `schema.yml` in sync; release steps in CONTRIBUTING.md updated to use `bump2version patch|minor|major` before finalizing CHANGELOG and tagging.
