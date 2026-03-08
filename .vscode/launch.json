@@ -1,22 +1,45 @@
 {
-	// Use IntelliSense to learn about possible attributes.
-	// Hover to view descriptions of existing attributes.
-	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-	"version": "0.2.0",
-	"configurations": [
-		{
-			"name": "Python: Django",
-			"type": "debugpy",
-			"request": "launch",
-			"program": "${workspaceFolder}/manage.py",
-			"args": [
-				"runserver"
-			],
-			"django": true,
-			"justMyCode": true,
-			"env": {
-				"PYTHONUNBUFFERED": "1"
-			}
-		}
-	]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Django: Run Server",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "args": ["runserver"],
+      "django": true,
+      "python": "${workspaceFolder}/venv/bin/python",
+      "justMyCode": false
+    },
+    {
+      "name": "Django: Run Server (with args)",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/manage.py",
+      "args": ["runserver", "0.0.0.0:8000"],
+      "django": true,
+      "python": "${workspaceFolder}/venv/bin/python",
+      "justMyCode": false
+    },
+    {
+      "name": "Pytest: Current File",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["${file}", "-v"],
+      "cwd": "${workspaceFolder}",
+      "python": "${workspaceFolder}/venv/bin/python",
+      "justMyCode": false
+    },
+    {
+      "name": "Pytest: api/test",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": ["api/test", "-v"],
+      "cwd": "${workspaceFolder}",
+      "python": "${workspaceFolder}/venv/bin/python",
+      "justMyCode": false
+    }
+  ]
 }

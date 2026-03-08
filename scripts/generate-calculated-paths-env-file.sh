@@ -5,8 +5,8 @@ log_with_script_prefixe () {
 }
 
 calculate_static_files_dir(){
-    if [ $ENV = "COLLECT_STATIC" ]; then
-        log_with_script_prefixe "ENV is set to COLLECT_STATIC. Calculating the static files directory..."
+    if [ $ENV = "collect_static" ]; then
+        log_with_script_prefixe "ENV is set to collect_static. Calculating the static files directory..."
         check_required_vars_are_set STATIC_FILES_INTERNAL
         if [ -n "$STATIC_FILES_EXTERNAL" ]; then
             log_with_script_prefixe "ERROR: In collect static mode, $STATIC_FILES_EXTERNAL must not be set." >&2
@@ -14,7 +14,7 @@ calculate_static_files_dir(){
         fi
     else 
         if [ -z "$STATIC_FILES_INTERNAL" ]; then
-            log_with_script_prefixe "ENV is not set to COLLECT_STATIC and STATIC_FILES_INTERNAL is not set. Static files are not needed."
+            log_with_script_prefixe "ENV is not set to collect_static and STATIC_FILES_INTERNAL is not set. Static files are not needed."
             if [ -n "$STATIC_FILES_EXTERNAL" ]; then
                 log_with_script_prefixe "ERROR: STATIC_FILES_EXTERNAL must not be set if STATIC_FILES_INTERNAL is not set." >&2
                 exit 1

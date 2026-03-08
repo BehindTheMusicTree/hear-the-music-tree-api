@@ -10,6 +10,8 @@ from api.utils.AppStaticFileStates import StaticFileStates
 from api.utils.env_var_loader import (
     load_calculated_env_paths,
     load_env_vars_from_file_if_exists,
+    load_optional_secret_env_var,
+    load_optional_str_env_var,
     load_required_bool_env_var,
     load_required_path_env_var,
     load_required_secret_env_var,
@@ -65,7 +67,9 @@ CRITERIA_TREE_IMPORT_MAX_ROOT_COUNT: int
 CRITERIA_TREE_IMPORT_MAX_TOTAL_COUNT: int
 
 # AFP Connection
-AFP_POST_FULL_URL: str
+AFP_PORT: str
+AFP_BASE_URL: str
+AFP_POST_ENDPOINT: str
 
 # Static Files
 STATIC_ROOT: Path
@@ -91,6 +95,8 @@ SIMPLE_JWT: dict[str, Any] = {}
 
 # Media
 ACOUSTID_API_KEY: str
+AFP_ENABLED: bool
+MUSICBRAINZ_LOOKUP_ENABLED: bool
 MEDIA_ROOT: Path
 MEDIA_URL: str
 LIBRARIES_DIR_NAME: str
@@ -100,12 +106,14 @@ LIBRARIES_DIR: Path
 DATA_DIR: Path
 
 # Spotify
+SPOTIFY_ENABLED: bool
 SPOTIFY_CLIENT_ID: str
 SPOTIFY_CLIENT_SECRET: str
 SPOTIFY_REDIRECT_URI: str
 SPOTIFY_SCOPES: str
 
 # Google OAuth
+GOOGLE_OAUTH_ENABLED: bool
 GOOGLE_CLIENT_ID: str
 GOOGLE_CLIENT_SECRET: str
 GOOGLE_REDIRECT_URI: str
@@ -422,7 +430,7 @@ def setup_app_constants():
     global UPLOADED_TRACK_GENERATED_TITLE_LENGTH
     UPLOADED_TRACK_GENERATED_TITLE_LENGTH = 20
     global UPLOADED_TRACK_GENERATED_TITLE_PREFIXE
-    UPLOADED_TRACK_GENERATED_TITLE_PREFIXE = "bodzify_"
+    UPLOADED_TRACK_GENERATED_TITLE_PREFIXE = "htmt_"
     global UPLOADED_TRACK_RATING_VALUE_MAX
     UPLOADED_TRACK_RATING_VALUE_MAX = 10
 
@@ -492,6 +500,9 @@ def setup_app_constants():
 
 
 def setup_afp_connection():
+    global AFP_BASE_URL
+    global AFP_PORT
+    global AFP_POST_ENDPOINT
     if APP_IS_EXPOSED:
         print_django("The app is exposed. The AFP host is the AFP container name.")
         AFP_BASE_URL = AFP_CONTAINER_NAME
@@ -502,9 +513,7 @@ def setup_afp_connection():
     AFP_PORT = load_required_str_env_var('AFP_PORT')
     AFP_POST_ENDPOINT = load_required_str_env_var('AFP_POST_ENDPOINT')
 
-    global AFP_POST_FULL_URL
-    AFP_POST_FULL_URL = "http://" + AFP_BASE_URL + ":" + AFP_PORT + '/' + AFP_POST_ENDPOINT
-    print_django(f"AFP_POST_FULL_URL: {AFP_POST_FULL_URL}")
+    print_django(f"AFP: http://{AFP_BASE_URL}:{AFP_PORT}/{AFP_POST_ENDPOINT}")
 
 
 def setup_data_dir():
@@ -674,6 +683,7 @@ def setup_django_constants():
         'DEFAULT_AUTHENTICATION_CLASSES': (
             'rest_framework_simplejwt.authentication.JWTAuthentication',
         ),
+        'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny', ],
         'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata',
         'DEFAULT_SCHEMA_CLASS': 'api.view.schema.AppAutoSchema.AppAutoSchema',
         'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
@@ -711,37 +721,75 @@ def setup_django_constants():
     }
 
 
-def setup_media_dirs():
-    print_django("FILE_UPLOAD_TEMP_DIR is set. Setting up the media variables...")
+def _load_service_feature_flags():
+    global AFP_ENABLED
+    global MUSICBRAINZ_LOOKUP_ENABLED
+    AFP_ENABLED = load_required_bool_env_var('AFP_ENABLED')
+    MUSICBRAINZ_LOOKUP_ENABLED = load_required_bool_env_var('MUSICBRAINZ_LOOKUP_ENABLED')
+    if MUSICBRAINZ_LOOKUP_ENABLED and not AFP_ENABLED:
+        raise EnvironmentError(
+            "MUSICBRAINZ_LOOKUP_ENABLED cannot be true when AFP_ENABLED is false (MusicBrainz lookup requires fingerprinting)."
+        )
+    print_django("AFP is enabled." if AFP_ENABLED else "AFP is disabled.")
+    print_django("MusicBrainz lookup is enabled." if MUSICBRAINZ_LOOKUP_ENABLED else "MusicBrainz lookup is disabled.")
 
+
+def _load_optional_service_credentials():
+    """Load ACOUSTID, Spotify and Google OAuth env; call after _load_service_feature_flags()."""
     global ACOUSTID_API_KEY
-    ACOUSTID_API_KEY = load_required_secret_env_var('ACOUSTID_API_KEY')
-
-    # Load Spotify API credentials
+    global SPOTIFY_ENABLED
     global SPOTIFY_CLIENT_ID
     global SPOTIFY_CLIENT_SECRET
     global SPOTIFY_REDIRECT_URI
     global SPOTIFY_SCOPES
-    SPOTIFY_CLIENT_ID = load_required_str_env_var('SPOTIFY_CLIENT_ID')
-    print_django(f"SPOTIFY_CLIENT_ID = {SPOTIFY_CLIENT_ID}")
-    SPOTIFY_CLIENT_SECRET = load_required_secret_env_var('SPOTIFY_CLIENT_SECRET')
-    print_django(f"SPOTIFY_CLIENT_SECRET = {SPOTIFY_CLIENT_SECRET}")
-    SPOTIFY_REDIRECT_URI = load_required_str_env_var('SPOTIFY_REDIRECT_URI',)
-    print_django(f"SPOTIFY_REDIRECT_URI = {SPOTIFY_REDIRECT_URI}")
-    SPOTIFY_SCOPES = load_required_str_env_var('SPOTIFY_SCOPES',)
-    print_django(f"SPOTIFY_SCOPES = {SPOTIFY_SCOPES}")
-    print_django("Spotify API credentials loaded.")
-
+    global GOOGLE_OAUTH_ENABLED
     global GOOGLE_CLIENT_ID
     global GOOGLE_CLIENT_SECRET
     global GOOGLE_REDIRECT_URI
-    GOOGLE_CLIENT_ID = load_required_str_env_var('GOOGLE_CLIENT_ID')
-    print_django(f"GOOGLE_CLIENT_ID = {GOOGLE_CLIENT_ID}")
-    GOOGLE_CLIENT_SECRET = load_required_secret_env_var('GOOGLE_CLIENT_SECRET')
-    print_django(f"GOOGLE_CLIENT_SECRET = {GOOGLE_CLIENT_SECRET}")
-    GOOGLE_REDIRECT_URI = load_required_str_env_var('GOOGLE_REDIRECT_URI')
-    print_django(f"GOOGLE_REDIRECT_URI = {GOOGLE_REDIRECT_URI}")
-    print_django("Google OAuth credentials loaded.")
+
+    if MUSICBRAINZ_LOOKUP_ENABLED:
+        ACOUSTID_API_KEY = load_required_secret_env_var('ACOUSTID_API_KEY')
+        print_django("MusicBrainz lookup enabled; ACOUSTID_API_KEY loaded.")
+    else:
+        ACOUSTID_API_KEY = load_optional_secret_env_var('ACOUSTID_API_KEY')
+        print_django("MusicBrainz lookup disabled; ACOUSTID_API_KEY not required.")
+
+    SPOTIFY_ENABLED = load_required_bool_env_var('SPOTIFY_ENABLED')
+    if SPOTIFY_ENABLED:
+        SPOTIFY_CLIENT_ID = load_required_str_env_var('SPOTIFY_CLIENT_ID')
+        print_django(f"SPOTIFY_CLIENT_ID = {SPOTIFY_CLIENT_ID}")
+        SPOTIFY_CLIENT_SECRET = load_required_secret_env_var('SPOTIFY_CLIENT_SECRET')
+        print_django(f"SPOTIFY_CLIENT_SECRET = {SPOTIFY_CLIENT_SECRET}")
+        SPOTIFY_REDIRECT_URI = load_required_str_env_var('SPOTIFY_REDIRECT_URI')
+        print_django(f"SPOTIFY_REDIRECT_URI = {SPOTIFY_REDIRECT_URI}")
+        SPOTIFY_SCOPES = load_required_str_env_var('SPOTIFY_SCOPES')
+        print_django(f"SPOTIFY_SCOPES = {SPOTIFY_SCOPES}")
+        print_django("Spotify API credentials loaded.")
+    else:
+        SPOTIFY_CLIENT_ID = load_optional_str_env_var('SPOTIFY_CLIENT_ID')
+        SPOTIFY_CLIENT_SECRET = load_optional_secret_env_var('SPOTIFY_CLIENT_SECRET')
+        SPOTIFY_REDIRECT_URI = load_optional_str_env_var('SPOTIFY_REDIRECT_URI')
+        SPOTIFY_SCOPES = load_optional_str_env_var('SPOTIFY_SCOPES')
+        print_django("Spotify disabled; credentials not loaded.")
+
+    GOOGLE_OAUTH_ENABLED = load_required_bool_env_var('GOOGLE_OAUTH_ENABLED')
+    if GOOGLE_OAUTH_ENABLED:
+        GOOGLE_CLIENT_ID = load_required_str_env_var('GOOGLE_CLIENT_ID')
+        print_django(f"GOOGLE_CLIENT_ID = {GOOGLE_CLIENT_ID}")
+        GOOGLE_CLIENT_SECRET = load_required_secret_env_var('GOOGLE_CLIENT_SECRET')
+        print_django(f"GOOGLE_CLIENT_SECRET = {GOOGLE_CLIENT_SECRET}")
+        GOOGLE_REDIRECT_URI = load_required_str_env_var('GOOGLE_REDIRECT_URI')
+        print_django(f"GOOGLE_REDIRECT_URI = {GOOGLE_REDIRECT_URI}")
+        print_django("Google OAuth credentials loaded.")
+    else:
+        GOOGLE_CLIENT_ID = load_optional_str_env_var('GOOGLE_CLIENT_ID')
+        GOOGLE_CLIENT_SECRET = load_optional_secret_env_var('GOOGLE_CLIENT_SECRET')
+        GOOGLE_REDIRECT_URI = load_optional_str_env_var('GOOGLE_REDIRECT_URI')
+        print_django("Google OAuth disabled; credentials not loaded.")
+
+
+def setup_media_dirs():
+    print_django("FILE_UPLOAD_TEMP_DIR is set. Setting up the media variables...")
 
     global MEDIA_ROOT  # Django constant, do not rename.
     MEDIA_ROOT = load_required_path_env_var('MEDIA_DIR')
@@ -784,25 +832,17 @@ APP_IS_EXPOSED = load_required_bool_env_var('APP_IS_EXPOSED')
 
 set_secret_key()
 
+load_calculated_env_paths(BASE_DIR)
+
 if 'pytest' in sys.argv[0]:
     print_django("settings.py is being executed because of a pytest command.")
-
-    if os.environ.get('AUDIO_META_ANALYSIS_ENABLED', 'False').lower() == 'true':
-        AUDIO_META_ANALYSIS_ENABLED = True
-        print_django("The audio meta analysis is enabled.")
-    else:
-        AUDIO_META_ANALYSIS_ENABLED = False
-        print_django("The audio meta analysis is disabled.")
-
     PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']  # Less secured to speed up tests
-else:
-    AUDIO_META_ANALYSIS_ENABLED = True
-    print_django("settings.py is not being executed because of a pytest command. The audio meta analysis is enabled.")
 
 if 'loaddata' in sys.argv:
     print_django("settings.py is being executed because of a loaddata command.")
-    load_calculated_env_paths(BASE_DIR)
     STATIC_FILES_STATE = StaticFileStates.NOT_NEEDED
+    _load_service_feature_flags()
+    _load_optional_service_credentials()
     setup_app_constants()
     setup_data_dir()
     setup_installed_apps_and_caches()
@@ -812,13 +852,14 @@ if 'loaddata' in sys.argv:
     setup_templates()  # Needed to use the admin application
     setup_media_dirs()  # Needed for the User model library path field
 else:
-    load_calculated_env_paths(BASE_DIR)
+    _load_service_feature_flags()
+    _load_optional_service_credentials()
     setup_app_exposure_if_needed()
     setup_app_constants()
     setup_data_dir()
 
     STATIC_FILES = os.getenv('STATIC_FILES')
-    if ENV == 'COLLECT_STATIC':
+    if ENV == 'collect_static':
         STATIC_FILES_STATE = StaticFileStates.COLLECTING
         LIBRARIES_DIR_NAME = ''  # Needed to setup the database (User model)
         setup_static_files()
@@ -846,6 +887,11 @@ else:
     if not FILE_UPLOAD_TEMP_DIR:
         print_django("TMP_UPLOADED_FILES/FILE_UPLOAD_TEMP_DIR is not set. The app will not handle media files.")
         FILE_UPLOAD_ENABLED = False
+        if os.getenv('AFP_ENABLED', '').lower() == 'true':
+            raise EnvironmentError(
+                "The AFP_ENABLED env variable cannot be true when "
+                "TMP_UPLOADED_FILES/FILE_UPLOAD_TEMP_DIR is not set."
+            )
         for var_name in ['AFP_PORT',
                          'AFP_CONTAINER_NAME',
                          'AFP_POST_ENDPOINT',
@@ -857,8 +903,9 @@ else:
                     TMP_UPLOADED_FILES/FILE_UPLOAD_TEMP_DIR is not.")
     else:
         FILE_UPLOAD_ENABLED = True
-        AFP_CONTAINER_NAME = load_required_str_env_var('AFP_CONTAINER_NAME')
         setup_media_dirs()
-        setup_afp_connection()
+        if AFP_ENABLED:  # pyright: ignore[reportUnboundVariable]
+            AFP_CONTAINER_NAME = load_required_str_env_var('AFP_CONTAINER_NAME')
+            setup_afp_connection()
 
 print_django("Finished loading settings.")

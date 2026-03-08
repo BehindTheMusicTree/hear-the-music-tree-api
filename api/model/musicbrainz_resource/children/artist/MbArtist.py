@@ -20,6 +20,7 @@ class MbArtist(MusicbrainzResource):
         return f"{self.musicbrainz_id} | {self.name}"
 
     class Meta:
+        db_table = 'htmt_api_mb_artist'
         verbose_name = 'Musicbrainz Artist'
         verbose_name_plural = 'Musicbrainz Artists'
         indexes = [models.Index(fields=[Fields.MUSICBRAINZ_ID], name='mb_artist_id_idx')]

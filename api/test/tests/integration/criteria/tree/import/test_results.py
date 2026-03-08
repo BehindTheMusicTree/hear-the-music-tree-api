@@ -2,7 +2,7 @@ from rest_framework import status
 
 from api.serializer.model.criteria.input.Fields import Fields as InputFields
 from api.serializer.model.criteria.input.tree_import.Fields import Fields as TreeImportFields
-from api.test.integration.view.criteria.GenreTestCase import GenreTestCase
+from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestResults(GenreTestCase):

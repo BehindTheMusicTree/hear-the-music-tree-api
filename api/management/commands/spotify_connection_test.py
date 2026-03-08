@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 
 from api.exception import spotify as spotify_exception
-from api.utils.spotify_api.SpotifyClient import SpotifyClient
+from api.utils.spotify_api.SpotifyClient import get_spotify_client
 
 
 class Command(BaseCommand):
@@ -14,9 +14,11 @@ class Command(BaseCommand):
         parser.add_argument('--isrc', type=str, help='Optional ISRC code to test')
 
     def handle(self, *args, **options):
+        service = get_spotify_client()
+        if service is None:
+            raise CommandError('Spotify is disabled. Set SPOTIFY_ENABLED=true and configure credentials.')
         try:
             self.stdout.write(self.style.SUCCESS('Creating Spotify API service...'))
-            service = SpotifyClient()
             self.stdout.write(self.style.SUCCESS('Successfully authenticated with Spotify API!'))
 
             # Test search functionality if search query provided

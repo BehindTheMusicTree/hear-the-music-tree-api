@@ -5,15 +5,18 @@ from api.model.criteria.children.genre.Genre import Genre
 from api.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.serializer.model.criteria.input.post import Fields as PostFields
-from api.serializer.model.playlist.children.manual.input.Fields import Fields as ManualPlaylistPostFields
-from api.test.integration.view.criteria.GenreTestCase import GenreTestCase
-from api.test.integration.view.playlist.base.PlaylistTestCase import PlaylistTestCase
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.serializer.model.playlist.children.manual.input.Fields import (
+    Fields as ManualPlaylistFields,
+)
+from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
+from api.test.tests.integration.playlist.children.manual.ManualPlaylistTestCase import (
+    ManualPlaylistTestCase,
+)
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
 @pytest.mark.e2e
-class TestCase(GenreTestCase, PlaylistTestCase, UploadedTrackTestCase):
+class TestCase(GenreTestCase):
     """
     E2E test for multi-user library isolation.
 
@@ -29,6 +32,7 @@ class TestCase(GenreTestCase, PlaylistTestCase, UploadedTrackTestCase):
 
     def test_multi_user_library_isolation_then_ok(self):
         self._login_as_test_user1()
+        playlist_helper = self._domain_helper(ManualPlaylistTestCase)
 
         user1_genre_name = "User1 Genre"
         response = self._post_genre(**{PostFields.NAME_PUBLIC: user1_genre_name})
@@ -36,12 +40,16 @@ class TestCase(GenreTestCase, PlaylistTestCase, UploadedTrackTestCase):
         user1_genre = self.saved_object
 
         user1_track = self.model_fixture_factory.create_uploaded_track_with_file(
-            title="User1 Track", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3)
+            title="User1 Track",
+            test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3,
+        )
 
         user1_playlist_name = "User1 Playlist"
-        response = self._post_playlist(**{ManualPlaylistPostFields.NAME: user1_playlist_name})
+        response = playlist_helper._post_manual_playlist(
+            **{ManualPlaylistFields.NAME_PUBLIC: user1_playlist_name}
+        )
         assert response.status_code == status.HTTP_201_CREATED
-        user1_playlist = self.saved_object
+        user1_playlist = playlist_helper.saved_object
 
         user1_genres = Genre.objects.filter(user=self.test_user1)
         user1_tracks = UploadedTrack.objects.filter(user=self.test_user1)
@@ -62,12 +70,17 @@ class TestCase(GenreTestCase, PlaylistTestCase, UploadedTrackTestCase):
         user2_genre = self.saved_object
 
         user2_track = self.model_fixture_factory.create_uploaded_track_with_file(
-            title="User2 Track", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3)
+            title="User2 Track",
+            test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3,
+            user=self.test_user2,
+        )
 
         user2_playlist_name = "User2 Playlist"
-        response = self._post_playlist(**{ManualPlaylistPostFields.NAME: user2_playlist_name})
+        response = playlist_helper._post_manual_playlist(
+            **{ManualPlaylistFields.NAME_PUBLIC: user2_playlist_name}
+        )
         assert response.status_code == status.HTTP_201_CREATED
-        user2_playlist = self.saved_object
+        user2_playlist = playlist_helper.saved_object
 
         user2_genres = Genre.objects.filter(user=self.test_user2)
         user2_tracks = UploadedTrack.objects.filter(user=self.test_user2)

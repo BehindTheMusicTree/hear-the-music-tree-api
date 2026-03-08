@@ -4,7 +4,7 @@ from api.exception.validation.FieldValidationErrorCode import FieldValidationErr
 from api.filtering.set.playlist.Fields import Fields as FilterFields
 from api.serializer.model.playlist.children.manual.output.Fields import Fields
 from api.test.utils.field.filter.char.NotNullableFreeCharFilterTestCase import NotNullableFreeCharFilterTestCase
-from api.test.integration.view.playlist.children.manual.ManualPlaylistTestCase import ManualPlaylistTestCase
+from api.test.tests.integration.playlist.children.manual.ManualPlaylistTestCase import ManualPlaylistTestCase
 
 
 class TestCase(ManualPlaylistTestCase, NotNullableFreeCharFilterTestCase):

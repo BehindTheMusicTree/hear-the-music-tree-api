@@ -32,6 +32,7 @@ class MbRecording(MusicbrainzResource):
         return f"{self.title} - {self.musicbrainz_artists} ({self.duration_str_in_hour_min_sec})"
 
     class Meta:
+        db_table = 'htmt_api_mb_recording'
         verbose_name = 'MusicBrainz Recording'
         verbose_name_plural = 'MusicBrainz Recordings'
         indexes = [models.Index(fields=[Fields.MUSICBRAINZ_ID], name='mb_recording_id_idx')]

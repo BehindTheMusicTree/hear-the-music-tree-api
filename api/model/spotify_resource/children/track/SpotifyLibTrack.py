@@ -65,7 +65,7 @@ class SpotifyLibTrack(SpotifyResource):
         return f"{minutes}:{seconds:02d}"
 
     class Meta:
+        db_table = 'htmt_api_spotify_lib_track'
         verbose_name = 'Spotify Library Track'
         verbose_name_plural = 'Spotify Library Tracks'
         indexes = [models.Index(fields=[Fields.SPOTIFY_ID], name='sp_track_id_idx')]
-        db_table = 'spotify_lib_track'

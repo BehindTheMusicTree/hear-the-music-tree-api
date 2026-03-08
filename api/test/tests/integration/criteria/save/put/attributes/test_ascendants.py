@@ -5,7 +5,7 @@ from api.model.criteria.Criteria import Criteria
 from api.model.criteria.lineage_rel.CriteriaLineageRel import CriteriaLineageRel
 from api.model.criteria.lineage_rel.Fields import Fields
 from api.serializer.model.criteria.input.put import Fields as PutFields
-from api.test.integration.view.criteria.GenreTestCase import GenreTestCase
+from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase):

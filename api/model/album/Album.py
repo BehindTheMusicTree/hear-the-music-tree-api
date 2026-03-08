@@ -43,6 +43,7 @@ class Album(UploadedTrackMixin):
             'null_position', UploadedTrackFields.TRACK_NUMBER, UploadedTrackFields.TITLE)
 
     class Meta:
+        db_table = 'htmt_api_album'
         constraints = [models.CheckConstraint(condition=~models.Q(_name=""), name="album_non_empty_name")]
 
     def __str__(self) -> str:

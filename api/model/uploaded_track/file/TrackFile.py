@@ -12,6 +12,8 @@ from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
 from django.utils.translation import gettext as _
 
+from django.conf import settings as django_settings
+
 from api import settings
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.exception.validation.app.AppValidationException import AppValidationException
@@ -40,6 +42,7 @@ from api.validator.TrackFileValidator import TrackFileValidator
 from .Fields import Fields
 from .fingerprinting.FingerprintingResult import FingerprintingResult
 from .fingerprinting.missing_cause.FingerprintMissingCause import FingerprintMissingCause
+from .fingerprinting.missing_cause.code.FingerprintMissingCauseCode import FingerprintMissingCauseCode
 
 
 class TrackFile(PrivateStandardResource):
@@ -73,6 +76,7 @@ class TrackFile(PrivateStandardResource):
         uploaded_track: UploadedTrack
 
     class Meta:
+        db_table = 'htmt_api_track_file'
         verbose_name = 'Track File'
         verbose_name_plural = 'Track Files'
 
@@ -98,15 +102,9 @@ class TrackFile(PrivateStandardResource):
         return ""
 
     def _manage_fingerprint(self) -> FingerprintingResult | None:
-        audio_meta_analysis_enabled_override_env_var = os.environ.get('AUDIO_META_ANALYSIS_ENABLED_OVERRIDE', None)
-        if audio_meta_analysis_enabled_override_env_var:
-            is_audio_meta_analysis_enabled_override = audio_meta_analysis_enabled_override_env_var.lower()
-        else:
-            is_audio_meta_analysis_enabled_override = 'false'
-
         fingerprinting_result: FingerprintingResult | None = None
 
-        if is_audio_meta_analysis_enabled_override == 'true' or settings.AUDIO_META_ANALYSIS_ENABLED:
+        if django_settings.AFP_ENABLED:
             fingerprinting_result = audio_fingerprinter.get_fingerprinting_result(
                 user=self.user, track_file=self.file, title=self.uploaded_track.title)
 
@@ -128,7 +126,7 @@ class TrackFile(PrivateStandardResource):
                 self.fingerprint_missing_cause = fingerprinting_result.missing_cause
         else:
             self.fingerprint_missing_cause = FingerprintMissingCause.objects.create(
-                user=self.user, code=MbRecordingMissingCauseCode.Codes.AUDIO_META_AMALYSIS_DISABLED)
+                user=self.user, code=FingerprintMissingCauseCode.Codes.AFP_DISABLED)
 
         return fingerprinting_result
 
@@ -138,15 +136,19 @@ class TrackFile(PrivateStandardResource):
 
         if self.fingerprint_missing_cause:
             if self.fingerprint_missing_cause.code.code == \
-                    MbRecordingMissingCauseCode.Codes.AUDIO_META_AMALYSIS_DISABLED:
+                    FingerprintMissingCauseCode.Codes.AFP_DISABLED:
                 self.musicbrainz_recording_missing_cause = MbRecordingMissingCause.objects.create(
                     user=self.user,
-                    code=MbRecordingMissingCauseCode.Codes.AUDIO_META_AMALYSIS_DISABLED)
+                    code=MbRecordingMissingCauseCode.Codes.AFP_DISABLED)
             else:
                 self.musicbrainz_recording_missing_cause = MbRecordingMissingCause.objects.create(
                     user=self.user,
                     code=MbRecordingMissingCauseCode.Codes.TRACK_FILE_FINGERPRINTING_FAILED,
                     message=f"Fingerprinting failed.")
+        elif not django_settings.MUSICBRAINZ_LOOKUP_ENABLED:
+            self.musicbrainz_recording_missing_cause = MbRecordingMissingCause.objects.create(
+                user=self.user,
+                code=MbRecordingMissingCauseCode.Codes.MUSICBRAINZ_LOOKUP_DISABLED)
         else:
             fingerprinting_result: FingerprintingResult = fingerprinting_result_nullable  # type: ignore
             musicbrainz_recording_lookup_result = \
@@ -207,4 +209,7 @@ def handle_pre_save(sender, instance: TrackFile, **kwargs):
 
 @receiver(pre_delete, sender=TrackFile)
 def handle_pre_delete(sender, instance: TrackFile, using, **kwargs):
+    lib_file_path = instance.user.lib_abs_path / instance.filename
+    if lib_file_path.exists():
+        lib_file_path.unlink()
     instance.file.delete(False)  # type: ignore

@@ -6,6 +6,7 @@ from rest_framework import routers
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from api.utils.AppStaticFileStates import StaticFileStates
+from api.view.AudioMetadataView import AudioMetadataView
 from api.view.viewset.model.AllUploadedTracksMixinViewSet import AllUploadedTracksViewSet
 from api.view.google_auth import google_auth
 from api.view.spotify_auth import spotify_auth
@@ -36,7 +37,6 @@ from .view.viewset.model.playlist.children.ReferenceManualPlaylistViewSet import
 from .view.viewset.model.playlist.PlaylistViewSet import PlaylistViewSet
 from .view.viewset.model.playlist.ReferencePlaylistViewSet import ReferencePlaylistViewSet
 from .view.viewset.model.SpotifyLibTrackViewSet import SpotifyLibTrackViewSet
-from .view.viewset.model.ReferenceSpotifyLibTrackViewSet import ReferenceSpotifyLibTrackViewSet
 from .view.viewset.model.user.BaseUserViewSet import BaseUserViewSet
 from .view.viewset.SearchViewSet import SearchViewSet
 
@@ -49,7 +49,6 @@ router.register(r'spotify-artists', SpotifyArtistViewSet, basename='spotify-arti
 # Do not move PlaylistViewSet after GenrePlaylistViewSet or ManualPlaylistViewSet or it will cause confusion resolving
 # reverse urls.
 router.register(r'reference/library/uploaded', ReferenceUploadedTrackViewSet, basename='reference-uploaded-track')
-router.register(r'reference/library/spotify', ReferenceSpotifyLibTrackViewSet, basename='reference-spotify-lib-track')
 router.register(r'reference/artists', ReferenceArtistViewSet, basename='reference-artist')
 router.register(r'reference/albums', ReferenceAlbumViewSet, basename='reference-album')
 router.register(r'reference/genres', ReferenceGenreViewSet, basename='reference-genre')
@@ -78,6 +77,7 @@ router.register(r'search', SearchViewSet, basename='search')
 
 urlpatterns = [
     path(settings.API_ROOT_BASE, include(router.urls)),
+    path(settings.API_ROOT_BASE + 'audio/metadata/full/', AudioMetadataView.as_view(), name='audio-metadata-full'),
 
     path('admin/', admin.site.urls),
     path('health/', HealthCheckView.as_view(), name='health-check'),

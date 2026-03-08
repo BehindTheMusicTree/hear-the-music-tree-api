@@ -2,12 +2,11 @@ import pytest
 from rest_framework import status
 
 from api.model.musicbrainz_resource.children.recording.missing_cause.code.MbRecordingMissingCauseCode import MbRecordingMissingCauseCode
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
 @pytest.mark.e2e
-@pytest.mark.usefixtures("enable_audio_metadata_analysis")
 class TestCase(UploadedTrackTestCase):
     """
     E2E test for track upload with MusicBrainz lookup failure handling.
@@ -19,10 +18,13 @@ class TestCase(UploadedTrackTestCase):
     4. MusicBrainz lookup fails (no matching recording found)
     5. System handles failure gracefully
     6. Track is created with metadata from file tags only
+
+    In CI, conftest mocks MusicBrainz with empty results, so this test's expectations
+    (no recording, missing cause set) are met deterministically.
     """
 
     def test_upload_track_with_musicbrainz_lookup_failure_then_ok(self):
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3)
+        response = self._post_uploaded_track(UploadedTrackTestFilename.RECORDING_TOKYO_DRIFT_NO_MB_RECORDING_MP3)
 
         assert response.status_code == status.HTTP_201_CREATED
 
@@ -58,7 +60,8 @@ class TestCase(UploadedTrackTestCase):
                 assert code in [
                     MbRecordingMissingCauseCode.Codes.LOOKUP_FOUND_NO_MATCHING_RECORDING,
                     MbRecordingMissingCauseCode.Codes.TRACK_FILE_FINGERPRINTING_FAILED,
-                    MbRecordingMissingCauseCode.Codes.AUDIO_META_AMALYSIS_DISABLED,
+                    MbRecordingMissingCauseCode.Codes.AFP_DISABLED,
+                    MbRecordingMissingCauseCode.Codes.MUSICBRAINZ_LOOKUP_DISABLED,
                     MbRecordingMissingCauseCode.Codes.LOOKUP_FAILED_DUE_TO_INVALID_FINGERPRINT,
                     MbRecordingMissingCauseCode.Codes.LOOKUP_FAILED_DNS_RESOLUTION_ERROR,
                     MbRecordingMissingCauseCode.Codes.LOOKUP_FAILED_WITH_INTERNAL_ERROR,

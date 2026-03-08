@@ -2,12 +2,11 @@ import pytest
 from rest_framework import status
 
 from api.model.uploaded_track.file.fingerprinting.missing_cause.code.FingerprintMissingCauseCode import FingerprintMissingCauseCode
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
 @pytest.mark.e2e
-@pytest.mark.usefixtures("enable_audio_metadata_analysis")
 class TestCase(UploadedTrackTestCase):
     """
     E2E test for track upload with fingerprinting failure handling.
@@ -39,7 +38,7 @@ class TestCase(UploadedTrackTestCase):
             if fingerprint_missing_cause:
                 code = fingerprint_missing_cause.code.code
                 assert code in [
-                    FingerprintMissingCauseCode.Codes.AUDIO_META_AMALYSIS_DISABLED,
+                    FingerprintMissingCauseCode.Codes.AFP_DISABLED,
                     FingerprintMissingCauseCode.Codes.SERVICE_NOT_FOUND,
                     FingerprintMissingCauseCode.Codes.WRONG_FILE_EXTENSION,
                     FingerprintMissingCauseCode.Codes.WRONG_FILE_TYPE,

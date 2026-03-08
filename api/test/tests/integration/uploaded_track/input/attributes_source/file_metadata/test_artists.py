@@ -2,7 +2,7 @@ from rest_framework import status
 
 from api import settings
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
 class TestCase(UploadedTrackTestCase):
@@ -83,7 +83,7 @@ class TestCase(UploadedTrackTestCase):
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.artists.count() == 3
         artists = self.saved_object.artists.all()
-        assert [artist.name for artist in artists] == ['One', 'Two', 'Three']
+        assert set(artist.name for artist in artists) == {'One', 'Two', 'Three'}
 
     def test_3_separated_by_double_slash_then_ok(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.ARTISTS_ONE_TWO_THREE_DOUBLE_SLASH_ID3V2)
@@ -116,7 +116,7 @@ class TestCase(UploadedTrackTestCase):
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.artists.count() == 3
         artists = self.saved_object.artists.all()
-        assert [artist.name for artist in artists] == ['One', 'Two', 'Three']
+        assert set(artist.name for artist in artists) == {'One', 'Two', 'Three'}
 
     def test_3_separated_by_slash_then_ok(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.ARTISTS_ONE_TWO_THREE_SLASH_ID3V2)

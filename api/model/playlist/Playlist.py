@@ -28,6 +28,7 @@ class Playlist(UploadedTrackMixin, TrackablePlayCount):
         criteria_playlist: 'CriteriaPlaylist | None'
 
     class Meta:
+        db_table = 'htmt_api_playlist'
         verbose_name = 'Playlist'
         verbose_name_plural = 'Playlists'
         indexes = [models.Index(fields=[Fields.USER, Fields.UUID], name='playlist_user_uuid_idx')]

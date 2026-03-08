@@ -9,7 +9,7 @@ The path prefix is the **major version** only (e.g. `v1`), derived from `APP_VER
 | Users                     | `/v1/users/`                       | TODO           | IsAdminUser | [users.md](users.md)                   |
 | Spotify profile (me)      | `/v1/me/spotify/`                  | Authenticated  | TODO        | [me_spotify.md](me_spotify.md)         |
 | Library Uploaded           | `/v1/me/library/uploaded/`, `/v1/reference/library/uploaded/` | Required / Optional | Uploaded tracks owned by authenticated user or system reference | [library_uploaded.md](library_uploaded.md) |
-| Library Spotify           | `/v1/me/library/spotify/`, `/v1/reference/library/spotify/` | Required / Optional | Spotify tracks in authenticated user's library or system reference | [library_spotify.md](library_spotify.md) |
+| Library Spotify           | `/v1/me/library/spotify/` | Required | Spotify tracks in authenticated user's library | [library_spotify.md](library_spotify.md) |
 | Spotify Artists           | `/v1/spotify-artists/`             | TODO           | TODO        | [spotify_artists.md](spotify_artists.md) |
 | Artists                   | `/v1/artists/`                     | TODO           | TODO        | [artists.md](artists.md)                |
 | Albums                    | `/v1/me/albums/`, `/v1/reference/albums/` | Required / Optional | Albums in authenticated user's library or system reference | [albums.md](albums.md) |
@@ -23,3 +23,4 @@ The path prefix is the **major version** only (e.g. `v1`), derived from `APP_VER
 | Tag Playlists             | `/v1/me/tag-playlists/`, `/v1/reference/tag-playlists/` | Required / Optional | Tag playlists owned by authenticated user or system reference | [tag_playlists.md](tag_playlists.md)     |
 | All Tracks                | `/v1/all-tracks/`                  | TODO           | TODO        | [all_tracks.md](all_tracks.md)           |
 | Search                    | `/v1/search/`                      | TODO           | TODO        | [search.md](search.md)                   |
+| Audio metadata (read raw) | `/v1/audio/metadata/full/`        | None           | Public      | [audio_metadata.md](audio_metadata.md)  |

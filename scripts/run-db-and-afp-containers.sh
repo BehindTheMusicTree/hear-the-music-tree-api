@@ -4,6 +4,19 @@ log_with_script_prefixe () {
     log "[AFP and DB runner] $1"
 }
 
+log_pull_debug () {
+    local image_label="$1"
+    local debug_timeout=10
+    log_with_script_prefixe "--- debug: $image_label pull failed ---"
+    log_with_script_prefixe "docker version (timeout ${debug_timeout}s):"
+    timeout $debug_timeout docker version 2>&1 | sed 's/^/[AFP and DB runner]   /' || log_with_script_prefixe "   (timed out or failed)"
+    hub_code=$(curl -sS --connect-timeout 5 -o /dev/null -w "%{http_code}" https://registry-1.docker.io/v2/ 2>/dev/null) || hub_code="failed"
+    log_with_script_prefixe "Docker Hub reachable (registry-1.docker.io): HTTP $hub_code"
+    log_with_script_prefixe "docker info excerpt (timeout ${debug_timeout}s):"
+    timeout $debug_timeout docker info 2>&1 | grep -E "^(Server Version|Operating System|Docker Root Dir|HTTP Proxy|HTTPS Proxy|No Proxy)" | sed 's/^/[AFP and DB runner]   /' || log_with_script_prefixe "   (timed out or no match)"
+    log_with_script_prefixe "--- end debug ---"
+}
+
 check_script_vars_are_set () {
     load_app_env_file_if_exists
     load_project_calculated_paths_env_vars
@@ -53,18 +66,42 @@ main() {
 
     check_script_vars_are_set
 
-    log_with_script_prefixe "Pulling the database and audio fingerprinter images..."
-    log_with_script_prefixe $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION
-    timeout 300 docker pull $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION
-    if [ $? -ne 0 ]; then
-        log_with_script_prefixe "ERROR: Failed to pull the database image (timeout or error)." >&2
+    if ! docker info &>/dev/null; then
+        log_with_script_prefixe "ERROR: Cannot connect to the Docker daemon. Is Docker running? Start Docker Desktop (or the Docker daemon) and try again." >&2
         exit 1
     fi
-    timeout 300 docker pull $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION
-    if [ $? -ne 0 ]; then
-        log_with_script_prefixe "ERROR: Failed to pull the audio fingerprinter image (timeout or error)." >&2
+
+    DOCKER_PULL_TIMEOUT=200
+    log_with_script_prefixe "Pulling images (timeout ${DOCKER_PULL_TIMEOUT}s each)..."
+
+    log_with_script_prefixe "Pulling DB image: $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION"
+    timeout $DOCKER_PULL_TIMEOUT docker pull $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION
+    pull_exit=$?
+    if [ $pull_exit -ne 0 ]; then
+        if [ $pull_exit -eq 124 ]; then
+            log_with_script_prefixe "ERROR: DB image pull timed out after ${DOCKER_PULL_TIMEOUT}s." >&2
+        else
+            log_with_script_prefixe "ERROR: DB image pull failed (exit $pull_exit). Check: docker login, network, image $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION." >&2
+        fi
+        log_pull_debug "DB"
         exit 1
     fi
+    log_with_script_prefixe "DB image pulled."
+
+    log_with_script_prefixe "Pulling AFP image: $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION"
+    timeout $DOCKER_PULL_TIMEOUT docker pull $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION
+    pull_exit=$?
+    if [ $pull_exit -ne 0 ]; then
+        if [ $pull_exit -eq 124 ]; then
+            log_with_script_prefixe "ERROR: AFP image pull timed out after ${DOCKER_PULL_TIMEOUT}s." >&2
+        else
+            log_with_script_prefixe "ERROR: AFP image pull failed (exit $pull_exit). Check: docker login, network, image $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION." >&2
+        fi
+        log_pull_debug "AFP"
+        exit 1
+    fi
+    log_with_script_prefixe "AFP image pulled."
+
     log_with_script_prefixe "Images pulled successfully."
 
     if timeout 10 docker ps -a --format '{{.Names}}' | grep -q "^${DB_CONTAINER_NAME}$"; then
@@ -121,19 +158,65 @@ main() {
     log_with_script_prefixe "Database container running successfully."
 
     log_with_script_prefixe "Running the audio fingerprinter container..."
-    timeout 60 docker run \
-        --name=$AFP_CONTAINER_NAME \
-        --volume=$TMP_UPLOADED_FILES:$AFP_POOL_DIR_EXTERNAL \
-        -p $AFP_PORT:$AFP_PORT \
-        -e ENV=$ENV \
-        -e DEBUG=$DEBUG \
-        -e APP_PORT=$AFP_PORT \
-        -d $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION
+    AFP_RUN_ARGS=(
+        --name="$AFP_CONTAINER_NAME"
+        --volume="$TMP_UPLOADED_FILES:$AFP_POOL_DIR_EXTERNAL"
+        -p "$AFP_PORT:$AFP_PORT"
+        -e "ENV=$ENV"
+        -e "DEBUG=$DEBUG"
+        -e "APP_PORT=$AFP_PORT"
+        -e "POOL_DIR_EXTERNAL=$AFP_POOL_DIR_EXTERNAL"
+        -e "FLASK_LOG_DIR_EXTERNAL=${AFP_FLASK_LOG_DIR_EXTERNAL:-/app/log/flask/}"
+        -e "GUNICORN_LOG_DIR=${AFP_GUNICORN_LOG_DIR_EXTERNAL:-/app/log/gunicorn/}"
+        -d "$DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION"
+    )
+    if [ "${RUN_AFP_AS_HOST_USER:-false}" = true ]; then
+        # Run as host user so the shared pool volume is writable by both AFP and the host (CI runner / local dev).
+        # Requires AFP image that supports non-root; point log dirs to container paths that are writable by any UID.
+        AFP_RUN_ARGS=(
+            --user "$(id -u):$(id -g)"
+            "${AFP_RUN_ARGS[@]}"
+        )
+    fi
+    timeout 60 docker run "${AFP_RUN_ARGS[@]}"
     if [ $? -ne 0 ]; then
         log_with_script_prefixe "ERROR: Failed to run audio fingerprinter container (timeout or error)." >&2
         exit 1
     fi
     log_with_script_prefixe "Audio fingerprinter container running successfully."
+
+    DB_HEALTH_MAX_ATTEMPTS=${DB_HEALTH_MAX_ATTEMPTS:-24}
+    DB_HEALTH_SLEEP=${DB_HEALTH_SLEEP:-2}
+    log_with_script_prefixe "Waiting for DB to be ready (max ${DB_HEALTH_MAX_ATTEMPTS} attempts, ${DB_HEALTH_SLEEP}s apart)..."
+    db_attempts=0
+    while ! timeout 5 docker exec "$DB_CONTAINER_NAME" pg_isready -h localhost -p "$DB_PORT" -U "$DB_SUPERUSER_NAME" &>/dev/null; do
+        if [ "$db_attempts" -ge "$DB_HEALTH_MAX_ATTEMPTS" ]; then
+            log_with_script_prefixe "ERROR: DB did not become ready within the expected time." >&2
+            log_with_script_prefixe "--- DB container logs ---" >&2
+            docker logs "$DB_CONTAINER_NAME" 2>&1 | sed 's/^/[AFP and DB runner]   /' >&2
+            exit 1
+        fi
+        sleep "$DB_HEALTH_SLEEP"
+        db_attempts=$((db_attempts + 1))
+    done
+    log_with_script_prefixe "DB is ready."
+
+    AFP_HEALTH_MAX_ATTEMPTS=${AFP_HEALTH_MAX_ATTEMPTS:-24}
+    AFP_HEALTH_SLEEP=${AFP_HEALTH_SLEEP:-2}
+    AFP_HEALTH_URL="http://localhost:${AFP_PORT}/health/"
+    log_with_script_prefixe "Waiting for AFP to be ready (max ${AFP_HEALTH_MAX_ATTEMPTS} attempts, ${AFP_HEALTH_SLEEP}s apart)..."
+    afp_attempts=0
+    while ! curl -sf -o /dev/null --connect-timeout 3 "$AFP_HEALTH_URL"; do
+        if [ "$afp_attempts" -ge "$AFP_HEALTH_MAX_ATTEMPTS" ]; then
+            log_with_script_prefixe "ERROR: AFP did not become ready within the expected time." >&2
+            log_with_script_prefixe "--- AFP container logs ---" >&2
+            docker logs "$AFP_CONTAINER_NAME" 2>&1 | sed 's/^/[AFP and DB runner]   /' >&2
+            exit 1
+        fi
+        sleep "$AFP_HEALTH_SLEEP"
+        afp_attempts=$((afp_attempts + 1))
+    done
+    log_with_script_prefixe "AFP is ready."
 
     log_with_script_prefixe "Containers running successfully."
 

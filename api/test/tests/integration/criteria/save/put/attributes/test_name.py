@@ -4,7 +4,7 @@ from api.exception.validation.FieldValidationErrorCode import FieldValidationErr
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.serializer.model.criteria.input.put import Fields as PutFields
 from api.test.utils.field.body_data.method.PutBodyDataTestCase import PutBodyDataTestCase
-from api.test.integration.view.criteria.GenreTestCase import GenreTestCase
+from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 from api.utils import audio_file_metadata
 from api.utils.audio_file_metadata.AppMetadataKey import AppMetadataKey
 
@@ -62,6 +62,6 @@ class TestCase(GenreTestCase, PutBodyDataTestCase):
         assert response.status_code == status.HTTP_200_OK
         updated_track: UploadedTrack = UploadedTrack.objects.get(uuid=track.uuid)
 
-        metadata = audio_file_metadata.get_merged_app_metadata(file=updated_track.track_file.file)
+        metadata = audio_file_metadata.get_app_metadata(file=updated_track.track_file.file)
         assert AppMetadataKey.GENRE_NAME in metadata
         assert metadata[AppMetadataKey.GENRE_NAME] == genre_new_name

@@ -75,6 +75,7 @@ class Criteria(UploadedTrackMixin):
         return list(self.descendants.all())
 
     class Meta:
+        db_table = 'htmt_api_criteria'
         verbose_name = 'Criteria'
         verbose_name_plural = 'Criterias'
         constraints = [

@@ -6,7 +6,7 @@ from api.test.utils.field.body_data.type.NullablePositiveIntBodyDataTestCase imp
     NullablePositiveIntBodyDataTestCase
 )
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
 class TestCase(UploadedTrackTestCase, NullablePositiveIntBodyDataTestCase):

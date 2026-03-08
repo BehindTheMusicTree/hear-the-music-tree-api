@@ -27,6 +27,7 @@ class Play(PrivateUniqueResource):
         return f"{self.uuid} | {self.content_type} | {self.content_uuid} | {self.content} | {self.created_on}"
 
     class Meta:
+        db_table = 'htmt_api_play'
         verbose_name = 'Play'
         verbose_name_plural = 'Plays'
         indexes = [

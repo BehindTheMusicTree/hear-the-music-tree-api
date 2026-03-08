@@ -27,6 +27,7 @@ class UploadedTrackPlaylistRel(PrivateStandardResource):
     objects: UploadedTrackPlaylistRelManager = UploadedTrackPlaylistRelManager()
 
     class Meta:
+        db_table = 'htmt_api_uploaded_track_playlist_rel'
         verbose_name = 'Uploaded Track Playlist Relation'
         verbose_name_plural = 'Uploaded Track Playlist Relations'
         indexes = [
