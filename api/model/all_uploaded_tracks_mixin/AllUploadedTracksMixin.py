@@ -13,6 +13,7 @@ class AllUploadedTracksMixin(UploadedTrackMixin):
     objects: AllUploadedTrackMixinManager = AllUploadedTrackMixinManager()
 
     class Meta:
+        db_table = 'htmt_api_all_uploaded_tracks_mixin'
         verbose_name = 'All Uploaded Tracks Mixin'
         verbose_name_plural = 'All Uploaded Tracks Mixins'
         constraints = [models.UniqueConstraint(fields=[Fields.USER], name=f'unique_{Fields.USER}_all_tracks_mixin')]

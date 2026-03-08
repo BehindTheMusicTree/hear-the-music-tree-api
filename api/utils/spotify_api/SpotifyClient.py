@@ -7,6 +7,13 @@ from api.exception import spotify as spotify_exception
 from api.utils.spotify_api.SpotifyCredentialManager import SpotifyCredentialManager
 
 
+def get_spotify_client() -> 'SpotifyClient | None':
+    from api import settings
+    if not getattr(settings, "SPOTIFY_ENABLED", False):
+        return None
+    return SpotifyClient()
+
+
 class SpotifyClient:
     _instance: 'SpotifyClient | None' = None
 
@@ -141,6 +148,3 @@ class SpotifyClient:
             return profile
         except Exception as e:
             raise spotify_exception.SpotifyException(f"Failed to get user profile: {str(e)}")
-
-
-spotify_client = SpotifyClient()

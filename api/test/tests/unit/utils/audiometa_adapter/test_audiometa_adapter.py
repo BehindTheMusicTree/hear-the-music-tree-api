@@ -8,7 +8,7 @@ from api.utils.audio_file_metadata import (
     delete_metadata,
     get_bitrate,
     get_duration_in_sec,
-    get_merged_app_metadata,
+    get_app_metadata,
     get_specific_metadata,
     is_flac_md5_valid,
     update_file_metadata,
@@ -27,7 +27,7 @@ class TestGetMergedAppMetadata:
             UnifiedMetadataKey.RATING: 85,
         }
 
-        result = get_merged_app_metadata("/path/to/file.mp3", normalized_rating_max_value=100)
+        result = get_app_metadata("/path/to/file.mp3", normalized_rating_max_value=100)
 
         assert result[AppMetadataKey.TITLE] == "Test Title"
         assert result[AppMetadataKey.ARTISTS_NAMES] == ["Artist 1", "Artist 2"]
@@ -43,7 +43,7 @@ class TestGetMergedAppMetadata:
         mock_get_unified.side_effect = AudiometaFileCorruptedError("File is corrupted")
 
         with pytest.raises(FileCorruptedError, match="File is corrupted"):
-            get_merged_app_metadata("/path/to/corrupted.mp3")
+            get_app_metadata("/path/to/corrupted.mp3")
 
     @patch("api.adapter.audiometa.get_unified_metadata")
     @patch("api.adapter._get_file_path")
@@ -53,7 +53,7 @@ class TestGetMergedAppMetadata:
             UnifiedMetadataKey.GENRES_NAMES: ["Rock", "Metal"],
         }
 
-        result = get_merged_app_metadata("/path/to/file.mp3")
+        result = get_app_metadata("/path/to/file.mp3")
 
         assert result[AppMetadataKey.GENRE_NAME] == "Rock"
 

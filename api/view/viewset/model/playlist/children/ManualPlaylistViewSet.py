@@ -40,3 +40,4 @@ class ManualPlaylistViewSet(AppModelViewSet[ManualPlaylist]):
     @extend_schema(request=ManualPlaylistInputSerializer, responses=ManualPlaylistDetailedSerializer)
     def update(self, request, *args, **kwargs):
         return self._handle_update(request)
+

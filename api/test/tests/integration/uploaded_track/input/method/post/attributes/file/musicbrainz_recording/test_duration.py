@@ -3,14 +3,14 @@ from unittest.mock import patch
 from rest_framework import status
 
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
-@pytest.mark.usefixtures("enable_audio_metadata_analysis")
+@pytest.mark.patches_musicbrainz_lookup
 class TestCase(UploadedTrackTestCase):
 
     def test_duration_greater_to_one_sec_then_ok(self):
-        with patch('acoustid.lookup') as mock_lookup:
+        with patch("api.utils.musicbrainz.service.acoustid.lookup") as mock_lookup:
             mock_lookup.return_value = {
                 'status': 'ok',
                 'results': [
@@ -39,7 +39,7 @@ class TestCase(UploadedTrackTestCase):
             assert self.saved_object.track_file.musicbrainz_recording.duration_in_sec == 181
 
     def test_musicbrainz_recording_is_missing_duration_then_none(self):
-        with patch('acoustid.lookup') as mock_lookup:
+        with patch("api.utils.musicbrainz.service.acoustid.lookup") as mock_lookup:
             mock_lookup.return_value = {
                 'status': 'ok',
                 'results': [

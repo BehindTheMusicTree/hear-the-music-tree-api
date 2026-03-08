@@ -4,7 +4,7 @@ from api.model.uploaded_track.Fields import Fields as UploadedTrackFields
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.serializer.model.uploaded_track.input.put.Fields import Fields as PutFields
 from api.test.utils.field.body_data.method.PutBodyDataTestCase import PutBodyDataTestCase
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
 class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
@@ -12,7 +12,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
     def test_not_provided_then_unchanged(self):
         rap_criteria = self.model_fixture_factory.create_genre(name="Rap")
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(
-            **{UploadedTrackFields.TITLE: "Love", UploadedTrackFields.GENRE: rap_criteria.uuid})
+            **{UploadedTrackFields.TITLE: "Love", UploadedTrackFields.GENRE: rap_criteria})
 
         response = self._put_uploaded_track(uploaded_track.uuid, **{PutFields.TITLE: "koko"})
 

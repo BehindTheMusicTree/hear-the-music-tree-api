@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from api.model.user.User import User
-from api.test.integration.view.user.UserTestCase import UserTestCase
+from api.test.tests.integration.user.UserTestCase import UserTestCase
 
 
 class TestCase(UserTestCase):

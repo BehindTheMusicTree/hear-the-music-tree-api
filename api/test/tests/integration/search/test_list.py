@@ -10,7 +10,7 @@ from api.serializer.model.album.minimum import Fields as AlbumFields
 from api.serializer.model.artist.minimum import Fields as ArtistFields
 from api.serializer.model.uploaded_track.output.detailed import Fields as UploadedTrackGetFields
 from api.serializer.model.playlist.children.criteria.output.simple import Fields as CriteriaPlayListFields
-from api.test.integration.view.search.SearchTestCase import SearchTestCase
+from api.test.tests.integration.search.SearchTestCase import SearchTestCase
 
 
 class TestCase(SearchTestCase):

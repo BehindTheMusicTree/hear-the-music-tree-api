@@ -6,8 +6,9 @@ FROM python:3.14-bookworm
 
 ARG APP_VERSION
 ARG APP_TITLE
+ARG API_DIR_NAME
 
-RUN for var in APP_VERSION APP_TITLE; do \
+RUN for var in APP_VERSION APP_TITLE API_DIR_NAME; do \
     eval "value=\$$var"; \
     if [ -z "$value" ]; then \
         echo "ERROR: The $var argument is not provided" >&2; \
@@ -18,7 +19,7 @@ done
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PROJECT_DIR=/home/app/ \
-    API_DIR_NAME=api \
+    API_DIR_NAME=$API_DIR_NAME \
     APP_VERSION=$APP_VERSION \
     APP_TITLE=$APP_TITLE \
     DB_IS_NEEDED=true
@@ -40,13 +41,7 @@ RUN apt update && \
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
-RUN chmod +x scripts/entrypoint.sh && \
-    FIXTURES_DIR=$${PROJECT_DIR}fixtures/ && \
-    for subdir in app genres users/test users/umg; do \
-        if [ -d "$${FIXTURES_DIR}$${subdir}" ] && [ -n "$$(ls -A "$${FIXTURES_DIR}$${subdir}" 2>/dev/null)" ]; then \
-            cp "$${FIXTURES_DIR}$${subdir}"/* "$${FIXTURES_DIR}"; \
-        fi; \
-    done
+RUN chmod +x scripts/entrypoint.sh
 
 # Set the entrypoint using shell form to allow environment variable expansion
 ENTRYPOINT ["bash", "-c", "${PROJECT_DIR}scripts/entrypoint.sh"]

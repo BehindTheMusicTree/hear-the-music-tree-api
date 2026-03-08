@@ -19,8 +19,9 @@ jobs:
     name: Static files
     runs-on: ubuntu-latest
     environment:
-      name: COLLECT_STATIC
+      name: collect_static
     env:
+      API_DIR_NAME: ${{ vars.API_DIR_NAME }}
       ENV: ${{ vars.ENV }}
       APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
       APP_TITLE: ${{ vars.APP_TITLE }}
@@ -28,6 +29,10 @@ jobs:
       DB_IS_NEEDED: false
       APP_IS_EXPOSED: false
       STATIC_FILES_INTERNAL: ${{ vars.STATIC_FILES_INTERNAL }}
+      AFP_ENABLED: "false"
+      MUSICBRAINZ_LOOKUP_ENABLED: "false"
+      SPOTIFY_ENABLED: "false"
+      GOOGLE_OAUTH_ENABLED: "false"
     outputs:
       collect_static_files_commit_hash: ${{ steps.set-commit-hash.outputs.collect_static_files_commit_hash }}
     steps:
@@ -39,6 +44,7 @@ jobs:
 
       - name: Check required vars and secrets
         env:
+          API_DIR_NAME: ${{ vars.API_DIR_NAME }}
           ENV: ${{ vars.ENV }}
           APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
           STATIC_FILES_INTERNAL: ${{ vars.STATIC_FILES_INTERNAL }}
@@ -46,6 +52,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           bash scripts/check-workflow-env.sh \
+            API_DIR_NAME \
             ENV \
             APP_NAME \
             STATIC_FILES_INTERNAL \

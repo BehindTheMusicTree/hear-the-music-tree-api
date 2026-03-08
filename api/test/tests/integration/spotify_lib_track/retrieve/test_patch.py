@@ -1,7 +1,7 @@
 from rest_framework import status
 from django.urls import reverse
 
-from api.test.integration.view.spotify_lib_track.SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
+from api.test.tests.integration.spotify_lib_track.SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
 
 
 class TestPatch(SpotifyLibTrackTestCase):
@@ -18,7 +18,7 @@ class TestPatch(SpotifyLibTrackTestCase):
 
     def test_patch_spotify_lib_track_then_405_method_not_allowed(self):
         response = self.api_client.patch(
-            path=reverse('spotify-lib-track-detail', kwargs={'pk': self.track.spotify_id}),
+            path=reverse('me-spotify-lib-track-detail', kwargs={'pk': self.track.spotify_id}),
             data={'name': 'Updated Track'}
         )
         assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED

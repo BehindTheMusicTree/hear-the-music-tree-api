@@ -27,18 +27,11 @@ class TestCase(AppTestCase):
     """
 
     def test_criteria_playlist_with_track_updates_then_ok(self):
-        from api.test.integration.view.criteria.GenreTestCase import GenreTestCase
-        from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+        from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
+        from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
-        genre_test_case = GenreTestCase()
-        genre_test_case.setUp()
-        genre_test_case.api_client = self.api_client
-        genre_test_case._login_as_test_user1()
-
-        uploaded_track_test_case = UploadedTrackTestCase()
-        uploaded_track_test_case.setUp()
-        uploaded_track_test_case.api_client = self.api_client
-        uploaded_track_test_case._login_as_test_user1()
+        genre_test_case = self._domain_helper(GenreTestCase)
+        uploaded_track_test_case = self._domain_helper(UploadedTrackTestCase)
 
         rock_genre_name = "Rock"
         jazz_genre_name = "Jazz"

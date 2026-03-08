@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from api.model.criteria.children.genre.Genre import Genre
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
 class TestCase(UploadedTrackTestCase):

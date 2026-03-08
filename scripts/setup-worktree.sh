@@ -7,7 +7,7 @@ WORKTREE_PATH="${1:-$(pwd)}"
 echo "Setting up worktree at: $WORKTREE_PATH"
 cd "$WORKTREE_PATH"
 
-if [ ! -d ".venv" ]; then
+if [ ! -d "venv" ]; then
     echo "Creating Python virtual environment..."
     
     PYTHON_CMD=""
@@ -29,8 +29,8 @@ if [ ! -d ".venv" ]; then
     fi
 
     echo "Using $PYTHON_CMD for virtual environment"
-    "$PYTHON_CMD" -m venv .venv
-    source .venv/bin/activate
+    "$PYTHON_CMD" -m venv venv
+    source venv/bin/activate
     echo "Installing dependencies..."
     pip install --upgrade pip
     
@@ -40,7 +40,7 @@ if [ ! -d ".venv" ]; then
     
     echo "✓ Virtual environment created and dependencies installed"
 else
-    echo "Virtual environment already exists at .venv"
+    echo "Virtual environment already exists at venv"
 fi
 
 if [ -f "package.json" ]; then

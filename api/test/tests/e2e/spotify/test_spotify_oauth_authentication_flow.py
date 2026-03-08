@@ -7,7 +7,7 @@ from api.exception.spotify import SpotifyInvalidGrantException
 from api.model.user.User import User
 from api.model.user.spotify.Fields import Fields as SpotifyUserFields
 from api.test.utils.AppTestCase import AppTestCase
-from api.utils.spotify_api.oauth import SpotifyOAuthService
+from api.utils.data_transformer import to_camel_case
 from api.serializer.token.Fields import Fields as TokenFields
 from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
 
@@ -26,27 +26,25 @@ class TestCase(AppTestCase):
     6. System returns JWT tokens for API authentication
     7. User uses JWT token to access API
 
-    Note: This test uses mocks for Spotify OAuth. For real E2E testing,
-    configure actual Spotify OAuth credentials.
+    Note: This test uses mocks for Spotify (OAuth + API). For real E2E testing,
+    set SPOTIFY_ENABLED=true and configure actual Spotify credentials. In CI,
+    conftest mocks Spotify; this test overrides with its own mock so the flow is deterministic.
     """
 
-    @mock.patch('api.utils.spotify_api.oauth.spotipy.Spotify')
-    @mock.patch('api.utils.spotify_api.oauth.SpotifyOAuth')
-    def test_spotify_oauth_authentication_flow_then_ok(self, mock_oauth_class, mock_spotify_class):
+    @mock.patch('api.view.spotify_auth.SpotifyOAuthService')
+    def test_spotify_oauth_authentication_flow_then_ok(self, mock_oauth_class):
         authorization_code = "test_authorization_code"
         spotify_id = "test_spotify_user_id"
         email = "test@example.com"
         display_name = "Test User"
 
-        mock_oauth = mock_oauth_class.return_value
-        mock_oauth.get_access_token.return_value = {
+        mock_service = mock_oauth_class.return_value
+        mock_service.get_access_token.return_value = {
             TokenFields.ACCESS_TOKEN: "test_access_token",
             TokenFields.REFRESH_TOKEN: "test_refresh_token",
             TokenFields.EXPIRES_IN: 3600
         }
-
-        mock_spotify = mock_spotify_class.return_value
-        mock_spotify.current_user.return_value = {
+        mock_service.get_user_info.return_value = {
             SpotifyUserFields.ID: spotify_id,
             SpotifyUserFields.EMAIL: email,
             SpotifyUserFields.DISPLAY_NAME: display_name,
@@ -66,15 +64,15 @@ class TestCase(AppTestCase):
         assert response.status_code == status.HTTP_200_OK
         response_data = response.json()
 
-        assert TokenFields.ACCESS_TOKEN in response_data
-        assert TokenFields.REFRESH_TOKEN in response_data
+        assert to_camel_case(TokenFields.ACCESS_TOKEN) in response_data
+        assert to_camel_case(TokenFields.REFRESH_TOKEN) in response_data
         assert 'expiresAt' in response_data
         assert 'spotifyUser' in response_data
 
         spotify_user_data = response_data['spotifyUser']
-        assert spotify_user_data[SpotifyUserFields.ID] is not None
-        assert spotify_user_data[SpotifyUserFields.EMAIL] == email
-        assert spotify_user_data[SpotifyUserFields.DISPLAY_NAME] == display_name
+        assert spotify_user_data[to_camel_case(SpotifyUserFields.ID)] is not None
+        assert spotify_user_data[to_camel_case(SpotifyUserFields.EMAIL)] == email
+        assert spotify_user_data[to_camel_case(SpotifyUserFields.DISPLAY_NAME)] == display_name
 
         user = User.objects.get(spotify_id=spotify_id)
         assert user is not None
@@ -83,10 +81,10 @@ class TestCase(AppTestCase):
         assert user.spotify_access_token == "test_access_token"
         assert user.spotify_refresh_token == "test_refresh_token"
 
-        access_token = response_data[TokenFields.ACCESS_TOKEN]
+        access_token = response_data[to_camel_case(TokenFields.ACCESS_TOKEN)]
         self.api_client.credentials(HTTP_AUTHORIZATION=f'Bearer {access_token}')
 
-        response = self.api_client.get(reverse('user-list'))
+        response = self.api_client.get(reverse('me-playlist-list'))
         assert response.status_code == status.HTTP_200_OK
 
     @mock.patch('api.view.spotify_auth.SpotifyOAuthService')
@@ -107,4 +105,3 @@ class TestCase(AppTestCase):
         assert data['details']['code'] == 'spotify_code_expired_or_used'
         assert 'expired or already used' in data['details']['message']
         assert data['success'] is False
-

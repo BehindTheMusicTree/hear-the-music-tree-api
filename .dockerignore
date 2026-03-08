@@ -5,12 +5,10 @@
 .gitignore
 .github/
 .pytest_cache/
-.venv/
+venv/
 .vscode/
 backup.postman_dump/
 api/test/
-api/fixtures/users/ci_test/
-api/fixtures/users/dev/
 bruno/
 env/dev/
 __pycache__

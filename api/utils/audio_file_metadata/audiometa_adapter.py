@@ -79,7 +79,7 @@ def _convert_app_to_unified_metadata(app_metadata: AppMetadata) -> dict:
     return unified_metadata
 
 
-def get_merged_app_metadata(file: FILE_TYPE, normalized_rating_max_value: int | None = None) -> AppMetadata:
+def get_app_metadata(file: FILE_TYPE, normalized_rating_max_value: int | None = None) -> AppMetadata:
     """Get merged metadata from all available formats."""
     file_path = _get_file_path_util(file)
     try:
@@ -142,11 +142,11 @@ def get_duration_in_sec(file: FILE_TYPE) -> float:
         raise FileCorruptedError(str(e)) from e
 
 
-def get_full_metadata(file: FILE_TYPE) -> dict:
+def get_full_metadata(file: FILE_TYPE, include_raw_binary_data: bool) -> dict:
     """Get full metadata."""
     file_path = _get_file_path_util(file)
     try:
-        return audiometa.get_full_metadata(file=file_path)
+        return audiometa.get_full_metadata(file=file_path, include_raw_binary_data=include_raw_binary_data)
     except AudiometaFileCorruptedError as e:
         raise FileCorruptedError(str(e)) from e
 
@@ -156,10 +156,6 @@ def is_flac_md5_valid(file: FILE_TYPE) -> bool:
     file_path = _get_file_path_util(file)
     try:
         md5_validation_result = audiometa.is_flac_md5_valid(file=file_path)
-        # audiometa.is_flac_md5_valid may return either an enum (FlacMd5State) or a bool depending on the
-        # audiometa library version. Normalize to a bool for backward compatibility.
-        if isinstance(md5_validation_result, bool):
-            return md5_validation_result
         return md5_validation_result == FlacMd5State.VALID
     except AudiometaFileCorruptedError as e:
         raise FileCorruptedError(str(e)) from e
@@ -171,8 +167,6 @@ def fix_md5_checking(file: FILE_TYPE) -> TemporaryUploadedFile:
     fixed_path = audiometa.fix_md5_checking(file=file_path)
     file_size = os.path.getsize(fixed_path)
     md5_validation_result = audiometa.is_flac_md5_valid(file=fixed_path)
-    # audiometa.is_flac_md5_valid returns an enum, not a bool
-    # Compare against the enum value that represents valid
     if md5_validation_result != FlacMd5State.VALID:
         os.unlink(fixed_path)
         error_message = f"MD5 correction failed - the corrected file has MD5 validation result: {md5_validation_result} (expected {FlacMd5State.VALID})"

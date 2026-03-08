@@ -43,6 +43,7 @@ class CriteriaPlaylist(Playlist):
     objects: CriteriaPlaylistManager = CriteriaPlaylistManager()
 
     class Meta:
+        db_table = 'htmt_api_criteria_playlist'
         verbose_name = 'Criteria Playlist'
         verbose_name_plural = 'Criteria Playlists'
         indexes = [models.Index(fields=[Fields.CRITERIA], name='crit_playlist_criteria_idx'),]

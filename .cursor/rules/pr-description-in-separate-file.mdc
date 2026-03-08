@@ -15,10 +15,15 @@ Create PR description files with descriptive names using kebab-case:
 - `.github/pr-descriptions/fix-track-upload-size-limit.md`
 - `.github/pr-descriptions/add-flac-audio-support.md`
 
+## PR Title Required
+
+When a PR description file is provided, **the PR title must be present** in that file. Include it at the top (e.g. as a first-level heading) or in a dedicated "PR Title" line so that when creating the GitHub PR, both title and body can be set from the file. Do not provide a PR description without a corresponding title.
+
 ## File Structure
 
 Each PR description file should follow the structure from `.github/pull_request_template.md`:
 
+- **PR Title** (required) — imperative, concise; e.g. `# PR Description: one-time scripts and migration 0011 fix` or `## PR Title` / `feat(scripts): add one-time DB rename script`
 - Description
 - Related Issue
 - Type of Change
@@ -33,9 +38,10 @@ Each PR description file should follow the structure from `.github/pull_request_
 ## Usage
 
 1. Create the PR description file in `.github/pr-descriptions/` with a descriptive name
-2. Write the full PR description in that file following the PR template structure
-3. When creating the GitHub PR, copy the content from the file
-4. The file remains local and git-ignored (not committed to version control)
+2. **Include the PR title** at the top of the file (required when a PR description is provided)
+3. Write the full PR description in that file following the PR template structure
+4. When creating the GitHub PR, set the PR title from the file and copy the body content
+5. The file remains local and git-ignored (not committed to version control)
 
 ## Benefits
 

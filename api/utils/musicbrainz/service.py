@@ -80,10 +80,12 @@ def get_musicbrainz_recording_lookup_result(user: User,
     musicbrainz_recording = None
     musicbrainz_recording_missing_cause = None
     musicbrainz_recording_missing_cause_code = None
+    musicbrainz_recording_missing_cause_message = None
 
     if duration_in_sec <= 1:
         musicbrainz_recording_missing_cause_code = MbRecordingMissingCauseCode.Codes.DURATION_BELOW_OR_EQUAL_1_SEC
-        musicbrainz_recording_missing_cause_message = None
+    elif not (getattr(settings, 'ACOUSTID_API_KEY', None) or '').strip():
+        musicbrainz_recording_missing_cause_code = MbRecordingMissingCauseCode.Codes.LOOKUP_FOUND_NO_MATCHING_RECORDING
     else:
         try:
             musicbrainz_recording_dict = _get_musicbrainz_best_recording_dict_from_fingerprint_and_duration(

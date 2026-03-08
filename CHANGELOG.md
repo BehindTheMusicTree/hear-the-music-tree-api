@@ -59,6 +59,51 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v2.1.1] - 2026-03-08
+
+### Documentation
+
+- **Release tooling**: bump2version added to keep `VERSION`, `package.json`, and `schema.yml` in sync; release steps in CONTRIBUTING.md updated to use `bump2version patch|minor|major` before finalizing CHANGELOG and tagging.
+- **Scripts**: One-time DB/maintenance scripts moved to `scripts/one-time/` with README; CONTRIBUTING.md updated with "One-time and maintenance scripts" subsection.
+
+### CI
+
+- **Test strategy**: CI now enables all optional services (Spotify, Google OAuth, MusicBrainz) with fake/placeholder credentials and mocks at the boundary. Only AFP is required to be reachable for e2e; third-party reachability is not checked in CI. See api/test/README.md and CONTRIBUTING.
+
+### Added
+
+- **Audio meta analysis**: AFP and MB lookup toggled by `AFP_ENABLED` and `MUSICBRAINZ_LOOKUP_ENABLED`. New MB missing cause `MUSICBRAINZ_LOOKUP_DISABLED` (code 9) when AFP on and MB off. CI: AFP on, MB off.
+
+### Removed
+
+- **Fixture files**: Removed all JSON fixtures from `api/fixtures/` (users, genres, app). Reference data is provided by data migrations; test data is created in code via `ModelFixtureFactory` and `AppTestCase.setUp()`. Removed fixture loading from `init-django-data.sh`, the "Set up fixtures files" CI step, and Dockerfile fixture copy. `api/fixtures/` kept with `.gitkeep` for optional local use.
+- **Reference Spotify library**: Removed reference API `/v1/reference/library/spotify/` and `ReferenceSpotifyLibTrackViewSet`. Exposing one Spotify account’s library to all users would violate Spotify’s User Guidelines and Developer Policy (no account sharing; each user must link their own account). Per-user library under `me/library/spotify/`. See [Spotify compliance](docs/integrations/spotify.md#no-shared-system-spotify-account).
+
+### Changed
+
+- **Missing cause codes**: Renamed `AUDIO_META_AMALYSIS_DISABLED` to `AFP_DISABLED` (code 0) in `FingerprintMissingCauseCode` and `MbRecordingMissingCauseCode`; label updated to "AFP (fingerprinting) is disabled." Migration `0012_rename_audio_meta_analysis_disabled_to_afp_disabled` updates existing rows. API code value remains 0.
+- **E2E fail early**: Session checks required services when e2e run; CI requires AFP enabled and reachable; dev requires all enabled services reachable. See `api/test/README.md` and CONTRIBUTING.
+- **Settings**: `MUSICBRAINZ_LOOKUP_ENABLED` global; TrackFile calls MB only when both it and `AFP_ENABLED` are true. Startup fails if `MUSICBRAINZ_LOOKUP_ENABLED=true` and `AFP_ENABLED=false` (MB needs fingerprint).
+- **Tests**: OAuth/MB/Spotify client mocked per conftest (CI or non-e2e). Audio meta: `override_settings(AFP_ENABLED=...)`, no test-only env override. E2e refactor with `_domain_helper()` and SearchMixin; markers and docs in api/test/README.md.
+- **Service flags**: `SPOTIFY_ENABLED`, `GOOGLE_OAUTH_ENABLED`, `AFP_ENABLED`, `MUSICBRAINZ_LOOKUP_ENABLED` required (no defaults). CI sets Spotify/Google/MB false; deploy sets all true.
+- **Settings**: Renamed to `AFP_ENABLED`; added to example env. AFP vars (`AFP_CONTAINER_NAME`, `AFP_URL`, `AFP_PORT`, `AFP_POST_ENDPOINT`) are required only when `AFP_ENABLED=true`; when false they must be unset (file upload disabled) or optional.
+- **Model table names**: Table-prefix metaclass removed. Every concrete model now sets `db_table` explicitly in `Meta` (e.g. `db_table = 'htmt_api_user'`), matching migration and raw SQL names. Aligns with Django best practice and "explicit is better than implicit"; model renames no longer affect table names unless `db_table` is changed. `TablePrefixModelBase` and `PolymorphicTablePrefixModelBase` deleted; `DB_TABLE_PREFIX` removed from settings.
+
+### Documentation
+
+- **API docs**: Audio metadata endpoint path aligned in `docs/api/index.md` and `docs/api/audio_metadata.md`.
+- **CONTRIBUTING**: Note that ffprobe (ffmpeg) must be installed and working for WAV-based tests; troubleshooting for broken install (e.g. `brew reinstall ffmpeg` on macOS).
+
+### Improved
+
+- **Tests**: Pytest fails fast when ffprobe is missing or broken: session-start runs `ffprobe -version` and probes the WAV fixture `duration=472s.wav`; clear exit message if probe fails. `test_duration` (album retrieve) uses WAV again (DURATION_472S_WAV, expected 277 + 472).
+
+## [v2.1.0] - 2026-02-23
+
+### Added
+
+- **Audio Metadata**: Added POST to get full raw metadata from a file
+
 ## [v2.0.1] - 2026-02-22
 
 ### Fixed

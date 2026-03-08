@@ -4,7 +4,6 @@ import os
 from uuid import UUID
 
 from django.contrib.auth.hashers import make_password
-from django.core.management import call_command
 from django.db import models
 from django.http import HttpResponse, JsonResponse
 from django.test import TestCase
@@ -18,6 +17,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework_simplejwt.tokens import AccessToken
 
+from api import settings
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.model.user.User import User
 from api.model.uuid.Fields import Fields as UuidModelFields
@@ -144,7 +144,7 @@ class AppTestCase(TestCase, Generic[T]):
 
     def _set_saved_uploaded_track_metadata(self):
         saved_uploaded_track = cast(UploadedTrack, self.saved_object)
-        self.saved_uploaded_track_metadata_with_raw_rating = audio_file_metadata.get_merged_app_metadata(
+        self.saved_uploaded_track_metadata_with_raw_rating = audio_file_metadata.get_app_metadata(
             file=saved_uploaded_track.track_file.file)
 
     # Defined here and not in UploadedTrackTestCase because other views needs sometimes to post a track for testing purposes
@@ -153,6 +153,7 @@ class AppTestCase(TestCase, Generic[T]):
                              **kwargs) -> Union[JsonResponse, HttpResponse]:
         file_abs_path = self.TEST_FILES_BASE_DIR / test_uploaded_track_filename.value
 
+        self._used_upload_in_test = True
         with open(file_abs_path, "rb") as sample_file:
             file_field_dict = {UploadedTrackPostFields.TRACK_FILE_PUBLIC: sample_file}
             if kwargs:
@@ -167,18 +168,31 @@ class AppTestCase(TestCase, Generic[T]):
     # Defined here and not in UploadedTrackTestCase because other views needs sometimes to put a track for testing purposes
     # (testing Genre deletion for example)
     def _put_uploaded_track(self, uuid, **kwargs):
-        if self.is_from_uploaded_track_test_case:
+        if self.is_from_uploaded_track_test_case and self.model_class == UploadedTrack:
             return self.api_client.put(
                 path=reverse('me-uploaded-track-detail', kwargs={'pk': uuid}),
                 data=kwargs, format='multipart', handle_response=self._set_results)
-        else:
-            return self.api_client.put(
-                path=reverse('me-uploaded-track-detail', kwargs={'pk': uuid}), data=kwargs)
+        return self.api_client.put(
+            path=reverse('me-uploaded-track-detail', kwargs={'pk': uuid}),
+            data=kwargs, format='multipart')
 
     def _post_uploaded_track_being_logged_out(self):
         self._logout()
         return self.api_client.post(
             path=reverse('me-uploaded-track-list'), data={}, format='multipart', handle_response=self._set_results)
+
+    def _domain_helper(self, helper_class: type) -> "AppTestCase":
+        """Return a domain test case instance bound to this test's api_client and users for composition in E2E tests.
+        Does not call setUp() on the helper to avoid duplicate DB fixtures (users).
+        """
+        inst = helper_class()
+        inst.api_client = self.api_client
+        inst.test_user1 = self.test_user1
+        inst.test_user2 = self.test_user2
+        inst.model_fixture_factory = self.model_fixture_factory
+        inst.TEST_FILES_BASE_DIR = self.TEST_FILES_BASE_DIR
+        inst._login_as_test_user1()
+        return inst
 
     def _setup_system_user_for_reference_tests(self, system_username: str = "test_reference_system_user"):
         """Set up system user for reference endpoint tests and configure TMTA_USERNAME environment variable."""
@@ -203,7 +217,6 @@ class AppTestCase(TestCase, Generic[T]):
 
     def setUp(self, methods_names_to_implement: list[str] | None = None) -> None:
 
-        call_command('loaddata', 'app')
         self.test_admin_user = User.objects.create_superuser(
             username='test_admin', password='test_admin', email='test_admin@example.com', is_test_user=True)
 
@@ -234,10 +247,26 @@ class AppTestCase(TestCase, Generic[T]):
                     raise NotImplementedError(f"Subclasses must implement the '{method_name}' method")
 
         self.api_client = AppApiClient(test_case=self)
+        self._used_upload_in_test = False
         self._login_as_test_user1()
 
     def tearDown(self):
-        # Restore TMTA_USERNAME environment variable if it was modified during setup
+        if getattr(settings, 'FILE_UPLOAD_TEMP_DIR', None):
+            temp_dir = settings.FILE_UPLOAD_TEMP_DIR
+            if os.path.isdir(temp_dir):
+                if getattr(self, '_used_upload_in_test', False):
+                    contents = os.listdir(temp_dir)
+                    assert contents == [], (
+                        "Temp dir not empty after test; endpoint likely did not close TemporaryUploadedFile. Left: %s"
+                        % contents
+                    )
+                for name in os.listdir(temp_dir):
+                    path = os.path.join(temp_dir, name)
+                    try:
+                        if os.path.isfile(path):
+                            os.unlink(path)
+                    except OSError:
+                        pass
         if hasattr(self, '_original_tmta_username'):
             if self._original_tmta_username is not None:
                 os.environ["TMTA_USERNAME"] = self._original_tmta_username

@@ -7,4 +7,5 @@ class TagPlaylist(CriteriaPlaylist):
     objects: 'TagPlaylistManager' = TagPlaylistManager()
 
     class Meta:
+        db_table = 'htmt_api_tag_playlist'
         proxy = True

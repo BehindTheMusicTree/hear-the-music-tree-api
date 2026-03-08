@@ -1,18 +1,20 @@
 import pytest
 from datetime import timedelta
+
+from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from rest_framework import status
 
 from api.model.play.Play import Play
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.serializer.model.play.input.schema.PostFields import Fields as PlayPostFields
-from api.test.integration.view.play.PlayTestCase import PlayTestCase
-from api.test.integration.view.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.tests.integration.play.PlayTestCase import PlayTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
+from api.utils.data_transformer import to_camel_case
 
 
 @pytest.mark.e2e
-class TestCase(PlayTestCase, UploadedTrackTestCase):
+class TestCase(PlayTestCase):
     """
     E2E test for complete play history tracking.
 
@@ -33,19 +35,19 @@ class TestCase(PlayTestCase, UploadedTrackTestCase):
         track3 = self.model_fixture_factory.create_uploaded_track_with_file(
             title="Track 3", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3)
 
-        response = self._post_play(**{PlayPostFields.UPLOADED_TRACK: str(track1.uuid)})
+        response = self._post_play(**{to_camel_case(PlayPostFields.CONTENT): str(track1.uuid)})
         assert response.status_code == status.HTTP_201_CREATED
         play1 = self.saved_object
 
-        response = self._post_play(**{PlayPostFields.UPLOADED_TRACK: str(track2.uuid)})
+        response = self._post_play(**{to_camel_case(PlayPostFields.CONTENT): str(track2.uuid)})
         assert response.status_code == status.HTTP_201_CREATED
         play2 = self.saved_object
 
-        response = self._post_play(**{PlayPostFields.UPLOADED_TRACK: str(track1.uuid)})
+        response = self._post_play(**{to_camel_case(PlayPostFields.CONTENT): str(track1.uuid)})
         assert response.status_code == status.HTTP_201_CREATED
         play3 = self.saved_object
 
-        response = self._post_play(**{PlayPostFields.UPLOADED_TRACK: str(track3.uuid)})
+        response = self._post_play(**{to_camel_case(PlayPostFields.CONTENT): str(track3.uuid)})
         assert response.status_code == status.HTTP_201_CREATED
         play4 = self.saved_object
 
@@ -56,9 +58,10 @@ class TestCase(PlayTestCase, UploadedTrackTestCase):
         plays = Play.objects.filter(user=self.test_user1)
         assert plays.count() >= 4
 
-        track1_plays = plays.filter(uploaded_track=track1)
-        track2_plays = plays.filter(uploaded_track=track2)
-        track3_plays = plays.filter(uploaded_track=track3)
+        track_ct = ContentType.objects.get_for_model(UploadedTrack)
+        track1_plays = plays.filter(content_type=track_ct, content_uuid=track1.uuid)
+        track2_plays = plays.filter(content_type=track_ct, content_uuid=track2.uuid)
+        track3_plays = plays.filter(content_type=track_ct, content_uuid=track3.uuid)
 
         assert track1_plays.count() >= 2
         assert track2_plays.count() >= 1
@@ -76,6 +79,11 @@ class TestCase(PlayTestCase, UploadedTrackTestCase):
         past_date = (now - timedelta(days=1)).isoformat()
         future_date = (now + timedelta(days=1)).isoformat()
 
-        response = self._get_plays(**{'created_on__gte': past_date, 'created_on__lte': future_date})
+        response = self._get_plays(
+            **{
+                to_camel_case("created_on_gte"): past_date,
+                to_camel_case("created_on_lte"): future_date,
+            }
+        )
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total >= 4

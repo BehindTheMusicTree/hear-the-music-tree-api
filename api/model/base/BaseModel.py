@@ -3,14 +3,13 @@ from typing import Self, TypeVar
 from django.db import models
 
 from api.model.base.BaseManager import BaseManager
-from api.model.base.DynamicTableNameModelBase import DynamicTableNameModelBase
 from api.utils.model import SaveContext
 
 
 T = TypeVar('T', bound='BaseModel')
 
 
-class BaseModel(models.Model, metaclass=DynamicTableNameModelBase):
+class BaseModel(models.Model):
     objects: BaseManager[Self]
 
     class Meta:

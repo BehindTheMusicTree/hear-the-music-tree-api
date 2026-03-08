@@ -157,12 +157,14 @@ cd the-music-tree-api
 
    This installs required system tools: `flac`, `ffmpeg`, `libchromaprint-tools`, `jq`, `postgresql-client`
 
+   **Note:** Tests that use WAV files require `ffprobe` (from ffmpeg) to be installed and working. If pytest exits with "ffprobe failed to run" or you see "File corrupted" when running audio tests, ffmpeg may be broken (e.g. missing libvpx on macOS). Fix by reinstalling: `brew reinstall ffmpeg` (macOS) or re-run `scripts/install-dependencies.sh` (Linux).
+
 4. Create and activate a virtual environment:
 
    ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # (Linux/macOS)
-   .venv\Scripts\activate     # (Windows)
+   python -m venv venv
+   source venv/bin/activate  # (Linux/macOS)
+   venv\Scripts\activate     # (Windows)
    ```
 
 5. Install Python dependencies:
@@ -261,10 +263,15 @@ The HearTheMusicTree API requires a PostgreSQL database to function. The databas
 - **Migrations run automatically on deploy**: The container entrypoint (`scripts/entrypoint.sh`) runs `migrate` after the database is ready, so every deployment applies pending migrations before starting the app.
 - **Keep migrations backward-compatible**: Prefer additive changes (e.g. nullable columns or defaults) so the previous app version keeps working until the new one has run.
 
+#### One-time and maintenance scripts
+
+One-off DB or data fix scripts (e.g. table renames, one-time backfills) live in **`scripts/one-time/`**, grouped by domain (e.g. `db/`, `data/`). They are versioned for audit, for re-running on other environments, and for use after restoring from backup. Each script (or the folder README) describes when and how to run it; run them only when the situation applies.
+
 #### Audio Fingerprinting Requirement
 
-For audio fingerprinting, the HearTheMusicTree API requires an app called Audio Fingerprinter. You can find the Audio Fingerprinter app on GitHub at the following link: [Audio Fingerprinter](https://github.com/BehindTheMusicTree/bodzify-audio-fingerprinter-flask)
+For audio fingerprinting, the HearTheMusicTree API requires an app called Audio Fingerprinter. You can find the Audio Fingerprinter app on GitHub at the following link: [Audio Fingerprinter](https://github.com/BehindTheMusicTree/audio-fingerprinter)
 
+The AFP image creates the Flask app log from `FLASK_LOG_APP_FILENAME` (e.g. `app.log`), which must match what `settings.py` expects (`LOG_APP_FILE`). Path variables (`GUNICORN_LOG_DIR`, `FLASK_LOG_DIR_EXTERNAL`, `POOL_DIR_EXTERNAL`) are runtime-only and required when running the container; the AFP entrypoint fails fast if any is missing. For CI and local runs with `--user`, the AFP image must support non-root (writable `/app/log` and `/app/env/calculated_paths`). See the AFP README.
 
 ### 2. Branching
 
@@ -436,6 +443,21 @@ pytest api/test/tests/integration/view/uploaded_track/test_specific.py
 
 For detailed information about test structure, organization, and conventions, see [Test README](api/test/README.md).
 
+**Mocked vs real (e2e) tests:**
+
+Integration tests that depend on external services (URLs, third-party APIs) use mocks by default so CI runs without network and stays deterministic.
+
+**Mockable services:** Spotify and Google OAuth (view layer); MusicBrainz (AcoustID) lookup and Spotify API client (service layer); AFP / audio fingerprinting (service layer). AFP and MusicBrainz can be toggled independently (`AFP_ENABLED`, `MUSICBRAINZ_LOOKUP_ENABLED`).
+
+- **Unit and integration tests:** All mocked.
+- **E2e tests:**
+  - Dev: nothing mocked; e2e can use real providers locally when the corresponding services are enabled (env / feature flags). When the run includes e2e tests, every enabled service must be reachable or the session fails early.
+  - All runs: `SPOTIFY_ENABLED`, `GOOGLE_OAUTH_ENABLED`, and `MUSICBRAINZ_LOOKUP_ENABLED` must be true or the test run fails at collection. Use fake credentials in CI; conftest only mocks at the boundary.
+  - CI (`ENV=ci_test`): only AFP must be reachable for e2e; other services are mocked.
+- Details: [api/test/README.md](api/test/README.md) (OAuth, Spotify API client, Audio meta analysis, fail early).
+
+Add at least one **real** e2e test when the service can be exercised without blocking CI (see [api/test/README.md](api/test/README.md) § E2E tests: when to add, when they hit real services, and how to run them).
+
 **CI Testing:**
 
 - CI runs tests with fail-fast flag (`-x`) - stops on first failure for faster feedback
@@ -506,12 +528,12 @@ git push origin --delete v0.3.6-dev-improve-cicd
 
 We follow a structured commit format inspired by [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
-**IMPORTANT:** Always activate the project's virtual environment (`.venv`) before committing if you're using pre-commit hooks.
+**IMPORTANT:** Always activate the project's virtual environment (`venv`) before committing if you're using pre-commit hooks.
 
 **Quick reference:**
 
 - Format: `<type>(<scope>): <summary>`
-- Activate virtual environment: `source .venv/bin/activate` (Linux/macOS) or `.venv\Scripts\activate` (Windows)
+- Activate virtual environment: `source venv/bin/activate` (Linux/macOS) or `venv\Scripts\activate` (Windows)
 
 **Commit Types:**
 
@@ -779,9 +801,17 @@ Quick release process:
 
 3. **On the release branch, prepare the release:**
 
+   - Bump the version with [bump2version](https://github.com/c4urself/bump2version) (patch / minor / major):
+     ```bash
+     bump2version patch   # 2.1.0 -> 2.1.1
+     # or: bump2version minor   # 2.1.0 -> 2.2.0
+     # or: bump2version major   # 2.1.0 -> 3.0.0
+     ```
+     This updates `VERSION`, `package.json`, and `schema.yml`. Then commit the changes.
+
    - Review and finalize `CHANGELOG.md`:
      - Review changes in the `[Unreleased]` section
-     - Move content from `[Unreleased]` section to new version entry with date (e.g., `## [v0.2.1] - 2025-01-15`)
+     - Move content from `[Unreleased]` section to new version entry with date (e.g., `## [v0.2.1] - 2025-01-15`). The version must match the one in `VERSION` (with a `v` prefix).
      - Review and consolidate entries if needed
      - Leave the `[Unreleased]` section empty (or with a placeholder) for future PRs
 
@@ -804,7 +834,7 @@ Quick release process:
    git push origin v0.2.1
    ```
 
-   **Important:** The tag version must match the version in `CHANGELOG.md` (with the `v` prefix).
+   **Important:** The tag version must match the version in `VERSION` and `CHANGELOG.md` (use the `v` prefix, e.g. `v2.1.1`).
 
 6. **Clean up pre-release tags**
 
