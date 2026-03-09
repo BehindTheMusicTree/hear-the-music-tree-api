@@ -5,3 +5,6 @@ class AudioMetadataRequestUrlSerializer(serializers.Serializer):
     """Request body for POST when sending an audio file URL (application/json)."""
 
     file = serializers.URLField(required=True)
+    include_musicbrainz_analysis = serializers.BooleanField(
+        required=False, default=False
+    )

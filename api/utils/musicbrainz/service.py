@@ -128,3 +128,60 @@ def get_musicbrainz_recording_lookup_result(user: User,
 
     return MusicbrainzRecordingLookupResult(recording=musicbrainz_recording,
                                             missing_cause=musicbrainz_recording_missing_cause)
+
+
+ANALYSIS_ERROR = "error"
+ANALYSIS_CODE = "code"
+ANALYSIS_MESSAGE = "message"
+
+ERROR_DURATION_TOO_SHORT = "duration_below_or_equal_1_sec"
+ERROR_NO_API_KEY = "no_acoustid_api_key"
+ERROR_NO_MATCH = "no_match"
+ERROR_INVALID_FINGERPRINT = "invalid_fingerprint"
+ERROR_INTERNAL = "internal_error"
+ERROR_UNKNOWN_RESPONSE_CODE = "unknown_response_error_code"
+ERROR_UNKNOWN_STATUS = "unknown_response_status_code"
+ERROR_DNS = "dns_resolution_error"
+ERROR_UNKNOWN = "unknown_error"
+
+_EXCEPTION_TO_ERROR_CODE = {
+    musicbrainz_exception.InvalidFingerprintMusicbrainzRecordingLookupException: ERROR_INVALID_FINGERPRINT,
+    musicbrainz_exception.InternalErrorMusicbrainzRecordingLookupException: ERROR_INTERNAL,
+    musicbrainz_exception.UnknownErrorCodeMusicbrainzRecordingLookupException: ERROR_UNKNOWN_RESPONSE_CODE,
+    musicbrainz_exception.UnknownStatusMusicbrainzRecordingLookupException: ERROR_UNKNOWN_STATUS,
+    musicbrainz_exception.DNSResolutionErrorMusicbrainzRecordingLookupException: ERROR_DNS,
+}
+
+
+def get_musicbrainz_recording_analysis(fingerprint: bytes, duration_in_sec: float) -> dict:
+    """Return raw AcoustID/MusicBrainz recording dict or error dict; no DB writes."""
+    if duration_in_sec <= 1:
+        return {
+            ANALYSIS_ERROR: ERROR_DURATION_TOO_SHORT,
+            ANALYSIS_CODE: ERROR_DURATION_TOO_SHORT,
+            ANALYSIS_MESSAGE: "Duration must be greater than 1 second for AcoustID lookup.",
+        }
+    if not (getattr(settings, "ACOUSTID_API_KEY", None) or "").strip():
+        return {
+            ANALYSIS_ERROR: ERROR_NO_API_KEY,
+            ANALYSIS_CODE: ERROR_NO_API_KEY,
+            ANALYSIS_MESSAGE: "AcoustID API key not configured.",
+        }
+    try:
+        recording_dict = _get_musicbrainz_best_recording_dict_from_fingerprint_and_duration(
+            fingerprint=fingerprint, duration_in_sec=duration_in_sec
+        )
+        if not recording_dict:
+            return {
+                ANALYSIS_ERROR: ERROR_NO_MATCH,
+                ANALYSIS_CODE: ERROR_NO_MATCH,
+                ANALYSIS_MESSAGE: "No matching recording found.",
+            }
+        return recording_dict
+    except musicbrainz_exception.MusicbrainzRecordingLookupException as e:
+        code = _EXCEPTION_TO_ERROR_CODE.get(type(e), ERROR_UNKNOWN)
+        return {
+            ANALYSIS_ERROR: code,
+            ANALYSIS_CODE: code,
+            ANALYSIS_MESSAGE: str(e),
+        }

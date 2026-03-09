@@ -28,6 +28,7 @@ Headers:
 
 Body (multipart form):
 - `file` (required): One audio file. Supported formats: `.mp3`, `.flac`, `.wav`. Max size is defined by server configuration (see `UPLOADED_TRACK_FILE_SIZE_MAX_IN_MO`).
+- `include_musicbrainz_analysis` (optional): Boolean. When `true`, the response includes a `musicbrainz_raw_data` key with raw AcoustID/MusicBrainz lookup result (or an error payload if fingerprinting or lookup fails). Default: `false`. No authentication required.
 
 **Response**
 
@@ -79,3 +80,11 @@ API path prefix uses the major version only (e.g. `v1`), derived from `APP_VERSI
 ### Notes
 - Metadata is merged from all formats present in the file (e.g. ID3v1 + ID3v2 for MP3). Format-specific behaviour is documented in `api/utils/audio_file_metadata/README.md`.
 - Not all fields are supported by every format (e.g. album artist is not supported by ID3v1).
+
+### When `include_musicbrainz_analysis` is true
+
+The response includes an additional key **`musicbrainz_raw_data`**:
+
+- **Success**: Object is the raw best-recording dict from AcoustID (e.g. `id`, `title`, `duration`, `artists`, `releasegroups`, `score`).
+- **Fingerprint failure**: Object is `{ "error": "fingerprint_failed", "code": "<code>", "message": "<message>" }`.
+- **MusicBrainz lookup failure or no match**: Object is `{ "error": "<code>", "code": "<code>", "message": "<message>" }` (e.g. `no_match`, `duration_below_or_equal_1_sec`).
