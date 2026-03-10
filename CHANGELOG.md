@@ -61,7 +61,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Added
 
-- **Audio metadata (full)**: Optional request parameter `include_musicbrainz_analysis` for `POST /v1/audio/metadata/full/`. When `true`, the response includes `musicbrainz_raw_data` with raw AcoustID/MusicBrainz lookup result (or an error payload if fingerprinting or lookup fails). No authentication required; no DB records are created. Ephemeral fingerprinting and non-persisting MusicBrainz lookup added for this flow. Integration and unit tests added.
+- **Audio metadata (full)**: Optional request parameter `include_musicbrainz_analysis` for `POST /v1/audio/metadata/full/`. When `true`, the response includes `musicbrainz_raw_data` with raw AcoustID/MusicBrainz lookup result (or an error payload if fingerprinting or lookup fails). No authentication required; no DB records are created. Ephemeral fingerprinting and non-persisting MusicBrainz lookup added for this flow. Integration, unit, and e2e tests added.
 
 ## [v2.1.1] - 2026-03-08
 
