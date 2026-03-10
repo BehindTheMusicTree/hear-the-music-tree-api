@@ -17,7 +17,7 @@ class TrackFileValidator:
         b'ID3': 'audio/mpeg',
         b'\x4F\x67\x67\x53': 'audio/ogg',
         b'RIFF': 'audio/wav',
-        b'.flac': 'audio/flac',
+        b'fLaC': 'audio/flac',
     }
 
     def __init__(self, field_name=None):

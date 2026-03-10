@@ -16,7 +16,7 @@ class TestCase(UploadedTrackTestCase):
         assert len(self.bad_request_result_field_errors) == 1
         error = self.bad_request_result_field_errors[0]
         assert error['field'] == UploadedTrackPostFields.TRACK_FILE_PUBLIC
-        assert error['code'] == FieldValidationErrorCode.TRACK_FILE_TYPE_INVALID
+        assert error['code'] == FieldValidationErrorCode.TRACK_FILE_CORRUPTED
 
     def test_flac_md5_not_valid_not_because_of_id3v1_metadata_then_corrected(self):
         response = self._post_uploaded_track(

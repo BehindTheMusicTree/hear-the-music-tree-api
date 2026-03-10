@@ -161,7 +161,9 @@ The test configuration is located in `api/test/tests/conftest.py` and includes:
 
 ### Mocking
 
-External services are mocked so CI and non-e2e tests do not call real providers. See below for each.
+**Rule:** External services (OAuth, Spotify API, MusicBrainz) are mocked in all environments for unit and integration tests, and in CI for e2e tests; they are **not** mocked for e2e tests when run in dev, so local e2e can hit real providers.
+
+See below for each service.
 
 #### OAuth mocking
 

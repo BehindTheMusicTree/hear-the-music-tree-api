@@ -1,5 +1,4 @@
 import pytest
-from unittest.mock import patch
 from rest_framework import status
 
 from api.model.musicbrainz_resource.children.artist.MbArtist import MbArtist
@@ -7,50 +6,20 @@ from api.model.musicbrainz_resource.children.recording.MbRecording import MbReco
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
-ACOUSTID_LOOKUP_RECORDING_PAYLOAD = {
-    "status": "ok",
-    "results": [
-        {
-            "score": 1.0,
-            "recordings": [
-                {
-                    "id": "e2e-mock-recording-id",
-                    "title": "E2E Mock Recording",
-                    "artists": [{"id": "e2e-mock-artist-id", "name": "E2E Mock Artist"}],
-                    "duration": 441,
-                }
-            ],
-        }
-    ],
-}
-
 
 @pytest.mark.e2e
-@pytest.mark.patches_musicbrainz_lookup
 class TestCase(UploadedTrackTestCase):
     """
     E2E test for complete track upload workflow with audio fingerprinting and MusicBrainz lookup.
 
-    This test verifies the complete workflow:
-    1. User authenticates
-    2. User uploads an audio file
-    3. System fingerprints the audio using AcoustID
-    4. System looks up fingerprint in MusicBrainz via AcoustID
-    5. System retrieves and stores MusicBrainz recording metadata
-    6. System creates/updates MusicBrainz artist records
-    7. User retrieves the uploaded track and verifies metadata is populated
-
-    In CI, conftest mocks MusicBrainz with empty results; this test overrides with a mock
-    recording so the success path is asserted deterministically.
+    Verifies the full stack with real AFP and real AcoustID/MusicBrainz in dev; in CI,
+    conftest mocks MusicBrainz (empty results), so the test may skip when no recording is found.
     """
 
     def test_upload_track_with_fingerprinting_and_musicbrainz_lookup_then_ok(self):
-        with patch(
-            "api.utils.musicbrainz.service.acoustid.lookup",
-            return_value=ACOUSTID_LOOKUP_RECORDING_PAYLOAD,
-        ):
-            response = self._post_uploaded_track(
-                UploadedTrackTestFilename.RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M21_MP3)
+        response = self._post_uploaded_track(
+            UploadedTrackTestFilename.RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M21_MP3,
+        )
 
         assert response.status_code == status.HTTP_201_CREATED
 
@@ -90,8 +59,10 @@ class TestCase(UploadedTrackTestCase):
 
         assert musicbrainz_recording is not None
         assert isinstance(musicbrainz_recording, MbRecording)
-        assert musicbrainz_recording.musicbrainz_id == "e2e-mock-recording-id"
-        assert musicbrainz_recording.title == "E2E Mock Recording"
+        assert musicbrainz_recording.musicbrainz_id is not None
+        assert len(musicbrainz_recording.musicbrainz_id) > 0
+        assert musicbrainz_recording.title is not None
+        assert len(musicbrainz_recording.title) > 0
 
         musicbrainz_artists = musicbrainz_recording.musicbrainz_artists.all()
         assert musicbrainz_artists.exists()
