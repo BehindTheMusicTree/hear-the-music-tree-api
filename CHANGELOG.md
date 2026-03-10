@@ -65,6 +65,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Added
 
+- **Metadata session (no auth)**: Two-step public flow: (1) `POST /v1/audio/metadata/session/` — upload file (or URL), get metadata plus `session_token` and `session_expires_in_seconds` (900); (2) `POST /v1/audio/metadata/session-download/` — send token (header `X-Session-Token` or body) and optional metadata, receive file with tags written. Session valid 15 minutes; multi-use (download multiple times with different metadata). No auth, no DB persistence. Frontend instructions in `docs/frontend/one_time_metadata_update.md`.
 - **Audio metadata (full)**: Optional request parameter `include_musicbrainz_analysis` for `POST /v1/audio/metadata/full/`. When `true`, the response includes `musicbrainz_raw_data` with raw AcoustID/MusicBrainz lookup result (or an error payload if fingerprinting or lookup fails). No authentication required; no DB records are created. Ephemeral fingerprinting and non-persisting MusicBrainz lookup added for this flow. Integration, unit, and e2e tests added.
 
 ## [v2.1.1] - 2026-03-08
