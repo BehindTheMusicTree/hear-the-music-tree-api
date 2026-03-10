@@ -1,23 +1,20 @@
+"""Canonical keys for app-level file metadata (read/write tags, metadata API)."""
 
 from enum import Enum
 
 from django.core.exceptions import ImproperlyConfigured
 
-from api.serializer.model.uploaded_track.input.Fields import Fields as UploadedTrackInputFields
-from api.serializer.model.criteria.input.Fields import Fields as CriteriaInputFields
-
 
 class AppMetadataKey(str, Enum):
-    TITLE = UploadedTrackInputFields.TITLE
-    ARTISTS_NAMES = UploadedTrackInputFields.ARTISTS_NAMES
-    ALBUM_NAME = UploadedTrackInputFields.ALBUM_NAME
-    ALBUM_ARTISTS_NAMES = UploadedTrackInputFields.ALBUM_ARTISTS_NAMES
-    GENRE_NAME = f'{UploadedTrackInputFields.GENRE}_{CriteriaInputFields.NAME_PUBLIC}'
-    RATING = UploadedTrackInputFields.RATING
-    LANGUAGE = UploadedTrackInputFields.LANGUAGE
-    # RELEASE_DATE = 'release_date'
-    # TRACK_NUMBER = 'track_number'
-    # BPM = 'bpm'
+    """Keys used in AppMetadata dicts and metadata API payloads. Defined here as single source of truth."""
+
+    TITLE = "title"
+    ARTISTS_NAMES = "artists_names"
+    ALBUM_NAME = "album_name"
+    ALBUM_ARTISTS_NAMES = "album_artists_names"
+    GENRES_NAMES = "genres_names"
+    RATING = "rating"
+    LANGUAGE = "language"
 
     def may_contain_separated_values(self) -> bool:
         result = self in (AppMetadataKey.ARTISTS_NAMES, AppMetadataKey.ALBUM_ARTISTS_NAMES)
@@ -31,7 +28,7 @@ class AppMetadataKey(str, Enum):
             AppMetadataKey.ARTISTS_NAMES: list[str],
             AppMetadataKey.ALBUM_NAME: str,
             AppMetadataKey.ALBUM_ARTISTS_NAMES: list[str],
-            AppMetadataKey.GENRE_NAME: str,
+            AppMetadataKey.GENRES_NAMES: list[str],
             AppMetadataKey.RATING: int,
             AppMetadataKey.LANGUAGE: str,
         }
@@ -39,3 +36,14 @@ class AppMetadataKey(str, Enum):
         if not type:
             raise ImproperlyConfigured(f'No optional type defined for {self}')
         return type
+
+
+APP_METADATA_WRITABLE_KEYS: tuple[AppMetadataKey, ...] = (
+    AppMetadataKey.TITLE,
+    AppMetadataKey.ARTISTS_NAMES,
+    AppMetadataKey.ALBUM_NAME,
+    AppMetadataKey.ALBUM_ARTISTS_NAMES,
+    AppMetadataKey.GENRES_NAMES,
+    AppMetadataKey.RATING,
+    AppMetadataKey.LANGUAGE,
+)

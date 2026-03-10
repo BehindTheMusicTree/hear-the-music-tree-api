@@ -48,7 +48,7 @@ class UploadedTrackPostSerializer(UploadedTrackInputSerializer):
             AppMetadataKey.ARTISTS_NAMES: settings.ARTISTS_NAMES_LEN_MAX,
             AppMetadataKey.ALBUM_NAME: settings.ALBUM_NAME_LEN_MAX,
             AppMetadataKey.ALBUM_ARTISTS_NAMES: settings.ALBUM_ARTISTS_NAMES_FIELD_LEN_MAX,
-            AppMetadataKey.GENRE_NAME: settings.CRITERIA_NAME_LEN_MAX,
+            AppMetadataKey.GENRES_NAMES: settings.CRITERIA_NAME_LEN_MAX,
             AppMetadataKey.LANGUAGE: settings.LANGUAGE_LEN_MAX,
         }
 
@@ -78,7 +78,8 @@ class UploadedTrackPostSerializer(UploadedTrackInputSerializer):
         return data
 
     def _handle_genre(self, input_data: dict, file_metadata: dict, user: User):
-        genre_name = file_metadata.get(AppMetadataKey.GENRE_NAME)
+        genres = file_metadata.get(AppMetadataKey.GENRES_NAMES) or []
+        genre_name = genres[0] if genres else None
         if genre_name:
             from api.model.criteria.children.genre.Genre import Genre
             input_data[PostFields.GENRE] = Genre.objects.get_or_create(user=user, name=genre_name)[0]

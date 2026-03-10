@@ -20,7 +20,7 @@ class TestCase(GenreTestCase):
         assert response.status_code == status.HTTP_204_NO_CONTENT
         metadata = audio_file_metadata.get_app_metadata(file=uploaded_track.track_file.file)
 
-        assert metadata[audio_file_metadata.AppMetadataKey.GENRE_NAME] == rock.name
+        assert metadata.get(audio_file_metadata.AppMetadataKey.GENRES_NAMES, []) == [rock.name]
 
     def test_delete_root_then_uploaded_tracks_metadata_genre_updated_to_none(self):
         rock = self.model_fixture_factory.create_genre(name='rock')
@@ -30,10 +30,10 @@ class TestCase(GenreTestCase):
             test_uploaded_track_filename=UploadedTrackTestFilename.METADATA_LONG_A_ID3V2_SMALL_MP3)
 
         metadata = audio_file_metadata.get_app_metadata(file=uploaded_track.track_file.file)
-        assert metadata.get(audio_file_metadata.AppMetadataKey.GENRE_NAME) is not None
+        assert metadata.get(audio_file_metadata.AppMetadataKey.GENRES_NAMES, []) != []
 
         response = self._delete_genre(uuid=rock.uuid)
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
         metadata = audio_file_metadata.get_app_metadata(file=uploaded_track.track_file.file)
-        assert metadata.get(audio_file_metadata.AppMetadataKey.GENRE_NAME) is None
+        assert metadata.get(audio_file_metadata.AppMetadataKey.GENRES_NAMES, []) == []

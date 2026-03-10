@@ -63,5 +63,5 @@ class TestCase(GenreTestCase, PutBodyDataTestCase):
         updated_track: UploadedTrack = UploadedTrack.objects.get(uuid=track.uuid)
 
         metadata = audio_file_metadata.get_app_metadata(file=updated_track.track_file.file)
-        assert AppMetadataKey.GENRE_NAME in metadata
-        assert metadata[AppMetadataKey.GENRE_NAME] == genre_new_name
+        assert AppMetadataKey.GENRES_NAMES in metadata
+        assert metadata[AppMetadataKey.GENRES_NAMES] == [genre_new_name]
