@@ -32,7 +32,6 @@ class UploadedTrackTestCase(AppTestCase[UploadedTrack]):
                 kwargs = data_transformer.merge_two_dicts(file_field_dict, kwargs)
             else:
                 kwargs = file_field_dict
-
             return self.api_client.post(
                 path=reverse('me-uploaded-track-list'),
                 data=kwargs, format='multipart', handle_response=self._set_results)
