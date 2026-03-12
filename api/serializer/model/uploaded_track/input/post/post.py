@@ -114,9 +114,13 @@ class UploadedTrackPostSerializer(UploadedTrackInputSerializer):
                 PostFields.LANGUAGE]
         data_transformer.override_dict1_with_dict2_values_for_each_key_in_dict2(dict1=input_data, dict2=data, keys=keys)
 
+        if PostFields.ALBUM_NAME in data and data.get(PostFields.ALBUM_NAME) in [None, ""]:
+            input_data[Fields.ALBUM_ARTISTS_NAMES] = []
+
+        self._validate_album_fields_from_data(input_data)
+
         input_data[Fields.TRACK_FILE_INTERNAL] = data[PostFields.TRACK_FILE_PUBLIC]
 
-        # If title is not provided, generate it from the file
         if input_data.get(PostFields.TITLE) in [None, '']:
             input_data[PostFields.TITLE] = self._get_generated_title_from_data(file, input_data)
 
