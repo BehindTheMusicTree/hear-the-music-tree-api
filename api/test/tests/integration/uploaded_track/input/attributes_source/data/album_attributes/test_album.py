@@ -17,7 +17,9 @@ class TestCase(UploadedTrackTestCase):
         assert self.saved_object.album.name == value
 
     def test_empty_then_none(self):
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{PostFields.ALBUM_NAME: ""})
+        response = self._post_uploaded_track(
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{PostFields.ALBUM_NAME.value: ""}
+        )
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.album == None
