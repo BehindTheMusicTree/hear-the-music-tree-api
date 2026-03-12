@@ -44,6 +44,8 @@ class UploadedTrackInputSerializer(AppInputSerializer):
                 album = Album.objects.get_album_from_name_and_album_artists_names_after_potential_creations(
                     user=user, name=album_name, album_artists_names=album_artists_names)
                 data[ModelFields.ALBUM] = album
+        elif not album_artists_names:
+            data[ModelFields.ALBUM] = None
 
     def _update_data_with_artists_if_names_otherwise_empty_list(self, user: User, data: dict) -> None:
         if Fields.ARTISTS_NAMES in data:
