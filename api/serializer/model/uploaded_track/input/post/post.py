@@ -116,6 +116,8 @@ class UploadedTrackPostSerializer(UploadedTrackInputSerializer):
 
         if PostFields.ALBUM_NAME in data and data.get(PostFields.ALBUM_NAME) in [None, ""]:
             input_data[Fields.ALBUM_ARTISTS_NAMES] = []
+            input_data[Fields.ALBUM_NAME] = ""
+            input_data[Fields.TRACK_NUMBER] = None
 
         self._validate_album_fields_from_data(input_data)
 

@@ -32,7 +32,9 @@ class TestCase(UploadedTrackTestCase, NullableCharBodyDataTestCase):
         assert error['code'] == FieldValidationErrorCode.STRING_TOO_LONG
 
     def test_empty_then_ok(self):
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{PostFields.ALBUM_NAME: ''})
+        response = self._post_uploaded_track(
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{PostFields.ALBUM_NAME.value: ''}
+        )
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.album == None
