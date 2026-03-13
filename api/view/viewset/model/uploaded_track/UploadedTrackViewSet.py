@@ -2,7 +2,7 @@ import os
 from django.core.files.base import File
 from django.core.files.storage import default_storage
 from drf_spectacular.types import OpenApiTypes  # type: ignore
-from drf_spectacular.utils import OpenApiParameter, extend_schema  # type: ignore
+from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema  # type: ignore
 from rest_framework.decorators import action
 from typing import cast
 
@@ -85,12 +85,23 @@ class UploadedTrackViewSet(AppModelViewSet[UploadedTrack]):
                     pass  # Ignore cleanup errors
             raise  # Re-raise the original exception
 
-    @extend_schema(parameters=[
-        OpenApiParameter(name=UploadedTrackFilterFieldKey.TITLE.value, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=UploadedTrackFilterFieldKey.ARTISTS_NAME.value, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=UploadedTrackFilterFieldKey.ALBUM_NAME.value, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=UploadedTrackFilterFieldKey.GENRE_NAME.value, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=UploadedTrackFilterFieldKey.LANGUAGE.value, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),])
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(
+                name=UploadedTrackFilterFieldKey.TITLE.value, type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY),
+            OpenApiParameter(
+                name=UploadedTrackFilterFieldKey.ARTISTS_NAME.value, type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY),
+            OpenApiParameter(
+                name=UploadedTrackFilterFieldKey.ALBUM_NAME.value, type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY),
+            OpenApiParameter(
+                name=UploadedTrackFilterFieldKey.GENRE_NAME.value, type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY),
+            OpenApiParameter(
+                name=UploadedTrackFilterFieldKey.LANGUAGE.value, type=OpenApiTypes.STR,
+                location=OpenApiParameter.QUERY),])
     def list(self, *args, **kwargs):
         return self._handle_list()
 
@@ -98,13 +109,12 @@ class UploadedTrackViewSet(AppModelViewSet[UploadedTrack]):
         return self._handle_retrieve()
 
     @extend_schema(request=UploadedTrackPutSerializer,
-                   responses=UploadedTrackDetailedSerializer,
                    description=("""
             Updates a track:\n"
             - to not update a field, it mustn't be specified (e.g the line \"artist_name\":... 
             shouldn't exist). The only exception is the field 'album_artists_name' (more precisions below).\n
             - to empty a field (artist or album), the field should be specified with an empty string.\n
-            - updating the rating will delete all the ratins from other media players like Windows Media Player or
+            - updating the rating will delete all the ratings from other media players like Windows Media Player or
             MusicBee (iTunes doesn't write rating in the files); 
             - if the album or the artist is updated, the old artist/album is checked to lookup if it is still linked to 
             something: \n
@@ -119,12 +129,18 @@ class UploadedTrackViewSet(AppModelViewSet[UploadedTrack]):
             album is the peer (album'sname/album's artists'names). 
             Thus:\n" +
                - if it already exists an album with the same name as 'album_name' but with different 
-               'album_artists_name', an new album is created.\n
-               - wether the field 'album_artists_name' is empty or not specified, it tells that the track's album has no 
+               'album_artists_name', a new album is created.\n
+               - whether the field 'album_artists_names' is empty or not specified, it tells that the track's album has no 
                artist.\n
-               - if 'album_name' is empty or missing and 'album_artists_name' is specified, the API will reject the 
-               request.
-            """))
+               - if 'album_artists_names' is specified without 'album_name' (album_name key missing), the request is 
+               rejected with 400 Bad Request (album name is required when album artists field is provided).\n
+               - if 'track_number' is specified with a value and 'album_name' is missing or empty, the request is 
+               rejected with 400 Bad Request (album name must be specified if track position is).
+            """),
+                   responses={
+                       200: UploadedTrackDetailedSerializer,
+                       400: OpenApiResponse(description='Validation error. Response body contains fieldErrors (field, code, message).'),
+                   })
     def update(self, request, *args, **kwargs):
         return self._handle_update(request)
 
