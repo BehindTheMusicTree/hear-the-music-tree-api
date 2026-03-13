@@ -8,7 +8,7 @@ from api.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.serializer.model.album.minimum import Fields as AlbumFields
 from api.serializer.model.artist.minimum import Fields as ArtistFields
-from api.serializer.model.uploaded_track.output.detailed import Fields as UploadedTrackGetFields
+from api.serializer.model.uploaded_track.output.UploadedTrackOutputFieldKey import UploadedTrackOutputFieldKey
 from api.serializer.model.playlist.children.criteria.output.simple import Fields as CriteriaPlayListFields
 from api.test.tests.integration.search.SearchTestCase import SearchTestCase
 
@@ -24,7 +24,7 @@ class TestCase(SearchTestCase):
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 3
-        title_key = UploadedTrackGetFields.TITLE
+        title_key = UploadedTrackOutputFieldKey.TITLE.value
         assert self.results[UploadedTrack.__name__][0][title_key] == summerlove_track.title
         assert self.results[Artist.__name__][0][ArtistFields.NAME] == sum41_artist.name
         assert self.results[Album.__name__][0][AlbumFields.NAME] == jailesum_album.name
@@ -82,7 +82,7 @@ class TestCase(SearchTestCase):
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 1
-        assert self.results[UploadedTrack.__name__][0][UploadedTrackGetFields.TITLE] == uploaded_track.title
+        assert self.results[UploadedTrack.__name__][0][UploadedTrackOutputFieldKey.TITLE.value] == uploaded_track.title
 
     def test_artist_then_results(self):
         artist = self.model_fixture_factory.create_artist(name='artist')
