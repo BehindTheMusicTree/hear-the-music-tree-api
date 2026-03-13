@@ -4,7 +4,7 @@ from rest_framework import status
 from api.model.criteria.children.genre.Genre import Genre
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 from api.serializer.model.criteria.input.post import Fields as PostFields
-from api.serializer.model.uploaded_track.input.put.Fields import Fields as PutFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.utils.AppTestCase import AppTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
@@ -35,21 +35,21 @@ class TestCase(AppTestCase):
         child_genre_name = "Techno"
         grandchild_genre_name = "Minimal Techno"
 
-        response = genre_test_case._post_genre(**{PostFields.NAME_PUBLIC: parent_genre_name})
+        response = genre_test_case._post_genre(**{PostUploadedTrackInputFieldKey.NAME_PUBLIC: parent_genre_name})
         assert response.status_code == status.HTTP_201_CREATED
         parent_genre = genre_test_case.saved_object
         assert parent_genre.name == parent_genre_name
         assert parent_genre.parent is None
 
         response = genre_test_case._post_genre(
-            **{PostFields.NAME_PUBLIC: child_genre_name, PostFields.PARENT: parent_genre.uuid})
+            **{PostUploadedTrackInputFieldKey.NAME_PUBLIC: child_genre_name, PostUploadedTrackInputFieldKey.PARENT: parent_genre.uuid})
         assert response.status_code == status.HTTP_201_CREATED
         child_genre = genre_test_case.saved_object
         assert child_genre.name == child_genre_name
         assert child_genre.parent == parent_genre
 
-        response = genre_test_case._post_genre(**{PostFields.NAME_PUBLIC: grandchild_genre_name,
-                                                  PostFields.PARENT: child_genre.uuid})
+        response = genre_test_case._post_genre(**{PostUploadedTrackInputFieldKey.NAME_PUBLIC: grandchild_genre_name,
+                                                  PostUploadedTrackInputFieldKey.PARENT: child_genre.uuid})
         assert response.status_code == status.HTTP_201_CREATED
         grandchild_genre = genre_test_case.saved_object
         assert grandchild_genre.name == grandchild_genre_name
@@ -77,7 +77,7 @@ class TestCase(AppTestCase):
         assert response.status_code == status.HTTP_201_CREATED
         track = uploaded_track_test_case.saved_object
 
-        response = uploaded_track_test_case._put_uploaded_track(track.uuid, **{PutFields.GENRE: grandchild_genre_name})
+        response = uploaded_track_test_case._put_uploaded_track(track.uuid, **{UploadedTrackInputFieldKey.GENRE.value: grandchild_genre_name})
         assert response.status_code == status.HTTP_200_OK
 
         track.refresh_from_db()

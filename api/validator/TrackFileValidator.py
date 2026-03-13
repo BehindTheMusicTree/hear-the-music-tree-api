@@ -6,7 +6,7 @@ from django.utils.translation import gettext as _
 
 from api import settings
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
-from api.serializer.model.uploaded_track.input.post.Fields import Fields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.utils.file_path_utils import get_file_path
 
 
@@ -21,7 +21,7 @@ class TrackFileValidator:
     }
 
     def __init__(self, field_name=None):
-        self.field_name = field_name or Fields.TRACK_FILE_PUBLIC
+        self.field_name = field_name or UploadedTrackInputFieldKey.TRACK_FILE_PUBLIC.value
 
     def __call__(self, value, field=None):
         self._validate_extension(value, field)
@@ -76,7 +76,7 @@ class TrackFileValidator:
             else:
                 from api.exception.validation.app.AppValidationException import AppValidationException
                 raise AppValidationException(
-                    field_name=Fields.TRACK_FILE_PUBLIC,
+                    field_name=UploadedTrackInputFieldKey.TRACK_FILE_PUBLIC.value,
                     message=message,
                     field_validation_error_code=FieldValidationErrorCode.FILE_TOO_SMALL
                 )

@@ -2,7 +2,7 @@ from rest_framework import status
 
 from api import settings
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
-from api.serializer.model.uploaded_track.input.post.Fields import Fields as PostFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.utils.field.body_data.type.NullableCharBodyDataTestCase import NullableCharBodyDataTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
@@ -14,7 +14,7 @@ class TestCase(NullableCharBodyDataTestCase, UploadedTrackTestCase):
     def test_largest_then_ok(self):
         genre_name = "a" * settings.CRITERIA_NAME_LEN_MAX
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.METADATA_NONE_MP3, **{PostFields.GENRE: genre_name})
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.GENRE: genre_name})
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.genre
@@ -23,16 +23,16 @@ class TestCase(NullableCharBodyDataTestCase, UploadedTrackTestCase):
     def test_too_large_then_400_bad_request(self):
         genre_name = "a" * (settings.CRITERIA_NAME_LEN_MAX + 1)
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.METADATA_NONE_MP3, **{PostFields.GENRE: genre_name})
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.GENRE: genre_name})
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1
         error = self.bad_request_result_field_errors[0]
-        assert error['field'] == to_camel_case(PostFields.GENRE)
+        assert error['field'] == to_camel_case(UploadedTrackInputFieldKey.GENRE)
         assert error['code'] == FieldValidationErrorCode.STRING_TOO_LONG
 
     def test_empty_then_ok(self):
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{PostFields.GENRE: ''})
+        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.GENRE: ''})
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.genre == None
@@ -42,7 +42,7 @@ class TestCase(NullableCharBodyDataTestCase, UploadedTrackTestCase):
         self.model_fixture_factory.create_genre(name=genre_name)
 
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.METADATA_NONE_MP3, **{PostFields.GENRE: genre_name})
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.GENRE: genre_name})
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.genre
@@ -51,7 +51,7 @@ class TestCase(NullableCharBodyDataTestCase, UploadedTrackTestCase):
     def test_not_existing(self):
         genre_name = "hoho"
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.METADATA_NONE_MP3, **{PostFields.GENRE: genre_name})
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.GENRE: genre_name})
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.genre
@@ -60,7 +60,7 @@ class TestCase(NullableCharBodyDataTestCase, UploadedTrackTestCase):
     def test_new_so_parent_none(self):
         genre_name = "Rock"
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.METADATA_NONE_MP3, **{PostFields.GENRE: genre_name})
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.GENRE: genre_name})
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.genre
@@ -68,10 +68,10 @@ class TestCase(NullableCharBodyDataTestCase, UploadedTrackTestCase):
 
     def test_multi_value_then_400_bad_request(self):
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.METADATA_NONE_MP3, **{PostFields.GENRE: ['a', 'b']})
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.GENRE: ['a', 'b']})
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1
         error = self.bad_request_result_field_errors[0]
-        assert error['field'] == to_camel_case(PostFields.GENRE)
+        assert error['field'] == to_camel_case(UploadedTrackInputFieldKey.GENRE)
         assert error['code'] == FieldValidationErrorCode.DUPLICATE  # because multipart

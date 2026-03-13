@@ -12,9 +12,14 @@ from api.serializer.field.TrackNumberField import TrackNumberField
 from api.serializer.field.RatingField import RatingField
 from api.serializer.field.criteria.CriteriaFieldInputType import CriteriaFieldInputType
 from api.serializer.field.criteria.GenreField import GenreField
-from api.model.uploaded_track.Fields import Fields as ModelFields
+from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as ModelFields
 from api.utils import data_transformer
-from .Fields import Fields
+
+from .UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
+
+
+def _wire_key(key) -> str:
+    return getattr(key, "value", key)
 
 
 class UploadedTrackInputSerializer(AppInputSerializer):
@@ -35,46 +40,47 @@ class UploadedTrackInputSerializer(AppInputSerializer):
 
     def _update_model_data_with_album_if_name(self, user: User, data: dict):
         from api.model.album.Album import Album
-        album_name = data.pop(Fields.ALBUM_NAME, None)
-        album_artists_names = data.pop(Fields.ALBUM_ARTISTS_NAMES, [])
+        album_name = data.pop(UploadedTrackInputFieldKey.ALBUM_NAME.value, None)
+        album_artists_names = data.pop(UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES.value, [])
         if album_name is not None:
             if album_name == "":
-                data[ModelFields.ALBUM] = None
+                data[ModelFields.ALBUM.value] = None
             else:
                 album = Album.objects.get_album_from_name_and_album_artists_names_after_potential_creations(
                     user=user, name=album_name, album_artists_names=album_artists_names)
-                data[ModelFields.ALBUM] = album
+                data[ModelFields.ALBUM.value] = album
         elif not album_artists_names:
-            data[ModelFields.ALBUM] = None
+            data[ModelFields.ALBUM.value] = None
 
     def _update_data_with_artists_if_names_otherwise_empty_list(self, user: User, data: dict) -> None:
-        if Fields.ARTISTS_NAMES in data:
-            artists_names = data.pop(Fields.ARTISTS_NAMES) or []
+        if UploadedTrackInputFieldKey.ARTISTS_NAMES.value in data:
+            artists_names = data.pop(UploadedTrackInputFieldKey.ARTISTS_NAMES.value) or []
             artists = Artist.objects.get_artists_list_from_names_after_potential_creation(
                 user=user, artists_names=artists_names)
-            data[ModelFields.ARTISTS] = artists
+            data[ModelFields.ARTISTS.value] = artists
 
     def _validate_album_fields_from_data(self, data: dict):
-        if Fields.ALBUM_ARTISTS_NAMES in data:
-            if data.get(Fields.ALBUM_ARTISTS_NAMES) not in [None, []] and \
-                    data.get(Fields.ALBUM_NAME, None) in [None, ""]:
+        if UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES.value in data:
+            if data.get(UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES.value) not in [None, []] and \
+                    data.get(UploadedTrackInputFieldKey.ALBUM_NAME.value, None) in [None, ""]:
                 raise AppValidationException(message="Album name is required when album artists field is provided",
-                                             field_name=Fields.ALBUM_NAME,
+                                             field_name=UploadedTrackInputFieldKey.ALBUM_NAME.value,
                                              field_validation_error_code=FieldValidationErrorCode.DEPENDENCY_MISSING)
 
-        if Fields.TRACK_NUMBER in data:
-            if data.get(Fields.TRACK_NUMBER) not in [None, ""] and data.get(Fields.ALBUM_NAME) in [None, ""]:
-                raise AppValidationException(field_name=Fields.ALBUM_NAME,
+        if UploadedTrackInputFieldKey.TRACK_NUMBER.value in data:
+            if data.get(UploadedTrackInputFieldKey.TRACK_NUMBER.value) not in [None, ""] and data.get(UploadedTrackInputFieldKey.ALBUM_NAME.value) in [None, ""]:
+                raise AppValidationException(field_name=UploadedTrackInputFieldKey.ALBUM_NAME.value,
                                              message="Album name must be specified if track position is.",
                                              field_validation_error_code=FieldValidationErrorCode.DEPENDENCY_MISSING)
 
     def validate(self, data: dict,):
-        if Fields.LANGUAGE in data and data[Fields.LANGUAGE] == "":
-            data[Fields.LANGUAGE] = None
-        data_transformer.update_dict_converting_str_to_int_value_if_set(key=ModelFields.RATING, data=data)
+        lang_key = UploadedTrackInputFieldKey.LANGUAGE.value
+        if lang_key in data and data[lang_key] == "":
+            data[lang_key] = None
+        data_transformer.update_dict_converting_str_to_int_value_if_set(key=ModelFields.RATING.value, data=data)
 
         user = self.context['request'].user
-        data[ModelFields.USER] = user
+        data[ModelFields.USER.value] = user
 
         self._update_data_with_artists_if_names_otherwise_empty_list(user=user, data=data)
         self._update_model_data_with_album_if_name(user=user, data=data)

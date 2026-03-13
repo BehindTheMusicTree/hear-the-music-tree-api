@@ -1,0 +1,22 @@
+from enum import Enum
+
+
+class CriteriaOutputFieldKey(str, Enum):
+    CREATED_ON = "created_on"
+    UPDATED_ON = "updated_on"
+    UUID = "uuid"
+    NAME = "name"
+    NAME_INTERNAL = "_name"
+    UPLOADED_TRACKS_NOT_ARCHIVED_INTERNAL = "uploaded_tracks_not_archived"
+    UPLOADED_TRACKS_NOT_ARCHIVED_PUBLIC = "uploaded_tracks"
+    UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_INTERNAL = "uploaded_tracks_not_archived_count"
+    UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC = "uploaded_tracks_count"
+    UPLOADED_TRACKS_ARCHIVED_COUNT_INTERNAL = "uploaded_tracks_archived_count"
+    UPLOADED_TRACKS_ARCHIVED_COUNT_PUBLIC = "uploaded_tracks_archived_count"
+    UPLOADED_TRACKS_TITLE = "title"
+    ROOT = "root"
+    PARENT = "parent"
+    ASCENDANTS = "ascendants"
+    DESCENDANTS = "descendants"
+    CHILDREN = "children"
+    CRITERIA_PLAYLIST = "criteria_playlist"

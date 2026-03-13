@@ -21,7 +21,7 @@ from api import settings
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.model.user.User import User
 from api.model.uuid.Fields import Fields as UuidModelFields
-from api.serializer.model.uploaded_track.input.post.Fields import Fields as UploadedTrackPostFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.utils.AppApiClient import AppApiClient
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.utils.ModelFixtureFactory import ModelFixtureFactory
@@ -155,7 +155,7 @@ class AppTestCase(TestCase, Generic[T]):
 
         self._used_upload_in_test = True
         with open(file_abs_path, "rb") as sample_file:
-            file_field_dict = {UploadedTrackPostFields.TRACK_FILE_PUBLIC: sample_file}
+            file_field_dict = {UploadedTrackInputFieldKey.TRACK_FILE_PUBLIC.value: sample_file}
             if kwargs:
                 kwargs = data_transformer.merge_two_dicts(file_field_dict, kwargs)
             else:

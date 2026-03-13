@@ -6,10 +6,10 @@ from drf_spectacular.utils import OpenApiParameter, extend_schema  # type: ignor
 from rest_framework.decorators import action
 from typing import cast
 
-from api.filtering.set.uploaded_track.Fields import Fields as FilterFields
+from api.filtering.set.uploaded_track.UploadedTrackFilterFieldKey import UploadedTrackFilterFieldKey
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.serializer.model.uploaded_track.input.post.post import UploadedTrackPostSerializer
-from api.serializer.model.uploaded_track.input.post.Fields import Fields as PostFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.serializer.model.uploaded_track.input.put.put import UploadedTrackPutSerializer
 from api.serializer.model.uploaded_track.output.detailed import UploadedTrackDetailedSerializer
 
@@ -76,21 +76,21 @@ class UploadedTrackViewSet(AppModelViewSet[UploadedTrack]):
         except Exception as e:
             # Clean up temporary file if it exists
             if request.FILES.get(
-                    PostFields.TRACK_FILE_PUBLIC) and hasattr(
-                    request.FILES[PostFields.TRACK_FILE_PUBLIC],
+                    UploadedTrackInputFieldKey.TRACK_FILE_PUBLIC.value) and hasattr(
+                    request.FILES[UploadedTrackInputFieldKey.TRACK_FILE_PUBLIC.value],
                     'temporary_file_path'):
                 try:
-                    os.unlink(request.FILES[PostFields.TRACK_FILE_PUBLIC].temporary_file_path())
+                    os.unlink(request.FILES[UploadedTrackInputFieldKey.TRACK_FILE_PUBLIC.value].temporary_file_path())
                 except (OSError, AttributeError):
                     pass  # Ignore cleanup errors
             raise  # Re-raise the original exception
 
     @extend_schema(parameters=[
-        OpenApiParameter(name=FilterFields.TITLE, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.ARTISTS_NAME, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.ALBUM_NAME, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.GENRE_NAME, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.LANGUAGE, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),])
+        OpenApiParameter(name=UploadedTrackFilterFieldKey.TITLE.value, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
+        OpenApiParameter(name=UploadedTrackFilterFieldKey.ARTISTS_NAME.value, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
+        OpenApiParameter(name=UploadedTrackFilterFieldKey.ALBUM_NAME.value, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
+        OpenApiParameter(name=UploadedTrackFilterFieldKey.GENRE_NAME.value, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
+        OpenApiParameter(name=UploadedTrackFilterFieldKey.LANGUAGE.value, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),])
     def list(self, *args, **kwargs):
         return self._handle_list()
 

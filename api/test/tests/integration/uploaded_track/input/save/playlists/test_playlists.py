@@ -1,7 +1,7 @@
 from rest_framework import status
 
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
-from api.serializer.model.uploaded_track.input.put.Fields import Fields as PutFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
@@ -11,7 +11,7 @@ class TestCase(UploadedTrackTestCase):
         genre_name = "Rock"
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="Love")
 
-        response = self._put_uploaded_track(uploaded_track.uuid, **{PutFields.GENRE: genre_name})
+        response = self._put_uploaded_track(uploaded_track.uuid, **{UploadedTrackInputFieldKey.GENRE.value: genre_name})
 
         assert response.status_code == status.HTTP_200_OK
         track_playlists_uuids = [playlist.uuid for playlist in self.saved_object.playlists.all()]
@@ -25,7 +25,7 @@ class TestCase(UploadedTrackTestCase):
         self.model_fixture_factory.create_genre(name=genre_name)
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="Love")
 
-        response = self._put_uploaded_track(uploaded_track.uuid, **{PutFields.GENRE: genre_name})
+        response = self._put_uploaded_track(uploaded_track.uuid, **{UploadedTrackInputFieldKey.GENRE.value: genre_name})
 
         assert response.status_code == status.HTTP_200_OK
 
@@ -46,7 +46,7 @@ class TestCase(UploadedTrackTestCase):
         self.model_fixture_factory.create_genre(name=genre_emo_name, parent=hardgenre_rock)
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="Love")
 
-        response = self._put_uploaded_track(uploaded_track.uuid, **{PutFields.GENRE: genre_emo_name})
+        response = self._put_uploaded_track(uploaded_track.uuid, **{UploadedTrackInputFieldKey.GENRE.value: genre_emo_name})
 
         assert response.status_code == status.HTTP_200_OK
         track_playlists_uuids = [playlist.uuid for playlist in self.saved_object.playlists.all()]
