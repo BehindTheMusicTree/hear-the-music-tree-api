@@ -46,8 +46,8 @@ class UploadedTrackInputSerializer(AppInputSerializer):
         from api.model.album.Album import Album
         album_name = data.pop(UploadedTrackInputFieldKey.ALBUM_NAME.value, None)
         album_artists_names = (data.pop(UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES.value, None)
-                              or data.pop(UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value, None)
-                              or [])
+                               or data.pop(UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value, None)
+                               or [])
         if album_name is not None:
             if album_name == "":
                 data[ModelFields.ALBUM.value] = None
@@ -74,19 +74,26 @@ class UploadedTrackInputSerializer(AppInputSerializer):
                                          field_validation_error_code=FieldValidationErrorCode.DEPENDENCY_MISSING)
         if UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES.value in data:
             album_artists_val = data.get(UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES.value)
-            if album_artists_val not in (None, []) and data.get(UploadedTrackInputFieldKey.ALBUM_NAME.value, None) in (None, ""):
+            if album_artists_val not in (
+                    None, []) and data.get(
+                    UploadedTrackInputFieldKey.ALBUM_NAME.value, None) in (
+                    None, ""):
                 raise AppValidationException(message="Album name is required when album artists field is provided",
                                              field_name=UploadedTrackInputFieldKey.ALBUM_NAME.value,
                                              field_validation_error_code=FieldValidationErrorCode.DEPENDENCY_MISSING)
         if UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value in data:
             album_artists_val = data.get(UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value)
-            if album_artists_val not in (None, []) and data.get(UploadedTrackInputFieldKey.ALBUM_NAME.value, None) in (None, ""):
+            if album_artists_val not in (
+                    None, []) and data.get(
+                    UploadedTrackInputFieldKey.ALBUM_NAME.value, None) in (
+                    None, ""):
                 raise AppValidationException(message="Album name is required when album artists field is provided",
                                              field_name=UploadedTrackInputFieldKey.ALBUM_NAME.value,
                                              field_validation_error_code=FieldValidationErrorCode.DEPENDENCY_MISSING)
 
         if UploadedTrackInputFieldKey.TRACK_NUMBER.value in data:
-            if data.get(UploadedTrackInputFieldKey.TRACK_NUMBER.value) not in [None, ""] and data.get(UploadedTrackInputFieldKey.ALBUM_NAME.value) in [None, ""]:
+            if data.get(UploadedTrackInputFieldKey.TRACK_NUMBER.value) not in [None, ""] and data.get(
+                    UploadedTrackInputFieldKey.ALBUM_NAME.value) in [None, ""]:
                 raise AppValidationException(field_name=UploadedTrackInputFieldKey.ALBUM_NAME.value,
                                              message="Album name must be specified if track position is.",
                                              field_validation_error_code=FieldValidationErrorCode.DEPENDENCY_MISSING)
