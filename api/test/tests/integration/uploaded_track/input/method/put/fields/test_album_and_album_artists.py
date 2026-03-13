@@ -1,10 +1,12 @@
 from rest_framework import status
 
+from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.model.album.Album import Album
 from api.model.artist.Artist import Artist
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 from api.test.utils.field.body_data.method.PutBodyDataTestCase import PutBodyDataTestCase
-from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
+from api.utils.data_transformer import to_camel_case
 
 
 class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
@@ -27,6 +29,30 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
 
         assert response.status_code == status.HTTP_200_OK
         assert self.saved_object.album == None
+
+    def test_album_artists_provided_without_album_name_then_400_bad_request(self):
+        uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="koko")
+
+        data = {UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: []}
+        response = self._put_uploaded_track(uuid=uploaded_track.uuid, **data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert len(self.bad_request_result_field_errors) == 1
+        error = self.bad_request_result_field_errors[0]
+        assert error['field'] == to_camel_case(UploadedTrackInputFieldKey.ALBUM_NAME.value)
+        assert error['code'] == FieldValidationErrorCode.DEPENDENCY_MISSING
+
+    def test_track_number_provided_without_album_name_then_400_bad_request(self):
+        uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="koko")
+
+        data = {UploadedTrackInputFieldKey.TRACK_NUMBER.value: 1}
+        response = self._put_uploaded_track(uuid=uploaded_track.uuid, **data)
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert len(self.bad_request_result_field_errors) == 1
+        error = self.bad_request_result_field_errors[0]
+        assert error['field'] == to_camel_case(UploadedTrackInputFieldKey.ALBUM_NAME.value)
+        assert error['code'] == FieldValidationErrorCode.DEPENDENCY_MISSING
 
     def test_provided_then_update(self):
         album_artist_new = self.model_fixture_factory.create_artist(name="James")
