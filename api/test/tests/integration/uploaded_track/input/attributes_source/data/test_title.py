@@ -9,7 +9,7 @@ class TitleTestCase(UploadedTrackTestCase):
 
     def test_value_then_ok(self):
         value = 'fr'
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TITLE: value})
+        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TITLE.value: value})
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.title == value

@@ -9,7 +9,7 @@ from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import Uplo
 class TestCase(UploadedTrackTestCase):
 
     def test_non_existing_then_400_bad_request(self):
-        data = {UploadedTrackInputFieldKey.GENRE: '8adfc3f9-18f6-4f06-b3cb-e16d5032121w' * settings.UUID_LEN}
+        data = {UploadedTrackInputFieldKey.GENRE.value: '8adfc3f9-18f6-4f06-b3cb-e16d5032121w' * settings.UUID_LEN}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
@@ -18,13 +18,13 @@ class TestCase(UploadedTrackTestCase):
         genre_uuid = self.model_fixture_factory.create_genre(name=genre_name).uuid
 
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.GENRE: genre_uuid})
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.GENRE.value: genre_uuid})
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.genre
         assert self.saved_object.genre.name == genre_name
 
     def test_empty_then_none(self):
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.GENRE: ''})
+        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.GENRE.value: ''})
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.genre == None

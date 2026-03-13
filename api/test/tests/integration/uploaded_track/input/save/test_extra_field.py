@@ -10,7 +10,7 @@ class TestCase(UploadedTrackTestCase):
 
     def test_extra_field_then_400_bad_request(self):
         extraField = "extraField"
-        data = {UploadedTrackInputFieldKey.TITLE: "Rock", extraField: "extra_value"}
+        data = {UploadedTrackInputFieldKey.TITLE.value: "Rock", extraField: "extra_value"}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
