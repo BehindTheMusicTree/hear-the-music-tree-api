@@ -11,7 +11,7 @@ class TestCase(UploadedTrackTestCase):
 
     def test_create_then_in_uploaded_track_mixin(self):
         title = "test"
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TITLE: title})
+        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TITLE.value: title})
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.test_user1.all_uploaded_tracks_mixin.uploaded_tracks.count() == 1

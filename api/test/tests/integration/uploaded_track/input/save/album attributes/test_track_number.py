@@ -13,14 +13,14 @@ class TestCase(UploadedTrackTestCase, NullablePositiveIntBodyDataTestCase):
 
     def test_empty_then_none(self):
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TRACK_NUMBER: None})
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TRACK_NUMBER.value: None})
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.track_number == None
 
     def test_empty_string_then_none(self):
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TRACK_NUMBER: ''})
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TRACK_NUMBER.value: ''})
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.track_number == None
@@ -28,14 +28,14 @@ class TestCase(UploadedTrackTestCase, NullablePositiveIntBodyDataTestCase):
     def test_string_castable_then_ok(self):
         response = self._post_uploaded_track(
             UploadedTrackTestFilename.METADATA_NONE_MP3, **
-            {UploadedTrackInputFieldKey.ALBUM_NAME: 'album', UploadedTrackInputFieldKey.TRACK_NUMBER: '5'})
+            {UploadedTrackInputFieldKey.ALBUM_NAME.value: 'album', UploadedTrackInputFieldKey.TRACK_NUMBER.value: '5'})
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.track_number == 5
 
     def test_string_not_castable_then_400_bad_request(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3,
-                                             **{UploadedTrackInputFieldKey.ALBUM_NAME: 'album', UploadedTrackInputFieldKey.TRACK_NUMBER: 'five'})
+                                             **{UploadedTrackInputFieldKey.ALBUM_NAME.value: 'album', UploadedTrackInputFieldKey.TRACK_NUMBER.value: 'five'})
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1
@@ -45,14 +45,14 @@ class TestCase(UploadedTrackTestCase, NullablePositiveIntBodyDataTestCase):
 
     def string_castable_then_ok(self):
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TRACK_NUMBER: '5'})
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TRACK_NUMBER.value: '5'})
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.track_number == 5
 
     def test_zero_then_400_bad_request(self):
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TRACK_NUMBER: 0})
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TRACK_NUMBER.value: 0})
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1
@@ -65,7 +65,7 @@ class TestCase(UploadedTrackTestCase, NullablePositiveIntBodyDataTestCase):
 
         response = self._post_uploaded_track(
             UploadedTrackTestFilename.METADATA_NONE_MP3, **
-            {UploadedTrackInputFieldKey.ALBUM_NAME: 'album', UploadedTrackInputFieldKey.TRACK_NUMBER: track_number})
+            {UploadedTrackInputFieldKey.ALBUM_NAME.value: 'album', UploadedTrackInputFieldKey.TRACK_NUMBER.value: track_number})
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.track_number == track_number
@@ -74,7 +74,7 @@ class TestCase(UploadedTrackTestCase, NullablePositiveIntBodyDataTestCase):
         track_number = settings.UPLOADED_TRACK_TRACK_NUMBER_MAX
         response = self._post_uploaded_track(
             UploadedTrackTestFilename.METADATA_NONE_MP3, **
-            {UploadedTrackInputFieldKey.ALBUM_NAME: 'album', UploadedTrackInputFieldKey.TRACK_NUMBER: track_number})
+            {UploadedTrackInputFieldKey.ALBUM_NAME.value: 'album', UploadedTrackInputFieldKey.TRACK_NUMBER.value: track_number})
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.track_number == track_number
@@ -82,7 +82,7 @@ class TestCase(UploadedTrackTestCase, NullablePositiveIntBodyDataTestCase):
     def test_too_large_then_400_bad_request(self):
         response = self._post_uploaded_track(
             UploadedTrackTestFilename.METADATA_NONE_MP3,
-            **{UploadedTrackInputFieldKey.ALBUM_NAME: 'album', UploadedTrackInputFieldKey.TRACK_NUMBER: settings.UPLOADED_TRACK_TRACK_NUMBER_MAX + 1})
+            **{UploadedTrackInputFieldKey.ALBUM_NAME.value: 'album', UploadedTrackInputFieldKey.TRACK_NUMBER.value: settings.UPLOADED_TRACK_TRACK_NUMBER_MAX + 1})
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1
@@ -92,7 +92,7 @@ class TestCase(UploadedTrackTestCase, NullablePositiveIntBodyDataTestCase):
 
     def test_negative_then_400_bad_request(self):
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TRACK_NUMBER: -1})
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TRACK_NUMBER.value: -1})
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1
@@ -102,7 +102,7 @@ class TestCase(UploadedTrackTestCase, NullablePositiveIntBodyDataTestCase):
 
     def test_float_then_400_bad_request(self):
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TRACK_NUMBER: 5.5})
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TRACK_NUMBER.value: 5.5})
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1
@@ -112,7 +112,7 @@ class TestCase(UploadedTrackTestCase, NullablePositiveIntBodyDataTestCase):
 
     def test_multi_value_then_400_bad_request(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3,
-                                             **{UploadedTrackInputFieldKey.TRACK_NUMBER: [1, 2]})
+                                             **{UploadedTrackInputFieldKey.TRACK_NUMBER.value: [1, 2]})
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1

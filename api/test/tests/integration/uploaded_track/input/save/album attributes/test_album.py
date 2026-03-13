@@ -15,7 +15,7 @@ class TestCase(UploadedTrackTestCase, NullableCharBodyDataTestCase):
         album_name = "a" * settings.ALBUM_NAME_LEN_MAX
         data = {
             UploadedTrackInputFieldKey.ALBUM_NAME.value: album_name,
-            UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART: ["muse"],
+            UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: ["muse"],
         }
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
 
@@ -27,7 +27,7 @@ class TestCase(UploadedTrackTestCase, NullableCharBodyDataTestCase):
         album_name = "a" * (settings.ALBUM_NAME_LEN_MAX + 1)
         data = {
             UploadedTrackInputFieldKey.ALBUM_NAME.value: album_name,
-            UploadedTrackInputFieldKey.ARTISTS_NAMES_MULTIPART: ["muse"],
+            UploadedTrackInputFieldKey.ARTISTS_NAMES_MULTIPART.value: ["muse"],
         }
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
 
@@ -52,7 +52,7 @@ class TestCase(UploadedTrackTestCase, NullableCharBodyDataTestCase):
 
         data = {
             UploadedTrackInputFieldKey.ALBUM_NAME.value: album_name,
-            UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART: [],
+            UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: [],
         }
         response = self._post_uploaded_track(
             test_uploaded_track_filename=UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
@@ -65,7 +65,7 @@ class TestCase(UploadedTrackTestCase, NullableCharBodyDataTestCase):
         album_name = "hoho"
         data = {
             UploadedTrackInputFieldKey.ALBUM_NAME.value: album_name,
-            UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART: ["muse"],
+            UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: ["muse"],
         }
         response = self._post_uploaded_track(
             test_uploaded_track_filename=UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
@@ -77,7 +77,7 @@ class TestCase(UploadedTrackTestCase, NullableCharBodyDataTestCase):
     def test_multi_value_then_400_bad_request(self):
         data = {
             UploadedTrackInputFieldKey.ALBUM_NAME.value: ['a', 'b'],
-            UploadedTrackInputFieldKey.ARTISTS_NAMES_MULTIPART: ["muse"],
+            UploadedTrackInputFieldKey.ARTISTS_NAMES_MULTIPART.value: ["muse"],
         }
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
 

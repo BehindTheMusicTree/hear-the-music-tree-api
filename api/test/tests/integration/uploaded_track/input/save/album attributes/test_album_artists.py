@@ -15,7 +15,7 @@ class TestCase(NullableListBodyDataTestCase, UploadedTrackTestCase):
 
     def test_largest_then_ok(self) -> None:
         artist_name = "a" * settings.ARTIST_NAME_LEN_MAX
-        data = {UploadedTrackInputFieldKey.ALBUM_NAME: "Best Of", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART: [artist_name]}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Best Of", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: [artist_name]}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
 
         assert response.status_code == status.HTTP_201_CREATED
@@ -26,7 +26,7 @@ class TestCase(NullableListBodyDataTestCase, UploadedTrackTestCase):
 
     def test_one_too_large_then_400_bad_request(self):
         artist_name = "a" * (settings.ARTIST_NAME_LEN_MAX + 1)
-        data = {UploadedTrackInputFieldKey.ALBUM_NAME: "Best Of", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART: artist_name}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Best Of", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: artist_name}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -37,7 +37,7 @@ class TestCase(NullableListBodyDataTestCase, UploadedTrackTestCase):
 
     def test_malformed_array_then_400_bad_request(self) -> None:
         malformed_post_multipart_field_name = "album_artists_names"
-        data = {UploadedTrackInputFieldKey.ALBUM_NAME: "Best Of", malformed_post_multipart_field_name: ['muse']}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Best Of", malformed_post_multipart_field_name: ['muse']}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -48,7 +48,7 @@ class TestCase(NullableListBodyDataTestCase, UploadedTrackTestCase):
 
         track = self.model_fixture_factory.create_uploaded_track_with_file(title="koko")
         malformed_put_json_field_name = "album_artists_names[]"
-        data = {UploadedTrackInputFieldKey.ALBUM_NAME: "Best Of", malformed_put_json_field_name: ['muse']}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Best Of", malformed_put_json_field_name: ['muse']}
         response = self.api_client.put(
             path=reverse('me-uploaded-track-detail', kwargs={'pk': track.uuid}),
             data=data, format='json', handle_response=self._set_results)
@@ -60,7 +60,7 @@ class TestCase(NullableListBodyDataTestCase, UploadedTrackTestCase):
         assert error['code'] == FieldValidationErrorCode.UNKNOWN
 
     def test_empty_then_ok(self):
-        data = {UploadedTrackInputFieldKey.ALBUM_NAME: "Best Of", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART: []}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Best Of", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: []}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
 
         assert response.status_code == status.HTTP_201_CREATED
@@ -69,7 +69,7 @@ class TestCase(NullableListBodyDataTestCase, UploadedTrackTestCase):
     def test_existing_then_ok(self) -> None:
         artist = self.model_fixture_factory.create_artist(name="Kopoe")
 
-        data = {UploadedTrackInputFieldKey.ALBUM_NAME: "Best Of", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART: [artist.name]}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Best Of", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: [artist.name]}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
 
         assert response.status_code == status.HTTP_201_CREATED
@@ -80,7 +80,7 @@ class TestCase(NullableListBodyDataTestCase, UploadedTrackTestCase):
 
     def test_not_existing_then_ok(self) -> None:
         artist_name = "hoho"
-        data = {UploadedTrackInputFieldKey.ALBUM_NAME: "Best Of", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART: artist_name}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Best Of", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: artist_name}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
 
         assert response.status_code == status.HTTP_201_CREATED
@@ -93,8 +93,8 @@ class TestCase(NullableListBodyDataTestCase, UploadedTrackTestCase):
         artist1 = self.model_fixture_factory.create_artist(name="Kopoe")
         artist2 = self.model_fixture_factory.create_artist(name="Steeve")
 
-        data = {UploadedTrackInputFieldKey.ALBUM_NAME: "Best Of",
-                UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART: [artist1.name, artist2.name]}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Best Of",
+                UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: [artist1.name, artist2.name]}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
 
         assert response.status_code == status.HTTP_201_CREATED
@@ -110,8 +110,8 @@ class TestCase(NullableListBodyDataTestCase, UploadedTrackTestCase):
         artist2_name = "NewArtist2"
         artist3_name = "NewArtist3"
 
-        data = {UploadedTrackInputFieldKey.ALBUM_NAME: "Best Of",
-                UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART: [artist1_name, artist2_name, artist3_name]}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Best Of",
+                UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: [artist1_name, artist2_name, artist3_name]}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
 
         assert response.status_code == status.HTTP_201_CREATED
@@ -128,8 +128,8 @@ class TestCase(NullableListBodyDataTestCase, UploadedTrackTestCase):
         new_artist1_name = "NewArtist1"
         new_artist2_name = "NewArtist2"
 
-        data = {UploadedTrackInputFieldKey.ALBUM_NAME: "Best Of",
-                UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART: [existing_artist.name, new_artist1_name, new_artist2_name]}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Best Of",
+                UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: [existing_artist.name, new_artist1_name, new_artist2_name]}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
 
         assert response.status_code == status.HTTP_201_CREATED
@@ -146,8 +146,8 @@ class TestCase(NullableListBodyDataTestCase, UploadedTrackTestCase):
         valid_artist = "ValidArtist"
         too_long_artist = "a" * (settings.ARTIST_NAME_LEN_MAX + 1)
 
-        data = {UploadedTrackInputFieldKey.ALBUM_NAME: "Best Of",
-                UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART: [valid_artist, too_long_artist]}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Best Of",
+                UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: [valid_artist, too_long_artist]}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -157,7 +157,7 @@ class TestCase(NullableListBodyDataTestCase, UploadedTrackTestCase):
         assert error['code'] == FieldValidationErrorCode.STRING_TOO_LONG
 
     def test_multiple_with_one_empty_then_400_bad_request(self) -> None:
-        data = {UploadedTrackInputFieldKey.ALBUM_NAME: "Best Of", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART: ['', 'Muse']}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Best Of", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: ['', 'Muse']}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -168,7 +168,7 @@ class TestCase(NullableListBodyDataTestCase, UploadedTrackTestCase):
 
     def test_comma_separated_then_only_one_value(self) -> None:
         artist_name = "mat, muse"
-        data = {UploadedTrackInputFieldKey.ALBUM_NAME: "Best Of", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART: [artist_name]}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Best Of", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: [artist_name]}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
 
         assert response.status_code == status.HTTP_201_CREATED
@@ -178,7 +178,7 @@ class TestCase(NullableListBodyDataTestCase, UploadedTrackTestCase):
         assert artists_list[0].name == artist_name
 
     def test_duplicate_values_then_400_bad_request(self) -> None:
-        data = {UploadedTrackInputFieldKey.ALBUM_NAME: "Best Of", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART: ['Muse', 'Muse']}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Best Of", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: ['Muse', 'Muse']}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST

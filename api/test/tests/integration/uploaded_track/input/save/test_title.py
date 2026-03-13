@@ -12,14 +12,14 @@ class TestCase(NotNullableCharBodyDataTestCase, UploadedTrackTestCase):
 
     def test_largest_then_ok(self):
         value = "a" * settings.UPLOADED_TRACK_TITLE_LEN_MAX
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TITLE: value})
+        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TITLE.value: value})
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.title == value
 
     def test_too_large_then_400_bad_request(self):
         value = "a" * (settings.UPLOADED_TRACK_TITLE_LEN_MAX + 1)
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TITLE: value})
+        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TITLE.value: value})
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1
@@ -28,7 +28,7 @@ class TestCase(NotNullableCharBodyDataTestCase, UploadedTrackTestCase):
         assert error['code'] == FieldValidationErrorCode.STRING_TOO_LONG
 
     def test_empty_then_400_bad_request(self):
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TITLE: ""})
+        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TITLE.value: ""})
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1
@@ -38,7 +38,7 @@ class TestCase(NotNullableCharBodyDataTestCase, UploadedTrackTestCase):
 
     def test_multi_value_then_400_bad_request(self):
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TITLE: ["a", "b"]})
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.TITLE.value: ["a", "b"]})
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1

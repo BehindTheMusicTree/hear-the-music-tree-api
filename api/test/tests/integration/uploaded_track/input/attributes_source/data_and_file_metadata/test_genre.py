@@ -9,7 +9,7 @@ class TestCase(UploadedTrackTestCase):
 
     def test_genre_name_in_both_then_take_data(self):
         data_genre_name = "Rock"
-        data_dict = {UploadedTrackInputFieldKey.GENRE: data_genre_name}
+        data_dict = {UploadedTrackInputFieldKey.GENRE.value: data_genre_name}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_LONG_A_ID3V2_SMALL_MP3, **data_dict)
 
         assert response.status_code == status.HTTP_201_CREATED
@@ -20,7 +20,7 @@ class TestCase(UploadedTrackTestCase):
         data_genre_name = "Rock"
         genre_uuid = self.model_fixture_factory.create_genre(name=data_genre_name).uuid
 
-        data_dict = {UploadedTrackInputFieldKey.GENRE: genre_uuid}
+        data_dict = {UploadedTrackInputFieldKey.GENRE.value: genre_uuid}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_LONG_A_ID3V2_SMALL_MP3, **data_dict)
 
         assert response.status_code == status.HTTP_201_CREATED

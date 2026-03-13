@@ -9,7 +9,7 @@ class TestCase(UploadedTrackFileMetadataUpdateStrTestCase):
     save_field = UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART
     uploaded_track_app_metadata_key = AppMetadataKey.ALBUM_ARTISTS_NAMES
     length_max = settings.ALBUM_ARTISTS_NAMES_FIELD_LEN_MAX
-    album_data = {UploadedTrackInputFieldKey.ALBUM_NAME: "The Great Twenty-Eight"}
+    album_data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "The Great Twenty-Eight"}
     value_expected_in_metadata_is_list = True
 
     def test_on_missing_tag_then_ok(self):
