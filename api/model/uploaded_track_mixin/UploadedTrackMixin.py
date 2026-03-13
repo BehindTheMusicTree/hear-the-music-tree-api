@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 from django.db import models
 
 from api.model.private_unique_resource.PrivateUniqueResource import PrivateUniqueResource
-from api.model.uploaded_track.Fields import Fields as UploadedTrackFields
+from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
 
 
 if TYPE_CHECKING:
@@ -33,7 +33,7 @@ class UploadedTrackMixin(PrivateUniqueResource):
 
     @property
     def uploaded_tracks_not_archived_sorted(self) -> models.QuerySet['UploadedTrack']:
-        return self.uploaded_tracks_not_archived.order_by(f'-{UploadedTrackFields.CREATED_ON}')
+        return self.uploaded_tracks_not_archived.order_by(f'-{UploadedTrackFields.CREATED_ON.value}')
 
     @property
     def uploaded_tracks_not_archived_count(self) -> int:

@@ -3,7 +3,7 @@ from uuid import UUID
 from django.urls import reverse
 
 from api.model.criteria.children.tag.Tag import Tag
-from api.serializer.model.criteria.output.Fields import Fields
+from api.serializer.model.criteria.output.CriteriaOutputFieldKey import CriteriaOutputFieldKey
 from api.test.utils.AppTestCase import AppTestCase
 
 

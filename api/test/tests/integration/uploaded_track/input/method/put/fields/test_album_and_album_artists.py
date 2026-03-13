@@ -4,7 +4,7 @@ from api.model.album.Album import Album
 from api.model.artist.Artist import Artist
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 from api.test.utils.field.body_data.method.PutBodyDataTestCase import PutBodyDataTestCase
-from api.serializer.model.uploaded_track.input.put.Fields import Fields as PutFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 
 
 class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
@@ -13,7 +13,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         album = self.model_fixture_factory.create_album(name="Jojo")
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="Love", album=album)
 
-        response = self._put_uploaded_track(uploaded_track.uuid, **{PutFields.ARCHIVED: True})
+        response = self._put_uploaded_track(uploaded_track.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: True})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.saved_object.album == album
@@ -22,7 +22,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         album_old = self.model_fixture_factory.create_album(name="Jojo")
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="koko", album=album_old)
 
-        data = {PutFields.ALBUM_NAME: '', PutFields.ALBUM_ARTISTS_NAMES_MULTIPART: []}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: '', UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: []}
         response = self._put_uploaded_track(uuid=uploaded_track.uuid, **data)
 
         assert response.status_code == status.HTTP_200_OK
@@ -35,7 +35,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         album_artist_new = self.model_fixture_factory.create_artist(name="Harden")
         album_new = self.model_fixture_factory.create_album(name="koko", album_artists=[album_artist_new])
 
-        data = {PutFields.ALBUM_NAME: album_new.name, PutFields.ALBUM_ARTISTS_NAMES_MULTIPART: [album_artist_new.name]}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: album_new.name, UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: [album_artist_new.name]}
         response = self._put_uploaded_track(uuid=uploaded_track.uuid, **data)
 
         assert response.status_code == status.HTTP_200_OK
@@ -50,8 +50,8 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         album_artist_new_1 = self.model_fixture_factory.create_artist(name="James")
         album_artist_new_2 = self.model_fixture_factory.create_artist(name="Koko")
 
-        data = {PutFields.ALBUM_NAME: album_new_name,
-                PutFields.ALBUM_ARTISTS_NAMES_MULTIPART: [album_artist_new_1.name, album_artist_new_2.name]}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: album_new_name,
+                UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: [album_artist_new_1.name, album_artist_new_2.name]}
         response = self._put_uploaded_track(uuid=uploaded_track.uuid, **data)
 
         assert response.status_code == status.HTTP_200_OK
@@ -65,7 +65,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         old_album = self.model_fixture_factory.create_album(name="Le Noir", album_artists=[old_album_artist])
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="Foire", album=old_album)
 
-        data = {PutFields.ALBUM_NAME: "Paul", PutFields.ALBUM_ARTISTS_NAMES_MULTIPART: ["James"]}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Paul", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: ["James"]}
         response = self._put_uploaded_track(uuid=uploaded_track.uuid, **data)
 
         assert response.status_code == status.HTTP_200_OK
@@ -76,7 +76,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         old_album = self.model_fixture_factory.create_album(name="Le Noir", album_artists=[old_album_artist])
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="Foire", album=old_album)
 
-        data = {PutFields.ALBUM_NAME: "Paul", PutFields.ALBUM_ARTISTS_NAMES_MULTIPART: ["James"]}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Paul", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: ["James"]}
         response = self._put_uploaded_track(uuid=uploaded_track.uuid, **data)
 
         assert response.status_code == status.HTTP_200_OK
@@ -88,7 +88,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="Foire", album=album)
         self.model_fixture_factory.create_uploaded_track_with_file(title="Josie", album=album)
 
-        data = {PutFields.ALBUM_NAME: "Paul", PutFields.ALBUM_ARTISTS_NAMES_MULTIPART: ["James"]}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Paul", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: ["James"]}
         response = self._put_uploaded_track(uuid=uploaded_track.uuid, **data)
 
         assert response.status_code == status.HTTP_200_OK
@@ -100,7 +100,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         album = self.model_fixture_factory.create_album(name="Jojo", album_artists=[album_artist])
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="Foire", album=album)
 
-        data = {PutFields.ALBUM_NAME: "Best of", PutFields.ALBUM_ARTISTS_NAMES_MULTIPART: ["Other artist"]}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Best of", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: ["Other artist"]}
         response = self._put_uploaded_track(uuid=uploaded_track.uuid, **data)
 
         assert response.status_code == status.HTTP_200_OK
@@ -112,7 +112,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="Foire", album=album)
         self.model_fixture_factory.create_uploaded_track_with_file(title="Josie", album=album)
 
-        data = {PutFields.ALBUM_NAME: "Best of", PutFields.ALBUM_ARTISTS_NAMES_MULTIPART: ["Other artist"]}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Best of", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: ["Other artist"]}
         response = self._put_uploaded_track(uuid=uploaded_track.uuid, **data)
 
         assert response.status_code == status.HTTP_200_OK
@@ -125,7 +125,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         album2 = self.model_fixture_factory.create_album(name="Jojo2", album_artists=[old_album_artist])
         self.model_fixture_factory.create_uploaded_track_with_file(title="Josie", album=album2)
 
-        data = {PutFields.ALBUM_NAME: "Best of", PutFields.ALBUM_ARTISTS_NAMES_MULTIPART: ["Other artist"]}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Best of", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: ["Other artist"]}
         response = self._put_uploaded_track(uuid=uploaded_track.uuid, **data)
 
         assert response.status_code == status.HTTP_200_OK
@@ -138,7 +138,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         album2 = self.model_fixture_factory.create_album(name="Jojo2", album_artists=[old_album_artist])
         self.model_fixture_factory.create_uploaded_track_with_file(title="Josie", album=album2)
 
-        data = {PutFields.ALBUM_NAME: "Best of", PutFields.ALBUM_ARTISTS_NAMES_MULTIPART: ["Other artist"]}
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Best of", UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: ["Other artist"]}
         response = self._put_uploaded_track(uuid=uploaded_track.uuid, **data)
 
         assert response.status_code == status.HTTP_200_OK

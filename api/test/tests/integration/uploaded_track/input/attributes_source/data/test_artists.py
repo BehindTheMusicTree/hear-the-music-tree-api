@@ -1,7 +1,7 @@
 from rest_framework import status
 
 from api.model.artist.Artist import Artist
-from api.serializer.model.uploaded_track.input.post.Fields import Fields as PostFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
@@ -11,7 +11,7 @@ class TestCase(UploadedTrackTestCase):
     def test_value_then_ok(self) -> None:
         value = 'rovk'
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.METADATA_NONE_MP3, **{PostFields.ARTISTS_NAMES_MULTIPART: [value]})
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.ARTISTS_NAMES_MULTIPART: [value]})
 
         assert response.status_code == status.HTTP_201_CREATED
         artists_list: list[Artist] = list(self.saved_object.artists.all())
@@ -20,7 +20,7 @@ class TestCase(UploadedTrackTestCase):
 
     def test_empty_then_none(self) -> None:
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.RATING_ID3V2_1_STAR_MP3, **{PostFields.ARTISTS_NAMES_MULTIPART: []})
+            UploadedTrackTestFilename.RATING_ID3V2_1_STAR_MP3, **{UploadedTrackInputFieldKey.ARTISTS_NAMES_MULTIPART: []})
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.artists.count() == 0

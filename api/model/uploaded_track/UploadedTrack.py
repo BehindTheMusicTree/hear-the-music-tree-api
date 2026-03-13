@@ -20,7 +20,7 @@ from api.model.trackable_play_count.TrackablePlayCount import TrackablePlayCount
 from api.utils.audio_file_metadata.AppMetadataKey import AppMetadataKey
 
 from .file.TrackFile import TrackFile
-from .Fields import Fields
+from .UploadedTrackFieldKey import UploadedTrackFieldKey as Fields
 from .UploadedTrackManager import UploadedTrackManager
 
 
@@ -65,9 +65,9 @@ class UploadedTrack(TrackablePlayCount):
         db_table = 'htmt_api_uploaded_track'
         verbose_name = 'Uploaded Track'
         verbose_name_plural = 'Uploaded Tracks'
-        indexes = [models.Index(fields=[Fields.USER, Fields.TITLE]),
-                   models.Index(fields=[Fields.USER, Fields.GENRE]),
-                   models.Index(fields=[Fields.USER, Fields.ALBUM]),]
+        indexes = [models.Index(fields=[Fields.USER.value, Fields.TITLE.value]),
+                   models.Index(fields=[Fields.USER.value, Fields.GENRE.value]),
+                   models.Index(fields=[Fields.USER.value, Fields.ALBUM.value]),]
 
     @property
     def relative_url(self) -> str:
@@ -78,22 +78,22 @@ class UploadedTrack(TrackablePlayCount):
 
         artists: QuerySet[Artist] = self.artists.all()
         artists_str = ", ".join(
-            artist.name for artist in artists) if self.artists.exists() else f"[no {Fields.ARTISTS}]"
-        album_str = str(self.album) if self.album else f"[no {Fields.ALBUM}]"
+            artist.name for artist in artists) if self.artists.exists() else f"[no {Fields.ARTISTS.value}]"
+        album_str = str(self.album) if self.album else f"[no {Fields.ALBUM.value}]"
 
-        genre_str = f"{Fields.GENRE}: {self.genre}" if self.genre else f"{Fields.GENRE}: --"
-        rating_str = f"{Fields.RATING}: {self.rating}" if self.rating else f"{Fields.RATING}: --"
-        language_str = f"{Fields.LANGUAGE}: {self.language}" if self.language else f"{Fields.LANGUAGE}: --"
-        file_str = f"{Fields.TRACK_FILE_INTERNAL}: {self.track_file}" if self.track_file else "no track file"
+        genre_str = f"{Fields.GENRE.value}: {self.genre}" if self.genre else f"{Fields.GENRE.value}: --"
+        rating_str = f"{Fields.RATING.value}: {self.rating}" if self.rating else f"{Fields.RATING.value}: --"
+        language_str = f"{Fields.LANGUAGE.value}: {self.language}" if self.language else f"{Fields.LANGUAGE.value}: --"
+        file_str = f"{Fields.TRACK_FILE_INTERNAL.value}: {self.track_file}" if self.track_file else "no track file"
 
         return (f"{self.uuid} | {position_str} | '{self.title}' by {artists_str} | {album_str} | "
                 f"{genre_str} | {rating_str} | {language_str} | "
-                + f"{Fields.CREATED_ON}: {self.created_on} | {file_str}")
+                + f"{Fields.CREATED_ON.value}: {self.created_on} | {file_str}")
 
     def simple_str(self) -> str:
         artists: QuerySet[Artist] = self.artists.all()
         artists_str = ", ".join(
-            artist.name for artist in artists) if self.artists.exists() else f"no {Fields.ARTISTS}"
+            artist.name for artist in artists) if self.artists.exists() else f"no {Fields.ARTISTS.value}"
         return f"{self.uuid} | '{self.title}' by {artists_str}"
 
     def update_file_metadata_from_uploaded_track_instance_values(self):

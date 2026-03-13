@@ -8,7 +8,7 @@ from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRelManager impor
 from api.model.playlist.Fields import Fields as PlayListFields
 from api.model.playlist.Playlist import Playlist
 from api.model.private_standard_resource.PrivateStandardResource import PrivateStandardResource
-from api.model.uploaded_track.Fields import Fields as UploadedTrackFields
+from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 
 from .Fields import Fields
@@ -21,7 +21,7 @@ class UploadedTrackPlaylistRel(PrivateStandardResource):
     playlist: Playlist = PrivateForeignKey(  # type: ignore
         Playlist, on_delete=models.CASCADE, related_name=PlayListFields.UPLOADED_TRACK_PLAYLIST_RELS_INTERNAL)
     uploaded_track: UploadedTrack = PrivateForeignKey(  # type: ignore
-        UploadedTrack, on_delete=models.CASCADE, related_name=UploadedTrackFields.UPLOADED_TRACK_PLAYLIST_RELS)
+        UploadedTrack, on_delete=models.CASCADE, related_name=UploadedTrackFields.UPLOADED_TRACK_PLAYLIST_RELS.value)
     position = models.PositiveIntegerField(null=True, blank=True)
 
     objects: UploadedTrackPlaylistRelManager = UploadedTrackPlaylistRelManager()

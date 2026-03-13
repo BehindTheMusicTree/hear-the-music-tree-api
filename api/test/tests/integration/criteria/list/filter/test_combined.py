@@ -2,7 +2,7 @@ from rest_framework import status
 from datetime import timedelta
 from django.utils import timezone
 
-from api.serializer.model.criteria.output.Fields import Fields as GenreFields
+from api.serializer.model.criteria.output.CriteriaOutputFieldKey import CriteriaOutputFieldKey
 from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 from api.utils.data_transformer import to_camel_case
 from api.filtering.set.private_unique_resource.Fields import Fields as PrivateUniqueResourceFields
@@ -20,7 +20,7 @@ class TestCase(GenreTestCase):
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 2
-        result_names = [result[to_camel_case(GenreFields.NAME)] for result in self.results]
+        result_names = [result[to_camel_case(CriteriaOutputFieldKey.NAME.value)] for result in self.results]
         assert genre_punk.name in result_names
         assert genre_punky.name in result_names
 
@@ -49,6 +49,6 @@ class TestCase(GenreTestCase):
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 2
-        result_names = [result[to_camel_case(GenreFields.NAME)] for result in self.results]
+        result_names = [result[to_camel_case(CriteriaOutputFieldKey.NAME.value)] for result in self.results]
         assert genre_rock_new.name in result_names
         assert genre_rock_old.name in result_names

@@ -1,7 +1,7 @@
 from rest_framework import status
 
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
-from api.serializer.model.uploaded_track.input.post.Fields import Fields as PostFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
@@ -10,7 +10,7 @@ class TestCase(UploadedTrackTestCase):
 
     def test_extra_field_then_400_bad_request(self):
         extraField = "extraField"
-        data = {PostFields.TITLE: "Rock", extraField: "extra_value"}
+        data = {UploadedTrackInputFieldKey.TITLE: "Rock", extraField: "extra_value"}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST

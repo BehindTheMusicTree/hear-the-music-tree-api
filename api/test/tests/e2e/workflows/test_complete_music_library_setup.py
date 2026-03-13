@@ -10,7 +10,7 @@ from api.serializer.model.playlist.children.manual.input.Fields import (
 )
 from api.serializer.model.play.input.schema.PostFields import Fields as PlayPostFields
 from api.utils.data_transformer import to_camel_case
-from api.serializer.model.uploaded_track.input.put.Fields import Fields as PutFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 from api.test.tests.integration.play.PlayTestCase import PlayTestCase
 from api.test.tests.integration.playlist.children.manual.ManualPlaylistTestCase import (
@@ -44,13 +44,13 @@ class TestCase(UploadedTrackTestCase, SearchMixin):
         genre_helper = self._domain_helper(GenreTestCase)
         tree_data = [
             {
-                TreeImportFields.NAME_PUBLIC: "Electronic Music",
-                TreeImportFields.CHILDREN: [
-                    {TreeImportFields.NAME_PUBLIC: "Techno", TreeImportFields.CHILDREN: []}
+                TreeImportUploadedTrackInputFieldKey.NAME_PUBLIC: "Electronic Music",
+                TreeImportUploadedTrackInputFieldKey.CHILDREN: [
+                    {TreeImportUploadedTrackInputFieldKey.NAME_PUBLIC: "Techno", TreeImportUploadedTrackInputFieldKey.CHILDREN: []}
                 ],
             }
         ]
-        response = genre_helper._post_genres_tree_import(data={TreeImportFields.TREE: tree_data})
+        response = genre_helper._post_genres_tree_import(data={TreeImportUploadedTrackInputFieldKey.TREE: tree_data})
         assert response.status_code == status.HTTP_201_CREATED
 
         genres = Genre.objects.filter(user=self.test_user1)
@@ -73,10 +73,10 @@ class TestCase(UploadedTrackTestCase, SearchMixin):
         track3 = self.saved_object
 
         techno_genre = genres.get(name="Techno")
-        response = self._put_uploaded_track(track1.uuid, **{PutFields.GENRE: "Techno"})
+        response = self._put_uploaded_track(track1.uuid, **{UploadedTrackInputFieldKey.GENRE.value: "Techno"})
         assert response.status_code == status.HTTP_200_OK
 
-        response = self._put_uploaded_track(track2.uuid, **{PutFields.GENRE: "Techno"})
+        response = self._put_uploaded_track(track2.uuid, **{UploadedTrackInputFieldKey.GENRE.value: "Techno"})
         assert response.status_code == status.HTTP_200_OK
 
         from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
@@ -92,7 +92,7 @@ class TestCase(UploadedTrackTestCase, SearchMixin):
 
         playlist_helper = self._domain_helper(ManualPlaylistTestCase)
         response = playlist_helper._post_manual_playlist(
-            **{ManualPlaylistFields.NAME_PUBLIC: "My Favorites"}
+            **{ManualPlaylistUploadedTrackInputFieldKey.NAME_PUBLIC: "My Favorites"}
         )
         assert response.status_code == status.HTTP_201_CREATED
         manual_playlist = playlist_helper.saved_object
@@ -103,7 +103,7 @@ class TestCase(UploadedTrackTestCase, SearchMixin):
 
         play_helper = self._domain_helper(PlayTestCase)
         response = play_helper._post_play(
-            **{to_camel_case(PlayPostFields.CONTENT): str(track1.uuid)}
+            **{to_camel_case(PlayPostUploadedTrackInputFieldKey.CONTENT): str(track1.uuid)}
         )
         assert response.status_code == status.HTTP_201_CREATED
 

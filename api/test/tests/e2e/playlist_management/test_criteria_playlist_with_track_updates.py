@@ -4,7 +4,7 @@ from rest_framework import status
 from api.model.criteria.children.genre.Genre import Genre
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 from api.serializer.model.criteria.input.post import Fields as PostFields
-from api.serializer.model.uploaded_track.input.put.Fields import Fields as PutFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.utils.AppTestCase import AppTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
@@ -36,7 +36,7 @@ class TestCase(AppTestCase):
         rock_genre_name = "Rock"
         jazz_genre_name = "Jazz"
 
-        response = genre_test_case._post_genre(**{PostFields.NAME_PUBLIC: rock_genre_name})
+        response = genre_test_case._post_genre(**{PostUploadedTrackInputFieldKey.NAME_PUBLIC: rock_genre_name})
         assert response.status_code == status.HTTP_201_CREATED
         rock_genre = genre_test_case.saved_object
 
@@ -46,7 +46,7 @@ class TestCase(AppTestCase):
         track = self.model_fixture_factory.create_uploaded_track_with_file(
             title="Test Track", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3)
 
-        response = uploaded_track_test_case._put_uploaded_track(track.uuid, **{PutFields.GENRE: rock_genre_name})
+        response = uploaded_track_test_case._put_uploaded_track(track.uuid, **{UploadedTrackInputFieldKey.GENRE.value: rock_genre_name})
         assert response.status_code == status.HTTP_200_OK
 
         track.refresh_from_db()
@@ -56,11 +56,11 @@ class TestCase(AppTestCase):
         assert rock_playlist.playlist.uuid in track_playlists
         assert track in rock_playlist.playlist.uploaded_tracks.all()
 
-        response = genre_test_case._post_genre(**{PostFields.NAME_PUBLIC: jazz_genre_name})
+        response = genre_test_case._post_genre(**{PostUploadedTrackInputFieldKey.NAME_PUBLIC: jazz_genre_name})
         assert response.status_code == status.HTTP_201_CREATED
         jazz_genre = genre_test_case.saved_object
 
-        response = uploaded_track_test_case._put_uploaded_track(track.uuid, **{PutFields.GENRE: jazz_genre_name})
+        response = uploaded_track_test_case._put_uploaded_track(track.uuid, **{UploadedTrackInputFieldKey.GENRE.value: jazz_genre_name})
         assert response.status_code == status.HTTP_200_OK
 
         track.refresh_from_db()

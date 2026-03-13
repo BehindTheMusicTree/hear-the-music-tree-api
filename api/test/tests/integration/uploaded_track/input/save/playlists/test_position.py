@@ -1,7 +1,7 @@
 from rest_framework import status
 
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
-from api.serializer.model.uploaded_track.input.post.Fields import Fields as PostFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
@@ -11,7 +11,7 @@ class TestCase(UploadedTrackTestCase):
     def test_new_genre_then_first_position(self):
         genre_name = "Rock"
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.METADATA_NONE_MP3, **{PostFields.GENRE: genre_name})
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.GENRE: genre_name})
 
         assert response.status_code == status.HTTP_201_CREATED
         genre_playlist: CriteriaPlaylist = CriteriaPlaylist.objects.get(user=self.test_user1, criteria__name=genre_name)
@@ -26,7 +26,7 @@ class TestCase(UploadedTrackTestCase):
             title="We're All To Blame", genre=genre, use_manager_for_genre_playlist_adding=True)
 
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.METADATA_NONE_MP3, **{PostFields.GENRE: genre_name})
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.GENRE: genre_name})
 
         assert response.status_code == status.HTTP_201_CREATED
         genre_playlist: CriteriaPlaylist = CriteriaPlaylist.objects.get(criteria__name=genre_name)

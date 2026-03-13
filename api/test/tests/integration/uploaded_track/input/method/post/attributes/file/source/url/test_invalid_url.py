@@ -3,7 +3,7 @@ from rest_framework import status
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.test.utils.uploaded_track.UploadedTrackDownloadTestUrl import UploadedTrackDownloadTestUrl
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
-from api.serializer.model.uploaded_track.input.post.Fields import Fields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 
 
 class TestCase(UploadedTrackTestCase):
@@ -14,5 +14,5 @@ class TestCase(UploadedTrackTestCase):
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1
         error = self.bad_request_result_field_errors[0]
-        assert error['field'] == Fields.TRACK_FILE_PUBLIC
+        assert error['field'] == UploadedTrackInputFieldKey.TRACK_FILE_PUBLIC.value
         assert error['code'] == FieldValidationErrorCode.URL_NOT_FOUND

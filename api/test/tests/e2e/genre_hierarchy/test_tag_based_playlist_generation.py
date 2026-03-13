@@ -3,7 +3,7 @@ from rest_framework import status
 
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 from api.serializer.model.criteria.input.post import Fields as PostFields
-from api.serializer.model.uploaded_track.input.put.Fields import Fields as PutFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.utils.AppTestCase import AppTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
@@ -32,15 +32,15 @@ class TestCase(AppTestCase):
         tag2_name = "electronic"
         tag3_name = "ambient"
 
-        response = tag_test_case._post_tag(**{PostFields.NAME_PUBLIC: tag1_name})
+        response = tag_test_case._post_tag(**{PostUploadedTrackInputFieldKey.NAME_PUBLIC: tag1_name})
         assert response.status_code == status.HTTP_201_CREATED
         tag1 = tag_test_case.saved_object
 
-        response = tag_test_case._post_tag(**{PostFields.NAME_PUBLIC: tag2_name})
+        response = tag_test_case._post_tag(**{PostUploadedTrackInputFieldKey.NAME_PUBLIC: tag2_name})
         assert response.status_code == status.HTTP_201_CREATED
         tag2 = tag_test_case.saved_object
 
-        response = tag_test_case._post_tag(**{PostFields.NAME_PUBLIC: tag3_name})
+        response = tag_test_case._post_tag(**{PostUploadedTrackInputFieldKey.NAME_PUBLIC: tag3_name})
         assert response.status_code == status.HTTP_201_CREATED
         tag3 = tag_test_case.saved_object
 
