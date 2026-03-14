@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **"Test" is NOT a valid changelog category** - tests should be mentioned within the related feature or fix entry, not as standalone entries.
 - Use an "Unreleased" section for upcoming changes.
 - Follow Semantic Versioning where possible.
-- Use ISO 8601 date format: YYYY-MM-DD.
+- Use ISO 8601 date format: 2026-03-14.
 - Avoid dumping raw git logs; summarize notable changes clearly.
 
 ### Guidelines for Contributors
@@ -57,7 +57,9 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 **Note:** During releases, maintainers will move entries from `[Unreleased]` to a versioned section (e.g., `## [0.2.8] - 2025-01-XX`).
 
-## [Unreleased]
+## [Unreleased]  <!-- release -->
+
+## [v2.2.0] - 2026-03-14
 
 ### Fixed
 
