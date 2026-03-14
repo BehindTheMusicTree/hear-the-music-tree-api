@@ -4,11 +4,15 @@ from rest_framework import status
 from api.model.criteria.children.genre.Genre import Genre
 from api.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
-from api.serializer.model.criteria.input.tree_import.Fields import Fields as TreeImportFields
-from api.serializer.model.playlist.children.manual.input.Fields import (
-    Fields as ManualPlaylistFields,
+from api.serializer.model.criteria.input.tree_import.Fields import (
+    Fields as TreeImportUploadedTrackInputFieldKey,
 )
-from api.serializer.model.play.input.schema.PostFields import Fields as PlayPostFields
+from api.serializer.model.playlist.children.manual.input.Fields import (
+    Fields as ManualPlaylistUploadedTrackInputFieldKey,
+)
+from api.serializer.model.play.input.schema.PostFields import (
+    Fields as PlayPostUploadedTrackInputFieldKey,
+)
 from api.utils.data_transformer import to_camel_case
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
