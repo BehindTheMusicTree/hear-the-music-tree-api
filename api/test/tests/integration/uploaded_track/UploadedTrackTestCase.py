@@ -6,7 +6,7 @@ from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.test.utils.AppTestCase import AppTestCase
 from api.test.utils.uploaded_track.UploadedTrackDownloadTestUrl import UploadedTrackDownloadTestUrl
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.serializer.model.uploaded_track.input.post.Fields import Fields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.utils import data_transformer
 
 
@@ -17,7 +17,7 @@ class UploadedTrackTestCase(AppTestCase[UploadedTrack]):
 
     def _post_uploaded_track_from_url(
             self, test_uploaded_track_url: UploadedTrackDownloadTestUrl = UploadedTrackDownloadTestUrl.MP3, **kwargs):
-        kwargs[Fields.TRACK_FILE_PUBLIC] = str(test_uploaded_track_url)
+        kwargs[UploadedTrackInputFieldKey.TRACK_FILE_PUBLIC.value] = str(test_uploaded_track_url)
         return self.api_client.post(
             path=reverse('me-uploaded-track-list'), data=kwargs, handle_response=self._set_results)
 
@@ -27,12 +27,11 @@ class UploadedTrackTestCase(AppTestCase[UploadedTrack]):
         file_abs_path = self.TEST_FILES_BASE_DIR / test_uploaded_track_filename.value
 
         with open(file_abs_path, "rb") as sample_file:
-            file_field_dict = {Fields.TRACK_FILE_PUBLIC: sample_file}
+            file_field_dict = {UploadedTrackInputFieldKey.TRACK_FILE_PUBLIC.value: sample_file}
             if kwargs:
                 kwargs = data_transformer.merge_two_dicts(file_field_dict, kwargs)
             else:
                 kwargs = file_field_dict
-
             return self.api_client.post(
                 path=reverse('me-uploaded-track-list'),
                 data=kwargs, format='multipart', handle_response=self._set_results)

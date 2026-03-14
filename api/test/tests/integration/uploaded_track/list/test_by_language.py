@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from api.serializer.model.uploaded_track.output.Fields import Fields as UploadedTrackFields
+from api.serializer.model.uploaded_track.output.UploadedTrackOutputFieldKey import UploadedTrackOutputFieldKey
 from api.test.utils.field.filter.char.NullableCharFilterTestCase import NullableCharFilterTestCase
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
@@ -34,4 +34,4 @@ class TestCase(UploadedTrackTestCase, NullableCharFilterTestCase):
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 1
-        assert self.results[0][UploadedTrackFields.TITLE] == track.title
+        assert self.results[0][UploadedTrackOutputFieldKey.TITLE.value] == track.title

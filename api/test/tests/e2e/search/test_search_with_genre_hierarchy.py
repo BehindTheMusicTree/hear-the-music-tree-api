@@ -2,9 +2,9 @@ import pytest
 from rest_framework import status
 
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
-from api.serializer.model.criteria.input.post import Fields as PostFields
-from api.filtering.set.search.Fields import Fields as SearchFields
-from api.serializer.model.uploaded_track.input.put.Fields import Fields as PutFields
+from api.serializer.model.criteria.input.post import Fields as PostUploadedTrackInputFieldKey
+from api.filtering.set.search.Fields import Fields as SearchUploadedTrackInputFieldKey
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 from api.test.tests.integration.search.SearchTestCase import SearchMixin
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
@@ -29,16 +29,16 @@ class TestCase(GenreTestCase, SearchMixin):
         child_genre_name = "Techno"
         grandchild_genre_name = "Minimal Techno"
 
-        response = self._post_genre(**{PostFields.NAME_PUBLIC: parent_genre_name})
+        response = self._post_genre(**{PostUploadedTrackInputFieldKey.NAME_PUBLIC: parent_genre_name})
         assert response.status_code == status.HTTP_201_CREATED
         parent_genre = self.saved_object
 
-        response = self._post_genre(**{PostFields.NAME_PUBLIC: child_genre_name, PostFields.PARENT: parent_genre.uuid})
+        response = self._post_genre(**{PostUploadedTrackInputFieldKey.NAME_PUBLIC: child_genre_name, PostUploadedTrackInputFieldKey.PARENT: parent_genre.uuid})
         assert response.status_code == status.HTTP_201_CREATED
         child_genre = self.saved_object
 
-        response = self._post_genre(**{PostFields.NAME_PUBLIC: grandchild_genre_name,
-                                    PostFields.PARENT: child_genre.uuid})
+        response = self._post_genre(**{PostUploadedTrackInputFieldKey.NAME_PUBLIC: grandchild_genre_name,
+                                    PostUploadedTrackInputFieldKey.PARENT: child_genre.uuid})
         assert response.status_code == status.HTTP_201_CREATED
         grandchild_genre = self.saved_object
 
@@ -50,25 +50,25 @@ class TestCase(GenreTestCase, SearchMixin):
             title="Techno Track",
             test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3)
 
-        response = track_helper._put_uploaded_track(track1.uuid, **{PutFields.GENRE: grandchild_genre_name})
+        response = track_helper._put_uploaded_track(track1.uuid, **{UploadedTrackInputFieldKey.GENRE.value: grandchild_genre_name})
         assert response.status_code == status.HTTP_200_OK
 
-        response = track_helper._put_uploaded_track(track2.uuid, **{PutFields.GENRE: child_genre_name})
+        response = track_helper._put_uploaded_track(track2.uuid, **{UploadedTrackInputFieldKey.GENRE.value: child_genre_name})
         assert response.status_code == status.HTTP_200_OK
 
-        response = self._search(**{SearchFields.QUERY: "Electronic"})
+        response = self._search(**{SearchUploadedTrackInputFieldKey.QUERY: "Electronic"})
         assert response.status_code == status.HTTP_200_OK
         assert UploadedTrack.__name__ in self.results
         track_titles = [t.get("title") for t in self.results[UploadedTrack.__name__]]
         assert track1.title in track_titles
 
-        response = self._search(**{SearchFields.QUERY: "Techno"})
+        response = self._search(**{SearchUploadedTrackInputFieldKey.QUERY: "Techno"})
         assert response.status_code == status.HTTP_200_OK
         assert UploadedTrack.__name__ in self.results
         track_titles = [t.get("title") for t in self.results[UploadedTrack.__name__]]
         assert track2.title in track_titles
 
-        response = self._search(**{SearchFields.QUERY: "Minimal"})
+        response = self._search(**{SearchUploadedTrackInputFieldKey.QUERY: "Minimal"})
         assert response.status_code == status.HTTP_200_OK
         assert UploadedTrack.__name__ in self.results
         track_titles = [t.get("title") for t in self.results[UploadedTrack.__name__]]

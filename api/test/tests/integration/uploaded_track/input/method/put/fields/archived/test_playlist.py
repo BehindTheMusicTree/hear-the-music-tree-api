@@ -7,7 +7,7 @@ from django.db.models import QuerySet
 from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 from api.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
-from api.serializer.model.uploaded_track.input.put.Fields import Fields as PutFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
@@ -23,7 +23,7 @@ class TestCase(UploadedTrackTestCase):
         self.model_fixture_factory.create_uploaded_track_playlist_rel(
             playlist=manual_playlist, uploaded_track=track_archived)
 
-        response = self._put_uploaded_track(uuid=track.uuid, **{PutFields.ARCHIVED: "true"})
+        response = self._put_uploaded_track(uuid=track.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: "true"})
 
         assert response.status_code == status.HTTP_200_OK
         manual_playlist_updated: ManualPlaylist = \
@@ -40,7 +40,7 @@ class TestCase(UploadedTrackTestCase):
         track_love = self.model_fixture_factory.create_uploaded_track_with_file(
             title="Love", genre=criteria, use_manager_for_genre_playlist_adding=True)
 
-        response = self._put_uploaded_track(uuid=track_love.uuid, **{PutFields.ARCHIVED: "true"})
+        response = self._put_uploaded_track(uuid=track_love.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: "true"})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.saved_object.genre
@@ -68,7 +68,7 @@ class TestCase(UploadedTrackTestCase):
         assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[3] == track_to_archive
         assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[4] == track1
 
-        response = self._put_uploaded_track(uuid=track_to_archive.uuid, **{PutFields.ARCHIVED: "true"})
+        response = self._put_uploaded_track(uuid=track_to_archive.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: "true"})
 
         assert response.status_code == status.HTTP_200_OK
 
@@ -99,7 +99,7 @@ class TestCase(UploadedTrackTestCase):
         assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[3] == track_to_unarchive
         assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[4] == track1
 
-        response = self._put_uploaded_track(uuid=track_to_unarchive.uuid, **{PutFields.ARCHIVED: "true"})
+        response = self._put_uploaded_track(uuid=track_to_unarchive.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: "true"})
         assert response.status_code == status.HTTP_200_OK
 
         assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[1] == track4
@@ -112,7 +112,7 @@ class TestCase(UploadedTrackTestCase):
         assert cast(UploadedTrackPlaylistRel, uploaded_track_playlist_rels_of_playlist_archived.first()
                     ).uploaded_track == track_to_unarchive
 
-        response = self._put_uploaded_track(uuid=track_to_unarchive.uuid, **{PutFields.ARCHIVED: "false"})
+        response = self._put_uploaded_track(uuid=track_to_unarchive.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: "false"})
 
         assert response.status_code == status.HTTP_200_OK
 

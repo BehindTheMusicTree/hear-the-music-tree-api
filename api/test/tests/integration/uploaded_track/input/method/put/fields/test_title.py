@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from api.serializer.model.uploaded_track.input.put.Fields import Fields as PutFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.utils.field.body_data.method.PutBodyDataTestCase import PutBodyDataTestCase
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
@@ -11,7 +11,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="Love")
 
         title_new = "a"
-        response = self._put_uploaded_track(uploaded_track.uuid, **{PutFields.TITLE: title_new})
+        response = self._put_uploaded_track(uploaded_track.uuid, **{UploadedTrackInputFieldKey.TITLE.value: title_new})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.saved_object.title == title_new
@@ -20,7 +20,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         old_title = "Love"
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title=old_title)
 
-        response = self._put_uploaded_track(uploaded_track.uuid, **{PutFields.ARCHIVED: True})
+        response = self._put_uploaded_track(uploaded_track.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: True})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.saved_object.title == old_title
@@ -28,7 +28,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
     def test_empty_then_400_bad_request(self):
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="Love")
 
-        response = self._put_uploaded_track(uploaded_track.uuid, **{PutFields.TITLE: ""}
+        response = self._put_uploaded_track(uploaded_track.uuid, **{UploadedTrackInputFieldKey.TITLE.value: ""}
                                             )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
@@ -36,7 +36,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         title = "a"
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title=title)
 
-        response = self._put_uploaded_track(uploaded_track.uuid, **{PutFields.TITLE: title})
+        response = self._put_uploaded_track(uploaded_track.uuid, **{UploadedTrackInputFieldKey.TITLE.value: title})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.saved_object.title == title

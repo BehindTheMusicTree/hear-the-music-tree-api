@@ -12,7 +12,7 @@ from api.model.artist.Fields import Fields as ArtistFields
 from api.model.field.AppCharField import AppCharField
 from api.model.field.foreign_key.PrivateManyToManyField import PrivateManyToManyField
 from api.model.uploaded_track_mixin.UploadedTrackMixin import UploadedTrackMixin
-from api.model.uploaded_track.Fields import Fields as UploadedTrackFields
+from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
 
 from .Fields import Fields
 
@@ -40,7 +40,7 @@ class Album(UploadedTrackMixin):
     def uploaded_tracks_not_archived_sorted(self) -> models.QuerySet['UploadedTrack']:
         return self.uploaded_tracks_not_archived.annotate(
             null_position=Q(track_number__isnull=True)).order_by(
-            'null_position', UploadedTrackFields.TRACK_NUMBER, UploadedTrackFields.TITLE)
+            'null_position', UploadedTrackFields.TRACK_NUMBER.value, UploadedTrackFields.TITLE.value)
 
     class Meta:
         db_table = 'htmt_api_album'

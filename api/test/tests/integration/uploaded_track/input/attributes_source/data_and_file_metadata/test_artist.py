@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from api.serializer.model.uploaded_track.input.post.Fields import Fields as PostFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
@@ -9,7 +9,7 @@ class TestCase(UploadedTrackTestCase):
 
     def test_artist_in_both_then_take_data(self):
         data_artist_name = "Queen"
-        data_dict = {PostFields.ARTISTS_NAMES_MULTIPART: [data_artist_name]}
+        data_dict = {UploadedTrackInputFieldKey.ARTISTS_NAMES_MULTIPART.value: [data_artist_name]}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_LONG_A_ID3V2_SMALL_MP3, **data_dict)
 
         assert response.status_code == status.HTTP_201_CREATED

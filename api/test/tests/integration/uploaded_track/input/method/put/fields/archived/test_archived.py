@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from api.serializer.model.uploaded_track.input.put.Fields import Fields as PutFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.utils.field.body_data.method.PutBodyDataTestCase import PutBodyDataTestCase
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
@@ -10,32 +10,32 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
     def test_not_provided_then_unchanged(self):
         track = self.model_fixture_factory.create_uploaded_track_with_file(title="Love")
 
-        response = self._put_uploaded_track(uuid=track.uuid, **{PutFields.TITLE: "Love"})
+        response = self._put_uploaded_track(uuid=track.uuid, **{UploadedTrackInputFieldKey.TITLE.value: "Love"})
 
         assert response.status_code == status.HTTP_200_OK
         assert not self.saved_object.archived
 
         track = self.model_fixture_factory.create_uploaded_track_with_file(title="Love", archived=True)
 
-        response = self._put_uploaded_track(uuid=track.uuid, **{PutFields.TITLE: "Love"})
+        response = self._put_uploaded_track(uuid=track.uuid, **{UploadedTrackInputFieldKey.TITLE.value: "Love"})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.saved_object.archived
 
     def test_empty_then_400_bad_request(self):
         track = self.model_fixture_factory.create_uploaded_track_with_file(title="Love")
-        response = self._put_uploaded_track(uuid=track.uuid, **{PutFields.ARCHIVED: ''})
+        response = self._put_uploaded_track(uuid=track.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: ''})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_not_boolean_then_400_bad_request(self):
         track = self.model_fixture_factory.create_uploaded_track_with_file(title="Love")
-        response = self._put_uploaded_track(uuid=track.uuid, **{PutFields.ARCHIVED: 'koko'})
+        response = self._put_uploaded_track(uuid=track.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: 'koko'})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_provided_then_update(self):
         track = self.model_fixture_factory.create_uploaded_track_with_file(title="Love")
 
-        response = self._put_uploaded_track(uuid=track.uuid, **{PutFields.ARCHIVED: "true"})
+        response = self._put_uploaded_track(uuid=track.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: "true"})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.saved_object.archived
@@ -43,7 +43,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
     def test_true_in_capital_letters_then_update(self):
         track = self.model_fixture_factory.create_uploaded_track_with_file(title="Love")
 
-        response = self._put_uploaded_track(uuid=track.uuid, **{PutFields.ARCHIVED: 'TRUE'})\
+        response = self._put_uploaded_track(uuid=track.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: 'TRUE'})\
 
         assert response.status_code == status.HTTP_200_OK
         assert self.saved_object.archived
@@ -51,7 +51,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
     def test_false_then_update(self):
         track = self.model_fixture_factory.create_uploaded_track_with_file(title="Love", archived=True)
 
-        response = self._put_uploaded_track(uuid=track.uuid, **{PutFields.ARCHIVED: "false"})
+        response = self._put_uploaded_track(uuid=track.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: "false"})
 
         assert response.status_code == status.HTTP_200_OK
         assert not self.saved_object.archived
@@ -59,7 +59,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
     def test_false_in_capital_letters_then_update(self):
         track = self.model_fixture_factory.create_uploaded_track_with_file(title="Love", archived=True)
 
-        response = self._put_uploaded_track(uuid=track.uuid, **{PutFields.ARCHIVED: 'FALSE'})
+        response = self._put_uploaded_track(uuid=track.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: 'FALSE'})
 
         assert response.status_code == status.HTTP_200_OK
         assert not self.saved_object.archived
