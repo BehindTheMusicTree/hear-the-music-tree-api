@@ -10,9 +10,8 @@ from api.model.criteria.type.CriteriaTypePks import CriteriaTypePks
 from api.model.public_standard_resource.StandardResourceManager import StandardResourceManager
 from api.model.uploaded_track.file.Fields import Fields as TrackFileFields
 from api.model.user.User import User
-from api.serializer.model.uploaded_track.input.Fields import Fields as Fields
 
-from .Fields import Fields
+from .UploadedTrackFieldKey import UploadedTrackFieldKey as Fields
 
 
 if TYPE_CHECKING:
@@ -85,9 +84,9 @@ class UploadedTrackManager(StandardResourceManager['UploadedTrack']):
         from .file.TrackFile import TrackFile
 
         with transaction.atomic():
-            artists = kwargs.pop(Fields.ARTISTS, None)
+            artists = kwargs.pop(Fields.ARTISTS.value, None)
             track_file_model_data = dict()
-            track_file_model_data[TrackFileFields.FILE] = kwargs.pop(Fields.TRACK_FILE_INTERNAL)
+            track_file_model_data[TrackFileFields.FILE] = kwargs.pop(Fields.TRACK_FILE_INTERNAL.value)
 
             instance: UploadedTrack = super().create(**kwargs)
             if artists:
@@ -108,7 +107,7 @@ class UploadedTrackManager(StandardResourceManager['UploadedTrack']):
         from ..file.TrackFile import TrackFile
 
         with transaction.atomic():
-            artists = uploaded_track_data.pop(Fields.ARTISTS, None)
+            artists = uploaded_track_data.pop(Fields.ARTISTS.value, None)
             uploaded_track: UploadedTrack = self.model(**uploaded_track_data)
             uploaded_track.save()
             if artists:

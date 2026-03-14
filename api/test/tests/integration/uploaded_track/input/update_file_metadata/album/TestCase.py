@@ -1,15 +1,15 @@
 from api import settings
-from api.serializer.model.uploaded_track.input.Fields import Fields as Fields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.tests.integration.uploaded_track.input.update_file_metadata.UploadedTrackFileMetadataUpdateStrTestCase import (
     UploadedTrackFileMetadataUpdateStrTestCase)
 from api.utils.audio_file_metadata.AppMetadataKey import AppMetadataKey
 
 
 class TestCase(UploadedTrackFileMetadataUpdateStrTestCase):
-    save_field = Fields.ALBUM_NAME
+    save_field = UploadedTrackInputFieldKey.ALBUM_NAME.value
     uploaded_track_app_metadata_key = AppMetadataKey.ALBUM_NAME
     length_max = settings.ALBUM_NAME_LEN_MAX
-    album_artists_data = {Fields.ALBUM_ARTISTS_NAMES_MULTIPART: ['Muse']}
+    album_artists_data = {UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: ['Muse']}
 
     def test_on_missing_tag_then_ok(self):
         self._test_value("a", additional_data=self.album_artists_data, file_has_metadata=False)

@@ -1,7 +1,7 @@
 from rest_framework import status
 
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
-from api.serializer.model.criteria.output.Fields import Fields as ModelFields
+from api.serializer.model.criteria.output.CriteriaOutputFieldKey import CriteriaOutputFieldKey
 from api.test.utils.field.filter.char.NotNullableFreeCharFilterTestCase import NotNullableFreeCharFilterTestCase
 from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 from api.utils.data_transformer import to_camel_case
@@ -18,7 +18,7 @@ class TestCase(GenreTestCase, NotNullableFreeCharFilterTestCase):
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1
         error = self.bad_request_result_field_errors[0]
-        assert error['field'] == ModelFields.NAME
+        assert error['field'] == CriteriaOutputFieldKey.NAME.value
         assert error['code'] == FieldValidationErrorCode.BLANK
 
     def test_contains_in_another_case_then_results(self):
@@ -30,7 +30,7 @@ class TestCase(GenreTestCase, NotNullableFreeCharFilterTestCase):
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 2
-        result_names = [result[to_camel_case(ModelFields.NAME)] for result in self.results]
+        result_names = [result[to_camel_case(CriteriaOutputFieldKey.NAME.value)] for result in self.results]
         assert genre_rock1.name in result_names
         assert genre_rock2.name in result_names
 
@@ -42,6 +42,6 @@ class TestCase(GenreTestCase, NotNullableFreeCharFilterTestCase):
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 2
-        result_names = [result[to_camel_case(ModelFields.NAME)] for result in self.results]
+        result_names = [result[to_camel_case(CriteriaOutputFieldKey.NAME.value)] for result in self.results]
         assert genre_rock.name in result_names
         assert genre_pop.name in result_names

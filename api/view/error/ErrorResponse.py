@@ -22,6 +22,16 @@ from api.exception.spotify import (
 )
 from api.utils.data_transformer import to_camel_case
 from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
+
+_APP_METADATA_KEY_PREFIX = "app_metadata_key."
+
+
+def _field_name_for_error_response(field: Any) -> str:
+    """Return camelCase wire field name for error response (strip app_metadata_key. prefix if present)."""
+    s = getattr(field, 'value', field) if not isinstance(field, str) else str(field)
+    if s.startswith(_APP_METADATA_KEY_PREFIX):
+        s = s[len(_APP_METADATA_KEY_PREFIX):]
+    return to_camel_case(s)
 from api.view.error.DrfValidationErrorResponseDetail import DrfValidationErrorResponseDetail
 from api.view.error.ErrorResponseFields import ErrorResponseFields
 
@@ -280,7 +290,7 @@ class ErrorResponse:
                 'message': ErrorResponseFields.MESSAGES[ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT],
                 'code': 'invalid_input',
                 ErrorResponseFields.FIELD_ERRORS: {
-                    to_camel_case(field): [{
+                    _field_name_for_error_response(field): [{
                         'message': error_detail['message'],
                         'code': error_detail['code']
                     }]

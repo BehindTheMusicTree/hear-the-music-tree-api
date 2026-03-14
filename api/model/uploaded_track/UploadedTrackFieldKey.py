@@ -1,8 +1,12 @@
-from api.model.private_unique_resource.Fields import Fields as PrivateUniqueResourceFields
-from api.model.trackable_play_count.Fields import Fields as TrackablePlayCountFields
+from enum import Enum
 
 
-class Fields(PrivateUniqueResourceFields, TrackablePlayCountFields):
+class UploadedTrackFieldKey(str, Enum):
+    USER = "user"
+    UUID = "uuid"
+    CREATED_ON = "created_on"
+    UPDATED_ON = "updated_on"
+    PLAY_COUNT = "play_count"
     TRACK_FILE_INTERNAL = "track_file"
     TRACK_FILE_PUBLIC = "file"
     TRACK_FILE_FINGERPRINT_MUST_BE_UNIQUE = "track_file_fingerprint_must_be_unique"
@@ -17,5 +21,5 @@ class Fields(PrivateUniqueResourceFields, TrackablePlayCountFields):
     UPLOADED_TRACK_PLAYLIST_RELS = "uploaded_track_playlist_rels"
     LANGUAGE = "language"
     PLAYLISTS_PUBLIC = "playlists"
-    ARCHIVED = 'archived'
+    ARCHIVED = "archived"
     RELATIVE_URL = "relative_url"

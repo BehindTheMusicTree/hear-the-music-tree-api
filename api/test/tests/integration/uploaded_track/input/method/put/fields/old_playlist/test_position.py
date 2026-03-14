@@ -1,7 +1,7 @@
 from rest_framework import status
 
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
-from api.serializer.model.uploaded_track.input.put.Fields import Fields as PutFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
@@ -22,7 +22,7 @@ class TestCase(UploadedTrackTestCase):
         assert old_genre_playlist.uploaded_track_playlist_rels.get(
             uploaded_track=uploaded_track_following2).position == 3
 
-        response = self._put_uploaded_track(uploaded_track.uuid, **{PutFields.GENRE: "Rock"})
+        response = self._put_uploaded_track(uploaded_track.uuid, **{UploadedTrackInputFieldKey.GENRE.value: "Rock"})
 
         assert response.status_code == status.HTTP_200_OK
         old_genre_playlist: CriteriaPlaylist = CriteriaPlaylist.objects.get(criteria=old_genre)

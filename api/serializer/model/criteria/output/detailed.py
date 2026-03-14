@@ -16,14 +16,14 @@ from api.serializer.model.uploaded_track.output.simple.simple_without_album_and_
 )
 from api.serializer.model.playlist.children.criteria.output.minumum import CriteriaPlaylistMinimumSerializer
 
-from .Fields import Fields as Fields
+from .CriteriaOutputFieldKey import CriteriaOutputFieldKey
 from .minimum import CriteriaMinimumSerializer
 
 
 class CriteriaDetailedSerializer(AppInputSerializer, serializers.ModelSerializer):
     uploaded_tracks = UploadedTrackWithoutAlbumPlaylistGenreSerializer(
-        source=Fields.UPLOADED_TRACKS_NOT_ARCHIVED_INTERNAL, many=True)
-    uploaded_tracks_count = IntegerField(source=Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_INTERNAL)
+        source=CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_INTERNAL.value, many=True)
+    uploaded_tracks_count = IntegerField(source=CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_INTERNAL.value)
     parent = CriteriaMinimumSerializer()
     ascendants = CriteriaLineageRelWithoutDescendantSerializer(source=ModelFields.ASCENDANTS_RELS, many=True)
     descendants = CriteriaLineageRelWithoutAscendantSerializer(source=ModelFields.DESCENDANTS_RELS, many=True)
@@ -34,16 +34,16 @@ class CriteriaDetailedSerializer(AppInputSerializer, serializers.ModelSerializer
 
     class Meta:
         model = Criteria
-        fields = [Fields.UUID,
-                  Fields.NAME,
-                  Fields.PARENT,
-                  Fields.ASCENDANTS,
-                  Fields.DESCENDANTS,
-                  Fields.ROOT,
-                  Fields.CHILDREN,
-                  Fields.CRITERIA_PLAYLIST,
-                  Fields.UPLOADED_TRACKS_NOT_ARCHIVED_PUBLIC,
-                  Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC,
-                  Fields.UPLOADED_TRACKS_ARCHIVED_COUNT_PUBLIC,
-                  Fields.CREATED_ON,
-                  Fields.UPDATED_ON]
+        fields = [CriteriaOutputFieldKey.UUID.value,
+                  CriteriaOutputFieldKey.NAME.value,
+                  CriteriaOutputFieldKey.PARENT.value,
+                  CriteriaOutputFieldKey.ASCENDANTS.value,
+                  CriteriaOutputFieldKey.DESCENDANTS.value,
+                  CriteriaOutputFieldKey.ROOT.value,
+                  CriteriaOutputFieldKey.CHILDREN.value,
+                  CriteriaOutputFieldKey.CRITERIA_PLAYLIST.value,
+                  CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_PUBLIC.value,
+                  CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC.value,
+                  CriteriaOutputFieldKey.UPLOADED_TRACKS_ARCHIVED_COUNT_PUBLIC.value,
+                  CriteriaOutputFieldKey.CREATED_ON.value,
+                  CriteriaOutputFieldKey.UPDATED_ON.value]

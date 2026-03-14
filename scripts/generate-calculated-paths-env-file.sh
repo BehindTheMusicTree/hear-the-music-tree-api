@@ -90,6 +90,25 @@ calculate_media_dirs(){
         log_with_script_prefixe "TMP_UPLOADED_FILES is set to $TMP_UPLOADED_FILES"
         echo "TMP_UPLOADED_FILES=$TMP_UPLOADED_FILES" >> "$CALCULATED_PATHS_ENV_FILE"
 
+        if [ -n "$METADATA_SESSION_DIR_EXTERNAL" ]; then
+            if [ -n "$METADATA_SESSION_DIR_INTERNAL" ]; then
+                log_with_script_prefixe "ERROR: METADATA_SESSION_DIR_INTERNAL and METADATA_SESSION_DIR_EXTERNAL must not be set at the same time." >&2
+                exit 1
+            fi
+            log_with_script_prefixe "METADATA_SESSION_DIR_EXTERNAL is set. Setting metadata session directory to external."
+            METADATA_SESSION_DIR="${METADATA_SESSION_DIR_EXTERNAL}"
+        else
+            if [ -n "$METADATA_SESSION_DIR_INTERNAL" ]; then
+                log_with_script_prefixe "METADATA_SESSION_DIR_INTERNAL is set. Setting metadata session directory to internal."
+                METADATA_SESSION_DIR="${PROJECT_DIR}${METADATA_SESSION_DIR_INTERNAL}"
+            else
+                log_with_script_prefixe "ERROR: When TMP_UPLOADED_FILES is set, METADATA_SESSION_DIR_INTERNAL or METADATA_SESSION_DIR_EXTERNAL must be set." >&2
+                exit 1
+            fi
+        fi
+        log_with_script_prefixe "METADATA_SESSION_DIR is set to $METADATA_SESSION_DIR"
+        echo "METADATA_SESSION_DIR=$METADATA_SESSION_DIR" >> "$CALCULATED_PATHS_ENV_FILE"
+
         log_with_script_prefixe "As TMP_UPLOADED_FILES is set, setting up media directories..."
         if [ -n "$MEDIA_DIR_EXTERNAL" ]; then
             if [ -n "$MEDIA_DIR_INTERNAL" ]; then
@@ -119,6 +138,10 @@ calculate_media_dirs(){
     else
         if [ -n "$MEDIA_DIR_EXTERNAL" ]; then
             log_with_script_prefixe "ERROR: MEDIA_DIR_EXTERNAL must not be set if TMP_UPLOADED_FILES_INTERNAL is not set." >&2
+            exit 1
+        fi
+        if [ -n "$METADATA_SESSION_DIR_EXTERNAL" ] || [ -n "$METADATA_SESSION_DIR_INTERNAL" ]; then
+            log_with_script_prefixe "ERROR: METADATA_SESSION_DIR_EXTERNAL and METADATA_SESSION_DIR_INTERNAL must not be set if TMP_UPLOADED_FILES is not set." >&2
             exit 1
         fi
         if [ -n "$LIBRARIES_DIR_NAME" ]; then

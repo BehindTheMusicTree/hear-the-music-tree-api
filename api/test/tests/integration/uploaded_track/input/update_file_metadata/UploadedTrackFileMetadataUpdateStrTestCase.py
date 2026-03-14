@@ -17,7 +17,8 @@ class UploadedTrackFileMetadataUpdateStrTestCase(UploadedTrackFileMetadataUpdate
                     additional_data,
                     value_expected_in_metadata=VALUE_EXPECTED_IN_METADATA_WHEN_NOT_PROVIDED,
                     file_has_metadata=False):
-        data = {self.save_field: value}
+        save_field_key = getattr(self.save_field, 'value', self.save_field)
+        data = {save_field_key: value}
 
         if additional_data:
             data.update(additional_data)

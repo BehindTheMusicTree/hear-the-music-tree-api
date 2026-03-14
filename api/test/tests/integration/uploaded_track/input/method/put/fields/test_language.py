@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from api.serializer.model.uploaded_track.input.put.Fields import Fields as PutFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.utils.field.body_data.method.PutBodyDataTestCase import PutBodyDataTestCase
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
@@ -11,7 +11,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         language = "Fr"
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="Love", language=language)
 
-        response = self._put_uploaded_track(uploaded_track.uuid, **{PutFields.TITLE: 'MJ'})
+        response = self._put_uploaded_track(uploaded_track.uuid, **{UploadedTrackInputFieldKey.TITLE.value: 'MJ'})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.saved_object.language == language
@@ -19,7 +19,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
     def test_empty_then_none(self):
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="Love", language="Fr")
 
-        response = self._put_uploaded_track(uploaded_track.uuid, **{PutFields.LANGUAGE: ""})
+        response = self._put_uploaded_track(uploaded_track.uuid, **{UploadedTrackInputFieldKey.LANGUAGE.value: ""})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.saved_object.language == None
@@ -28,7 +28,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="Love", language="en")
 
         language = "fr"
-        response = self._put_uploaded_track(uploaded_track.uuid, **{PutFields.LANGUAGE: language})
+        response = self._put_uploaded_track(uploaded_track.uuid, **{UploadedTrackInputFieldKey.LANGUAGE.value: language})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.saved_object.language == language

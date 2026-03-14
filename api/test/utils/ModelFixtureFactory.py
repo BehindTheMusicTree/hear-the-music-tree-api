@@ -31,7 +31,7 @@ from api.model.playlist.Playlist import Playlist
 from api.model.playlist.children.manual.Fields import Fields as ManualPlayListFields
 from api.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
 from api.model.playlist.Fields import Fields as PlayListFields
-from api.model.uploaded_track.Fields import Fields as UploadedTrackFields
+from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.model.trackable_play_count.TrackablePlayCount import TrackablePlayCount
 from api.model.user.User import User
@@ -85,16 +85,16 @@ class ModelFixtureFactory:
     def _create_uploaded_track(self, user: User, title: str | None = None, **kwargs) -> UploadedTrack:
         now = timezone.make_aware(datetime.now())
         model_fields = {
-            UploadedTrackFields.CREATED_ON: kwargs.get(UploadedTrackFields.CREATED_ON, now),
-            UploadedTrackFields.UPDATED_ON: kwargs.get(UploadedTrackFields.UPDATED_ON, now),
-            UploadedTrackFields.USER: user,
-            UploadedTrackFields.TITLE: title or "Untitled",
+            UploadedTrackFields.CREATED_ON.value: kwargs.get(UploadedTrackFields.CREATED_ON.value, now),
+            UploadedTrackFields.UPDATED_ON.value: kwargs.get(UploadedTrackFields.UPDATED_ON.value, now),
+            UploadedTrackFields.USER.value: user,
+            UploadedTrackFields.TITLE.value: title or "Untitled",
         }
         model_fields.update(kwargs)
         uploaded_track = G(UploadedTrack, **model_fields)
 
-        if kwargs.get(UploadedTrackFields.ARTISTS):
-            uploaded_track.artists.set(kwargs[UploadedTrackFields.ARTISTS])
+        if kwargs.get(UploadedTrackFields.ARTISTS.value):
+            uploaded_track.artists.set(kwargs[UploadedTrackFields.ARTISTS.value])
 
         return uploaded_track
 
@@ -119,10 +119,10 @@ class ModelFixtureFactory:
 
         now = timezone.make_aware(datetime.now())
         model_fields = {
-            UploadedTrackFields.CREATED_ON: kwargs.get(UploadedTrackFields.CREATED_ON, now),
-            UploadedTrackFields.UPDATED_ON: kwargs.get(UploadedTrackFields.UPDATED_ON, now),
-            UploadedTrackFields.USER: user,
-            UploadedTrackFields.TITLE: title,
+            UploadedTrackFields.CREATED_ON.value: kwargs.get(UploadedTrackFields.CREATED_ON.value, now),
+            UploadedTrackFields.UPDATED_ON.value: kwargs.get(UploadedTrackFields.UPDATED_ON.value, now),
+            UploadedTrackFields.USER.value: user,
+            UploadedTrackFields.TITLE.value: title,
         }
         model_fields.update(kwargs)
 
@@ -146,7 +146,7 @@ class ModelFixtureFactory:
 
         with open(track_file_path_in_lib, 'rb') as f:
             django_file = File(f, name=str(track_file_path_in_lib))
-            model_fields.update({UploadedTrackFields.TRACK_FILE_INTERNAL: django_file})
+            model_fields.update({UploadedTrackFields.TRACK_FILE_INTERNAL.value: django_file})
             uploaded_track = UploadedTrack.objects.create(**model_fields)
         if not use_manager_for_genre_playlist_adding:
             from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import (
