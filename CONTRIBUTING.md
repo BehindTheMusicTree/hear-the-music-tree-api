@@ -218,7 +218,9 @@ Create a copy of the file `env/dev/.env.dev.template` as `env/.env` and set the 
 The docker build requires the following environment variables:
 - `APP_NAME`
 - `APP_VERSION`
+- `FILE_UPLOAD_ENABLED`
 - `TMP_UPLOADED_FILES_EXTERNAL`
+- `METADATA_SESSION_DIR_EXTERNAL`
 - `MEDIA_DIR_EXTERNAL`
 - `LIBRARIES_DIR_NAME`
 - `STATIC_FILES_EXTERNAL`

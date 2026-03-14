@@ -1,0 +1,48 @@
+---
+description: Document validation and error responses in OpenAPI (drf-spectacular) in line with industry practice.
+globs: api/view/**/*.py
+alwaysApply: false
+---
+# OpenAPI Validation and Error Documentation
+
+When documenting endpoints that accept input and can return validation errors (400), follow these practices in **both** OpenAPI (view/schema) and the **endpoint doc** when it exists (`docs/api/*.md`).
+
+## Document the 400 response
+
+- For create/update operations that validate input, declare **400** in `@extend_schema(responses={...})` (e.g. using `OpenApiResponse(description='...')`).
+- Describe the error shape briefly (e.g. "Response body contains fieldErrors with field, code, message") so clients know what to parse.
+
+## Document non-obvious validation rules in the operation description
+
+- In the operation `description`, document **cross-field** or **dependency** rules that are not obvious from the request schema alone (e.g. "album_artists requires album_name", "track_number requires album_name", "at least one field required for PUT").
+- Mention that violating these rules returns 400 Bad Request.
+
+## Do not enumerate every validation case
+
+- Do **not** list every possible invalid input (every field length, every error code, every format) in the operation description.
+- The request schema (types, required, max length) and the 400 response body (field + code) are the source of truth for what failed.
+- Documenting a few important dependency rules is enough; the rest is discoverable from the schema and error payload.
+
+## Example
+
+```python
+@extend_schema(
+    request=MyPutSerializer,
+    description="""
+    ...
+    - if 'album_artists_names' is specified without 'album_name', the request is rejected with 400 Bad Request.
+    - if 'track_number' is specified with a value and 'album_name' is missing or empty, the request is rejected with 400 Bad Request.
+    """,
+    responses={
+        200: MySerializer,
+        400: OpenApiResponse(description='Validation error. Response body contains fieldErrors (field, code, message).'),
+    },
+)
+def update(self, request, *args, **kwargs):
+    ...
+```
+
+## Endpoint doc (docs/api/)
+
+- When the endpoint has a dedicated doc in `docs/api/` (e.g. `library_uploaded.md` for uploaded tracks), add or update a short note for that operation (e.g. Create, Update) listing 400 and notable validation rules (e.g. "400 Bad Request: validation error (e.g. album_artists_names without album_name; track_number without album_name).").
+- Keeps the rule visible for readers who use the static docs as well as the OpenAPI schema.

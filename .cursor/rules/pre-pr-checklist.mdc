@@ -30,6 +30,7 @@ Before submitting a Pull Request, ensure all checks are completed. This checklis
 
 - ✅ Update docstrings for new functions/classes (only when needed - see `no-useless-comments.mdc`)
 - ✅ Update README or other documentation if adding new features or changing behavior
+- ✅ When adding or changing validation that returns 400, document in OpenAPI and in the endpoint doc (e.g. `docs/api/*.md`) per `openapi-validation-documentation.mdc`
 - ✅ Add/update type hints where appropriate
 - ✅ Update `CHANGELOG.md` with changes in the `[Unreleased]` section
 

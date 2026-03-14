@@ -2,7 +2,7 @@ from rest_framework import status
 from datetime import timedelta
 from django.utils import timezone
 
-from api.serializer.model.uploaded_track.output.Fields import Fields as UploadedTrackFields
+from api.serializer.model.uploaded_track.output.UploadedTrackOutputFieldKey import UploadedTrackOutputFieldKey
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 from api.utils import data_transformer
 from api.filtering.set.private_unique_resource.Fields import Fields as PrivateUniqueResourceFields
@@ -21,7 +21,7 @@ class TestCase(UploadedTrackTestCase):
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 1
-        assert self.results[0][data_transformer.to_camel_case(UploadedTrackFields.TITLE)] == track.title
+        assert self.results[0][data_transformer.to_camel_case(UploadedTrackOutputFieldKey.TITLE.value)] == track.title
 
     def test_title_and_album_name_and_artists_name_ok(self):
         genre = self.model_fixture_factory.create_genre(name="Heyaa")
@@ -49,8 +49,8 @@ class TestCase(UploadedTrackTestCase):
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 2
         titles = self.results[0][
-            data_transformer.to_camel_case(UploadedTrackFields.TITLE)], self.results[1][
-            data_transformer.to_camel_case(UploadedTrackFields.TITLE)]
+            data_transformer.to_camel_case(UploadedTrackOutputFieldKey.TITLE.value)], self.results[1][
+            data_transformer.to_camel_case(UploadedTrackOutputFieldKey.TITLE.value)]
         assert track_pascalito.title in titles
         assert track_mapasa.title in titles
 
@@ -84,5 +84,5 @@ class TestCase(UploadedTrackTestCase):
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 2
-        titles = [result[data_transformer.to_camel_case(UploadedTrackFields.TITLE)] for result in self.results]
+        titles = [result[data_transformer.to_camel_case(UploadedTrackOutputFieldKey.TITLE.value)] for result in self.results]
         assert track_rock_in_range.title in titles

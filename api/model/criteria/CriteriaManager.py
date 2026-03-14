@@ -140,12 +140,12 @@ class CriteriaManager(UploadedTrackMixinWithInternalNameManager[T]):
         """
         from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 
-        from api.model.uploaded_track.Fields import Fields as UploadedTrackFields
+        from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
 
         criteria_uploaded_tracks = instance.uploaded_tracks.all()
         for uploaded_track in criteria_uploaded_tracks:
             uploaded_track.genre = instance.parent
-            uploaded_track.save(update_fields=[f'{UploadedTrackFields.GENRE}_id'])
+            uploaded_track.save(update_fields=[f'{UploadedTrackFields.GENRE.value}_id'])
             uploaded_track.update_file_metadata_from_uploaded_track_instance_values()
 
         if instance.is_root:

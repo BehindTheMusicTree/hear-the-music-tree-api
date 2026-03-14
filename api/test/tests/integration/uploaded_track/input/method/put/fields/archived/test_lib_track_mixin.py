@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from api.serializer.model.uploaded_track.input.put.Fields import Fields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
@@ -11,7 +11,7 @@ class TestCase(UploadedTrackTestCase):
         self.model_fixture_factory.create_uploaded_track_with_file(title="archived 1", archived=True)
         track_love = self.model_fixture_factory.create_uploaded_track_with_file(title="Love")
 
-        response = self._put_uploaded_track(uuid=track_love.uuid, **{Fields.ARCHIVED: "true"})
+        response = self._put_uploaded_track(uuid=track_love.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: "true"})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.test_user1.all_uploaded_tracks_mixin.uploaded_tracks_archived_count == 2

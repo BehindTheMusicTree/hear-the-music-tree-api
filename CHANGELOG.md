@@ -65,7 +65,19 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Added
 
+- **Metadata session (no auth)**: Two-step public flow: (1) `POST /v1/audio/metadata/session/` — upload file (or URL), get metadata plus `session_token` and `session_expires_in_seconds` (900); (2) `POST /v1/audio/metadata/session-download/` — send token (header `X-Session-Token` or body) and optional metadata, receive file with tags written. Session valid 15 minutes; multi-use (download multiple times with different metadata). No auth, no DB persistence. Session and upload temp use separate env-defined dirs (`METADATA_SESSION_DIR`, `TMP_UPLOADED_FILES`). Frontend instructions in `docs/frontend/one_time_metadata_update.md`.
 - **Audio metadata (full)**: Optional request parameter `include_musicbrainz_analysis` for `POST /v1/audio/metadata/full/`. When `true`, the response includes `musicbrainz_raw_data` with raw AcoustID/MusicBrainz lookup result (or an error payload if fingerprinting or lookup fails). No authentication required; no DB records are created. Ephemeral fingerprinting and non-persisting MusicBrainz lookup added for this flow. Integration, unit, and e2e tests added.
+- **FILE_UPLOAD_ENABLED**: Explicit env flag for file upload / media. When `true`, setup-filesystem creates upload temp, metadata session, and media dirs; when `false`, skips them. Env example, CI, and deploy use the flag; CONTRIBUTING and deploy workflow require it in GitHub vars.
+
+### Changed
+
+- **Metadata keys**: `AppMetadataKey` is the single source of truth for metadata field names (literal values). Track input Fields and writable metadata (session-download, file update) use it; `APP_METADATA_WRITABLE_KEYS` and `WritableMetadataFieldsMixin` shared. Genre in metadata is `genres_names` (array of strings) everywhere.
+- **Storage**: `METADATA_SESSION_DIR` and `TMP_UPLOADED_FILES` are independent env-defined paths (not one under the other). Setup-filesystem creates `METADATA_SESSION_DIR` when file upload is enabled. Deploy and CI set both; deploy requires `METADATA_SESSION_DIR_EXTERNAL` and `FILE_UPLOAD_ENABLED` in GitHub vars.
+
+### CI
+
+- **Test workflow**: `FILE_UPLOAD_ENABLED=true`; `METADATA_SESSION_DIR_EXTERNAL` uses a separate path (`/tmp/ci-metadata-sessions/`). Upload temp dir tearDown expects no leftover files (session dir is separate).
+- **Deploy workflow**: `METADATA_SESSION_DIR_EXTERNAL` and `FILE_UPLOAD_ENABLED` added to required vars check and app .env output.
 
 ## [v2.1.1] - 2026-03-08
 

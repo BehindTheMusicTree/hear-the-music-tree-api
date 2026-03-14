@@ -8,6 +8,11 @@ from api.utils import data_transformer
 from api.utils.json_utils import transform_uuids
 
 
+def _request_key_str(key: Any) -> str:
+    """Return string key for request payloads; wire format (HTTP) uses string field names."""
+    return key if isinstance(key, str) else getattr(key, "value", str(key))
+
+
 class AppApiClient(APIClient):
     def __init__(self, test_case=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -61,19 +66,18 @@ class AppApiClient(APIClient):
                 return transform_uuids(data)
             return data
 
-        # For dictionaries, handle None values
-        prepared_data = data_transformer.replace_none_with_empty_string(**data)
-        if format == 'json' and isinstance(prepared_data, dict):
-            return transform_uuids(prepared_data)  # Only convert UUIDs to strings, let client handle JSON encoding
-
-        # For multipart requests, convert empty lists [] to [''] for list fields (with [] suffix)
-        # This preserves empty list fields that DRF's test client would otherwise drop
-        # The middleware will normalize [''] back to [] during request processing
-        if format == 'multipart' and isinstance(prepared_data, dict):
+        # Wire format (HTTP) uses string keys; normalize enum or other key types to string (e.g. str Enum .value)
+        prepared_data = {_request_key_str(k): v for k, v in data.items()}
+        prepared_data = data_transformer.replace_none_with_empty_string(**prepared_data)
+        if not isinstance(prepared_data, dict):
+            return prepared_data
+        if format == 'json':
+            return transform_uuids(prepared_data)
+        # For multipart: preserve empty list fields that DRF's test client would otherwise drop
+        if format == 'multipart':
             for key, value in list(prepared_data.items()):
                 if key.endswith('[]') and isinstance(value, list) and len(value) == 0:
                     prepared_data[key] = ['']
-
         return prepared_data
 
     def _prepare_request_kwargs(

@@ -27,6 +27,10 @@ Manage uploaded tracks in user library.
 #### Update
 `PUT {base}{id}/`
 
+**Validation (400 Bad Request)**  
+- `album_artists_names` provided without `album_name` (album name is required when album artists field is provided).
+- `track_number` provided with a value without `album_name` (album name must be specified if track position is).
+
 #### Delete
 `DELETE {base}{id}/`
 

@@ -31,7 +31,7 @@ from api.model.musicbrainz_resource.children.recording.missing_cause.code.MbReco
     MbRecordingMissingCauseCode
 )
 from api.model.private_standard_resource.PrivateStandardResource import PrivateStandardResource
-from api.model.uploaded_track.Fields import Fields as UploadedTrackFields
+from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
 from api.model.utils import utils as model_utils
 from api.model.utils.PreserveSpacesStorage import PreserveSpacesStorage
 from api.utils import audio_fingerprinter, audio_file_metadata, musicbrainz
@@ -47,7 +47,7 @@ from .fingerprinting.missing_cause.code.FingerprintMissingCauseCode import Finge
 
 class TrackFile(PrivateStandardResource):
     uploaded_track = PrivateOneToOneField(  # type: ignore
-        'UploadedTrack', on_delete=models.CASCADE, related_name=UploadedTrackFields.TRACK_FILE_INTERNAL)
+        'UploadedTrack', on_delete=models.CASCADE, related_name=UploadedTrackFields.TRACK_FILE_INTERNAL.value)
     file: TemporaryUploadedFile | FieldFile = models.FileField(  # type: ignore
         upload_to=model_utils.get_user_lib_path,
         storage=PreserveSpacesStorage(),

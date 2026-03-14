@@ -2,7 +2,7 @@ from uuid import UUID
 
 from rest_framework import status
 
-from api.serializer.model.criteria.output.Fields import Fields as RetrieveFields
+from api.serializer.model.criteria.output.CriteriaOutputFieldKey import CriteriaOutputFieldKey
 from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 from api.utils.data_transformer import to_camel_case
 
@@ -16,7 +16,7 @@ class TestCase(GenreTestCase):
         response = self._retrieve_genre(uuid=uuid)
 
         assert response.status_code == status.HTTP_200_OK
-        assert self.result[RetrieveFields.NAME] == name
+        assert self.result[CriteriaOutputFieldKey.NAME.value] == name
 
     def test_uploaded_tracks(self):
         criteria = self.model_fixture_factory.create_genre(name='rock')
@@ -32,11 +32,11 @@ class TestCase(GenreTestCase):
         response = self._retrieve_genre(uuid=criteria.uuid)
 
         assert response.status_code == status.HTTP_200_OK
-        uploaded_tracks = self.result[to_camel_case(RetrieveFields.UPLOADED_TRACKS_NOT_ARCHIVED_PUBLIC)]
+        uploaded_tracks = self.result[to_camel_case(CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_PUBLIC.value)]
         assert len(uploaded_tracks) == 2
-        titles = [track[RetrieveFields.UPLOADED_TRACKS_TITLE] for track in uploaded_tracks]
+        titles = [track[CriteriaOutputFieldKey.UPLOADED_TRACKS_TITLE.value] for track in uploaded_tracks]
         assert title1 in titles
         assert title2 in titles
-        uuids = [UUID(track[RetrieveFields.UUID]) for track in uploaded_tracks]
+        uuids = [UUID(track[CriteriaOutputFieldKey.UUID.value]) for track in uploaded_tracks]
         assert track1_uuid in uuids
         assert track2_uuid in uuids

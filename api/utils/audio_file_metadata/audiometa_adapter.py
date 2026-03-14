@@ -30,7 +30,7 @@ _APP_TO_UNIFIED_KEY_MAP = {
     AppMetadataKey.ARTISTS_NAMES: UnifiedMetadataKey.ARTISTS,
     AppMetadataKey.ALBUM_NAME: UnifiedMetadataKey.ALBUM,
     AppMetadataKey.ALBUM_ARTISTS_NAMES: UnifiedMetadataKey.ALBUM_ARTISTS,
-    AppMetadataKey.GENRE_NAME: UnifiedMetadataKey.GENRES_NAMES,
+    AppMetadataKey.GENRES_NAMES: UnifiedMetadataKey.GENRES_NAMES,
     AppMetadataKey.RATING: UnifiedMetadataKey.RATING,
     AppMetadataKey.LANGUAGE: UnifiedMetadataKey.LANGUAGE,
 }
@@ -44,11 +44,11 @@ def _convert_unified_to_app_metadata(unified_metadata: UnifiedMetadata) -> AppMe
     for unified_key, value in unified_metadata.items():
         if unified_key in _UNIFIED_TO_APP_KEY_MAP:
             app_key = _UNIFIED_TO_APP_KEY_MAP[unified_key]
-            if app_key == AppMetadataKey.GENRE_NAME:
-                if isinstance(value, list) and len(value) > 0:
-                    app_metadata[app_key] = value[0]
-                elif isinstance(value, str):
+            if app_key == AppMetadataKey.GENRES_NAMES:
+                if isinstance(value, list):
                     app_metadata[app_key] = value
+                elif isinstance(value, str):
+                    app_metadata[app_key] = [value] if value else []
             else:
                 app_metadata[app_key] = value
     return app_metadata
@@ -60,7 +60,7 @@ def _convert_app_to_unified_metadata(app_metadata: AppMetadata) -> dict:
     for app_key, value in app_metadata.items():
         if app_key in _APP_TO_UNIFIED_KEY_MAP:
             unified_key = _APP_TO_UNIFIED_KEY_MAP[app_key]
-            if app_key in (AppMetadataKey.GENRE_NAME, AppMetadataKey.ARTISTS_NAMES, AppMetadataKey.ALBUM_ARTISTS_NAMES):
+            if app_key in (AppMetadataKey.GENRES_NAMES, AppMetadataKey.ARTISTS_NAMES, AppMetadataKey.ALBUM_ARTISTS_NAMES):
                 if value is None:
                     # Explicitly set to None to delete the metadata field
                     unified_metadata[unified_key] = None
@@ -98,8 +98,6 @@ def get_specific_metadata(file: FILE_TYPE, app_metadata_key: AppMetadataKey) -> 
     if not unified_key:
         return None
     value = audiometa.get_unified_metadata_field(file=file_path, unified_metadata_key=unified_key)
-    if app_metadata_key == AppMetadataKey.GENRE_NAME and isinstance(value, list) and len(value) > 0:
-        return value[0]
     return value
 
 

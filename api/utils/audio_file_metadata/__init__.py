@@ -11,13 +11,14 @@ from .audiometa_adapter import (
     is_flac_md5_valid,
     fix_md5_checking,
 )
-from .AppMetadataKey import AppMetadataKey
+from .AppMetadataKey import AppMetadataKey, APP_METADATA_WRITABLE_KEYS
 from .exceptions import FileCorruptedError
 from .types import AppMetadata, AppMetadataValue
 
 __all__ = [
     "AppMetadata",
     "AppMetadataKey",
+    "APP_METADATA_WRITABLE_KEYS",
     "AppMetadataValue",
     "FileCorruptedError",
     "get_specific_metadata",
