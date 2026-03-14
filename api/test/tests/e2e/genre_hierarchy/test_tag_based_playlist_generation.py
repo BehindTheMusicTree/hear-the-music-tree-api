@@ -2,7 +2,7 @@ import pytest
 from rest_framework import status
 
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
-from api.serializer.model.criteria.input.post import Fields as PostFields
+from api.serializer.model.criteria.input.post import Fields as PostUploadedTrackInputFieldKey
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.utils.AppTestCase import AppTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename

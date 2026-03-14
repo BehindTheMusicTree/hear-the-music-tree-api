@@ -2,8 +2,8 @@ import pytest
 from rest_framework import status
 
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
-from api.serializer.model.criteria.input.post import Fields as PostFields
-from api.filtering.set.search.Fields import Fields as SearchFields
+from api.serializer.model.criteria.input.post import Fields as PostUploadedTrackInputFieldKey
+from api.filtering.set.search.Fields import Fields as SearchUploadedTrackInputFieldKey
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 from api.test.tests.integration.search.SearchTestCase import SearchMixin

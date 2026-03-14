@@ -4,7 +4,7 @@ from rest_framework import status
 from api.model.criteria.children.genre.Genre import Genre
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
-from api.serializer.model.criteria.input.tree_import.Fields import Fields as TreeImportFields
+from api.serializer.model.criteria.input.tree_import.Fields import Fields as TreeImportUploadedTrackInputFieldKey
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.utils.AppTestCase import AppTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
