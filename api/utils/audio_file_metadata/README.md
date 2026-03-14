@@ -54,6 +54,8 @@ The adapter supports the following metadata fields (via `UnifiedMetadataKey`):
 - `RATING`: Rating value (int | float) - supports half-star ratings (e.g., 1.5, 2.5, 3.5)
 - `LANGUAGE`: Language code (string)
 
+For list-type fields (e.g. `ARTISTS`, `GENRES_NAMES`, `ALBUM_ARTISTS`): **`None`** means the tag is not present in the file (nothing set); **empty list `[]`** means the tag is present but has no values.
+
 ### Additional Metadata Fields
 - `RELEASE_DATE`: Release date (string) - format: YYYY or YYYY-MM-DD
 - `TRACK_NUMBER`: Track number (string) - can be int or str format
@@ -173,7 +175,7 @@ The adapter uses an **automatic format selection** strategy for writing metadata
 - **Half-star ratings**: Supports half-star ratings (e.g., 1.5, 2.5, 3.5) for more granular rating systems
 
 #### Deleting Metadata
-- **Field removal**: Setting any field to `None` removes that field from the metadata. This works for both single-value fields (e.g., `TITLE`, `ALBUM`) and list-type fields (e.g., `ARTISTS`, `GENRES_NAMES`)
+- **Field removal**: Setting any field to `None` removes that tag from the file (tag not present). This works for both single-value fields (e.g., `TITLE`, `ALBUM`) and list-type fields (e.g., `ARTISTS`, `GENRES_NAMES`). Read-back then returns `None` (key absent). Setting a list-type field to `[]` writes an empty tag (tag present but empty); read-back returns `[]`.
 
 **Note:** The library supports additional writing strategies (PRESERVE, CLEANUP) and format-specific writing, but the adapter uses the default SYNC strategy which ensures metadata is written in the most compatible and feature-rich format for each file type.
 
