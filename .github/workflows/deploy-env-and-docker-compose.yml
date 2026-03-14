@@ -89,7 +89,6 @@ jobs:
           DJANGO_LOG_APP_FILENAME: ${{ vars.DJANGO_LOG_APP_FILENAME }}
           MEDIA_DIR_EXTERNAL: ${{ vars.MEDIA_DIR_EXTERNAL }}
           STATIC_FILES_EXTERNAL: ${{ vars.STATIC_FILES_EXTERNAL }}
-          FILE_UPLOAD_ENABLED: ${{ vars.FILE_UPLOAD_ENABLED }}
           TMP_UPLOADED_FILES_EXTERNAL: ${{ vars.TMP_UPLOADED_FILES_EXTERNAL }}
           METADATA_SESSION_DIR_EXTERNAL: ${{ vars.METADATA_SESSION_DIR_EXTERNAL }}
           SERVER_DEPLOY_USERNAME: ${{ secrets.SERVER_DEPLOY_USERNAME }}
@@ -159,7 +158,6 @@ jobs:
             DJANGO_LOG_APP_FILENAME \
             MEDIA_DIR_EXTERNAL \
             STATIC_FILES_EXTERNAL \
-            FILE_UPLOAD_ENABLED \
             TMP_UPLOADED_FILES_EXTERNAL \
             METADATA_SESSION_DIR_EXTERNAL \
             SERVER_DEPLOY_USERNAME \
@@ -261,15 +259,17 @@ jobs:
           if [ "${{ inputs.env }}" = "test" ]; then
             SPOTIFY_ID='${{ secrets.SPOTIFY_CLIENT_ID_TEST }}'
             GOOGLE_ID='${{ secrets.GOOGLE_CLIENT_ID_TEST }}'
+            DEBUG_VAL='true'
           else
             SPOTIFY_ID='${{ secrets.SPOTIFY_CLIENT_ID_PROD }}'
             GOOGLE_ID='${{ secrets.GOOGLE_CLIENT_ID_PROD }}'
+            DEBUG_VAL='false'
           fi
           {
             echo 'ENV=${{ inputs.env }}'
             echo 'APP_NAME=${{ vars.HTMT_API_APP_NAME }}'
             echo "APP_PORT=${{ vars.APP_PORT }}"
-            echo 'DEBUG=true'
+            echo "DEBUG=${DEBUG_VAL}"
             echo 'APP_IS_EXPOSED=true'
             echo 'AFP_ENABLED=true'
             echo "DJANGO_SECRET_KEY='${{ secrets.DJANGO_SECRET_KEY }}'"
@@ -286,7 +286,7 @@ jobs:
             echo "GOOGLE_REDIRECT_URI='https://${FRONT_HOST}.${{ vars.DOMAIN_NAME }}/${{ vars.GOOGLE_REDIRECT_RELATIVE_URI }}'"
             echo "CSRF_TRUSTED_ORIGINS=${{ steps.set_csrf_and_allowed_hosts.outputs.csrf_origins }}"
             echo "ALLOWED_HOSTS=${{ steps.set_csrf_and_allowed_hosts.outputs.allowed_hosts }}"
-            echo 'FILE_UPLOAD_ENABLED=${{ vars.FILE_UPLOAD_ENABLED }}'
+            echo "FILE_UPLOAD_ENABLED=true"
             echo 'TMP_UPLOADED_FILES=${{ vars.TMP_UPLOADED_FILES_EXTERNAL }}'
             echo 'METADATA_SESSION_DIR_EXTERNAL=${{ vars.METADATA_SESSION_DIR_EXTERNAL }}'
             echo 'MEDIA_URL=${{ vars.MEDIA_URL }}'
