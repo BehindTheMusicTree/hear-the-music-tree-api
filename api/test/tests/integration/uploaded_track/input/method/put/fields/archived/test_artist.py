@@ -1,7 +1,7 @@
 from rest_framework import status
 
 from api.model.artist.Artist import Artist
-from api.serializer.model.uploaded_track.input.put.Fields import Fields as PutFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
@@ -15,7 +15,7 @@ class TestCase(UploadedTrackTestCase):
         self.model_fixture_factory.create_uploaded_track_with_file(title="archived 1", artists=[artist], archived=True)
         track_love = self.model_fixture_factory.create_uploaded_track_with_file(title="Love", artists=[artist])
 
-        response = self._put_uploaded_track(uuid=track_love.uuid, **{PutFields.ARCHIVED: "true"})
+        response = self._put_uploaded_track(uuid=track_love.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: "true"})
 
         assert response.status_code == status.HTTP_200_OK
         artists_list: list[Artist] = list(self.saved_object.artists.all())
@@ -31,7 +31,7 @@ class TestCase(UploadedTrackTestCase):
         track = self.model_fixture_factory.create_uploaded_track_with_file(
             title="Love", artists=[artist], archived=True)
 
-        response = self._put_uploaded_track(uuid=track.uuid, **{PutFields.ARCHIVED: "false"})
+        response = self._put_uploaded_track(uuid=track.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: "false"})
 
         assert response.status_code == status.HTTP_200_OK
         artists_list: list[Artist] = list(self.saved_object.artists.all())

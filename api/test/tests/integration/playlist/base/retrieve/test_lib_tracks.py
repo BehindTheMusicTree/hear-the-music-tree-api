@@ -2,7 +2,7 @@ from rest_framework import status
 
 from api.model.uploaded_track_playlist_rel.Fields import Fields as UploadedTrackPlaylistRelFields
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
-from api.serializer.model.uploaded_track.output.simple.simple_without_album import Fields as UploadedTrackOutputFields
+from api.serializer.model.uploaded_track.output.UploadedTrackOutputFieldKey import UploadedTrackOutputFieldKey
 from api.serializer.model.playlist.base.output.detailed import Fields as PlaylistOutputFields
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.playlist.base.PlaylistTestCase import PlaylistTestCase
@@ -30,11 +30,11 @@ class TestCase(PlaylistTestCase):
             result_tracks_raw, key=lambda x: x[data_transformer.to_camel_case(UploadedTrackPlaylistRelFields.POSITION)])
         uploaded_track_field_name = data_transformer.to_camel_case(UploadedTrackPlaylistRelFields.UPLOADED_TRACK_PUBLIC)
         assert result_tracks_sorted[0][uploaded_track_field_name][
-            UploadedTrackOutputFields.TITLE] == uploaded_track1.title
+            UploadedTrackOutputFieldKey.TITLE.value] == uploaded_track1.title
         assert result_tracks_sorted[1][uploaded_track_field_name][
-            UploadedTrackOutputFields.TITLE] == uploaded_track2.title
+            UploadedTrackOutputFieldKey.TITLE.value] == uploaded_track2.title
         assert result_tracks_sorted[2][uploaded_track_field_name][
-            UploadedTrackOutputFields.TITLE] == uploaded_track3.title
+            UploadedTrackOutputFieldKey.TITLE.value] == uploaded_track3.title
 
     def test_duration(self):
         genre = self.model_fixture_factory.create_genre(name='rock')

@@ -2,7 +2,7 @@
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 from api.utils.audio_file_metadata.AppMetadataKey import AppMetadataKey
-from api.serializer.model.uploaded_track.input.post.Fields import Fields as PostFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 
 
 class TestCase(UploadedTrackTestCase):
@@ -29,6 +29,6 @@ class TestCase(UploadedTrackTestCase):
         for input_rating, expected in test_cases:
             with self.subTest(input_rating=input_rating, expected=expected):
                 response = self._post_uploaded_track(
-                    UploadedTrackTestFilename.METADATA_NONE_FLAC, **{PostFields.RATING: input_rating})
+                    UploadedTrackTestFilename.METADATA_NONE_FLAC, **{UploadedTrackInputFieldKey.RATING.value: input_rating})
                 assert response.status_code == 201
                 assert self.saved_uploaded_track_metadata_with_raw_rating[AppMetadataKey.RATING] == expected

@@ -36,7 +36,6 @@ node_modules/
 # =============================================================================
 .github/pr-descriptions/*
 !.github/pr-descriptions/pr-description-template.md
-.github/descriptions/
 
 # =============================================================================
 # General analysis and design docs (not version controlled)

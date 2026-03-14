@@ -134,21 +134,32 @@ setup_gunicorn_log () {
 }
 
 setup_media_dirs () {
-    if [ -n "${TMP_UPLOADED_FILES}" ]; then
-        log_with_script_prefixe "TMP_UPLOADED_FILES is set. Setting up temp uploaded files directory and media direcroties..."
-        create_directory_if_not_exists_or_exit "$TMP_UPLOADED_FILES"
-        set_read_write_permissions_and_owner_or_exit "$TMP_UPLOADED_FILES"
-        chmod a+rwx "$TMP_UPLOADED_FILES"
-        log_with_script_prefixe "Temp uploaded files directory is set up (world-writable so AFP container and runner can both write)."
-
-        log_with_script_prefixe "Setting up media directory..."
-        create_directory_if_not_exists_or_exit "$MEDIA_DIR"
-        create_directory_if_not_exists_or_exit "$LIBRARIES_DIR"
-        set_read_write_permissions_and_owner_or_exit "$MEDIA_DIR"
-        log_with_script_prefixe "Media directories are set up."
-    else
-        log_with_script_prefixe "TMP_UPLOADED_FILES is not set. The app will not handle media files."
+    if [ "$FILE_UPLOAD_ENABLED" = "false" ]; then
+        log_with_script_prefixe "FILE_UPLOAD_ENABLED is false. Skipping media directories."
+        return
     fi
+    if [ -z "${TMP_UPLOADED_FILES}" ]; then
+        log_with_script_prefixe "TMP_UPLOADED_FILES is not set. The app will not handle media files."
+        return
+    fi
+    log_with_script_prefixe "Setting up temp uploaded files directory and media directories..."
+    create_directory_if_not_exists_or_exit "$TMP_UPLOADED_FILES"
+    set_read_write_permissions_and_owner_or_exit "$TMP_UPLOADED_FILES"
+    chmod a+rwx "$TMP_UPLOADED_FILES"
+    log_with_script_prefixe "Temp uploaded files directory is set up (world-writable so AFP container and runner can both write)."
+
+    if [ -n "${METADATA_SESSION_DIR}" ]; then
+        create_directory_if_not_exists_or_exit "$METADATA_SESSION_DIR"
+        set_read_write_permissions_and_owner_or_exit "$METADATA_SESSION_DIR"
+        chmod a+rwx "$METADATA_SESSION_DIR"
+        log_with_script_prefixe "Metadata session directory is set up."
+    fi
+
+    log_with_script_prefixe "Setting up media directory..."
+    create_directory_if_not_exists_or_exit "$MEDIA_DIR"
+    create_directory_if_not_exists_or_exit "$LIBRARIES_DIR"
+    set_read_write_permissions_and_owner_or_exit "$MEDIA_DIR"
+    log_with_script_prefixe "Media directories are set up."
 }
 
 main (){

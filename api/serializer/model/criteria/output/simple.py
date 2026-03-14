@@ -4,14 +4,7 @@ from api.model.criteria.Criteria import Criteria
 from api.serializer.AppInputSerializer import AppInputSerializer
 from api.serializer.model.criteria.output.minimum import CriteriaMinimumSerializer
 
-from .Fields import Fields as AvailableFields
-
-
-class Fields:
-    UUID = AvailableFields.UUID
-    NAME = AvailableFields.NAME
-    PARENT = AvailableFields.PARENT
-    CREATED_ON = AvailableFields.CREATED_ON
+from .CriteriaOutputFieldKey import CriteriaOutputFieldKey
 
 
 class CriteriaSimpleSerializer(AppInputSerializer, serializers.ModelSerializer):
@@ -20,8 +13,8 @@ class CriteriaSimpleSerializer(AppInputSerializer, serializers.ModelSerializer):
     class Meta:
         model = Criteria
         fields = [
-            Fields.UUID,
-            Fields.NAME,
-            Fields.PARENT,
-            Fields.CREATED_ON
+            CriteriaOutputFieldKey.UUID.value,
+            CriteriaOutputFieldKey.NAME.value,
+            CriteriaOutputFieldKey.PARENT.value,
+            CriteriaOutputFieldKey.CREATED_ON.value,
         ]

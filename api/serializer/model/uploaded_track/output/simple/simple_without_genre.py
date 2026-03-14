@@ -4,18 +4,7 @@ from rest_framework import serializers
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.serializer.model.album.minimum import AlbumMinimumSerializer
 from api.serializer.model.artist.minimum import ArtistMinimumSerializer
-from api.serializer.model.uploaded_track.output.simple.Fields import Fields as SimpleFields
-
-
-class Fields:
-    UUID = SimpleFields.UUID
-    TITLE = SimpleFields.TITLE
-    ARTISTS = SimpleFields.ARTISTS
-    ALBUM = SimpleFields.ALBUM
-    GENRE = SimpleFields.GENRE
-    RATING = SimpleFields.RATING
-    LANGUAGE = SimpleFields.LANGUAGE
-    PLAY_COUNT = SimpleFields.PLAY_COUNT
+from api.serializer.model.uploaded_track.output.UploadedTrackOutputFieldKey import UploadedTrackOutputFieldKey
 
 
 class UploadedTrackSimpleWithoutGenreSerializer(serializers.ModelSerializer):
@@ -24,10 +13,10 @@ class UploadedTrackSimpleWithoutGenreSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UploadedTrack
-        fields = [Fields.UUID,
-                  Fields.TITLE,
-                  Fields.ARTISTS,
-                  Fields.ALBUM,
-                  Fields.RATING,
-                  Fields.LANGUAGE,
-                  Fields.PLAY_COUNT]
+        fields = [UploadedTrackOutputFieldKey.UUID.value,
+                  UploadedTrackOutputFieldKey.TITLE.value,
+                  UploadedTrackOutputFieldKey.ARTISTS.value,
+                  UploadedTrackOutputFieldKey.ALBUM.value,
+                  UploadedTrackOutputFieldKey.RATING.value,
+                  UploadedTrackOutputFieldKey.LANGUAGE.value,
+                  UploadedTrackOutputFieldKey.PLAY_COUNT.value]

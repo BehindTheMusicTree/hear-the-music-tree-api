@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from api.serializer.model.uploaded_track.input.put.Fields import Fields as PutFields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.utils.field.body_data.method.PutBodyDataTestCase import PutBodyDataTestCase
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
@@ -11,7 +11,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         rating = 5
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="Korinto", rating=rating)
 
-        response = self._put_uploaded_track(uuid=uploaded_track.uuid, **{PutFields.TITLE: "Wech"})
+        response = self._put_uploaded_track(uuid=uploaded_track.uuid, **{UploadedTrackInputFieldKey.TITLE.value: "Wech"})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.saved_object.rating == rating
@@ -20,7 +20,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         rating = 0
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="Korinto")
 
-        response = self._put_uploaded_track(uuid=uploaded_track.uuid, **{PutFields.RATING: rating})
+        response = self._put_uploaded_track(uuid=uploaded_track.uuid, **{UploadedTrackInputFieldKey.RATING.value: rating})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.saved_object.rating == rating

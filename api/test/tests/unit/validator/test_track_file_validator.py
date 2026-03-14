@@ -77,6 +77,14 @@ class TestTrackFileValidator:
         with patch.object(validator, "_validate_extension"), patch.object(validator, "_validate_file_size"):
             validator(file)
 
+    def test_flac_magic_bytes_then_passes(self):
+        validator = TrackFileValidator()
+        file = SimpleUploadedFile("test.flac", b"fLaC", content_type="audio/flac")
+        file.size = 1024 * 1024
+
+        with patch.object(validator, "_validate_extension"), patch.object(validator, "_validate_file_size"):
+            validator(file)
+
     @patch("api.validator.TrackFileValidator.audiometa.get_unified_metadata")
     @patch("api.validator.TrackFileValidator.get_file_path")
     def test_valid_audio_file_then_passes(self, mock_get_path, mock_get_metadata):

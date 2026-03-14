@@ -27,8 +27,8 @@ class GenreViewSet(CriteriaViewSet):
         serializer.is_valid(raise_exception=True)
 
         from api.model.uploaded_track.UploadedTrack import UploadedTrack
-        from api.model.uploaded_track.Fields import Fields as UploadedTrackFields
-        UploadedTrack.objects.filter(user=request.user).update(**{UploadedTrackFields.GENRE: None})
+        from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
+        UploadedTrack.objects.filter(user=request.user).update(**{UploadedTrackFields.GENRE.value: None})
 
         Genre.objects.import_criteria_tree(request.user, serializer.validated_data)
 

@@ -124,6 +124,7 @@ SECRET_KEY: str
 # File Upload
 FILE_UPLOAD_TEMP_DIR: str | None
 FILE_UPLOAD_ENABLED: bool
+METADATA_SESSION_DIR: Path | None
 
 
 def init_logs_if_needed():
@@ -887,6 +888,7 @@ else:
     if not FILE_UPLOAD_TEMP_DIR:
         print_django("TMP_UPLOADED_FILES/FILE_UPLOAD_TEMP_DIR is not set. The app will not handle media files.")
         FILE_UPLOAD_ENABLED = False
+        METADATA_SESSION_DIR = None
         if os.getenv('AFP_ENABLED', '').lower() == 'true':
             raise EnvironmentError(
                 "The AFP_ENABLED env variable cannot be true when "
@@ -897,12 +899,14 @@ else:
                          'AFP_POST_ENDPOINT',
                          'ACOUSTID_API_KEY',
                          'MEDIA_DIR',
+                         'METADATA_SESSION_DIR',
                          'LIBRARIES_DIR_NAME']:
             if os.getenv(var_name):
                 raise EnvironmentError(f"The {var_name} env variable cannot be set as \
                     TMP_UPLOADED_FILES/FILE_UPLOAD_TEMP_DIR is not.")
     else:
         FILE_UPLOAD_ENABLED = True
+        METADATA_SESSION_DIR = Path(load_required_str_env_var("METADATA_SESSION_DIR")).resolve()
         setup_media_dirs()
         if AFP_ENABLED:  # pyright: ignore[reportUnboundVariable]
             AFP_CONTAINER_NAME = load_required_str_env_var('AFP_CONTAINER_NAME')

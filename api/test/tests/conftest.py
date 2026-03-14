@@ -436,6 +436,19 @@ def pytest_collection_modifyitems(config, items):
     items[:] = ordered
 
 
+def _cleanup_metadata_session_dir() -> None:
+    """Remove files in METADATA_SESSION_DIR so test runs do not leave session files behind."""
+    session_dir = getattr(settings, "METADATA_SESSION_DIR", None)
+    if not session_dir or not Path(session_dir).is_dir():
+        return
+    for entry in Path(session_dir).iterdir():
+        if entry.is_file():
+            try:
+                entry.unlink()
+            except OSError:
+                pass
+
+
 def _cleanup_test_user_directories() -> None:
     """Cleanup test user library directories.
 
@@ -443,6 +456,7 @@ def _cleanup_test_user_directories() -> None:
     TEST_USER_LIBRARIES_DIR_NAME_PREFIXE. It's called from multiple hooks to ensure
     cleanup happens even if tests are interrupted or fail.
     """
+    _cleanup_metadata_session_dir()
     libraries_path = Path(settings.LIBRARIES_DIR)
     removed_dirs: list[str] = []
     failed_dirs: list[str] = []

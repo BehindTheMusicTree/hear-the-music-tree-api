@@ -1,6 +1,6 @@
 from unittest.mock import patch
 
-from api.serializer.model.uploaded_track.input.Fields import Fields
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
@@ -16,7 +16,7 @@ class TestCase(UploadedTrackTestCase):
             mock.side_effect = Exception(exception_message)
 
             try:
-                self._put_uploaded_track(uuid=track.uuid, **{Fields.GENRE: new_genre_name})
+                self._put_uploaded_track(uuid=track.uuid, **{UploadedTrackInputFieldKey.GENRE.value: new_genre_name})
             except Exception as e:
                 assert str(e) == exception_message
                 assert track in original_genre.uploaded_tracks.all()

@@ -42,7 +42,7 @@ Body: JSON object with raw metadata and optional technical fields. Keys may be o
   "artists_names": ["string"],
   "album_name": "string | null",
   "album_artists_names": ["string"],
-  "genre_name": "string | null",
+  "genres_names": ["string"],
   "rating": "number | null",
   "language": "string | null",
   "duration_sec": "number",
@@ -55,7 +55,7 @@ Body: JSON object with raw metadata and optional technical fields. Keys may be o
 - **artists_names**: List of artist names
 - **album_name**: Album name
 - **album_artists_names**: List of album artist names
-- **genre_name**: Genre (single value; from the first genre tag when multiple exist)
+- **genres_names**: List of genre names
 - **rating**: Rating (format-dependent; may be normalized)
 - **language**: Language code
 - **duration_sec**: Duration in seconds (technical)
