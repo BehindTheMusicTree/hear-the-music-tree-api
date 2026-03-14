@@ -29,7 +29,8 @@ class TestCase(UploadedTrackTestCase):
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_LONG_A_ID3V1_SMALL_MP3, **data)
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert self.saved_uploaded_track_metadata_with_raw_rating.get(AppMetadataKey.GENRES_NAMES, None) == []
+        genres = self.saved_uploaded_track_metadata_with_raw_rating.get(AppMetadataKey.GENRES_NAMES, None)
+        assert genres is None
 
     def test_flac_empty_then_ok(self):
         genre_name = 'metal'
@@ -52,7 +53,8 @@ class TestCase(UploadedTrackTestCase):
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_LONG_A_VORBIS_SMALL_FLAC, **data)
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert self.saved_uploaded_track_metadata_with_raw_rating.get(AppMetadataKey.GENRES_NAMES, None) == []
+        genres = self.saved_uploaded_track_metadata_with_raw_rating.get(AppMetadataKey.GENRES_NAMES, None)
+        assert genres is None
 
     def test_wav_empty_then_ok(self):
         genre_name = 'Metal'
@@ -75,4 +77,5 @@ class TestCase(UploadedTrackTestCase):
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_LONG_A_RIFF_SMALL_WAV, **data)
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert self.saved_uploaded_track_metadata_with_raw_rating.get(AppMetadataKey.GENRES_NAMES, None) == []
+        genres = self.saved_uploaded_track_metadata_with_raw_rating.get(AppMetadataKey.GENRES_NAMES, None)
+        assert genres is None

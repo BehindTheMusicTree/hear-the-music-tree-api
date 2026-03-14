@@ -36,4 +36,4 @@ class TestCase(GenreTestCase):
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
         metadata = audio_file_metadata.get_app_metadata(file=uploaded_track.track_file.file)
-        assert metadata.get(audio_file_metadata.AppMetadataKey.GENRES_NAMES, []) == []
+        assert metadata.get(audio_file_metadata.AppMetadataKey.GENRES_NAMES, None) is None
