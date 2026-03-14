@@ -94,7 +94,7 @@ Body example:
 - Session and temp file are removed automatically after 15 minutes (TTL). A periodic cleanup of the session directory is recommended for orphaned files.
 
 **Storage**  
-Session files are stored in the env-defined directory `METADATA_SESSION_DIR`. This directory is separate from `TMP_UPLOADED_FILES` (Django’s request upload temp dir): each has its own path. When `TMP_UPLOADED_FILES` is set, `METADATA_SESSION_DIR` must be set (via `METADATA_SESSION_DIR_INTERNAL` or `METADATA_SESSION_DIR_EXTERNAL` in the paths script). No default; the app fails to start if `METADATA_SESSION_DIR` is missing when uploads are enabled.
+Session files are stored in the env-defined directory `METADATA_SESSION_DIR`. This directory is separate from `TMP_UPLOADED_FILES` (Django’s request upload temp dir): each has its own path. When `TMP_UPLOADED_FILES` is set, `METADATA_SESSION_DIR` must be set (via `METADATA_SESSION_DIR_INTERNAL` or `METADATA_SESSION_DIR_EXTERNAL` in the paths script). No default; the app fails to start if `METADATA_SESSION_DIR` is missing when uploads are enabled. On production deploy, `METADATA_SESSION_DIR_EXTERNAL` is supplied at runtime by the server or Compose environment (not by the deploy workflow).
 
 ---
 

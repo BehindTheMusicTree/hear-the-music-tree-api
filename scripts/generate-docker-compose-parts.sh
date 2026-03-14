@@ -39,11 +39,6 @@ REQUIRED_NON_BOOL_VARS=(
   APP_CONTAINER_NAME
   APP_PORT
   APP_ENV_FILENAME
-  GUNICORN_LOG_DIR
-  DJANGO_LOG_DIR_EXTERNAL
-  MEDIA_DIR_EXTERNAL
-  STATIC_FILES_EXTERNAL
-  TMP_UPLOADED_FILES_EXTERNAL
 )
 check_required_vars_are_set ${REQUIRED_NON_BOOL_VARS[@]}
 
@@ -104,11 +99,19 @@ cat << EOF > "$DOCKER_COMPOSE_PARTIAL_API_FILE"
       retries: 3
       start_period: 60s
     volumes:
-      - api-django-log-dir:${DJANGO_LOG_DIR_EXTERNAL}
-      - api-gunicorn-log-dir:${GUNICORN_LOG_DIR}
-      - api-media-dir:${MEDIA_DIR_EXTERNAL}
-      - api-static-files:${STATIC_FILES_EXTERNAL}
-      - api-upload-tmp-files:${TMP_UPLOADED_FILES_EXTERNAL}
+      - api-django-log-dir:\${DJANGO_LOG_DIR_EXTERNAL}
+      - api-gunicorn-log-dir:\${GUNICORN_LOG_DIR}
+      - api-media-dir:\${MEDIA_DIR_EXTERNAL}
+      - api-static-files:\${STATIC_FILES_EXTERNAL}
+      - api-upload-tmp-files:\${TMP_UPLOADED_FILES_EXTERNAL}
+      - api-metadata-sessions:\${METADATA_SESSION_DIR_EXTERNAL}
+    environment:
+      - DJANGO_LOG_DIR_EXTERNAL=\${DJANGO_LOG_DIR_EXTERNAL}
+      - GUNICORN_LOG_DIR=\${GUNICORN_LOG_DIR}
+      - MEDIA_DIR_EXTERNAL=\${MEDIA_DIR_EXTERNAL}
+      - STATIC_FILES_EXTERNAL=\${STATIC_FILES_EXTERNAL}
+      - TMP_UPLOADED_FILES_EXTERNAL=\${TMP_UPLOADED_FILES_EXTERNAL}
+      - METADATA_SESSION_DIR_EXTERNAL=\${METADATA_SESSION_DIR_EXTERNAL}
     expose:
       - $APP_PORT
     depends_on:
