@@ -1,49 +1,39 @@
-name: Publish
+# Build and push HTMT API image tagged as :staging (industry standard: moving tag for deploy).
+# App version inside container is VERSION-staging (e.g. 2.1.1-staging) for traceability.
+# Trigger: push to develop or workflow_dispatch. Set HTMT_API_IMAGE_TAG_TEST=staging in infrastructure so deploy pulls :staging.
+name: Publish staging
 
 on:
-  workflow_call:
   push:
-    tags:
-      - 'v*'
+    branches: [develop]
+  workflow_dispatch:
 
 jobs:
   determine-version:
     name: Determine version
     runs-on: ubuntu-latest
     outputs:
-      app_version: ${{ steps.version.outputs.version }}
+      app_version: ${{ steps.version.outputs.app_version }}
+      image_tag: ${{ steps.version.outputs.image_tag }}
       env: ${{ steps.version.outputs.env }}
     steps:
       - name: Checkout code
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Extract version from tag
+      - name: Set staging version and tag
         id: version
         run: |
-          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
-            VERSION="${GITHUB_REF#refs/tags/v}"
-            echo "Using version from tag ref: $VERSION"
-          else
-            git fetch --tags --force
-            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-            if [ -z "$LATEST_TAG" ]; then
-              echo "Error: Cannot determine version. No tag provided."
-              exit 1
-            fi
-            VERSION="${LATEST_TAG#v}"
-            echo "Using latest tag version: $VERSION (from tag: $LATEST_TAG)"
+          VERSION=$(cat VERSION | tr -d '[:space:]')
+          if [ -z "$VERSION" ]; then
+            echo "Error: VERSION file is empty or missing."
+            exit 1
           fi
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          if [[ "$VERSION" == *-* ]]; then
-            echo "env=test" >> "$GITHUB_OUTPUT"
-            echo "Prerelease version -> env test"
-          else
-            echo "env=prod" >> "$GITHUB_OUTPUT"
-            echo "Release version -> env prod"
-          fi
+          echo "app_version=${VERSION}-staging" >> "$GITHUB_OUTPUT"
+          echo "image_tag=staging" >> "$GITHUB_OUTPUT"
+          echo "env=test" >> "$GITHUB_OUTPUT"
+          echo "Staging: app_version=${VERSION}-staging, image_tag=staging"
 
   static:
     name: Static files
@@ -60,7 +50,7 @@ jobs:
     with:
       commit_hash: ${{ needs.static.outputs.collect_static_files_commit_hash }}
       app_version: ${{ needs.determine-version.outputs.app_version }}
-      image_tag: ${{ needs.determine-version.outputs.app_version }}
+      image_tag: ${{ needs.determine-version.outputs.image_tag }}
     secrets: inherit
 
   deploy-env-and-docker-compose:
@@ -79,4 +69,3 @@ jobs:
     with:
       env: ${{ needs.determine-version.outputs.env }}
     secrets: inherit
-
