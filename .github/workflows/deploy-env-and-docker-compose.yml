@@ -49,7 +49,7 @@ jobs:
         env:
           APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
           APP_CONTAINER_NAME: ${{ vars.HTMT_API_APP_NAME }}-${{ inputs.env }}
-          APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
+          HTMT_API_IMAGE_REPO: ${{ vars.HTMT_API_IMAGE_REPO }}
           APP_PORT: ${{ vars.APP_PORT }}
           WEBHOOK_DIR: ${{ vars.WEBHOOK_DIR }}
           WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE: ${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE }}
@@ -112,7 +112,7 @@ jobs:
           bash scripts/check-workflow-env.sh \
             APP_NAME \
             APP_PORT \
-            APP_IMAGE_REPO \
+            HTMT_API_IMAGE_REPO \
             DOMAIN_NAME \
             HTMT_API_SUBDOMAIN_NAME \
             WEBHOOK_DIR \
@@ -365,7 +365,7 @@ jobs:
           APP_ROOT_DIR: ${{ env.CONTAINER_ROOT_DIR }}
           APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
           APP_SERVICE_NAME: ${{ vars.HTMT_API_APP_NAME }}
-          APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
+          HTMT_API_IMAGE_REPO: ${{ vars.HTMT_API_IMAGE_REPO }}
           APP_CONTAINER_NAME: ${{ steps.set_container_names.outputs.app_container_name }}
           APP_PORT: ${{ vars.APP_PORT}}
           GUNICORN_LOG_ERROR_FILENAME: ${{ vars.GUNICORN_LOG_ERROR_FILENAME }}
