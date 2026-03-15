@@ -71,7 +71,7 @@ Builds the app Docker image and pushes it to Docker Hub.
 
 **Jobs:** **check-vars-and-secrets** (Check vars and secrets) – determines version from git tags and validates required env vars and secrets; **build-and-push-to-dockerhub** (Push to Docker Hub) – checkout at ref → login to Docker Hub → build and push image with build-args from repo vars.
 
-**Environment:** `TEST`. Image tag: `$DOCKERHUB_USERNAME/$APP_IMAGE_REPO:$APP_VERSION` (version determined from git tags).
+**Environment:** `TEST`. Image tag: `$DOCKERHUB_USERNAME/$HTMT_API_IMAGE_REPO:$APP_VERSION` (version determined from git tags).
 
 ## Deploy
 

@@ -34,7 +34,7 @@ REQUIRED_NON_BOOL_VARS=(
   APP_NAME
   APP_SERVICE_NAME
   APP_ROOT_DIR
-  APP_IMAGE_REPO
+  HTMT_API_IMAGE_REPO
   APP_VERSION
   APP_CONTAINER_NAME
   APP_PORT
@@ -90,7 +90,7 @@ log "Generating the API partial docker-compose files in $DOCKER_COMPOSE_PARTIAL_
 cat << EOF > "$DOCKER_COMPOSE_PARTIAL_API_FILE"
   ${APP_SERVICE_NAME}:
     working_dir: $APP_ROOT_DIR
-    image: $DOCKERHUB_USERNAME/$APP_IMAGE_REPO:$APP_VERSION
+    image: $DOCKERHUB_USERNAME/$HTMT_API_IMAGE_REPO:$APP_VERSION
     container_name: $APP_CONTAINER_NAME
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:${APP_PORT}/health/"]
