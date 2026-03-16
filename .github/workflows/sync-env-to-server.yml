@@ -99,6 +99,7 @@ jobs:
             DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET \
             SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME DEMO_EMAIL SUPERADMIN_EMAIL FILE_UPLOAD_ENABLED; do
             val="${!key}"
+            val=$(printf '%s' "$val" | tr -d '\n\r')
             [ -n "${val}" ] && printf '%s=%s\n' "$key" "$val" >> "$FRAGMENT"
           done
           echo "path=$FRAGMENT" >> "$GITHUB_OUTPUT"
