@@ -7,6 +7,10 @@ on:
         description: 'App version to use'
         required: true
         type: string
+    outputs:
+      collect_static_files_commit_hash:
+        description: 'Commit hash after collecting and pushing static files'
+        value: ${{ jobs.collect-and-push-static-files.outputs.collect_static_files_commit_hash }}
 
 permissions:
   contents: write
@@ -122,7 +126,7 @@ jobs:
           PAT_TOKEN: ${{ secrets.STATIC_FILES_PAT }}
         run: |
           TOKEN="${PAT_TOKEN:-${GITHUB_TOKEN}}"
-          git remote set-url origin https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          git remote set-url origin "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           BRANCH=$(git branch --show-current)
           if [ -z "$BRANCH" ]; then
             echo "Error: Could not determine current branch"

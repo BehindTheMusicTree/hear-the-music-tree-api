@@ -42,7 +42,7 @@ check_script_vars_are_set () {
         AFP_POOL_DIR_EXTERNAL
         AFP_PORT
     )
-    check_required_vars_are_set ${REQUIRED_NON_BOOL_VARS[@]}
+    check_required_vars_are_set "${REQUIRED_NON_BOOL_VARS[@]}"
     check_bool_vars_are_set DEBUG APP_IS_EXPOSED DB_DATA_MUST_PERSIST
     export_value_removing_potential_surrounding_quotes DB_SUPERUSER_PASSWORD
     export_value_removing_potential_surrounding_quotes "DB_APP_USER_PASSWORD"

@@ -8,7 +8,11 @@ on:
         required: false
         type: string
       app_version:
-        description: 'App version to use'
+        description: 'App version (build-arg APP_VERSION for display in container)'
+        required: true
+        type: string
+      image_tag:
+        description: 'Docker image tag to push (e.g. 1.2.3 for release, staging for staging)'
         required: true
         type: string
 
@@ -25,6 +29,7 @@ jobs:
       name: TEST
     env:
       APP_VERSION: ${{ inputs.app_version }}
+      IMAGE_TAG: ${{ inputs.image_tag }}
       APP_TITLE: ${{ vars.APP_TITLE }}
     steps:
       - name: Checkout code
@@ -37,9 +42,9 @@ jobs:
         env:
           API_DIR_NAME: ${{ vars.API_DIR_NAME }}
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
-          APP_IMAGE_REPO: ${{ vars.APP_IMAGE_REPO }}
+          HTMT_API_IMAGE_REPO: ${{ vars.HTMT_API_IMAGE_REPO }}
           DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
-        run: bash scripts/check-workflow-env.sh API_DIR_NAME DOCKERHUB_USERNAME APP_IMAGE_REPO DOCKERHUB_ACCESS_TOKEN APP_TITLE
+        run: bash scripts/check-workflow-env.sh API_DIR_NAME DOCKERHUB_USERNAME HTMT_API_IMAGE_REPO DOCKERHUB_ACCESS_TOKEN APP_TITLE
 
       - name: Login to Dockerhub
         run: |
@@ -48,7 +53,7 @@ jobs:
 
       - name: Build and Push Docker image
         env:
-          IMAGE_FULL_NAME: ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.APP_IMAGE_REPO }}:${{ env.APP_VERSION }}
+          IMAGE_FULL_NAME: ${{ vars.DOCKERHUB_USERNAME }}/${{ vars.HTMT_API_IMAGE_REPO }}:${{ env.IMAGE_TAG }}
         uses: docker/build-push-action@v6
         with:
           context: .
