@@ -82,7 +82,6 @@ jobs:
 
   set-version-api:
     name: Set API version on server
-    runs-on: ubuntu-latest
     needs: [build-and-push, determine-version]
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
     with:
@@ -93,9 +92,7 @@ jobs:
 
   set-version-db:
     name: Set DB version on server
-    runs-on: ubuntu-latest
     needs: [determine-version, check-pinned-tags]
-    environment: TEST
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
@@ -105,9 +102,7 @@ jobs:
 
   set-version-afp:
     name: Set AFP version on server
-    runs-on: ubuntu-latest
     needs: [determine-version, check-pinned-tags]
-    environment: TEST
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
@@ -117,9 +112,7 @@ jobs:
 
   redeploy-webhook-call:
     name: Redeploy webhook
-    runs-on: ubuntu-latest
     needs: [build-and-push, set-version-api, set-version-db, set-version-afp, check-pinned-tags, determine-version]
-    environment: TEST
     uses: BehindTheMusicTree/github-workflows/.github/workflows/call-redeployment-webhook.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
