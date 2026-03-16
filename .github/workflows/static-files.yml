@@ -122,7 +122,7 @@ jobs:
           PAT_TOKEN: ${{ secrets.STATIC_FILES_PAT }}
         run: |
           TOKEN="${PAT_TOKEN:-${GITHUB_TOKEN}}"
-          git remote set-url origin https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+          git remote set-url origin "https://x-access-token:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           BRANCH=$(git branch --show-current)
           if [ -z "$BRANCH" ]; then
             echo "Error: Could not determine current branch"
