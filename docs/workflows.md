@@ -7,8 +7,8 @@ This document describes each GitHub Actions workflow in `.github/workflows/`.
 - [Overview](#overview)
 - [Test](#test)
 - [Publish](#publish)
+- [Publish staging](#publish-staging)
 - [Build](#build)
-- [Deploy](#deploy)
 - [Sync env to server](#sync-env-to-server)
 - [Static Files](#static-files)
 - [Branch Protection](#branch-protection)
@@ -16,7 +16,7 @@ This document describes each GitHub Actions workflow in `.github/workflows/`.
 
 ## Overview
 
-Workflows are split by responsibility: tests run on every change; publishing (static files, build, deploy) runs on version tags; branch protection and labeler run on pull requests. Reusable workflows (`test`, `build`, `static-files`, `deploy`) can be called by others or triggered manually. Workflows that use environment vars or secrets run a **check-vars-and-secrets** job first (script: `scripts/check-workflow-env.sh`); it fails if any required var or secret is missing.
+Workflows are split by responsibility: tests run on every change; publishing runs on version tags (Publish) or on push to `develop` (Publish staging); branch protection and labeler run on pull requests. Reusable workflows (`test`, `build-and-push`, `static-files`) can be called by others or triggered manually. Workflows that use environment vars or secrets run a **check-vars-and-secrets** job first (script: `scripts/check-workflow-env.sh`); it fails if any required var or secret is missing.
 
 **Versioning**: Application version is derived from git tags (e.g., `v0.3.4` → `0.3.4`). See [Versioning Strategy](versioning.md) for details.
 
@@ -42,23 +42,44 @@ Runs the full test suite with pytest.
 
 **File:** `.github/workflows/publish.yml`
 
-Orchestrates release: collect static files, build Docker image, deploy to the test server.
+Orchestrates release: collect static files, build Docker image, set image tags on server (API, DB, AFP) via shared workflows, then trigger redeployment webhook.
 
 **Triggers:**
 
 - **Push** of version tags (`v*`, e.g. `v0.2.1`)
 - **Callable** by other workflows via `workflow_call`
 
-**Jobs (sequential):**
+**Jobs:**
 
-1. **determine-version** (Determine version) – extracts version from git tag
+1. **determine-version** (Determine version) – extracts version from git tag; prerelease tags (version contains `-`) use env `test`, else `prod`
 2. **static** (Static files) – calls `static-files.yml`, commits and pushes collected static files
-3. **build-and-push** (Docker image) – calls `build-and-push.yml` with commit hash from step 2
-4. **deploy** (Deploy) – calls `deploy.yml` to deploy to the test server
+3. **build-and-push** (Docker image) – calls `build-and-push.yml` with commit hash from static job
+4. **check-pinned-tags** (Check DB/AFP tags are pinned) – requires `DB_VERSION` and `AFP_VERSION` in Settings → Variables (no `latest`)
+5. **set-version-api** (Set API version on server) – shared workflow `set-image-tag-on-server` for `htmt-api`
+6. **set-version-db** (Set DB version on server) – shared workflow for `htmt-db` using `vars.DB_VERSION`
+7. **set-version-afp** (Set AFP version on server) – shared workflow for `afp` using `vars.AFP_VERSION`
+8. **redeploy-webhook-call** (Redeploy webhook) – shared workflow `call-redeployment-webhook` (runs after set-version jobs)
 
-**Environment:** Uses `TEST` environment vars and secrets. **DB and AFP image tags must be pinned:** set `DB_VERSION` and `AFP_VERSION` (e.g. `16`, `1.0`) in Settings → Variables; the workflow fails if they are unset (no `latest`).
+**Environment:** Dynamic: **TEST** for prerelease version tags (e.g. `v0.2.0-rc1`), **PROD** for release tags (e.g. `v0.2.0`). **DB and AFP image tags must be pinned:** set `DB_VERSION` and `AFP_VERSION` (e.g. `16`, `1.0`) in Settings → Variables; the workflow fails if they are unset.
 
-**Versioning:** Version is automatically extracted from git tags (e.g., `refs/tags/v0.3.4` → `0.3.4`). If not triggered by a tag, it fetches the latest git tag.
+**Versioning:** Version is extracted from git tags (e.g., `refs/tags/v0.3.4` → `0.3.4`). If triggered via `workflow_call` without a tag, it uses the latest git tag.
+
+**Migrations:** Not run by the workflow. The API container entrypoint (`scripts/entrypoint.sh`) runs `migrate` after the database is ready, so each deployment applies pending migrations before Gunicorn starts.
+
+## Publish staging
+
+**File:** `.github/workflows/publish-staging.yml`
+
+Builds and pushes the API image as `:staging` and deploys to the test server. App version inside the container is `VERSION-staging` (e.g. `2.1.1-staging`) for traceability.
+
+**Triggers:**
+
+- **Push** to `develop`
+- **workflow_dispatch** (Actions → Publish staging → Run workflow)
+
+**Jobs:** Same structure as Publish: **determine-version** (reads `VERSION` file, sets `app_version` to `VERSION-staging`, `image_tag` to `staging`, `env` to `test`), **static**, **build-and-push** (with `image_tag=staging`), **check-pinned-tags**, **set-version-api** / **set-version-db** / **set-version-afp**, **redeploy-webhook-call**. All deployment jobs use shared workflows from `BehindTheMusicTree/github-workflows` and environment **TEST**.
+
+**Versioning:** Uses the `VERSION` file in the repo; image is always tagged `staging` on the registry.
 
 ## Build And Push
 
@@ -68,32 +89,11 @@ Builds the app Docker image and pushes it to Docker Hub.
 
 **Triggers:**
 
-- **Callable** via `workflow_call` (optional `commit_hash` input; used by Publish)
+- **Callable** via `workflow_call` (optional `commit_hash` input; used by Publish and Publish staging)
 
 **Jobs:** **check-vars-and-secrets** (Check vars and secrets) – determines version from git tags and validates required env vars and secrets; **build-and-push-to-dockerhub** (Push to Docker Hub) – checkout at ref → login to Docker Hub → build and push image with build-args from repo vars.
 
 **Environment:** `TEST`. Image tag: `$DOCKERHUB_USERNAME/$HTMT_API_IMAGE_REPO:$APP_VERSION` (version determined from git tags).
-
-## Deploy
-
-**File:** `.github/workflows/deploy.yml`
-
-Deploys the application to the test server via SSH and redeployment webhook.
-
-**Triggers:**
-
-- **Callable** via `workflow_call` (used by Publish)
-
-**Jobs:**
-
-1. **check-vars-and-secrets** (Check vars and secrets) – determines version from git tags and validates required env vars and secrets
-2. **set-env-variables-on-server** (Set env vars) – SSH to server, write API, DB, and AFP `.env` files from GitHub vars/secrets
-3. **set-partial-docker-compose-on-server** (Set compose files) – generate partial Docker Compose files with `generate-docker-compose-parts.sh` using version from job 1, SCP them to the server
-4. **redeploy-webhook-call** (Redeploy webhook) – call BehindTheMusicTree server-management redeployment webhook (depends on jobs 2 and 3)
-
-**Environment:** `TEST`. Uses `SERVER_DEPLOY_SSH_PRIVATE_KEY`, `DOMAIN_NAME`, `WEBHOOK_DIR`, etc.
-
-**Migrations:** The workflow does not run Django migrations. Migrations are applied when the container starts: the API container entrypoint (`scripts/entrypoint.sh`) runs `migrate` after the database is ready, so each new deployment applies pending migrations before Gunicorn starts.
 
 ## Sync env to server
 
