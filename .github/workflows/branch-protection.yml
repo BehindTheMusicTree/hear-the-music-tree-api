@@ -50,5 +50,18 @@ jobs:
             fi
           fi
 
+  actionlint:
+    name: Actionlint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install actionlint
+        run: |
+          VERSION="1.7.11"
+          curl -sSL "https://github.com/rhysd/actionlint/releases/download/v${VERSION}/actionlint_${VERSION}_linux_amd64.tar.gz" | tar xz -C /tmp
+
+      - name: Lint workflows
+        run: /tmp/actionlint -config-file .github/actionlint.yaml
 
 
