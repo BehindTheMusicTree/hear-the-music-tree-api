@@ -59,7 +59,7 @@ jobs:
           for v in "${required[@]}"; do
             [ -z "${!v}" ] && missing+=("$v")
           done
-          if [ ${#missing[@]} -gt 0 ]; then
+          if [ "${#missing[@]}" -gt 0 ]; then
             echo "ERROR: Missing required vars or secrets: ${missing[*]}"
             echo "Set them in Settings → Secrets and variables → Actions (repo or environment)."
             exit 1
