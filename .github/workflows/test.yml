@@ -37,6 +37,18 @@ env:
   DEMO_EMAIL: ci_demo@example.com
 
 jobs:
+  actionlint:
+    name: Actionlint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run actionlint
+        uses: raven-actions/actionlint@v2
+        with:
+          flags: -config-file .github/actionlint.yaml
+          fail-on-error: true
+
   check-vars-and-secrets:
     name: Check vars and secrets
     runs-on: ubuntu-latest
