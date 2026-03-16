@@ -9,6 +9,7 @@ This document describes each GitHub Actions workflow in `.github/workflows/`.
 - [Publish](#publish)
 - [Build](#build)
 - [Deploy](#deploy)
+- [Sync env to server](#sync-env-to-server)
 - [Static Files](#static-files)
 - [Branch Protection](#branch-protection)
 - [Labeler](#labeler)
@@ -93,6 +94,18 @@ Deploys the application to the test server via SSH and redeployment webhook.
 **Environment:** `TEST`. Uses `SERVER_DEPLOY_SSH_PRIVATE_KEY`, `DOMAIN_NAME`, `WEBHOOK_DIR`, etc.
 
 **Migrations:** The workflow does not run Django migrations. Migrations are applied when the container starts: the API container entrypoint (`scripts/entrypoint.sh`) runs `migrate` after the database is ready, so each new deployment applies pending migrations before Gunicorn starts.
+
+## Sync env to server
+
+**File:** `.github/workflows/sync-env-to-server.yml`
+
+Manually sync app env vars and secrets to the server `scripts/.env` (test and prod). Only the listed keys are updated; other keys in `.env` (set by the infrastructure repo) are unchanged.
+
+**Triggers:** **workflow_dispatch** (Actions → Sync env to server → Run workflow).
+
+**Secrets (this repo):** `DB_APP_DB_NAME`, `DB_APP_USERNAME`, `DB_APP_USER_PASSWORD`, `DB_SUPERUSER_PASSWORD`, `DEMO_PASSWORD`, `DEMO_USERNAME`, `DJANGO_SECRET_KEY`, `GOOGLE_CLIENT_SECRET`, `SPOTIFY_CLIENT_SECRET`, `SUPERADMIN_PASSWORD`, `SUPERADMIN_USERNAME`, `TMTA_USERNAME`, plus deploy secrets `SERVER_DEPLOY_USERNAME`, `SERVER_DEPLOY_SSH_PRIVATE_KEY`.
+
+**Variables (this repo):** `DEMO_EMAIL`, `SUPERADMIN_EMAIL`, `FILE_UPLOAD_ENABLED`, and deploy vars `DOMAIN_NAME`, `WEBHOOK_DIR`, `WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE`.
 
 ## Static Files
 

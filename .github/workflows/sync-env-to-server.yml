@@ -1,0 +1,136 @@
+# Manually sync app env vars and secrets to the server scripts/.env.
+# Uses GitHub Environment (TEST / PROD) so each run gets the right vars/secrets for that env.
+# Updates only the listed keys; other keys in .env are unchanged.
+name: Sync env to server
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sync:
+    name: Sync app env to server (${{ matrix.environment }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - environment: TEST
+            sync_env: test
+          - environment: PROD
+            sync_env: prod
+    environment: ${{ matrix.environment }}
+    env:
+      SSH_DESTINATION: ${{ secrets.SERVER_DEPLOY_USERNAME }}@${{ vars.DOMAIN_NAME }}
+      WEBHOOK_DIR: ${{ vars.WEBHOOK_DIR }}
+      WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE: ${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE }}
+    steps:
+      - name: Check required vars and secrets
+        env:
+          DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
+          WEBHOOK_DIR: ${{ vars.WEBHOOK_DIR }}
+          WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE: ${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE }}
+          DEMO_EMAIL: ${{ vars.DEMO_EMAIL }}
+          SUPERADMIN_EMAIL: ${{ vars.SUPERADMIN_EMAIL }}
+          FILE_UPLOAD_ENABLED: ${{ vars.FILE_UPLOAD_ENABLED }}
+          SERVER_DEPLOY_USERNAME: ${{ secrets.SERVER_DEPLOY_USERNAME }}
+          SERVER_DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.SERVER_DEPLOY_SSH_PRIVATE_KEY }}
+          DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
+          DB_APP_USERNAME: ${{ secrets.DB_APP_USERNAME }}
+          DB_APP_USER_PASSWORD: ${{ secrets.DB_APP_USER_PASSWORD }}
+          DB_SUPERUSER_PASSWORD: ${{ secrets.DB_SUPERUSER_PASSWORD }}
+          DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
+          DEMO_USERNAME: ${{ secrets.DEMO_USERNAME }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SUPERADMIN_PASSWORD: ${{ secrets.SUPERADMIN_PASSWORD }}
+          SUPERADMIN_USERNAME: ${{ secrets.SUPERADMIN_USERNAME }}
+          TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
+        run: |
+          required=(
+            DOMAIN_NAME WEBHOOK_DIR WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE
+            DEMO_EMAIL SUPERADMIN_EMAIL FILE_UPLOAD_ENABLED
+            SERVER_DEPLOY_USERNAME SERVER_DEPLOY_SSH_PRIVATE_KEY
+            DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD DB_SUPERUSER_PASSWORD
+            DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY
+            GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET
+            SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME
+          )
+          missing=()
+          for v in "${required[@]}"; do
+            [ -z "${!v}" ] && missing+=("$v")
+          done
+          if [ ${#missing[@]} -gt 0 ]; then
+            echo "ERROR: Missing required vars or secrets: ${missing[*]}"
+            echo "Set them in Settings → Secrets and variables → Actions (repo or environment)."
+            exit 1
+          fi
+          echo "All required vars and secrets are set."
+
+      - uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SERVER_DEPLOY_SSH_PRIVATE_KEY }}
+
+      - name: Add host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ vars.DOMAIN_NAME }} >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Build env fragment
+        id: fragment
+        env:
+          DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
+          DB_APP_USERNAME: ${{ secrets.DB_APP_USERNAME }}
+          DB_APP_USER_PASSWORD: ${{ secrets.DB_APP_USER_PASSWORD }}
+          DB_SUPERUSER_PASSWORD: ${{ secrets.DB_SUPERUSER_PASSWORD }}
+          DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
+          DEMO_USERNAME: ${{ secrets.DEMO_USERNAME }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SUPERADMIN_PASSWORD: ${{ secrets.SUPERADMIN_PASSWORD }}
+          SUPERADMIN_USERNAME: ${{ secrets.SUPERADMIN_USERNAME }}
+          TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
+          DEMO_EMAIL: ${{ vars.DEMO_EMAIL }}
+          SUPERADMIN_EMAIL: ${{ vars.SUPERADMIN_EMAIL }}
+          FILE_UPLOAD_ENABLED: ${{ vars.FILE_UPLOAD_ENABLED }}
+        run: |
+          FRAGMENT=$(mktemp)
+          for key in DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD DB_SUPERUSER_PASSWORD \
+            DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET \
+            SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME DEMO_EMAIL SUPERADMIN_EMAIL FILE_UPLOAD_ENABLED; do
+            val="${!key}"
+            [ -n "${val}" ] && printf '%s=%s\n' "$key" "$val" >> "$FRAGMENT"
+          done
+          echo "path=$FRAGMENT" >> "$GITHUB_OUTPUT"
+
+      # Merge fragment into this env's scripts/.env only (vars from environment: ${{ matrix.environment }})
+      - name: Upload fragment and merge into server .env (${{ matrix.environment }})
+        env:
+          FRAGMENT_PATH: ${{ steps.fragment.outputs.path }}
+          SYNC_ENV: ${{ matrix.sync_env }}
+        run: |
+          scp -o StrictHostKeyChecking=accept-new "$FRAGMENT_PATH" "$SSH_DESTINATION:/tmp/htmt-sync-env-$SYNC_ENV.env"
+          rm -f "$FRAGMENT_PATH"
+          ssh "$SSH_DESTINATION" "bash -s" -- "$WEBHOOK_DIR" "$WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE" "$SYNC_ENV" << 'REMOTE'
+          WEBHOOK_DIR="$1"
+          BASE="$2"
+          env="$3"
+          FRAGMENT="/tmp/htmt-sync-env-${env}.env"
+          scripts_dir="${WEBHOOK_DIR}${BASE}-${env}/scripts"
+          env_file="${scripts_dir}/.env"
+          if [ ! -f "$env_file" ]; then
+            echo "ERROR: $env_file not found"
+            exit 1
+          fi
+          tmp=$(mktemp)
+          while IFS= read -r line; do
+            [[ -z "$line" || "$line" =~ ^# ]] && continue
+            key="${line%%=*}"
+            grep -v "^${key}=" "$env_file" > "$tmp" 2>/dev/null || true
+            echo "$line" >> "$tmp"
+            mv "$tmp" "$env_file"
+            tmp=$(mktemp)
+          done < "$FRAGMENT"
+          rm -f "$tmp" "$FRAGMENT"
+          echo "Updated $env_file"
+          REMOTE
