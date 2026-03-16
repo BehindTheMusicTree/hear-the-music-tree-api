@@ -29,11 +29,6 @@ paths:
       - "Unexpected value .uses."
       - "Unexpected value .with."
       - "Unexpected value .secrets."
-      - "^\\(Line:.*\\): Unexpected value 'uses'$"
-      - "^\\(Line:.*\\): Unexpected value 'with'$"
-      - "^\\(Line:.*\\): Unexpected value 'secrets'$"
-      - "Unexpected value"
-      - "Invalid workflow file"
   ".github/workflows/**/*.yml":
     ignore:
       # vars context (repository/org variables) - actionlint has no runtime context
