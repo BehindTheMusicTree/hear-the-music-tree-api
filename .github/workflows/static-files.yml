@@ -7,6 +7,10 @@ on:
         description: 'App version to use'
         required: true
         type: string
+    outputs:
+      collect_static_files_commit_hash:
+        description: 'Commit hash after collecting and pushing static files'
+        value: ${{ jobs.collect-and-push-static-files.outputs.collect_static_files_commit_hash }}
 
 permissions:
   contents: write
