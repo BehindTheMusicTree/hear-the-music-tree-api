@@ -91,8 +91,8 @@ jobs:
   set-version-api:
     name: Set API version on server
     needs: [build-and-push, determine-version]
-    environment: ${{ needs.determine-version.outputs.deployment_environment }}
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
+    environment: ${{ needs.determine-version.outputs.deployment_environment }}
     with:
       env: ${{ needs.determine-version.outputs.env }}
       tag: ${{ needs.determine-version.outputs.app_version }}
@@ -102,8 +102,8 @@ jobs:
   set-version-db:
     name: Set DB version on server
     needs: [determine-version, check-pinned-tags]
-    environment: ${{ needs.determine-version.outputs.deployment_environment }}
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
+    environment: ${{ needs.determine-version.outputs.deployment_environment }}
     with:
       env: ${{ needs.determine-version.outputs.env }}
       tag: ${{ vars.DB_VERSION }}
@@ -113,8 +113,8 @@ jobs:
   set-version-afp:
     name: Set AFP version on server
     needs: [determine-version, check-pinned-tags]
-    environment: ${{ needs.determine-version.outputs.deployment_environment }}
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
+    environment: ${{ needs.determine-version.outputs.deployment_environment }}
     with:
       env: ${{ needs.determine-version.outputs.env }}
       tag: ${{ vars.AFP_VERSION }}
@@ -124,8 +124,8 @@ jobs:
   redeploy-webhook-call:
     name: Redeploy webhook
     needs: [build-and-push, set-version-api, set-version-db, set-version-afp, check-pinned-tags, determine-version]
-    environment: ${{ needs.determine-version.outputs.deployment_environment }}
     uses: BehindTheMusicTree/github-workflows/.github/workflows/call-redeployment-webhook.yml@main
+    environment: ${{ needs.determine-version.outputs.deployment_environment }}
     with:
       env: ${{ needs.determine-version.outputs.env }}
     secrets: inherit
