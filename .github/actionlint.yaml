@@ -43,6 +43,10 @@ paths:
       - 'Context access might be invalid: collect_static_files_commit_hash'
       - 'property "test_path" is not defined'
       - 'test_path'
+      # Job-level uses/with/secrets for reusable workflow calls (valid in GitHub Actions)
+      - "Unexpected value 'uses'"
+      - "Unexpected value 'with'"
+      - "Unexpected value 'secrets'"
   ".github/workflows/*.yaml":
     ignore:
       - '"runs-on" is not available'
@@ -56,3 +60,6 @@ paths:
       - 'Context access might be invalid: collect_static_files_commit_hash'
       - 'property "test_path" is not defined'
       - 'test_path'
+      - "Unexpected value 'uses'"
+      - "Unexpected value 'with'"
+      - "Unexpected value 'secrets'"
