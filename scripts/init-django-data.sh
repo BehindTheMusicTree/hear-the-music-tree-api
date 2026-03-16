@@ -15,7 +15,7 @@ check_script_vars_are_set() {
     DB_APP_USERNAME
     DB_APP_USER_PASSWORD
   )
-  check_required_vars_are_set ${REQUIRED_NON_BOOL_VARS[@]}
+  check_required_vars_are_set "${REQUIRED_NON_BOOL_VARS[@]}"
   check_bool_vars_are_set APP_IS_EXPOSED
   export_value_removing_potential_surrounding_quotes DB_SUPERUSER_PASSWORD
   export_value_removing_potential_surrounding_quotes "DB_APP_USER_PASSWORD"
