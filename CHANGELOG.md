@@ -65,6 +65,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Added
 
+- **Sync env to server workflow**: Manually triggerable workflow `sync-env-to-server.yml` that merges app secrets and vars (DB_APP_*, DJANGO_SECRET_KEY, SUPERADMIN_*, DEMO_*, TMTA_USERNAME, OAuth secrets, FILE_UPLOAD_ENABLED, DEMO_EMAIL, SUPERADMIN_EMAIL) into the server `scripts/.env` for test and prod. Use after changing these in this repo so the server has the latest values without running the full infrastructure transfer. See [docs/workflows.md](docs/workflows.md#sync-env-to-server).
 - **Metadata session (no auth)**: Two-step public flow: (1) `POST /v1/audio/metadata/session/` — upload file (or URL), get metadata plus `session_token` and `session_expires_in_seconds` (900); (2) `POST /v1/audio/metadata/session-download/` — send token (header `X-Session-Token` or body) and optional metadata, receive file with tags written. Session valid 15 minutes; multi-use (download multiple times with different metadata). No auth, no DB persistence. Session and upload temp use separate env-defined dirs (`METADATA_SESSION_DIR`, `TMP_UPLOADED_FILES`). Frontend instructions in `docs/frontend/one_time_metadata_update.md`.
 - **Audio metadata (full)**: Optional request parameter `include_musicbrainz_analysis` for `POST /v1/audio/metadata/full/`. When `true`, the response includes `musicbrainz_raw_data` with raw AcoustID/MusicBrainz lookup result (or an error payload if fingerprinting or lookup fails). No authentication required; no DB records are created. Ephemeral fingerprinting and non-persisting MusicBrainz lookup added for this flow. Integration, unit, and e2e tests added.
 - **FILE_UPLOAD_ENABLED**: Explicit env flag for file upload / media. When `true`, setup-filesystem creates upload temp, metadata session, and media dirs; when `false`, skips them. Env example, CI, and deploy use the flag; CONTRIBUTING and deploy workflow require it in GitHub vars.
@@ -72,12 +73,15 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ### Changed
 
 - **Metadata keys**: `AppMetadataKey` is the single source of truth for metadata field names (literal values). Track input Fields and writable metadata (session-download, file update) use it; `APP_METADATA_WRITABLE_KEYS` and `WritableMetadataFieldsMixin` shared. Genre in metadata is `genres_names` (array of strings) everywhere.
-- **Storage**: `METADATA_SESSION_DIR` and `TMP_UPLOADED_FILES` are independent env-defined paths (not one under the other). Setup-filesystem creates `METADATA_SESSION_DIR` when file upload is enabled. Deploy and CI set both; deploy requires `METADATA_SESSION_DIR_EXTERNAL` and `FILE_UPLOAD_ENABLED` in GitHub vars.
+- **Storage**: `METADATA_SESSION_DIR` and `TMP_UPLOADED_FILES` are independent env-defined paths (not one under the other). Setup-filesystem creates `METADATA_SESSION_DIR` when file upload is enabled. Deploy and CI set both.
+- **Deploy (runtime config)**: Path variables are no longer written into the app .env by the deploy workflow; they are supplied at runtime by the server or Compose environment (12-factor style). Affected: `METADATA_SESSION_DIR_EXTERNAL`, `TMP_UPLOADED_FILES_EXTERNAL`, `MEDIA_DIR_EXTERNAL`, `STATIC_FILES_EXTERNAL`, `DJANGO_LOG_DIR_EXTERNAL`, `GUNICORN_LOG_DIR`. The generated Compose part passes these from the host env into the API container and mounts volumes at those paths; the server must set them (e.g. in a .env next to docker-compose) when starting the stack.
 
 ### CI
 
+- **Publish workflows**: Staging and release flows now set image tags on the server (API, DB, AFP) via `set-image-tag-on-server` before calling the redeploy webhook, so the server pulls the correct image versions when redeploying.
+- **DB and AFP image tags must be pinned**: `DB_VERSION` and `AFP_VERSION` are required (no `latest`). Set them in Settings → Variables (e.g. `16`, `1.0`). New job **check-pinned-tags** fails the workflow if either is unset. Redeploy on the server also aborts if DB or AFP tag is still `latest`.
 - **Test workflow**: `FILE_UPLOAD_ENABLED=true`; `METADATA_SESSION_DIR_EXTERNAL` uses a separate path (`/tmp/ci-metadata-sessions/`). Upload temp dir tearDown expects no leftover files (session dir is separate).
-- **Deploy workflow**: `METADATA_SESSION_DIR_EXTERNAL` and `FILE_UPLOAD_ENABLED` added to required vars check and app .env output.
+- **Deploy workflow**: `FILE_UPLOAD_ENABLED` in required vars check and app .env output; `METADATA_SESSION_DIR_EXTERNAL` removed from workflow (set at runtime on server).
 
 ## [v2.1.1] - 2026-03-08
 
