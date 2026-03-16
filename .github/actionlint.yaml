@@ -1,0 +1,58 @@
+# Allow repository/organization variables used in workflows (actionlint has no runtime context)
+config-variables:
+  - API_DIR_NAME
+  - APP_TITLE
+  - APP_NAME
+  - HTMT_API_APP_NAME
+  - DOCKERHUB_USERNAME
+  - HTMT_API_IMAGE_REPO
+  - DB_VERSION
+  - AFP_VERSION
+  - ENV
+  - STATIC_FILES_INTERNAL
+  - STATIC_FILES_URL
+  - DOMAIN_NAME
+  - WEBHOOK_DIR
+  - WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE
+  - DEMO_EMAIL
+  - SUPERADMIN_EMAIL
+  - FILE_UPLOAD_ENABLED
+  - DB_IMAGE_REPO
+  - DB_APP_NAME
+  - AFP_APP_NAME
+  - AFP_IMAGE_REPO
+  - AFP_VERSION
+
+paths:
+  ".github/workflows/*.yml":
+    ignore:
+      # vars context (repository/org variables) - actionlint has no runtime context
+      - 'undefined variable "vars"'
+      # secrets: inherit is valid for reusable workflow calls
+      - '"secrets" section is scalar node but mapping node is expected'
+      # runs-on and environment are required/valid on jobs that call reusable workflows (caller job runs on runner)
+      - '"runs-on" is not available'
+      - '"environment" is not available'
+      # Local workflow calls (./.github/...) and workflow_call nesting are valid
+      - 'reusable workflow call ".+" at "uses" is not following the format'
+      - 'reusable workflow cannot be nested'
+      # Runtime secrets and workflow outputs not in actionlint schema
+      - 'property ".+" is not defined in object type'
+      # Output from called workflow static-files (declared in workflow_call.outputs)
+      - 'collect_static_files_commit_hash'
+      - 'Context access might be invalid: collect_static_files_commit_hash'
+      - 'property "test_path" is not defined'
+      - 'test_path'
+  ".github/workflows/*.yaml":
+    ignore:
+      - '"runs-on" is not available'
+      - '"environment" is not available'
+      - 'undefined variable "vars"'
+      - '"secrets" section is scalar node but mapping node is expected'
+      - 'reusable workflow call ".+" at "uses" is not following the format'
+      - 'reusable workflow cannot be nested'
+      - 'property ".+" is not defined in object type'
+      - 'collect_static_files_commit_hash'
+      - 'Context access might be invalid: collect_static_files_commit_hash'
+      - 'property "test_path" is not defined'
+      - 'test_path'
