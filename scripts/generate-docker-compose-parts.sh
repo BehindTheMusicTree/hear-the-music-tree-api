@@ -40,7 +40,7 @@ REQUIRED_NON_BOOL_VARS=(
   APP_PORT
   APP_ENV_FILENAME
 )
-check_required_vars_are_set ${REQUIRED_NON_BOOL_VARS[@]}
+check_required_vars_are_set "${REQUIRED_NON_BOOL_VARS[@]}"
 
 DOCKER_COMPOSE_PARTIAL_DB_FILE="${SCRIPTS_DIR}${DB_COMPOSE_PART_FILENAME}"
 log "Generating the DB partial docker-compose files in $DOCKER_COMPOSE_PARTIAL_DB_FILE..."
