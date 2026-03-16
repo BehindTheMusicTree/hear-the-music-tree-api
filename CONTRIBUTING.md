@@ -807,13 +807,16 @@ Quick release process:
      # or: bump2version minor   # 2.1.0 -> 2.2.0
      # or: bump2version major   # 2.1.0 -> 3.0.0
      ```
-     This updates `VERSION`, `package.json`, and `schema.yml`. Then commit the changes.
+     This updates `VERSION`, `package.json`, `schema.yml`, and `CHANGELOG.md` (moves `[Unreleased]` to the new version and adds a fresh `[Unreleased]` section). Then run:
+     ```bash
+     python scripts/fix_changelog_after_bump.py
+     ```
+     to set the release date and fix the Unreleased heading. Commit the changes.
 
    - Review and finalize `CHANGELOG.md`:
-     - Review changes in the `[Unreleased]` section
-     - Move content from `[Unreleased]` section to new version entry with date (e.g., `## [v0.2.1] - 2025-01-15`). The version must match the one in `VERSION` (with a `v` prefix).
+     - Review the new version entry and the content moved from `[Unreleased]`
      - Review and consolidate entries if needed
-     - Leave the `[Unreleased]` section empty (or with a placeholder) for future PRs
+     - Leave the new `[Unreleased]` section empty (or with a placeholder) for future PRs
 
    - Make any final bug fixes or adjustments on the release branch
    - Ensure all tests pass: `pytest`
