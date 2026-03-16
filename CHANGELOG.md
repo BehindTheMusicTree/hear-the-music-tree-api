@@ -79,6 +79,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ### CI
 
 - **Publish workflows**: Staging and release flows now set image tags on the server (API, DB, AFP) via `set-image-tag-on-server` before calling the redeploy webhook, so the server pulls the correct image versions when redeploying.
+- **DB and AFP image tags must be pinned**: `DB_IMAGE_VERSION` and `AFP_IMAGE_VERSION` are required (no `latest`). Set them in Settings → Variables (e.g. `16`, `1.0`). New job **check-pinned-tags** fails the workflow if either is unset. Redeploy on the server also aborts if DB or AFP tag is still `latest`.
 - **Test workflow**: `FILE_UPLOAD_ENABLED=true`; `METADATA_SESSION_DIR_EXTERNAL` uses a separate path (`/tmp/ci-metadata-sessions/`). Upload temp dir tearDown expects no leftover files (session dir is separate).
 - **Deploy workflow**: `FILE_UPLOAD_ENABLED` in required vars check and app .env output; `METADATA_SESSION_DIR_EXTERNAL` removed from workflow (set at runtime on server).
 

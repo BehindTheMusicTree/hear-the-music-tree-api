@@ -56,7 +56,7 @@ Orchestrates release: collect static files, build Docker image, deploy to the te
 3. **build-and-push** (Docker image) – calls `build-and-push.yml` with commit hash from step 2
 4. **deploy** (Deploy) – calls `deploy.yml` to deploy to the test server
 
-**Environment:** Uses `TEST` environment vars and secrets.
+**Environment:** Uses `TEST` environment vars and secrets. **DB and AFP image tags must be pinned:** set `DB_IMAGE_VERSION` and `AFP_IMAGE_VERSION` (e.g. `16`, `1.0`) in Settings → Variables; the workflow fails if they are unset (no `latest`).
 
 **Versioning:** Version is automatically extracted from git tags (e.g., `refs/tags/v0.3.4` → `0.3.4`). If not triggered by a tag, it fetches the latest git tag.
 

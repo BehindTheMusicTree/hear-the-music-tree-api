@@ -54,6 +54,26 @@ jobs:
       image_tag: ${{ needs.determine-version.outputs.image_tag }}
     secrets: inherit
 
+  check-pinned-tags:
+    name: Check DB/AFP tags are pinned
+    runs-on: ubuntu-latest
+    needs: [determine-version]
+    env:
+      DB_IMAGE_VERSION: ${{ vars.DB_IMAGE_VERSION }}
+      AFP_IMAGE_VERSION: ${{ vars.AFP_IMAGE_VERSION }}
+    steps:
+      - name: Require pinned DB and AFP image tags
+        run: |
+          missing=""
+          [ -z "${DB_IMAGE_VERSION}" ] && missing="${missing} DB_IMAGE_VERSION"
+          [ -z "${AFP_IMAGE_VERSION}" ] && missing="${missing} AFP_IMAGE_VERSION"
+          if [ -n "$missing" ]; then
+            echo "ERROR: Pinned image tags required (no 'latest'). Set in Settings → Variables:$missing"
+            echo "Example: DB_IMAGE_VERSION=16, AFP_IMAGE_VERSION=1.0"
+            exit 1
+          fi
+          echo "DB_IMAGE_VERSION=$DB_IMAGE_VERSION, AFP_IMAGE_VERSION=$AFP_IMAGE_VERSION"
+
   set-version-api:
     name: Set API version on server
     needs: [build-and-push, determine-version]
@@ -66,27 +86,27 @@ jobs:
 
   set-version-db:
     name: Set DB version on server
-    needs: [determine-version]
+    needs: [determine-version, check-pinned-tags]
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
-      tag: ${{ vars.DB_IMAGE_TAG || 'latest' }}
+      tag: ${{ vars.DB_IMAGE_VERSION }}
       app_name: htmt-db
     secrets: inherit
 
   set-version-afp:
     name: Set AFP version on server
-    needs: [determine-version]
+    needs: [determine-version, check-pinned-tags]
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
-      tag: ${{ vars.AFP_IMAGE_TAG || 'latest' }}
+      tag: ${{ vars.AFP_IMAGE_VERSION }}
       app_name: afp
     secrets: inherit
 
   redeploy-webhook-call:
     name: Redeploy webhook
-    needs: [build-and-push, set-version-api, set-version-db, set-version-afp, determine-version]
+    needs: [build-and-push, set-version-api, set-version-db, set-version-afp, check-pinned-tags, determine-version]
     uses: BehindTheMusicTree/github-workflows/.github/workflows/call-redeployment-webhook.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
