@@ -14,6 +14,7 @@ jobs:
     outputs:
       app_version: ${{ steps.version.outputs.version }}
       env: ${{ steps.version.outputs.env }}
+      deployment_environment: ${{ steps.version.outputs.deployment_environment }}
     steps:
       - name: Checkout code
         if: ${{ !startsWith(github.ref, 'refs/tags/') }}
@@ -40,9 +41,11 @@ jobs:
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           if [[ "$VERSION" == *-* ]]; then
             echo "env=test" >> "$GITHUB_OUTPUT"
+            echo "deployment_environment=TEST" >> "$GITHUB_OUTPUT"
             echo "Prerelease version -> env test"
           else
             echo "env=prod" >> "$GITHUB_OUTPUT"
+            echo "deployment_environment=PROD" >> "$GITHUB_OUTPUT"
             echo "Release version -> env prod"
           fi
 
@@ -68,6 +71,7 @@ jobs:
     name: Check DB/AFP tags are pinned
     runs-on: ubuntu-latest
     needs: [determine-version]
+    environment: ${{ needs.determine-version.outputs.deployment_environment }}
     env:
       DB_VERSION: ${{ vars.DB_VERSION }}
       AFP_VERSION: ${{ vars.AFP_VERSION }}
@@ -87,6 +91,7 @@ jobs:
   set-version-api:
     name: Set API version on server
     needs: [build-and-push, determine-version]
+    environment: ${{ needs.determine-version.outputs.deployment_environment }}
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
@@ -97,6 +102,7 @@ jobs:
   set-version-db:
     name: Set DB version on server
     needs: [determine-version, check-pinned-tags]
+    environment: ${{ needs.determine-version.outputs.deployment_environment }}
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
@@ -107,6 +113,7 @@ jobs:
   set-version-afp:
     name: Set AFP version on server
     needs: [determine-version, check-pinned-tags]
+    environment: ${{ needs.determine-version.outputs.deployment_environment }}
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
@@ -117,6 +124,7 @@ jobs:
   redeploy-webhook-call:
     name: Redeploy webhook
     needs: [build-and-push, set-version-api, set-version-db, set-version-afp, check-pinned-tags, determine-version]
+    environment: ${{ needs.determine-version.outputs.deployment_environment }}
     uses: BehindTheMusicTree/github-workflows/.github/workflows/call-redeployment-webhook.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
