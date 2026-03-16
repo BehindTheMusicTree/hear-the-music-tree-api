@@ -64,15 +64,6 @@ jobs:
       image_tag: ${{ needs.determine-version.outputs.app_version }}
     secrets: inherit
 
-  deploy-env-and-docker-compose:
-    name: Deploy
-    needs: [determine-version]
-    uses: ./.github/workflows/deploy-env-and-docker-compose.yml
-    with:
-      app_version: ${{ needs.determine-version.outputs.app_version }}
-      env: ${{ needs.determine-version.outputs.env }}
-    secrets: inherit
-
   set-version-api:
     name: Set API version on server
     needs: [build-and-push, determine-version]
@@ -105,7 +96,7 @@ jobs:
 
   redeploy-webhook-call:
     name: Redeploy webhook
-    needs: [build-and-push, deploy-env-and-docker-compose, set-version-api, set-version-db, set-version-afp, determine-version]
+    needs: [build-and-push, set-version-api, set-version-db, set-version-afp, determine-version]
     uses: BehindTheMusicTree/github-workflows/.github/workflows/call-redeployment-webhook.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
