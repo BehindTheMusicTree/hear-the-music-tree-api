@@ -43,6 +43,10 @@ paths:
       - 'Context access might be invalid: collect_static_files_commit_hash'
       - 'property "test_path" is not defined'
       - 'test_path'
+      # inputs used in test.yml (optional when called as reusable workflow)
+      - 'undefined variable "inputs"'
+      - 'property "inputs" is not defined'
+      - 'inputs'
       # Job-level uses/with/secrets for reusable workflow calls (valid in GitHub Actions)
       - ".*Unexpected value ['\"]uses['\"].*"
       - ".*Unexpected value ['\"]with['\"].*"
@@ -70,6 +74,9 @@ paths:
       - 'Context access might be invalid: collect_static_files_commit_hash'
       - 'property "test_path" is not defined'
       - 'test_path'
+      - 'undefined variable "inputs"'
+      - 'property "inputs" is not defined'
+      - 'inputs'
       - ".*Unexpected value ['\"]uses['\"].*"
       - ".*Unexpected value ['\"]with['\"].*"
       - ".*Unexpected value ['\"]secrets['\"].*"

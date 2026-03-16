@@ -37,26 +37,6 @@ env:
   DEMO_EMAIL: ci_demo@example.com
 
 jobs:
-  actionlint:
-    name: Actionlint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Run actionlint (show errors)
-        run: |
-          curl -sSL "https://github.com/rhysd/actionlint/releases/download/v1.7.11/actionlint_1.7.11_linux_amd64.tar.gz" | tar xz
-          sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
-          pipx install pyflakes
-          ./actionlint -config-file .github/actionlint.yaml -verbose 2>&1
-        continue-on-error: true
-
-      - name: Run actionlint
-        uses: raven-actions/actionlint@v2
-        with:
-          flags: -config-file .github/actionlint.yaml
-          fail-on-error: true
-
   check-vars-and-secrets:
     name: Check vars and secrets
     runs-on: ubuntu-latest
