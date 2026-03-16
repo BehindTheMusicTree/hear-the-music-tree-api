@@ -4,7 +4,8 @@
   "description": "HearTheMusicTree API is an online platform similar to iTunes, designed for managing and interacting with music tracks. It offers a range of features to help you organize, tag, and rate your music, as well as create automatic hierarchical genre playlists.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "actionlint": "bash scripts/run-actionlint.sh"
   },
   "repository": {
     "type": "git",
@@ -18,7 +19,8 @@
   },
   "homepage": "https://github.com/BehindTheMusicTree/the-music-tree-api#readme",
   "devDependencies": {
-    "git-worktree-scripts": "1.4.1"
+    "git-worktree-scripts": "1.4.1",
+    "node-actionlint": "1.2.2"
   }
 }
 
