@@ -37,15 +37,21 @@ jobs:
         run: |
           if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             VERSION="${GITHUB_REF#refs/tags/v}"
-            echo "app_version=$VERSION" >> "$GITHUB_OUTPUT"
-            echo "image_tag=$VERSION" >> "$GITHUB_OUTPUT"
             if [[ "$VERSION" == *-* ]]; then
-              echo "env=test" >> "$GITHUB_OUTPUT"
-              echo "deployment_environment=TEST" >> "$GITHUB_OUTPUT"
+              {
+                echo "app_version=$VERSION"
+                echo "image_tag=$VERSION"
+                echo "env=test"
+                echo "deployment_environment=TEST"
+              } >> "$GITHUB_OUTPUT"
               echo "Prerelease/dev tag -> TEST, staging"
             else
-              echo "env=prod" >> "$GITHUB_OUTPUT"
-              echo "deployment_environment=PROD" >> "$GITHUB_OUTPUT"
+              {
+                echo "app_version=$VERSION"
+                echo "image_tag=$VERSION"
+                echo "env=prod"
+                echo "deployment_environment=PROD"
+              } >> "$GITHUB_OUTPUT"
               echo "Release tag -> PROD, production"
             fi
           elif [[ "$GITHUB_REF" == refs/heads/main ]]; then
@@ -54,10 +60,12 @@ jobs:
               echo "Error: VERSION file is empty or missing."
               exit 1
             fi
-            echo "app_version=${VERSION}-staging" >> "$GITHUB_OUTPUT"
-            echo "image_tag=staging" >> "$GITHUB_OUTPUT"
-            echo "env=test" >> "$GITHUB_OUTPUT"
-            echo "deployment_environment=TEST" >> "$GITHUB_OUTPUT"
+            {
+              echo "app_version=${VERSION}-staging"
+              echo "image_tag=staging"
+              echo "env=test"
+              echo "deployment_environment=TEST"
+            } >> "$GITHUB_OUTPUT"
             echo "Main push -> TEST, staging"
           else
             git fetch --tags --force
@@ -67,15 +75,17 @@ jobs:
               exit 1
             fi
             VERSION="${LATEST_TAG#v}"
-            echo "app_version=$VERSION" >> "$GITHUB_OUTPUT"
-            echo "image_tag=$VERSION" >> "$GITHUB_OUTPUT"
-            if [[ "$VERSION" == *-* ]]; then
-              echo "env=test" >> "$GITHUB_OUTPUT"
-              echo "deployment_environment=TEST" >> "$GITHUB_OUTPUT"
-            else
-              echo "env=prod" >> "$GITHUB_OUTPUT"
-              echo "deployment_environment=PROD" >> "$GITHUB_OUTPUT"
-            fi
+            {
+              echo "app_version=$VERSION"
+              echo "image_tag=$VERSION"
+              if [[ "$VERSION" == *-* ]]; then
+                echo "env=test"
+                echo "deployment_environment=TEST"
+              else
+                echo "env=prod"
+                echo "deployment_environment=PROD"
+              fi
+            } >> "$GITHUB_OUTPUT"
           fi
 
   static:
