@@ -760,11 +760,8 @@ The project uses focused, reusable GitHub Actions workflows for CI/CD. For a ful
 - Publishes test results to GitHub Actions UI
 
 **Publish Workflow** (`.github/workflows/publish.yml`):
-- Runs automatically when version tags are pushed (e.g., `v0.2.1`)
-- Orchestrates the release process:
-  1. Collects and commits static files
-  2. Builds and pushes Docker image to Docker Hub
-  3. Deploys to the test server
+- Runs on **push to `main`** (staging, TEST env) or **push of version tags** (e.g. `v0.2.1`; prerelease tags → staging/TEST, release tags → production/PROD)
+- Orchestrates the release process: collects/commits static files, builds and pushes Docker image, deploys to staging or production
 
 **Other Workflows**:
 - `build-and-push.yml` - Builds and pushes Docker images (reusable)
