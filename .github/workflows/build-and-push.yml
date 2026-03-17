@@ -48,8 +48,11 @@ jobs:
           API_DIR_NAME: ${{ vars.API_DIR_NAME }}
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
           HTMT_API_IMAGE_REPO: ${{ vars.HTMT_API_IMAGE_REPO }}
+          STATIC_FILES_INTERNAL: ${{ vars.STATIC_FILES_INTERNAL }}
+          STATIC_FILES_URL: ${{ vars.STATIC_FILES_URL }}
+          APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
           DOCKERHUB_ACCESS_TOKEN: ${{ secrets.DOCKERHUB_ACCESS_TOKEN }}
-        run: bash scripts/check-workflow-env.sh API_DIR_NAME DOCKERHUB_USERNAME HTMT_API_IMAGE_REPO DOCKERHUB_ACCESS_TOKEN APP_TITLE
+        run: bash scripts/check-workflow-env.sh API_DIR_NAME DOCKERHUB_USERNAME HTMT_API_IMAGE_REPO STATIC_FILES_INTERNAL STATIC_FILES_URL APP_NAME DOCKERHUB_ACCESS_TOKEN APP_TITLE
 
       - name: Login to Dockerhub
         run: |
@@ -68,3 +71,6 @@ jobs:
             APP_VERSION=${{ inputs.app_version }}
             APP_TITLE=${{ env.APP_TITLE }}
             API_DIR_NAME=${{ vars.API_DIR_NAME }}
+            STATIC_FILES_INTERNAL=${{ vars.STATIC_FILES_INTERNAL }}
+            STATIC_FILES_URL=${{ vars.STATIC_FILES_URL }}
+            APP_NAME=${{ vars.HTMT_API_APP_NAME }}
