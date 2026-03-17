@@ -27,7 +27,7 @@ jobs:
       - name: Set staging version and tag
         id: version
         run: |
-          VERSION=$(cat VERSION | tr -d '[:space:]')
+          VERSION=$(tr -d '[:space:]' < VERSION)
           if [ -z "$VERSION" ]; then
             echo "Error: VERSION file is empty or missing."
             exit 1
