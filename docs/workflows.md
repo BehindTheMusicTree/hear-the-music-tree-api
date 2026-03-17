@@ -83,11 +83,9 @@ Builds the app Docker image and pushes it to Docker Hub.
 
 **File:** `.github/workflows/sync-env-to-server.yml`
 
-Manually sync app env vars and secrets to the server `scripts/.env`. **Job 1 (build-fragment)** builds the env fragment in this repo (app-specific keys), then uploads it as an artifact. **Job 2 (sync)** calls the reusable workflow from **BehindTheMusicTree/github-workflows** (`sync-env-to-server.yml`), which downloads the artifact, SCPs it to the server, and merges it. Secrets and vars come from the selected environment (TEST or PROD). Run once per environment: choose **test** or **prod** in the workflow_dispatch dialog.
+Manually sync app env vars and secrets to the server `scripts/.env` for **both TEST and PROD** in one run. Calls the reusable workflow from **BehindTheMusicTree/github-workflows** twice (once per environment). **Jobs:** **build-fragment** (matrix: TEST and PROD; build fragment per env, upload artifact), **sync-test**, **sync-prod** (each calls shared workflow with the corresponding fragment). No workflow_dispatch input; one run syncs both environments.
 
-**Triggers:** **workflow_dispatch** (Actions → Sync env to server → Run workflow). Input: **env** (choice: test | prod).
-
-**Jobs:** **build-fragment** – check required vars/secrets, build `fragment.env`, upload artifact `sync-env-fragment`; **sync** – call shared workflow with `secrets: inherit` and `environment` (TEST or PROD).
+**Triggers:** **workflow_dispatch** (Actions → Sync env to server → Run workflow). No inputs.
 
 **Secrets (this repo, per environment):** `DB_APP_DB_NAME`, `DB_APP_USERNAME`, `DB_APP_USER_PASSWORD`, `DB_SUPERUSER_PASSWORD`, `DEMO_PASSWORD`, `DEMO_USERNAME`, `DJANGO_SECRET_KEY`, `GOOGLE_CLIENT_SECRET`, `SPOTIFY_CLIENT_SECRET`, `SUPERADMIN_PASSWORD`, `SUPERADMIN_USERNAME`, `TMTA_USERNAME`, plus deploy secrets `SERVER_DEPLOY_USERNAME`, `SERVER_DEPLOY_SSH_PRIVATE_KEY`.
 

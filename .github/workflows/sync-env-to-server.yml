@@ -1,28 +1,27 @@
-# yaml-language-server: $schema=../../.vscode/empty-schema.json
-# Manually sync app env vars and secrets to the server scripts/.env.
-# Job 1 builds the fragment (app-specific keys) and uploads it; job 2 calls shared workflow to transfer and merge.
+# Manually sync app env vars and secrets to the server scripts/.env for both TEST and PROD.
+# Three jobs: build fragment per environment (matrix), then call shared workflow to transfer each.
 name: Sync env to server
 
 on:
-  workflow_dispatch:
-    inputs:
-      env:
-        description: "Environment to sync (test or prod)"
-        required: true
-        type: choice
-        options:
-          - test
-          - prod
-        default: "prod"
+  workflow_dispatch: {}
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build-fragment:
-    name: Build env fragment
+    name: Build env fragment (${{ matrix.env }})
     runs-on: ubuntu-latest
-    environment: ${{ inputs.env == 'test' && 'TEST' || 'PROD' }}
+    strategy:
+      matrix:
+        include:
+          - env: TEST
+            sync_env: test
+            artifact_name: sync-env-fragment-test
+          - env: PROD
+            sync_env: prod
+            artifact_name: sync-env-fragment-prod
+    environment: ${{ matrix.env }}
     steps:
       - name: Check required vars and secrets
         env:
@@ -89,8 +88,8 @@ jobs:
           SPOTIFY_ENABLED: "true"
           GOOGLE_OAUTH_ENABLED: "true"
         run: |
-          mkdir -p sync-env-fragment
-          FRAGMENT="sync-env-fragment/fragment.env"
+          mkdir -p ${{ matrix.artifact_name }}
+          FRAGMENT="${{ matrix.artifact_name }}/fragment.env"
           for key in DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD DB_SUPERUSER_PASSWORD \
             DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET \
             SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME DEMO_EMAIL SUPERADMIN_EMAIL \
@@ -103,16 +102,25 @@ jobs:
       - name: Upload fragment artifact
         uses: actions/upload-artifact@v4
         with:
-          name: sync-env-fragment
-          path: sync-env-fragment/
+          name: ${{ matrix.artifact_name }}
+          path: ${{ matrix.artifact_name }}/
 
-  sync:
-    name: Transfer fragment to server (${{ inputs.env }})
+  sync-test:
+    name: Transfer fragment to server (test)
     needs: build-fragment
     uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-server.yml@main
-    environment: ${{ inputs.env == 'test' && 'TEST' || 'PROD' }}
     with:
-      sync_env: ${{ inputs.env }}
+      sync_env: test
       app_name: ${{ vars.HTMT_API_APP_NAME }}
-      fragment_artifact: sync-env-fragment/fragment.env
+      fragment_artifact: sync-env-fragment-test/fragment.env
+    secrets: inherit
+
+  sync-prod:
+    name: Transfer fragment to server (prod)
+    needs: build-fragment
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-server.yml@main
+    with:
+      sync_env: prod
+      app_name: ${{ vars.HTMT_API_APP_NAME }}
+      fragment_artifact: sync-env-fragment-prod/fragment.env
     secrets: inherit
