@@ -59,6 +59,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]  <!-- release -->
 
+### CI
+
+- **Branch protection status checks**: Added explicit commit-status reporting in Test and Branch Protection Check workflows so the required checks "Test" and "Branch Protection Check" are reported to the PR. Fixes "Waiting for status to be reported" when job-level checks pass but workflow-level names were not reported.
+
 ## [v2.2.0] - 2026-03-14
 
 ### Fixed
