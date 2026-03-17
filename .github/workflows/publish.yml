@@ -1,10 +1,12 @@
 # yaml-language-server: $schema=https://gist.githubusercontent.com/sargunv/c2ca41a08391cd06feaad97aece309e4/raw/empty-json-schema.json
-# Release: build image with version tag, set that tag on server (set-image-tag-on-server), then trigger redeploy webhook.
+# Single publish: main push or prerelease/dev tag → TEST + staging; release tag → PROD + production.
 name: Publish
 
 on:
   workflow_call:
+  workflow_dispatch:
   push:
+    branches: [main]
     tags:
       - 'v*'
 
@@ -13,22 +15,58 @@ jobs:
     name: Determine version
     runs-on: ubuntu-latest
     outputs:
-      app_version: ${{ steps.version.outputs.version }}
+      app_version: ${{ steps.version.outputs.app_version }}
+      image_tag: ${{ steps.version.outputs.image_tag }}
       env: ${{ steps.version.outputs.env }}
       deployment_environment: ${{ steps.version.outputs.deployment_environment }}
     steps:
       - name: Checkout code
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        if: ${{ github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/tags/') }}
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Extract version from tag
+      - name: Checkout for main branch
+        if: github.ref == 'refs/heads/main'
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set version and environment
         id: version
         run: |
-          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             VERSION="${GITHUB_REF#refs/tags/v}"
-            echo "Using version from tag ref: $VERSION"
+            if [[ "$VERSION" == *-* ]]; then
+              {
+                echo "app_version=$VERSION"
+                echo "image_tag=$VERSION"
+                echo "env=test"
+                echo "deployment_environment=TEST"
+              } >> "$GITHUB_OUTPUT"
+              echo "Prerelease/dev tag -> TEST, staging"
+            else
+              {
+                echo "app_version=$VERSION"
+                echo "image_tag=$VERSION"
+                echo "env=prod"
+                echo "deployment_environment=PROD"
+              } >> "$GITHUB_OUTPUT"
+              echo "Release tag -> PROD, production"
+            fi
+          elif [[ "$GITHUB_REF" == refs/heads/main ]]; then
+            VERSION=$(tr -d '[:space:]' < VERSION)
+            if [ -z "$VERSION" ]; then
+              echo "Error: VERSION file is empty or missing."
+              exit 1
+            fi
+            {
+              echo "app_version=${VERSION}-staging"
+              echo "image_tag=staging"
+              echo "env=test"
+              echo "deployment_environment=TEST"
+            } >> "$GITHUB_OUTPUT"
+            echo "Main push -> TEST, staging"
           else
             git fetch --tags --force
             LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
@@ -37,17 +75,17 @@ jobs:
               exit 1
             fi
             VERSION="${LATEST_TAG#v}"
-            echo "Using latest tag version: $VERSION (from tag: $LATEST_TAG)"
-          fi
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          if [[ "$VERSION" == *-* ]]; then
-            echo "env=test" >> "$GITHUB_OUTPUT"
-            echo "deployment_environment=TEST" >> "$GITHUB_OUTPUT"
-            echo "Prerelease version -> env test"
-          else
-            echo "env=prod" >> "$GITHUB_OUTPUT"
-            echo "deployment_environment=PROD" >> "$GITHUB_OUTPUT"
-            echo "Release version -> env prod"
+            {
+              echo "app_version=$VERSION"
+              echo "image_tag=$VERSION"
+              if [[ "$VERSION" == *-* ]]; then
+                echo "env=test"
+                echo "deployment_environment=TEST"
+              else
+                echo "env=prod"
+                echo "deployment_environment=PROD"
+              fi
+            } >> "$GITHUB_OUTPUT"
           fi
 
   static:
@@ -65,7 +103,8 @@ jobs:
     with:
       commit_hash: ${{ needs.static.outputs.collect_static_files_commit_hash }}
       app_version: ${{ needs.determine-version.outputs.app_version }}
-      image_tag: ${{ needs.determine-version.outputs.app_version }}
+      image_tag: ${{ needs.determine-version.outputs.image_tag }}
+      environment: ${{ needs.determine-version.outputs.deployment_environment }}
     secrets: inherit
 
   check-pinned-tags:
@@ -95,7 +134,7 @@ jobs:
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
-      tag: ${{ needs.determine-version.outputs.app_version }}
+      tag: ${{ needs.determine-version.outputs.image_tag }}
       app_name: htmt-api
     secrets: inherit
 
@@ -126,4 +165,3 @@ jobs:
     with:
       env: ${{ needs.determine-version.outputs.env }}
     secrets: inherit
-

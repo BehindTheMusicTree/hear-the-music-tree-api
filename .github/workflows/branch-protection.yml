@@ -63,5 +63,3 @@ jobs:
 
       - name: Lint workflows
         run: /tmp/actionlint -config-file .github/actionlint.yaml
-
-

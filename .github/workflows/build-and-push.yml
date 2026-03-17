@@ -15,6 +15,11 @@ on:
         description: 'Docker image tag to push (e.g. 1.2.3 for release, staging for staging)'
         required: true
         type: string
+      environment:
+        description: 'Deployment environment (TEST or PROD) for secrets/vars'
+        required: false
+        type: string
+        default: TEST
 
 env:
   DB_CONNECTION_TEST_MAX_ATTEMPTS: 10
@@ -26,7 +31,7 @@ jobs:
     name: Push to Docker Hub
     runs-on: ubuntu-latest
     environment:
-      name: TEST
+      name: ${{ inputs.environment || 'TEST' }}
     env:
       APP_VERSION: ${{ inputs.app_version }}
       IMAGE_TAG: ${{ inputs.image_tag }}

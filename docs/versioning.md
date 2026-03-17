@@ -134,11 +134,12 @@ All pre-release version tags (dev, rc, beta, alpha) should be deleted during the
 
 ### Release Workflow (`publish.yml`)
 
-When a version tag is pushed (e.g., `git push origin v0.2.0`), the `publish.yml` workflow:
+Single publish workflow, triggered by:
 
-1. **Extracts version number from tag**: The workflow automatically extracts the version number from the git tag via `github.ref` (e.g., `refs/tags/v0.2.0` → `0.2.0`).
+- **Push to `main`**: Uses `VERSION` file, image tag `staging`, deploys to staging (TEST env).
+- **Push of version tag** (e.g. `git push origin v0.2.0`): Extracts version from the tag; prerelease (tag contains `-`) → TEST/staging; release → PROD/production.
 
-2. **Uses version number throughout pipeline**: Docker image tag (e.g. `username/repo:0.2.0`), and when deploying, sets that image tag on the server then triggers the redeployment webhook. Prerelease versions (tag contains `-`) deploy to the test environment; release versions deploy to production.
+The workflow extracts the version from the ref, uses it for the Docker image tag and server image tag, then triggers the redeployment webhook.
 
 ## Benefits
 

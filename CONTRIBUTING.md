@@ -760,11 +760,8 @@ The project uses focused, reusable GitHub Actions workflows for CI/CD. For a ful
 - Publishes test results to GitHub Actions UI
 
 **Publish Workflow** (`.github/workflows/publish.yml`):
-- Runs automatically when version tags are pushed (e.g., `v0.2.1`)
-- Orchestrates the release process:
-  1. Collects and commits static files
-  2. Builds and pushes Docker image to Docker Hub
-  3. Deploys to the test server
+- Runs on **push to `main`** (staging, TEST env) or **push of version tags** (e.g. `v0.2.1`; prerelease tags → staging/TEST, release tags → production/PROD)
+- Orchestrates the release process: collects/commits static files, builds and pushes Docker image, deploys to staging or production
 
 **Other Workflows**:
 - `build-and-push.yml` - Builds and pushes Docker images (reusable)
@@ -841,18 +838,15 @@ Quick release process:
 
 6. **Clean up pre-release tags**
 
-   Delete all pre-release tags (dev, rc, beta, alpha) that were used for testing this release:
+   Remove all pre-release tags for this version (e.g. `-dev`, `-staging`, `-test`, `-rc`, `-beta`, `-alpha`) from local and remote:
 
    ```bash
-   # List all pre-release tags for this version
-   git tag -l "v0.2.1-dev-*" "v0.2.1-rc*" "v0.2.1-beta*" "v0.2.1-alpha*"
-   
-   # Delete all pre-release tags locally and remotely
-   git tag -l "v0.2.1-dev-*" "v0.2.1-rc*" "v0.2.1-beta*" "v0.2.1-alpha*" | xargs -n 1 git tag -d
-   git tag -l "v0.2.1-dev-*" "v0.2.1-rc*" "v0.2.1-beta*" "v0.2.1-alpha*" | xargs -n 1 git push origin --delete
+   ./scripts/remove_prerelease_tags.sh
    ```
 
-   **Note:** Pre-release tags (dev, rc, beta, alpha) are temporary and should be cleaned up after the release is published to keep the repository clean.
+   The script uses the version from the `VERSION` file (same as after `bump2version`). You can also pass a version explicitly: `./scripts/remove_prerelease_tags.sh 0.2.1`.
+
+   **Note:** Pre-release tags are temporary and should be cleaned up after the release is published to keep the repository clean.
 
 7. **Merge release branch back into `develop`** (to keep develop up to date)
 
