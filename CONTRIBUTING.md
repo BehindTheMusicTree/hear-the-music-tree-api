@@ -219,13 +219,8 @@ The docker build requires the following environment variables:
 - `APP_NAME`
 - `APP_VERSION`
 - `FILE_UPLOAD_ENABLED`
-- `TMP_UPLOADED_FILES_EXTERNAL`
-- `METADATA_SESSION_DIR_EXTERNAL`
-- `MEDIA_DIR_EXTERNAL`
 - `LIBRARIES_DIR_NAME`
-- `STATIC_FILES_EXTERNAL`
 - `STATIC_FILES_INTERNAL`
-- `DJANGO_LOG_DIR_EXTERNAL`
 - `DJANGO_LOG_GENERAL_FILENAME`
 - `DJANGO_LOG_INFO_FILENAME`
 - `DJANGO_LOG_REQUESTS_FILENAME`
@@ -233,9 +228,12 @@ The docker build requires the following environment variables:
 - `DJANGO_LOG_EXCEPTIONS_FILENAME`
 - `DJANGO_LOG_DJANGO_FILENAME`
 - `DJANGO_LOG_APP_FILENAME`
-- `GUNICORN_LOG_DIR`
 - `GUNICORN_LOG_ERROR_FILENAME`
 - `GUNICORN_LOG_ACCESS_FILENAME`
+
+For production deploy, path variables (`METADATA_SESSION_DIR_EXTERNAL`, `TMP_UPLOADED_FILES_EXTERNAL`, `MEDIA_DIR_EXTERNAL`, `STATIC_FILES_EXTERNAL`, `DJANGO_LOG_DIR_EXTERNAL`, `GUNICORN_LOG_DIR`) are set at runtime on the server (e.g. in a `.env` next to docker-compose), not by the workflow. Do not add them to GitHub repo or environment vars; the server supplies them when starting the stack.
+
+Log and static filenames (e.g. `GUNICORN_LOG_ERROR_FILENAME`, `DJANGO_LOG_GENERAL_FILENAME`) stay in the workflow. Industry practice: paths vary by host/deployment so they are runtime config (12-factor); filenames are usually fixed or set at deploy time because they rarely differ per environment. Strict 12-factor also prefers logging to stdout and letting the execution environment handle files; when using file-based logging, path = runtime, filename = workflow or code default is a common compromise.
 
 **Running the container:**
 Running the container requires the following environment variables:

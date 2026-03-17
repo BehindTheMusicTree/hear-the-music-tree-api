@@ -11,7 +11,7 @@ This document describes how application versioning is handled in CI/CD workflows
   - [Development Tags (`-dev`)](#development-tags--dev-)
   - [Release Candidate Tags (`-rc`, `-beta`, `-alpha`)](#release-candidate-tags--rc--beta--alpha-)
 - [How Versioning Works](#how-versioning-works)
-  - [Release Workflow (`publish.yml`)](#release-workflow-deployyml)
+  - [Release Workflow (`publish.yml`)](#release-workflow-publishyml)
   - [Version Extraction Logic](#version-extraction-logic)
 - [Benefits](#benefits)
 - [Usage Examples](#usage-examples)
@@ -73,10 +73,9 @@ The version number is a placeholder - the actual release version is determined w
 When you push a development version tag (e.g., `v0.3.6-dev-improve-cicd`), the workflow automatically:
 
 1. **Extracts the version number** from the tag: `v0.3.6-dev-improve-cicd` → `0.3.6-dev-improve-cicd`
-2. **Builds the Next.js application** using `npm run build`
-3. **Builds Docker image** using the version: `username/repo:0.3.6-dev-improve-cicd`
-4. **Deploys to test server** with that version
-5. **Creates Docker Compose configuration** with the versioned image
+2. **Collects static files** and commits them (via `static-files.yml`)
+3. **Builds Docker image** with that version: `username/repo:0.3.6-dev-improve-cicd`
+4. **Sets image tags on server** (API, DB, AFP) and **triggers redeploy webhook** to deploy to the test server
 
 #### Republishing Development Version Tags
 
@@ -123,10 +122,9 @@ Release candidate version tags are used to test builds and deployments from **re
 When you push a release candidate version tag (e.g., `v0.2.0-rc1`), the workflow automatically:
 
 1. **Extracts the version number** from the tag: `v0.2.0-rc1` → `0.2.0-rc1`
-2. **Builds the Next.js application** using `npm run build`
-3. **Builds Docker image** using the version: `username/repo:0.2.0-rc1`
-4. **Deploys to test server** with that version
-5. **Creates Docker Compose configuration** with the versioned image
+2. **Collects static files** and commits them (via `static-files.yml`)
+3. **Builds Docker image** with that version: `username/repo:0.2.0-rc1`
+4. **Sets image tags on server** (API, DB, AFP) and **triggers redeploy webhook** to deploy to the test server
 
 ### Cleanup
 
@@ -138,11 +136,9 @@ All pre-release version tags (dev, rc, beta, alpha) should be deleted during the
 
 When a version tag is pushed (e.g., `git push origin v0.2.0`), the `publish.yml` workflow:
 
-1. **Extracts version number from tag**: The workflow automatically extracts the version number from the git tag via `github.ref` (e.g., `refs/tags/v0.2.0` → `0.2.0`)
+1. **Extracts version number from tag**: The workflow automatically extracts the version number from the git tag via `github.ref` (e.g., `refs/tags/v0.2.0` → `0.2.0`).
 
-2. **Uses version number throughout pipeline**:
-   - Docker image tags: `username/repo:0.2.0`
-   - Docker Compose service configurations
+2. **Uses version number throughout pipeline**: Docker image tag (e.g. `username/repo:0.2.0`), and when deploying, sets that image tag on the server then triggers the redeployment webhook. Prerelease versions (tag contains `-`) deploy to the test environment; release versions deploy to production.
 
 ## Benefits
 

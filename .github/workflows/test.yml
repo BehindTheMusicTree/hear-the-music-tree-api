@@ -132,7 +132,7 @@ jobs:
         run: sudo -E bash scripts/install-dependencies.sh
 
       - name: Add fpcalc to PATH
-        run: echo "bin/fpcalc" >> $GITHUB_PATH
+        run: echo "bin/fpcalc" >> "$GITHUB_PATH"
 
       - name: Install requirements
         run: PIP_NO_CACHE_DIR=off pip install -r requirements.txt
