@@ -1,6 +1,10 @@
 
 
 {
+	"files.associations": {
+		"**/.github/workflows/publish.yml": "yaml",
+		"**/.github/workflows/publish-staging.yml": "yaml"
+	},
     "workbench.colorCustomizations": {
         "editorCursor.foreground": "#2E8B57",
         "terminalCursor.foreground": "#2E8B57",
