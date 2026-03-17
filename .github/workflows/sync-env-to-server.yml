@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=.vscode/empty-schema.json
+# yaml-language-server: $schema=../../.vscode/empty-schema.json
 # Manually sync app env vars and secrets to the server scripts/.env.
 # Job 1 builds the fragment (app-specific keys) and uploads it; job 2 calls shared workflow to transfer and merge.
 name: Sync env to server
