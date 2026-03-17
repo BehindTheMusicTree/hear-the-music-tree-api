@@ -63,27 +63,3 @@ jobs:
 
       - name: Lint workflows
         run: /tmp/actionlint -config-file .github/actionlint.yaml
-
-  report-status:
-    name: Report Branch Protection Check status
-    runs-on: ubuntu-latest
-    needs: [check-branch-name, actionlint]
-    if: always()
-    permissions:
-      statuses: write
-    steps:
-      - name: Report status to branch protection
-        run: |
-          if [ "${{ needs.check-branch-name.result }}" = "success" ] && [ "${{ needs.actionlint.result }}" = "success" ]; then
-            STATE=success
-            DESC="All jobs passed"
-          else
-            STATE=failure
-            DESC="One or more jobs failed"
-          fi
-          curl -sS -X POST \
-            "https://api.github.com/repos/${{ github.repository }}/statuses/${{ github.sha }}" \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d "{\"state\":\"${STATE}\",\"target_url\":\"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\",\"description\":\"${DESC}\",\"context\":\"Branch Protection Check\"}"
-
