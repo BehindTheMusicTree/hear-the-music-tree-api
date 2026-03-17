@@ -30,8 +30,10 @@ jobs:
           HTMT_API_APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
           DEMO_EMAIL: ${{ vars.DEMO_EMAIL }}
           SUPERADMIN_EMAIL: ${{ vars.SUPERADMIN_EMAIL }}
-          SPOTIFY_CLIENT_ID: ${{ vars.SPOTIFY_CLIENT_ID }}
-          GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
+          SPOTIFY_CLIENT_ID_TEST: ${{ vars.SPOTIFY_CLIENT_ID_TEST }}
+          SPOTIFY_CLIENT_ID_PROD: ${{ vars.SPOTIFY_CLIENT_ID_PROD }}
+          GOOGLE_CLIENT_ID_TEST: ${{ vars.GOOGLE_CLIENT_ID_TEST }}
+          GOOGLE_CLIENT_ID_PROD: ${{ vars.GOOGLE_CLIENT_ID_PROD }}
           SERVER_DEPLOY_USERNAME: ${{ secrets.SERVER_DEPLOY_USERNAME }}
           SERVER_DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.SERVER_DEPLOY_SSH_PRIVATE_KEY }}
           DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
@@ -48,6 +50,14 @@ jobs:
           SUPERADMIN_USERNAME: ${{ secrets.SUPERADMIN_USERNAME }}
           TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
         run: |
+          if [ "${{ matrix.environment }}" = "TEST" ]; then
+            SPOTIFY_CLIENT_ID="${SPOTIFY_CLIENT_ID_TEST}"
+            GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID_TEST}"
+          else
+            SPOTIFY_CLIENT_ID="${SPOTIFY_CLIENT_ID_PROD}"
+            GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID_PROD}"
+          fi
+          export SPOTIFY_CLIENT_ID GOOGLE_CLIENT_ID
           required=(
             VPS_IP WEBHOOK_DIR WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE HTMT_API_APP_NAME
             DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID GOOGLE_CLIENT_ID
@@ -84,10 +94,19 @@ jobs:
           TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
           DEMO_EMAIL: ${{ vars.DEMO_EMAIL }}
           SUPERADMIN_EMAIL: ${{ vars.SUPERADMIN_EMAIL }}
-          SPOTIFY_CLIENT_ID: ${{ vars.SPOTIFY_CLIENT_ID }}
-          GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID }}
+          SPOTIFY_CLIENT_ID_TEST: ${{ vars.SPOTIFY_CLIENT_ID_TEST }}
+          SPOTIFY_CLIENT_ID_PROD: ${{ vars.SPOTIFY_CLIENT_ID_PROD }}
+          GOOGLE_CLIENT_ID_TEST: ${{ vars.GOOGLE_CLIENT_ID_TEST }}
+          GOOGLE_CLIENT_ID_PROD: ${{ vars.GOOGLE_CLIENT_ID_PROD }}
           FILE_UPLOAD_ENABLED: "true"
         run: |
+          if [ "${{ matrix.environment }}" = "TEST" ]; then
+            export SPOTIFY_CLIENT_ID="${SPOTIFY_CLIENT_ID_TEST}"
+            export GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID_TEST}"
+          else
+            export SPOTIFY_CLIENT_ID="${SPOTIFY_CLIENT_ID_PROD}"
+            export GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID_PROD}"
+          fi
           for key in DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD DB_SUPERUSER_PASSWORD \
             DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY ACOUSTID_API_KEY GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET \
             SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME DEMO_EMAIL SUPERADMIN_EMAIL \
