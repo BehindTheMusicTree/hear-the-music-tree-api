@@ -100,7 +100,7 @@ jobs:
           done
 
       - name: Upload fragment artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6.0.0
         with:
           name: ${{ matrix.artifact_name }}
           path: ${{ matrix.artifact_name }}/
