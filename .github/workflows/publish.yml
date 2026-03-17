@@ -88,20 +88,11 @@ jobs:
             } >> "$GITHUB_OUTPUT"
           fi
 
-  static:
-    name: Static files
-    needs: [determine-version]
-    uses: ./.github/workflows/static-files.yml
-    with:
-      app_version: ${{ needs.determine-version.outputs.app_version }}
-    secrets: inherit
-
   build-and-push:
     name: Docker image
-    needs: [static, determine-version]
+    needs: [determine-version]
     uses: ./.github/workflows/build-and-push.yml
     with:
-      commit_hash: ${{ needs.static.outputs.collect_static_files_commit_hash }}
       app_version: ${{ needs.determine-version.outputs.app_version }}
       image_tag: ${{ needs.determine-version.outputs.image_tag }}
       environment: ${{ needs.determine-version.outputs.deployment_environment }}
