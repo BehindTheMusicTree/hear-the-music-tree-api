@@ -1,37 +1,36 @@
-# Manually sync app env vars and secrets to the server scripts/.env for both TEST and PROD.
-# Three jobs: build fragment per environment (matrix), then call shared workflow to transfer each.
+# Sync app env to server via shared workflow (BehindTheMusicTree/github-workflows).
+# Builds fragment per env (TEST/PROD), uploads artifact, then calls reusable sync-env-to-server.
+# Writes /tmp/sync-env-<app>-<env>.env (required by infra redeploy) and merges into scripts/.env.
 name: Sync env to server
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build-fragment:
-    name: Build env fragment (${{ matrix.env }})
+    name: Build env fragment (${{ matrix.environment }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
         include:
-          - env: TEST
+          - environment: TEST
             sync_env: test
-            artifact_name: sync-env-fragment-test
-          - env: PROD
+          - environment: PROD
             sync_env: prod
-            artifact_name: sync-env-fragment-prod
-    environment: ${{ matrix.env }}
+    environment: ${{ matrix.environment }}
     steps:
       - name: Check required vars and secrets
         env:
           VPS_IP: ${{ vars.VPS_IP }}
           WEBHOOK_DIR: ${{ vars.WEBHOOK_DIR }}
           WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE: ${{ vars.WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE }}
-          SYNC_ENV_REMOTE_FILENAME_PREFIX_BASE: ${{ vars.SYNC_ENV_REMOTE_FILENAME_PREFIX_BASE }}
           HTMT_API_APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
           DEMO_EMAIL: ${{ vars.DEMO_EMAIL }}
           SUPERADMIN_EMAIL: ${{ vars.SUPERADMIN_EMAIL }}
+          FILE_UPLOAD_ENABLED: ${{ vars.FILE_UPLOAD_ENABLED }}
           SERVER_DEPLOY_USERNAME: ${{ secrets.SERVER_DEPLOY_USERNAME }}
           SERVER_DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.SERVER_DEPLOY_SSH_PRIVATE_KEY }}
           DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
@@ -48,8 +47,8 @@ jobs:
           TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
         run: |
           required=(
-            VPS_IP WEBHOOK_DIR WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE SYNC_ENV_REMOTE_FILENAME_PREFIX_BASE HTMT_API_APP_NAME
-            DEMO_EMAIL SUPERADMIN_EMAIL
+            VPS_IP WEBHOOK_DIR WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE HTMT_API_APP_NAME
+            DEMO_EMAIL SUPERADMIN_EMAIL FILE_UPLOAD_ENABLED
             SERVER_DEPLOY_USERNAME SERVER_DEPLOY_SSH_PRIVATE_KEY
             DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD DB_SUPERUSER_PASSWORD
             DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY
@@ -82,45 +81,39 @@ jobs:
           TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
           DEMO_EMAIL: ${{ vars.DEMO_EMAIL }}
           SUPERADMIN_EMAIL: ${{ vars.SUPERADMIN_EMAIL }}
-          FILE_UPLOAD_ENABLED: "true"
-          AFP_ENABLED: "true"
-          MUSICBRAINZ_LOOKUP_ENABLED: "true"
-          SPOTIFY_ENABLED: "true"
-          GOOGLE_OAUTH_ENABLED: "true"
+          FILE_UPLOAD_ENABLED: ${{ vars.FILE_UPLOAD_ENABLED }}
         run: |
-          mkdir -p ${{ matrix.artifact_name }}
-          FRAGMENT="${{ matrix.artifact_name }}/fragment.env"
           for key in DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD DB_SUPERUSER_PASSWORD \
             DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET \
-            SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME DEMO_EMAIL SUPERADMIN_EMAIL \
-            FILE_UPLOAD_ENABLED AFP_ENABLED MUSICBRAINZ_LOOKUP_ENABLED SPOTIFY_ENABLED GOOGLE_OAUTH_ENABLED; do
+            SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME DEMO_EMAIL SUPERADMIN_EMAIL FILE_UPLOAD_ENABLED; do
             val="${!key}"
             val=$(printf '%s' "$val" | tr -d '\n\r')
-            [ -n "${val}" ] && printf '%s=%s\n' "$key" "$val" >> "$FRAGMENT"
+            [ -n "${val}" ] && printf '%s=%s\n' "$key" "$val" >> fragment.env
           done
+          [ -n "${DB_SUPERUSER_PASSWORD}" ] && printf 'POSTGRES_PASSWORD=%s\n' "$(printf '%s' "$DB_SUPERUSER_PASSWORD" | tr -d '\n\r')" >> fragment.env
 
       - name: Upload fragment artifact
-        uses: actions/upload-artifact@v6.0.0
+        uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact_name }}
-          path: ${{ matrix.artifact_name }}/
+          name: sync-env-fragment-${{ matrix.sync_env }}
+          path: fragment.env
 
   sync-test:
-    name: Transfer fragment to server (test)
-    needs: build-fragment
+    name: Sync env (test)
+    needs: [build-fragment]
     uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-server.yml@main
     with:
       sync_env: test
-      app_name: ${{ vars.HTMT_API_APP_NAME }}
       fragment_artifact: sync-env-fragment-test/fragment.env
+      app_name: ${{ vars.HTMT_API_APP_NAME }}
     secrets: inherit
 
   sync-prod:
-    name: Transfer fragment to server (prod)
-    needs: build-fragment
+    name: Sync env (prod)
+    needs: [build-fragment]
     uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-server.yml@main
     with:
       sync_env: prod
-      app_name: ${{ vars.HTMT_API_APP_NAME }}
       fragment_artifact: sync-env-fragment-prod/fragment.env
+      app_name: ${{ vars.HTMT_API_APP_NAME }}
     secrets: inherit
