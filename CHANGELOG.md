@@ -57,7 +57,12 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 **Note:** During releases, maintainers will move entries from `[Unreleased]` to a versioned section (e.g., `## [0.2.8] - 2025-01-XX`).
 
-## [v2.2.1] - YYYY-MM-DD
+## [v2.2.1] - 2026-03-17
+
+### CI
+
+- **Single Publish workflow**: Replaced separate Publish and Publish staging with one `publish.yml`. Triggers: push to `main` (→ TEST env, staging, image tag `staging`); push to version tags `v*` (prerelease/dev tag → TEST/staging, release tag → PROD/production). `workflow_dispatch` and `workflow_call` retained. Build workflow accepts optional `environment` (TEST/PROD). Removed `publish-staging.yml`. See docs/workflows.md.
+- **Branch protection status checks**: Use job-level required checks (Test / Pytest, Test / Check vars and secrets, Branch Protection Check / Actionlint, Branch Protection Check / Verify PR source branch) instead of workflow-level names. Removed report-status jobs; configure branch protection to require the exact check names above. See docs/workflows.md.
 
 ## [v2.2.0] - 2026-03-14
 
