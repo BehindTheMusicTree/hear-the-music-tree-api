@@ -83,13 +83,15 @@ Builds the app Docker image and pushes it to Docker Hub.
 
 **File:** `.github/workflows/sync-env-to-server.yml`
 
-Manually sync app env vars and secrets to the server `scripts/.env` (test and prod). Only the listed keys are updated; other keys in `.env` (set by the infrastructure repo) are unchanged.
+Manually sync app env vars and secrets to the server `scripts/.env`. **Job 1 (build-fragment)** builds the env fragment in this repo (app-specific keys), then uploads it as an artifact. **Job 2 (sync)** calls the reusable workflow from **BehindTheMusicTree/github-workflows** (`sync-env-to-server.yml`), which downloads the artifact, SCPs it to the server, and merges it. Secrets and vars come from the selected environment (TEST or PROD). Run once per environment: choose **test** or **prod** in the workflow_dispatch dialog.
 
-**Triggers:** **workflow_dispatch** (Actions → Sync env to server → Run workflow).
+**Triggers:** **workflow_dispatch** (Actions → Sync env to server → Run workflow). Input: **env** (choice: test | prod).
 
-**Secrets (this repo):** `DB_APP_DB_NAME`, `DB_APP_USERNAME`, `DB_APP_USER_PASSWORD`, `DB_SUPERUSER_PASSWORD`, `DEMO_PASSWORD`, `DEMO_USERNAME`, `DJANGO_SECRET_KEY`, `GOOGLE_CLIENT_SECRET`, `SPOTIFY_CLIENT_SECRET`, `SUPERADMIN_PASSWORD`, `SUPERADMIN_USERNAME`, `TMTA_USERNAME`, plus deploy secrets `SERVER_DEPLOY_USERNAME`, `SERVER_DEPLOY_SSH_PRIVATE_KEY`.
+**Jobs:** **build-fragment** – check required vars/secrets, build `fragment.env`, upload artifact `sync-env-fragment`; **sync** – call shared workflow with `secrets: inherit` and `environment` (TEST or PROD).
 
-**Variables (this repo):** `DEMO_EMAIL`, `SUPERADMIN_EMAIL`, `FILE_UPLOAD_ENABLED`, and deploy vars `DOMAIN_NAME`, `WEBHOOK_DIR`, `WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE`.
+**Secrets (this repo, per environment):** `DB_APP_DB_NAME`, `DB_APP_USERNAME`, `DB_APP_USER_PASSWORD`, `DB_SUPERUSER_PASSWORD`, `DEMO_PASSWORD`, `DEMO_USERNAME`, `DJANGO_SECRET_KEY`, `GOOGLE_CLIENT_SECRET`, `SPOTIFY_CLIENT_SECRET`, `SUPERADMIN_PASSWORD`, `SUPERADMIN_USERNAME`, `TMTA_USERNAME`, plus deploy secrets `SERVER_DEPLOY_USERNAME`, `SERVER_DEPLOY_SSH_PRIVATE_KEY`.
+
+**Variables (this repo or org):** `VPS_IP`, `WEBHOOK_DIR`, `WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE`, `SYNC_ENV_REMOTE_FILENAME_PREFIX_BASE`, `HTMT_API_APP_NAME`, `DEMO_EMAIL`, `SUPERADMIN_EMAIL`.
 
 ## Static Files
 
