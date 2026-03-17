@@ -106,8 +106,12 @@ jobs:
     env:
       DB_VERSION: ${{ vars.DB_VERSION }}
       AFP_VERSION: ${{ vars.AFP_VERSION }}
+    outputs:
+      db_version: ${{ steps.pinned.outputs.db_version }}
+      afp_version: ${{ steps.pinned.outputs.afp_version }}
     steps:
       - name: Require pinned DB and AFP image tags
+        id: pinned
         run: |
           missing=""
           [ -z "${DB_VERSION}" ] && missing="${missing} DB_VERSION"
@@ -118,6 +122,8 @@ jobs:
             exit 1
           fi
           echo "DB_VERSION=$DB_VERSION, AFP_VERSION=$AFP_VERSION"
+          echo "db_version=$DB_VERSION" >> "$GITHUB_OUTPUT"
+          echo "afp_version=$AFP_VERSION" >> "$GITHUB_OUTPUT"
 
   set-version-api:
     name: Set API version on server
@@ -135,7 +141,7 @@ jobs:
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
-      tag: ${{ vars.DB_VERSION }}
+      tag: ${{ needs.check-pinned-tags.outputs.db_version }}
       app_name: htmt-db
     secrets: inherit
 
@@ -145,7 +151,7 @@ jobs:
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
-      tag: ${{ vars.AFP_VERSION }}
+      tag: ${{ needs.check-pinned-tags.outputs.afp_version }}
       app_name: afp
     secrets: inherit
 
