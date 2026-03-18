@@ -107,17 +107,23 @@ jobs:
       DB_VERSION: ${{ vars.DB_VERSION }}
       AFP_VERSION: ${{ vars.AFP_VERSION }}
       REDEPLOYMENT_ROOT: ${{ vars.REDEPLOYMENT_ROOT }}
+      HTMT_API_APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
+      DB_APP_NAME: ${{ vars.DB_APP_NAME }}
+      AFP_APP_NAME: ${{ vars.AFP_APP_NAME }}
     outputs:
       db_version: ${{ steps.pinned.outputs.db_version }}
       afp_version: ${{ steps.pinned.outputs.afp_version }}
     steps:
-      - name: Require deploy path var (set-image-tag-on-server)
+      - name: Require deploy and app-name vars (set-image-tag-on-server)
         run: |
           missing=""
           [ -z "${REDEPLOYMENT_ROOT}" ] && missing="${missing} REDEPLOYMENT_ROOT"
+          [ -z "${HTMT_API_APP_NAME}" ] && missing="${missing} HTMT_API_APP_NAME"
+          [ -z "${DB_APP_NAME}" ] && missing="${missing} DB_APP_NAME"
+          [ -z "${AFP_APP_NAME}" ] && missing="${missing} AFP_APP_NAME"
           if [ -n "$missing" ]; then
             echo "ERROR: Set org-level (or this repo) Variables:$missing"
-            echo "Example: REDEPLOYMENT_ROOT=/var/webhook/redeployment (org pool so infra + apps share path)"
+            echo "Example: REDEPLOYMENT_ROOT=/var/webhook/redeployment, HTMT_API_APP_NAME=htmt-api, DB_APP_NAME=htmt-db, AFP_APP_NAME=afp (must match infrastructure)"
             exit 1
           fi
       - name: Require pinned DB and AFP image tags
@@ -142,7 +148,7 @@ jobs:
     with:
       env: ${{ needs.determine-version.outputs.env }}
       tag: ${{ needs.determine-version.outputs.image_tag }}
-      app_name: htmt-api
+      app_name: ${{ vars.HTMT_API_APP_NAME }}
     secrets: inherit
 
   set-version-db:
@@ -152,7 +158,7 @@ jobs:
     with:
       env: ${{ needs.determine-version.outputs.env }}
       tag: ${{ needs.check-pinned-tags.outputs.db_version }}
-      app_name: htmt-db
+      app_name: ${{ vars.DB_APP_NAME }}
     secrets: inherit
 
   set-version-afp:
@@ -162,7 +168,7 @@ jobs:
     with:
       env: ${{ needs.determine-version.outputs.env }}
       tag: ${{ needs.check-pinned-tags.outputs.afp_version }}
-      app_name: afp
+      app_name: ${{ vars.AFP_APP_NAME }}
     secrets: inherit
 
   redeploy-webhook-call:
