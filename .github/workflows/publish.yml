@@ -132,7 +132,7 @@ jobs:
     with:
       env: ${{ needs.determine-version.outputs.env }}
       tag: ${{ needs.determine-version.outputs.image_tag }}
-      app_name: htmt-api
+      app_name: ${{ vars.HTMT_API_APP_NAME }}
     secrets: inherit
 
   set-version-db:
@@ -142,7 +142,7 @@ jobs:
     with:
       env: ${{ needs.determine-version.outputs.env }}
       tag: ${{ needs.check-pinned-tags.outputs.db_version }}
-      app_name: htmt-db
+      app_name: ${{ vars.DB_APP_NAME }}
     secrets: inherit
 
   set-version-afp:
@@ -152,7 +152,7 @@ jobs:
     with:
       env: ${{ needs.determine-version.outputs.env }}
       tag: ${{ needs.check-pinned-tags.outputs.afp_version }}
-      app_name: afp
+      app_name: ${{ vars.AFP_APP_NAME }}
     secrets: inherit
 
   redeploy-webhook-call:
