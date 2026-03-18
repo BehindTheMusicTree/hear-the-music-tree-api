@@ -91,7 +91,7 @@ Manually sync app env vars and secrets to the server `scripts/.env` for **both T
 
 **Secrets (this repo, per environment):** `DB_APP_DB_NAME`, `DB_APP_USERNAME`, `DB_APP_USER_PASSWORD`, `DB_SUPERUSER_PASSWORD`, `DEMO_PASSWORD`, `DEMO_USERNAME`, `DJANGO_SECRET_KEY`, `GOOGLE_CLIENT_SECRET`, `SPOTIFY_CLIENT_SECRET`, `SUPERADMIN_PASSWORD`, `SUPERADMIN_USERNAME`, `TMTA_USERNAME`, plus deploy secrets `SERVER_DEPLOY_USERNAME`, `SERVER_DEPLOY_SSH_PRIVATE_KEY`.
 
-**Variables (this repo or org):** `VPS_IP`, `REDEPLOYMENT_ROOT`, `SYNC_ENV_REMOTE_FILENAME_PREFIX_BASE`, `HTMT_API_APP_NAME`, `DEMO_EMAIL`, `SUPERADMIN_EMAIL`.
+**Variables (this repo or org):** `VPS_IP`, `REDEPLOYMENT_ROOT`, `SYNC_ENV_REMOTE_FILENAME_PREFIX_BASE`, `HTMT_API_APP_NAME`, `DEMO_EMAIL`, `SUPERADMIN_EMAIL`, `SPOTIFY_CLIENT_ID_TEST`, `SPOTIFY_CLIENT_ID_PROD`, `GOOGLE_CLIENT_ID_TEST`, `GOOGLE_CLIENT_ID_PROD`, **`SPOTIFY_SCOPES`** (space-separated Spotify scopes; required when Spotify is enabled—see `env/dev/.env.dev.example`).
 
 ## Static Files
 
