@@ -106,10 +106,20 @@ jobs:
     env:
       DB_VERSION: ${{ vars.DB_VERSION }}
       AFP_VERSION: ${{ vars.AFP_VERSION }}
+      REDEPLOYMENT_ROOT: ${{ vars.REDEPLOYMENT_ROOT }}
     outputs:
       db_version: ${{ steps.pinned.outputs.db_version }}
       afp_version: ${{ steps.pinned.outputs.afp_version }}
     steps:
+      - name: Require deploy path var (set-image-tag-on-server)
+        run: |
+          missing=""
+          [ -z "${REDEPLOYMENT_ROOT}" ] && missing="${missing} REDEPLOYMENT_ROOT"
+          if [ -n "$missing" ]; then
+            echo "ERROR: Set org-level (or this repo) Variables:$missing"
+            echo "Example: REDEPLOYMENT_ROOT=/var/webhook/redeployment (org pool so infra + apps share path)"
+            exit 1
+          fi
       - name: Require pinned DB and AFP image tags
         id: pinned
         run: |
@@ -127,12 +137,12 @@ jobs:
 
   set-version-api:
     name: Set API version on server
-    needs: [build-and-push, determine-version]
+    needs: [build-and-push, determine-version, check-pinned-tags]
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
       tag: ${{ needs.determine-version.outputs.image_tag }}
-      app_name: ${{ vars.HTMT_API_APP_NAME }}
+      app_name: htmt-api
     secrets: inherit
 
   set-version-db:
@@ -142,7 +152,7 @@ jobs:
     with:
       env: ${{ needs.determine-version.outputs.env }}
       tag: ${{ needs.check-pinned-tags.outputs.db_version }}
-      app_name: ${{ vars.DB_APP_NAME }}
+      app_name: htmt-db
     secrets: inherit
 
   set-version-afp:
@@ -152,7 +162,7 @@ jobs:
     with:
       env: ${{ needs.determine-version.outputs.env }}
       tag: ${{ needs.check-pinned-tags.outputs.afp_version }}
-      app_name: ${{ vars.AFP_APP_NAME }}
+      app_name: afp
     secrets: inherit
 
   redeploy-webhook-call:
