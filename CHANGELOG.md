@@ -59,6 +59,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Fixed
+
+- **Container setup-filesystem: Django log paths**: `DJANGO_LOG_DIR` is `/var/log/django` (no trailing slash) in deploy; the script concatenated `${DJANGO_LOG_DIR}${filename}`, producing `/var/log/djangorequests_debug.log` instead of `/var/log/django/requests_debug.log`. Django log and Gunicorn log file paths now join with `${VAR%/}/filename`.
+
 ### Changed
 
 - **Entrypoint: collectstatic at runtime**: When `STATIC_FILES` is set, the container runs `manage.py collectstatic --noinput` on startup (after Django check, before migrate). The static root (e.g. `/app/static`) is then populated so nginx or the app can serve files without a separate build-step; same image works across envs.

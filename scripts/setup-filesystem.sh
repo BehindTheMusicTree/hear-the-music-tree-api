@@ -101,7 +101,7 @@ setup_django_log () {
         )
         for log_filename in "${LOG_FILENAMES[@]}"; do
             check_required_vars_are_set "$log_filename"
-            touch_file_or_exit "${DJANGO_LOG_DIR}${!log_filename}"
+            touch_file_or_exit "${DJANGO_LOG_DIR%/}/${!log_filename}"
         done
         set_read_write_permissions_and_owner_or_exit "$DJANGO_LOG_DIR"
     else
@@ -121,8 +121,8 @@ setup_gunicorn_log () {
             check_required_vars_are_set "$var_name"
         done
 
-        GUNICORN_LOG_ERROR_FILE="${GUNICORN_LOG_DIR}${GUNICORN_LOG_ERROR_FILENAME}"
-        GUNICORN_LOG_ACCESS_FILE="${GUNICORN_LOG_DIR}${GUNICORN_LOG_ACCESS_FILENAME}"
+        GUNICORN_LOG_ERROR_FILE="${GUNICORN_LOG_DIR%/}/${GUNICORN_LOG_ERROR_FILENAME}"
+        GUNICORN_LOG_ACCESS_FILE="${GUNICORN_LOG_DIR%/}/${GUNICORN_LOG_ACCESS_FILENAME}"
         create_directory_if_not_exists_or_exit "$GUNICORN_LOG_DIR"
         touch_file_or_exit "$GUNICORN_LOG_ERROR_FILE"
         touch_file_or_exit "$GUNICORN_LOG_ACCESS_FILE"
