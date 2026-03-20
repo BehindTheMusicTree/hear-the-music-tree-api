@@ -17,7 +17,7 @@ from api.utils.env_var_loader import (
     load_required_secret_env_var,
     load_required_str_env_var
 )
-from api.utils.utils import print_django
+from api.utils.utils import is_django_startup_verbose, mask_oauth_client_id, print_django
 
 
 TEST_USER_LIBRARIES_DIR_NAME_PREFIXE: str
@@ -383,6 +383,10 @@ def setup_app_constants():
     global DEBUG
     if 'pytest' not in sys.argv[0]:  # Skip loading DEBUG from env in test mode
         DEBUG = load_required_bool_env_var('DEBUG')
+        if APP_IS_EXPOSED and DEBUG:
+            print_django(
+                "SECURITY WARNING: DEBUG is True while APP_IS_EXPOSED — disable DEBUG in production/staging servers."
+            )
     # else: keep the module-level DEBUG value (False by default, can be set to True by conftest)
 
     global USER_LIBRARIES_DIR_NAME_PREFIXE
@@ -757,14 +761,19 @@ def _load_optional_service_credentials():
 
     SPOTIFY_ENABLED = load_required_bool_env_var('SPOTIFY_ENABLED')
     if SPOTIFY_ENABLED:
-        SPOTIFY_CLIENT_ID = load_required_str_env_var('SPOTIFY_CLIENT_ID')
-        print_django(f"SPOTIFY_CLIENT_ID = {SPOTIFY_CLIENT_ID}")
-        SPOTIFY_CLIENT_SECRET = load_required_secret_env_var('SPOTIFY_CLIENT_SECRET')
-        print_django("SPOTIFY_CLIENT_SECRET is set.")
-        SPOTIFY_REDIRECT_URI = load_required_str_env_var('SPOTIFY_REDIRECT_URI')
-        print_django(f"SPOTIFY_REDIRECT_URI = {SPOTIFY_REDIRECT_URI}")
-        SPOTIFY_SCOPES = load_required_str_env_var('SPOTIFY_SCOPES')
-        print_django(f"SPOTIFY_SCOPES = {SPOTIFY_SCOPES}")
+        SPOTIFY_CLIENT_ID = load_required_str_env_var('SPOTIFY_CLIENT_ID', silent=True)
+        SPOTIFY_CLIENT_SECRET = load_required_secret_env_var('SPOTIFY_CLIENT_SECRET', silent=True)
+        SPOTIFY_REDIRECT_URI = load_required_str_env_var('SPOTIFY_REDIRECT_URI', silent=True)
+        SPOTIFY_SCOPES = load_required_str_env_var('SPOTIFY_SCOPES', silent=True)
+        if is_django_startup_verbose():
+            print_django(f"SPOTIFY_CLIENT_ID = {SPOTIFY_CLIENT_ID}")
+            print_django("SPOTIFY_CLIENT_SECRET is set.")
+            print_django(f"SPOTIFY_REDIRECT_URI = {SPOTIFY_REDIRECT_URI}")
+            print_django(f"SPOTIFY_SCOPES = {SPOTIFY_SCOPES}")
+        else:
+            print_django(f"SPOTIFY_CLIENT_ID: {mask_oauth_client_id(SPOTIFY_CLIENT_ID)} (set)")
+            print_django("SPOTIFY_CLIENT_SECRET is set.")
+            print_django("SPOTIFY_REDIRECT_URI and SPOTIFY_SCOPES are set.")
         print_django("Spotify API credentials loaded.")
     else:
         SPOTIFY_CLIENT_ID = load_optional_str_env_var('SPOTIFY_CLIENT_ID')
@@ -775,12 +784,17 @@ def _load_optional_service_credentials():
 
     GOOGLE_OAUTH_ENABLED = load_required_bool_env_var('GOOGLE_OAUTH_ENABLED')
     if GOOGLE_OAUTH_ENABLED:
-        GOOGLE_CLIENT_ID = load_required_str_env_var('GOOGLE_CLIENT_ID')
-        print_django(f"GOOGLE_CLIENT_ID = {GOOGLE_CLIENT_ID}")
-        GOOGLE_CLIENT_SECRET = load_required_secret_env_var('GOOGLE_CLIENT_SECRET')
-        print_django("GOOGLE_CLIENT_SECRET is set.")
-        GOOGLE_REDIRECT_URI = load_required_str_env_var('GOOGLE_REDIRECT_URI')
-        print_django(f"GOOGLE_REDIRECT_URI = {GOOGLE_REDIRECT_URI}")
+        GOOGLE_CLIENT_ID = load_required_str_env_var('GOOGLE_CLIENT_ID', silent=True)
+        GOOGLE_CLIENT_SECRET = load_required_secret_env_var('GOOGLE_CLIENT_SECRET', silent=True)
+        GOOGLE_REDIRECT_URI = load_required_str_env_var('GOOGLE_REDIRECT_URI', silent=True)
+        if is_django_startup_verbose():
+            print_django(f"GOOGLE_CLIENT_ID = {GOOGLE_CLIENT_ID}")
+            print_django("GOOGLE_CLIENT_SECRET is set.")
+            print_django(f"GOOGLE_REDIRECT_URI = {GOOGLE_REDIRECT_URI}")
+        else:
+            print_django(f"GOOGLE_CLIENT_ID: {mask_oauth_client_id(GOOGLE_CLIENT_ID)} (set)")
+            print_django("GOOGLE_CLIENT_SECRET is set.")
+            print_django("GOOGLE_REDIRECT_URI is set.")
         print_django("Google OAuth credentials loaded.")
     else:
         GOOGLE_CLIENT_ID = load_optional_str_env_var('GOOGLE_CLIENT_ID')
