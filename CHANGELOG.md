@@ -59,6 +59,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Security
+
+- **Startup and request logging**: OAuth client ids are no longer printed in full by default (masked prefix/suffix); redirect URIs and scopes are summarized unless **`DJANGO_VERBOSE_STARTUP=true`**. **`load_required_bool_env_var`** no longer echoes the raw string before parsing. If **`APP_IS_EXPOSED`** and **`DEBUG`** are both true, a **security warning** is printed. Removed debug **`print`** from **`SpotifyLibTrackViewSet`**; **`TreeField`** criteria validation uses **`logging.debug`**; Spotify artist batch errors use **`logger.exception`**.
+
 ### Fixed
 
 - **Container setup-filesystem: Django log paths**: `DJANGO_LOG_DIR` is `/var/log/django` (no trailing slash) in deploy; the script concatenated `${DJANGO_LOG_DIR}${filename}`, producing `/var/log/djangorequests_debug.log` instead of `/var/log/django/requests_debug.log`. Django log and Gunicorn log file paths now join with `${VAR%/}/filename`.

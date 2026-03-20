@@ -1,6 +1,9 @@
+import logging
 from typing import Any, cast
 
 from api import settings
+
+logger = logging.getLogger(__name__)
 from api.exception.validation.app.AppValidationException import AppValidationException
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.serializer.field.AppListField import AppListField
@@ -61,7 +64,7 @@ class TreeField(AppListField):
                     # Treat None as empty list (no descendants to count)
                     pass
                 elif not isinstance(children_list, list):
-                    print(f"Invalid children type: {type(children_list)}")
+                    logger.debug("Invalid children type: %s", type(children_list))
                     raise AppValidationException(
                         field_name=self.get_error_field_name(),
                         message=f"Invalid tree structure: {Fields.CHILDREN} must be an array, null, or not provided",
@@ -137,7 +140,7 @@ class TreeField(AppListField):
 
             # Store the original children before validation
             if isinstance(node, dict) and Fields.CHILDREN in node:
-                print(f"TREE FIELD - Node {i} has children before validation: {node[Fields.CHILDREN]}")
+                logger.debug("TREE FIELD - Node %s has children before validation: %s", i, node[Fields.CHILDREN])
                 node_children = copy.deepcopy(node[Fields.CHILDREN])
 
             # Check for missing or empty name fields directly before passing to serializer
@@ -170,11 +173,11 @@ class TreeField(AppListField):
                         field_validation_error_code=FieldValidationErrorCode.FORMAT_INVALID
                     )
 
-                print(f"TREE FIELD - Node {i} validated with keys: {validated_node.keys()}")
+                logger.debug("TREE FIELD - Node %s validated with keys: %s", i, list(validated_node.keys()))
 
                 # Ensure children field exists with original data
                 if node_children is not None:
-                    print(f"TREE FIELD - Restoring original children for node {i}")
+                    logger.debug("TREE FIELD - Restoring original children for node %s", i)
                     validated_node[Fields.CHILDREN] = node_children
                 elif Fields.CHILDREN not in validated_node:
                     validated_node[Fields.CHILDREN] = []
@@ -201,15 +204,18 @@ class TreeField(AppListField):
         for i, node in enumerate(validated_data):
             # Process non-empty children recursively
             if Fields.CHILDREN in node and node[Fields.CHILDREN]:
-                print(f"TREE FIELD - Processing children for node {i}: {node[Fields.CHILDREN]}")
+                logger.debug("TREE FIELD - Processing children for node %s: %s", i, node[Fields.CHILDREN])
                 node[Fields.CHILDREN] = self.children_field.run_validation(node[Fields.CHILDREN])
-                print(f"TREE FIELD - Children after validation: {node[Fields.CHILDREN]}")
+                logger.debug("TREE FIELD - Children after validation: %s", node[Fields.CHILDREN])
 
-        print(f"TREE FIELD - Returning {len(validated_data)} validated nodes")
+        logger.debug("TREE FIELD - Returning %s validated nodes", len(validated_data))
         if validated_data and len(validated_data) > 0:
-            print(f"TREE FIELD - First validated node: {validated_data[0]}")
+            logger.debug("TREE FIELD - First validated node: %s", validated_data[0])
             if Fields.CHILDREN in validated_data[0]:
-                print(f"TREE FIELD - First node children after validation: {validated_data[0][Fields.CHILDREN]}")
+                logger.debug(
+                    "TREE FIELD - First node children after validation: %s",
+                    validated_data[0][Fields.CHILDREN],
+                )
 
         return validated_data
 
