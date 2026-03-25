@@ -68,24 +68,9 @@ jobs:
             } >> "$GITHUB_OUTPUT"
             echo "Main push -> STAGING, staging"
           else
-            git fetch --tags --force
-            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-            if [ -z "$LATEST_TAG" ]; then
-              echo "Error: Cannot determine version. No tag provided."
-              exit 1
-            fi
-            VERSION="${LATEST_TAG#v}"
-            {
-              echo "app_version=$VERSION"
-              echo "image_tag=$VERSION"
-              if [[ "$VERSION" == *-* ]]; then
-                echo "env=staging"
-                echo "deployment_environment=STAGING"
-              else
-                echo "env=prod"
-                echo "deployment_environment=PROD"
-              fi
-            } >> "$GITHUB_OUTPUT"
+            echo "Error: Unsupported ref '$GITHUB_REF'."
+            echo "Only 'main' branch or tags matching 'v*' are supported."
+            exit 1
           fi
 
   build-and-push:
