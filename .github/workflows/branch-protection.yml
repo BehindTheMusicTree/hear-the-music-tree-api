@@ -54,7 +54,7 @@ jobs:
     name: Actionlint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5.0.1
 
       - name: Install actionlint
         run: |
@@ -63,5 +63,3 @@ jobs:
 
       - name: Lint workflows
         run: /tmp/actionlint -config-file .github/actionlint.yaml
-
-

@@ -1,9 +1,11 @@
 
 
 {
+	"yaml.schemas": {
+		".vscode/empty-schema.json": [".github/workflows/sync-env-to-server.yml"]
+	},
 	"files.associations": {
-		"**/.github/workflows/publish.yml": "yaml",
-		"**/.github/workflows/publish-staging.yml": "yaml"
+		"**/.github/workflows/publish.yml": "yaml"
 	},
     "workbench.colorCustomizations": {
         "editorCursor.foreground": "#2E8B57",

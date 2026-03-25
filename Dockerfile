@@ -7,6 +7,9 @@ FROM python:3.14-bookworm
 ARG APP_VERSION
 ARG APP_TITLE
 ARG API_DIR_NAME
+ARG STATIC_FILES_INTERNAL=staticfiles
+ARG STATIC_FILES_URL=/static/
+ARG APP_NAME=htmt-api
 
 RUN for var in APP_VERSION APP_TITLE API_DIR_NAME; do \
     eval "value=\$$var"; \
