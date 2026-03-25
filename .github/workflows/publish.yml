@@ -41,10 +41,10 @@ jobs:
               {
                 echo "app_version=$VERSION"
                 echo "image_tag=$VERSION"
-                echo "env=test"
-                echo "deployment_environment=TEST"
+                echo "env=staging"
+                echo "deployment_environment=STAGING"
               } >> "$GITHUB_OUTPUT"
-              echo "Prerelease/dev tag -> TEST, staging"
+              echo "Prerelease/dev tag -> STAGING, staging"
             else
               {
                 echo "app_version=$VERSION"
@@ -63,10 +63,10 @@ jobs:
             {
               echo "app_version=${VERSION}-staging"
               echo "image_tag=staging"
-              echo "env=test"
-              echo "deployment_environment=TEST"
+              echo "env=staging"
+              echo "deployment_environment=STAGING"
             } >> "$GITHUB_OUTPUT"
-            echo "Main push -> TEST, staging"
+            echo "Main push -> STAGING, staging"
           else
             git fetch --tags --force
             LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
@@ -79,8 +79,8 @@ jobs:
               echo "app_version=$VERSION"
               echo "image_tag=$VERSION"
               if [[ "$VERSION" == *-* ]]; then
-                echo "env=test"
-                echo "deployment_environment=TEST"
+                echo "env=staging"
+                echo "deployment_environment=STAGING"
               else
                 echo "env=prod"
                 echo "deployment_environment=PROD"
