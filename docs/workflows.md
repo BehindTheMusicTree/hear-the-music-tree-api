@@ -85,13 +85,13 @@ Builds the app Docker image and pushes it to Docker Hub.
 
 **File:** `.github/workflows/sync-env-to-server.yml`
 
-Manually sync app env vars and secrets for **both STAGING and PROD** in one run. The shared workflow uploads the fragment to **`/tmp/sync-env-<HTMT_API_APP_NAME>-<env>.env`** on the VPS and merges into **`scripts/.env`**; **`generate-docker-compose.sh` requires that file** for secrets and API flags. **`FILE_UPLOAD_ENABLED`** comes from GitHub Variables; **`SPOTIFY_ENABLED`**, **`GOOGLE_OAUTH_ENABLED`**, **`MUSICBRAINZ_LOOKUP_ENABLED`**, and **`HTMT_API_AFP_ENABLED`** are **hardcoded `true`** in this workflow. **Jobs:** **build-fragment** (matrix: STAGING and PROD), **sync-staging**, **sync-prod**. No `workflow_dispatch` inputs; one run syncs both environments.
+Manually sync app env vars and secrets for **both STAGING and PROD** in one run. The shared workflow uploads the fragment to **`/tmp/sync-env-<HTMT_API_APP_NAME>-<env>.env`** on the VPS and merges into **`scripts/.env`**; **`generate-docker-compose.sh` requires that file** for secrets and API flags. **`FILE_UPLOAD_ENABLED`**, **`SPOTIFY_ENABLED`**, **`GOOGLE_OAUTH_ENABLED`**, **`MUSICBRAINZ_LOOKUP_ENABLED`**, and **`HTMT_API_AFP_ENABLED`** are **hardcoded `true`** in this workflow (no GitHub Variables). **Jobs:** **build-fragment** (matrix: STAGING and PROD), **sync-staging**, **sync-prod**. No `workflow_dispatch` inputs; one run syncs both environments.
 
 **Triggers:** **workflow_dispatch** (Actions → Sync env to server → Run workflow). No inputs.
 
 **Secrets (this repo, per environment):** `DB_APP_DB_NAME`, `DB_APP_USERNAME`, `DB_APP_USER_PASSWORD`, `DB_SUPERUSER_PASSWORD`, `DEMO_PASSWORD`, `DEMO_USERNAME`, `DJANGO_SECRET_KEY`, `GOOGLE_CLIENT_SECRET`, `SPOTIFY_CLIENT_SECRET`, `SUPERADMIN_PASSWORD`, `SUPERADMIN_USERNAME`, `TMTA_USERNAME`, plus deploy secrets `SERVER_DEPLOY_USERNAME`, `SERVER_DEPLOY_SSH_PRIVATE_KEY`.
 
-**Variables (this repo or org, per GitHub Environment):** `FILE_UPLOAD_ENABLED` (**`true`** or **`false`**; see `api/settings.py` / `TMP_UPLOADED_FILES`). **`SPOTIFY_ENABLED`**, **`GOOGLE_OAUTH_ENABLED`**, **`MUSICBRAINZ_LOOKUP_ENABLED`**, and **`HTMT_API_AFP_ENABLED`** are **hardcoded to `true`** in the workflow fragment (no GitHub Variables). Also: `VPS_IP`, `REDEPLOYMENT_ROOT`, `SYNC_ENV_REMOTE_FILENAME_PREFIX_BASE`, `HTMT_API_APP_NAME`, `DEMO_EMAIL`, `SUPERADMIN_EMAIL`, `SPOTIFY_CLIENT_ID_TEST`, `SPOTIFY_CLIENT_ID_PROD`, `GOOGLE_CLIENT_ID_TEST`, `GOOGLE_CLIENT_ID_PROD`, **`SPOTIFY_SCOPES`** (see `env/dev/.env.dev.example`).
+**Variables (this repo or org, per GitHub Environment):** `VPS_IP`, `REDEPLOYMENT_ROOT`, `SYNC_ENV_REMOTE_FILENAME_PREFIX_BASE`, `HTMT_API_APP_NAME`, `DEMO_EMAIL`, `SUPERADMIN_EMAIL`, `SPOTIFY_CLIENT_ID_TEST`, `SPOTIFY_CLIENT_ID_PROD`, `GOOGLE_CLIENT_ID_TEST`, `GOOGLE_CLIENT_ID_PROD`, **`SPOTIFY_SCOPES`** (see `env/dev/.env.dev.example`). The compose-required API booleans above are **not** Variables—they are written as **`true`** in the workflow. Locally and in CI you still set **`FILE_UPLOAD_ENABLED`** in `env/.env` as needed (see `api/settings.py` / `TMP_UPLOADED_FILES`).
 
 ## Static Files
 
