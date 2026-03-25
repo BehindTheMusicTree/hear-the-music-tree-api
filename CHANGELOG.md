@@ -67,6 +67,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Sync env to server**: Single step validates and builds `fragment.env`; **`FILE_UPLOAD_ENABLED`** and the other compose-required API `*_ENABLED` keys are hardcoded **`true`** in the workflow YAML.
 
+- **Calculated `LIBRARIES_DIR`**: `generate-calculated-paths-env-file.sh` concatenated `${MEDIA_DIR}${LIBRARIES_DIR_NAME}`, which produced `/app/medialibraries` when `MEDIA_DIR` was `/app/media` and `LIBRARIES_DIR_NAME` was `libraries`—while Django uses `MEDIA_DIR` / `LIBRARIES_DIR_NAME` (`/app/media/libraries`). Filesystem setup created the wrong path and `manage.py check` failed in deploy.
+
 - **Container setup-filesystem: Django log paths**: `DJANGO_LOG_DIR` is `/var/log/django` (no trailing slash) in deploy; the script concatenated `${DJANGO_LOG_DIR}${filename}`, producing `/var/log/djangorequests_debug.log` instead of `/var/log/django/requests_debug.log`. Django log and Gunicorn log file paths now join with `${VAR%/}/filename`.
 
 ### Changed
