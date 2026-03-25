@@ -65,13 +65,15 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Fixed
 
+- **Sync env to server**: Single step validates and builds `fragment.env`; integration `*_ENABLED` keys are hardcoded `true` in the workflow YAML.
+
 - **Container setup-filesystem: Django log paths**: `DJANGO_LOG_DIR` is `/var/log/django` (no trailing slash) in deploy; the script concatenated `${DJANGO_LOG_DIR}${filename}`, producing `/var/log/djangorequests_debug.log` instead of `/var/log/django/requests_debug.log`. Django log and Gunicorn log file paths now join with `${VAR%/}/filename`.
 
 ### Changed
 
 - **`FILE_UPLOAD_ENABLED` required at runtime**: No inference from `TMP_UPLOADED_FILES`. Django and `scripts/setup-filesystem.sh` fail fast if it is unset or not `true`/`false`. Set it in local `env/.env` (see `env/dev/.env.dev.example`) and in GitHub Variables for **Sync env to server**.
 
-- **Sync env: explicit feature flags**: **Sync env to server** requires and writes **`SPOTIFY_ENABLED`**, **`GOOGLE_OAUTH_ENABLED`**, **`MUSICBRAINZ_LOOKUP_ENABLED`**, and **`HTMT_API_AFP_ENABLED`** (each GitHub Variable `true`/`false` per STAGING/PROD), alongside **`FILE_UPLOAD_ENABLED`**, so **`generate-docker-compose.sh`** gets API toggles only from the sync fragment (infrastructure transfer stays agnostic).
+- **Sync env: service flags hardcoded**: **Sync env to server** always writes **`SPOTIFY_ENABLED=true`**, **`GOOGLE_OAUTH_ENABLED=true`**, **`MUSICBRAINZ_LOOKUP_ENABLED=true`**, **`HTMT_API_AFP_ENABLED=true`**; only **`FILE_UPLOAD_ENABLED`** remains a GitHub Variable (`true`/`false` per STAGING/PROD).
 
 - **Entrypoint: collectstatic at runtime**: When `STATIC_FILES` is set, the container runs `manage.py collectstatic --noinput` on startup (after Django check, before migrate). The static root (e.g. `/app/static`) is then populated so nginx or the app can serve files without a separate build-step; same image works across envs.
 - **Sync env to server**: Fragment includes **`SPOTIFY_SCOPES`** from GitHub Variable `SPOTIFY_SCOPES` (required). Use the same scopes as in `env/dev/.env.dev.example` unless you need fewer. Redeploy compose fails if Spotify is enabled and scopes are absent.
