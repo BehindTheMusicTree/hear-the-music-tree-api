@@ -67,7 +67,6 @@ class SpotifyLibTrackViewSet(AppModelViewSet[SpotifyLibTrack]):
     ])
     @spotify_user_required
     def list(self, request, *args, **kwargs):
-        print('SpotifyLibTrackViewSet user', request.user)
         return self._handle_list()
 
     @spotify_user_required
@@ -81,7 +80,6 @@ class SpotifyLibTrackViewSet(AppModelViewSet[SpotifyLibTrack]):
         Perform a quick sync of the user's Spotify library.
         This only fetches new additions since the last sync and is faster than a full sync.
         """
-        print("SpotifyLibTrackViewSet quick_sync user: ", request.user)
         with transaction.atomic():
             if request.user.spotify_sync_in_progress:
                 return Response(

@@ -1,9 +1,23 @@
+import os
 import random
 import string
 
 
 def print_django(message):
     print(f"[Django] {message}")
+
+
+def is_django_startup_verbose() -> bool:
+    """When true, settings startup logs full OAuth client ids, redirect URIs, etc. Default: off (safer for container logs)."""
+    return os.environ.get("DJANGO_VERBOSE_STARTUP", "").strip().lower() in ("1", "true", "yes")
+
+
+def mask_oauth_client_id(value: str, keep: int = 4) -> str:
+    """Shorten OAuth *public* client ids for logs (not as sensitive as secrets; still avoid full value in stdout)."""
+    v = (value or "").strip()
+    if len(v) <= 2 * keep:
+        return "***"
+    return f"{v[:keep]}…{v[-keep:]}"
 
 
 def generate_short_uu(length: int):

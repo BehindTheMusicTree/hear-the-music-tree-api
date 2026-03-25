@@ -101,7 +101,7 @@ setup_django_log () {
         )
         for log_filename in "${LOG_FILENAMES[@]}"; do
             check_required_vars_are_set "$log_filename"
-            touch_file_or_exit "${DJANGO_LOG_DIR}${!log_filename}"
+            touch_file_or_exit "${DJANGO_LOG_DIR%/}/${!log_filename}"
         done
         set_read_write_permissions_and_owner_or_exit "$DJANGO_LOG_DIR"
     else
@@ -121,8 +121,8 @@ setup_gunicorn_log () {
             check_required_vars_are_set "$var_name"
         done
 
-        GUNICORN_LOG_ERROR_FILE="${GUNICORN_LOG_DIR}${GUNICORN_LOG_ERROR_FILENAME}"
-        GUNICORN_LOG_ACCESS_FILE="${GUNICORN_LOG_DIR}${GUNICORN_LOG_ACCESS_FILENAME}"
+        GUNICORN_LOG_ERROR_FILE="${GUNICORN_LOG_DIR%/}/${GUNICORN_LOG_ERROR_FILENAME}"
+        GUNICORN_LOG_ACCESS_FILE="${GUNICORN_LOG_DIR%/}/${GUNICORN_LOG_ACCESS_FILENAME}"
         create_directory_if_not_exists_or_exit "$GUNICORN_LOG_DIR"
         touch_file_or_exit "$GUNICORN_LOG_ERROR_FILE"
         touch_file_or_exit "$GUNICORN_LOG_ACCESS_FILE"
@@ -134,13 +134,26 @@ setup_gunicorn_log () {
 }
 
 setup_media_dirs () {
-    if [ "$FILE_UPLOAD_ENABLED" = "false" ]; then
-        log_with_script_prefixe "FILE_UPLOAD_ENABLED is false. Skipping media directories."
-        return
+    # Match settings.py: FILE_UPLOAD_ENABLED must be set (true or false); no defaults.
+    if [ -z "${FILE_UPLOAD_ENABLED:-}" ]; then
+        log_with_script_prefixe "ERROR: FILE_UPLOAD_ENABLED must be set to 'true' or 'false'." >&2
+        exit 1
     fi
-    if [ -z "${TMP_UPLOADED_FILES}" ]; then
-        log_with_script_prefixe "TMP_UPLOADED_FILES is not set. The app will not handle media files."
-        return
+    _fue=$(printf '%s' "$FILE_UPLOAD_ENABLED" | tr '[:upper:]' '[:lower:]')
+    case "$_fue" in
+        false)
+            log_with_script_prefixe "FILE_UPLOAD_ENABLED is false. Skipping media directories."
+            return
+            ;;
+        true) ;;
+        *)
+            log_with_script_prefixe "ERROR: FILE_UPLOAD_ENABLED must be 'true' or 'false' (got: ${FILE_UPLOAD_ENABLED})." >&2
+            exit 1
+            ;;
+    esac
+    if [ -z "${TMP_UPLOADED_FILES:-}" ]; then
+        log_with_script_prefixe "ERROR: TMP_UPLOADED_FILES must be set when FILE_UPLOAD_ENABLED is true." >&2
+        exit 1
     fi
     log_with_script_prefixe "Setting up temp uploaded files directory and media directories..."
     create_directory_if_not_exists_or_exit "$TMP_UPLOADED_FILES"

@@ -1,6 +1,9 @@
 
 
 {
+	"yaml.schemas": {
+		".vscode/empty-schema.json": [".github/workflows/sync-env-to-server.yml"]
+	},
 	"files.associations": {
 		"**/.github/workflows/publish.yml": "yaml"
 	},

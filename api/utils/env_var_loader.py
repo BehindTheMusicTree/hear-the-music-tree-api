@@ -7,10 +7,12 @@ import dotenv
 from api.utils.utils import print_django
 
 
-def load_required_str_env_var(var_name: str, must_print_value: bool = True) -> str:
+def load_required_str_env_var(var_name: str, must_print_value: bool = True, *, silent: bool = False) -> str:
     var_value = os.getenv(var_name)
     if var_value is None or var_value == "":
         raise EnvironmentError(f"The {var_name} environment variable must be set and non-empty")
+    if silent:
+        return var_value
     if must_print_value:
         print_django(f"{var_name}: {var_value}")
     else:
@@ -31,10 +33,15 @@ def load_optional_secret_env_var(var_name: str, default: str = "") -> str:
 
 
 def load_required_bool_env_var(var_name: str) -> bool:
-    var_value = load_required_str_env_var(var_name).lower()
-    if var_value not in ['true', 'false']:
-        raise EnvironmentError(f"The {var_name} environment variable must be 'true' or 'false', got '{var_value}'")
-    return var_value == 'true'
+    raw = os.getenv(var_name)
+    if raw is None or raw == "":
+        raise EnvironmentError(f"The {var_name} environment variable must be set and non-empty")
+    lower = raw.strip().lower()
+    if lower not in ("true", "false"):
+        raise EnvironmentError(f"The {var_name} environment variable must be 'true' or 'false', got '{raw}'")
+    result = lower == "true"
+    print_django(f"{var_name}: {result}")
+    return result
 
 
 def load_required_int_env_var(var_name: str) -> int:
@@ -78,8 +85,8 @@ def load_env_vars_from_file_if_exists(env_file_path: Path):
         print_django("Env file loaded.")
 
 
-def load_required_secret_env_var(var_name: str) -> str:
-    var_value = load_required_str_env_var(var_name=var_name, must_print_value=False)
+def load_required_secret_env_var(var_name: str, *, silent: bool = False) -> str:
+    var_value = load_required_str_env_var(var_name, must_print_value=False, silent=silent)
     if var_value.startswith('"') and var_value.endswith('"'):
         return var_value[1:-1]
     return var_value

@@ -22,13 +22,13 @@ jobs:
     steps:
       - name: Checkout code
         if: ${{ github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/tags/') }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5.0.1
         with:
           fetch-depth: 0
 
       - name: Checkout for main branch
         if: github.ref == 'refs/heads/main'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5.0.1
         with:
           fetch-depth: 0
 
@@ -41,10 +41,10 @@ jobs:
               {
                 echo "app_version=$VERSION"
                 echo "image_tag=$VERSION"
-                echo "env=test"
-                echo "deployment_environment=TEST"
+                echo "env=staging"
+                echo "deployment_environment=STAGING"
               } >> "$GITHUB_OUTPUT"
-              echo "Prerelease/dev tag -> TEST, staging"
+              echo "Prerelease/dev tag -> STAGING, staging"
             else
               {
                 echo "app_version=$VERSION"
@@ -63,29 +63,14 @@ jobs:
             {
               echo "app_version=${VERSION}-staging"
               echo "image_tag=staging"
-              echo "env=test"
-              echo "deployment_environment=TEST"
+              echo "env=staging"
+              echo "deployment_environment=STAGING"
             } >> "$GITHUB_OUTPUT"
-            echo "Main push -> TEST, staging"
+            echo "Main push -> STAGING, staging"
           else
-            git fetch --tags --force
-            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-            if [ -z "$LATEST_TAG" ]; then
-              echo "Error: Cannot determine version. No tag provided."
-              exit 1
-            fi
-            VERSION="${LATEST_TAG#v}"
-            {
-              echo "app_version=$VERSION"
-              echo "image_tag=$VERSION"
-              if [[ "$VERSION" == *-* ]]; then
-                echo "env=test"
-                echo "deployment_environment=TEST"
-              else
-                echo "env=prod"
-                echo "deployment_environment=PROD"
-              fi
-            } >> "$GITHUB_OUTPUT"
+            echo "Error: Unsupported ref '$GITHUB_REF'."
+            echo "Only 'main' branch or tags matching 'v*' are supported."
+            exit 1
           fi
 
   build-and-push:
@@ -106,8 +91,28 @@ jobs:
     env:
       DB_VERSION: ${{ vars.DB_VERSION }}
       AFP_VERSION: ${{ vars.AFP_VERSION }}
+      REDEPLOYMENT_ROOT: ${{ vars.REDEPLOYMENT_ROOT }}
+      HTMT_API_APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
+      DB_APP_NAME: ${{ vars.DB_APP_NAME }}
+      AFP_APP_NAME: ${{ vars.AFP_APP_NAME }}
+    outputs:
+      db_version: ${{ steps.pinned.outputs.db_version }}
+      afp_version: ${{ steps.pinned.outputs.afp_version }}
     steps:
+      - name: Require deploy and app-name vars (set-image-tag-on-server)
+        run: |
+          missing=""
+          [ -z "${REDEPLOYMENT_ROOT}" ] && missing="${missing} REDEPLOYMENT_ROOT"
+          [ -z "${HTMT_API_APP_NAME}" ] && missing="${missing} HTMT_API_APP_NAME"
+          [ -z "${DB_APP_NAME}" ] && missing="${missing} DB_APP_NAME"
+          [ -z "${AFP_APP_NAME}" ] && missing="${missing} AFP_APP_NAME"
+          if [ -n "$missing" ]; then
+            echo "ERROR: Set org-level (or this repo) Variables:$missing"
+            echo "Example: REDEPLOYMENT_ROOT=/var/webhook/redeployment, HTMT_API_APP_NAME=htmt-api, DB_APP_NAME=htmt-db, AFP_APP_NAME=afp (must match infrastructure)"
+            exit 1
+          fi
       - name: Require pinned DB and AFP image tags
+        id: pinned
         run: |
           missing=""
           [ -z "${DB_VERSION}" ] && missing="${missing} DB_VERSION"
@@ -118,15 +123,17 @@ jobs:
             exit 1
           fi
           echo "DB_VERSION=$DB_VERSION, AFP_VERSION=$AFP_VERSION"
+          echo "db_version=$DB_VERSION" >> "$GITHUB_OUTPUT"
+          echo "afp_version=$AFP_VERSION" >> "$GITHUB_OUTPUT"
 
   set-version-api:
     name: Set API version on server
-    needs: [build-and-push, determine-version]
+    needs: [build-and-push, determine-version, check-pinned-tags]
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
       tag: ${{ needs.determine-version.outputs.image_tag }}
-      app_name: htmt-api
+      app_name: ${{ vars.HTMT_API_APP_NAME }}
     secrets: inherit
 
   set-version-db:
@@ -135,8 +142,8 @@ jobs:
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
-      tag: ${{ vars.DB_VERSION }}
-      app_name: htmt-db
+      tag: ${{ needs.check-pinned-tags.outputs.db_version }}
+      app_name: ${{ vars.DB_APP_NAME }}
     secrets: inherit
 
   set-version-afp:
@@ -145,8 +152,8 @@ jobs:
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
-      tag: ${{ vars.AFP_VERSION }}
-      app_name: afp
+      tag: ${{ needs.check-pinned-tags.outputs.afp_version }}
+      app_name: ${{ vars.AFP_APP_NAME }}
     secrets: inherit
 
   redeploy-webhook-call:
