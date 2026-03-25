@@ -120,7 +120,7 @@ jobs:
           [ -n "${DB_SUPERUSER_PASSWORD}" ] && printf 'POSTGRES_PASSWORD=%s\n' "$(printf '%s' "$DB_SUPERUSER_PASSWORD" | tr -d '\n\r')" >> fragment.env
 
       - name: Upload fragment artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5.0.0
         with:
           name: sync-env-fragment-${{ matrix.sync_env }}
           path: fragment.env
