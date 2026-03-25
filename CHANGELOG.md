@@ -59,6 +59,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v2.2.2] - 2026-03-25
+
 ### Security
 
 - **Startup and request logging**: OAuth client ids are no longer printed in full by default (masked prefix/suffix); redirect URIs and scopes are summarized unless **`DJANGO_VERBOSE_STARTUP=true`**. **`load_required_bool_env_var`** no longer echoes the raw string before parsing. If **`APP_IS_EXPOSED`** and **`DEBUG`** are both true, a **security warning** is printed. Removed debug **`print`** from **`SpotifyLibTrackViewSet`**; **`TreeField`** criteria validation uses **`logging.debug`**; Spotify artist batch errors use **`logger.exception`**.
