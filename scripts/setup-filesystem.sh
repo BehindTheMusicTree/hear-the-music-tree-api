@@ -134,10 +134,23 @@ setup_gunicorn_log () {
 }
 
 setup_media_dirs () {
-    if [ "${FILE_UPLOAD_ENABLED:-}" = "false" ]; then
-        log_with_script_prefixe "FILE_UPLOAD_ENABLED is false. Skipping media directories."
-        return
+    # Match settings.py: FILE_UPLOAD_ENABLED must be set (true or false); no defaults.
+    if [ -z "${FILE_UPLOAD_ENABLED:-}" ]; then
+        log_with_script_prefixe "ERROR: FILE_UPLOAD_ENABLED must be set to 'true' or 'false'." >&2
+        exit 1
     fi
+    _fue=$(printf '%s' "$FILE_UPLOAD_ENABLED" | tr '[:upper:]' '[:lower:]')
+    case "$_fue" in
+        false)
+            log_with_script_prefixe "FILE_UPLOAD_ENABLED is false. Skipping media directories."
+            return
+            ;;
+        true) ;;
+        *)
+            log_with_script_prefixe "ERROR: FILE_UPLOAD_ENABLED must be 'true' or 'false' (got: ${FILE_UPLOAD_ENABLED})." >&2
+            exit 1
+            ;;
+    esac
     if [ -z "${TMP_UPLOADED_FILES:-}" ]; then
         log_with_script_prefixe "ERROR: TMP_UPLOADED_FILES must be set when FILE_UPLOAD_ENABLED is true." >&2
         exit 1

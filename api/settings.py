@@ -819,8 +819,11 @@ def setup_media_dirs():
     global LIBRARIES_DIR
     LIBRARIES_DIR = MEDIA_ROOT / LIBRARIES_DIR_NAME
     print_django("LIBRARIES_DIR: " + str(LIBRARIES_DIR))
-    if not LIBRARIES_DIR.exists():
-        raise EnvironmentError(f"The libraries directory {LIBRARIES_DIR} does not exist.")
+    if not LIBRARIES_DIR.is_dir():
+        raise EnvironmentError(
+            f"The libraries directory {LIBRARIES_DIR} does not exist. "
+            "Run filesystem setup (e.g. scripts/setup-filesystem.sh in the container entrypoint) before starting Django."
+        )
     print_django("The LIBRARIES_DIR directory exists.")
     print_django("Media variables are set.")
 

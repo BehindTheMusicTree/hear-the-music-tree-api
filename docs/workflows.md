@@ -85,13 +85,13 @@ Builds the app Docker image and pushes it to Docker Hub.
 
 **File:** `.github/workflows/sync-env-to-server.yml`
 
-Manually sync app env vars and secrets to the server `scripts/.env` for **both TEST and PROD** in one run. Calls the reusable workflow from **BehindTheMusicTree/github-workflows** twice (once per environment). **Jobs:** **build-fragment** (matrix: TEST and PROD; build fragment per env, upload artifact), **sync-test**, **sync-prod** (each calls shared workflow with the corresponding fragment). No workflow_dispatch input; one run syncs both environments.
+Manually sync app env vars and secrets for **both STAGING and PROD** in one run. The shared workflow uploads the fragment to **`/tmp/sync-env-<HTMT_API_APP_NAME>-<env>.env`** on the VPS and merges into **`scripts/.env`**; **`generate-docker-compose.sh` requires that file** for secrets and API feature flags. **Infrastructure transfer does not set** `FILE_UPLOAD_ENABLED`, `SPOTIFY_ENABLED`, `GOOGLE_OAUTH_ENABLED`, `MUSICBRAINZ_LOOKUP_ENABLED`, or `HTMT_API_AFP_ENABLED`—this workflow is their source of truth. **Jobs:** **build-fragment** (matrix: STAGING and PROD), **sync-staging**, **sync-prod**. No `workflow_dispatch` inputs; one run syncs both environments.
 
 **Triggers:** **workflow_dispatch** (Actions → Sync env to server → Run workflow). No inputs.
 
 **Secrets (this repo, per environment):** `DB_APP_DB_NAME`, `DB_APP_USERNAME`, `DB_APP_USER_PASSWORD`, `DB_SUPERUSER_PASSWORD`, `DEMO_PASSWORD`, `DEMO_USERNAME`, `DJANGO_SECRET_KEY`, `GOOGLE_CLIENT_SECRET`, `SPOTIFY_CLIENT_SECRET`, `SUPERADMIN_PASSWORD`, `SUPERADMIN_USERNAME`, `TMTA_USERNAME`, plus deploy secrets `SERVER_DEPLOY_USERNAME`, `SERVER_DEPLOY_SSH_PRIVATE_KEY`.
 
-**Variables (this repo or org):** `VPS_IP`, `REDEPLOYMENT_ROOT`, `SYNC_ENV_REMOTE_FILENAME_PREFIX_BASE`, `HTMT_API_APP_NAME`, `DEMO_EMAIL`, `SUPERADMIN_EMAIL`, `SPOTIFY_CLIENT_ID_TEST`, `SPOTIFY_CLIENT_ID_PROD`, `GOOGLE_CLIENT_ID_TEST`, `GOOGLE_CLIENT_ID_PROD`, **`SPOTIFY_SCOPES`** (space-separated Spotify scopes; required when Spotify is enabled—see `env/dev/.env.dev.example`).
+**Variables (this repo or org, per GitHub Environment):** Feature flags (**each `true` or `false`**): `FILE_UPLOAD_ENABLED` (see `api/settings.py` / `TMP_UPLOADED_FILES`), `SPOTIFY_ENABLED`, `GOOGLE_OAUTH_ENABLED`, `MUSICBRAINZ_LOOKUP_ENABLED`, `HTMT_API_AFP_ENABLED` (maps to `AFP_ENABLED` in the API container via compose). Also: `VPS_IP`, `REDEPLOYMENT_ROOT`, `SYNC_ENV_REMOTE_FILENAME_PREFIX_BASE`, `HTMT_API_APP_NAME`, `DEMO_EMAIL`, `SUPERADMIN_EMAIL`, `SPOTIFY_CLIENT_ID_TEST`, `SPOTIFY_CLIENT_ID_PROD`, `GOOGLE_CLIENT_ID_TEST`, `GOOGLE_CLIENT_ID_PROD`, **`SPOTIFY_SCOPES`** (required when `SPOTIFY_ENABLED=true`; see `env/dev/.env.dev.example`).
 
 ## Static Files
 
