@@ -899,14 +899,15 @@ else:
     # FILE_UPLOAD_TEMP_DIR is a Django constant, do not rename.
     FILE_UPLOAD_TEMP_DIR = os.getenv('TMP_UPLOADED_FILES')
     print_django(f"FILE_UPLOAD_TEMP_DIR: {FILE_UPLOAD_TEMP_DIR}")
-    if not FILE_UPLOAD_TEMP_DIR:
-        print_django("TMP_UPLOADED_FILES/FILE_UPLOAD_TEMP_DIR is not set. The app will not handle media files.")
-        FILE_UPLOAD_ENABLED = False
+
+    FILE_UPLOAD_ENABLED = load_required_bool_env_var('FILE_UPLOAD_ENABLED')
+
+    if not FILE_UPLOAD_ENABLED:
+        print_django("FILE_UPLOAD_ENABLED is false. The app will not handle media files.")
         METADATA_SESSION_DIR = None
         if os.getenv('AFP_ENABLED', '').lower() == 'true':
             raise EnvironmentError(
-                "The AFP_ENABLED env variable cannot be true when "
-                "TMP_UPLOADED_FILES/FILE_UPLOAD_TEMP_DIR is not set."
+                "The AFP_ENABLED env variable cannot be true when FILE_UPLOAD_ENABLED is false."
             )
         for var_name in ['AFP_PORT',
                          'AFP_CONTAINER_NAME',
@@ -914,12 +915,17 @@ else:
                          'ACOUSTID_API_KEY',
                          'MEDIA_DIR',
                          'METADATA_SESSION_DIR',
-                         'LIBRARIES_DIR_NAME']:
+                         'LIBRARIES_DIR_NAME',
+                         'TMP_UPLOADED_FILES']:
             if os.getenv(var_name):
-                raise EnvironmentError(f"The {var_name} env variable cannot be set as \
-                    TMP_UPLOADED_FILES/FILE_UPLOAD_TEMP_DIR is not.")
+                raise EnvironmentError(
+                    f"The {var_name} env variable cannot be set as FILE_UPLOAD_ENABLED is false."
+                )
     else:
-        FILE_UPLOAD_ENABLED = True
+        if not FILE_UPLOAD_TEMP_DIR:
+            raise EnvironmentError(
+                "TMP_UPLOADED_FILES/FILE_UPLOAD_TEMP_DIR must be set when FILE_UPLOAD_ENABLED is true."
+            )
         METADATA_SESSION_DIR = Path(load_required_str_env_var("METADATA_SESSION_DIR")).resolve()
         setup_media_dirs()
         if AFP_ENABLED:  # pyright: ignore[reportUnboundVariable]
