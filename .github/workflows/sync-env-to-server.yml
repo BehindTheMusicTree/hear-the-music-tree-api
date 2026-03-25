@@ -1,6 +1,7 @@
 # Sync app env to server via shared workflow (BehindTheMusicTree/github-workflows).
 # Builds fragment per env (STAGING/PROD), uploads artifact, then calls reusable sync-env-to-server.
 # Writes /tmp/sync-env-<app>-<env>.env (required by infra redeploy) and merges into scripts/.env.
+# SPOTIFY_ENABLED, GOOGLE_OAUTH_ENABLED, MUSICBRAINZ_LOOKUP_ENABLED, HTMT_API_AFP_ENABLED are hardcoded true; FILE_UPLOAD_ENABLED from vars.
 name: Sync env to server
 
 on:
@@ -22,13 +23,9 @@ jobs:
             sync_env: prod
     environment: ${{ matrix.environment }}
     steps:
-      - name: Check required vars and secrets
+      - name: Validate vars and build env fragment
         env:
           FILE_UPLOAD_ENABLED: ${{ vars.FILE_UPLOAD_ENABLED }}
-          SPOTIFY_ENABLED: ${{ vars.SPOTIFY_ENABLED }}
-          GOOGLE_OAUTH_ENABLED: ${{ vars.GOOGLE_OAUTH_ENABLED }}
-          MUSICBRAINZ_LOOKUP_ENABLED: ${{ vars.MUSICBRAINZ_LOOKUP_ENABLED }}
-          AFP_ENABLED: ${{ vars.AFP_ENABLED }}
           VPS_IP: ${{ vars.VPS_IP }}
           REDEPLOYMENT_ROOT: ${{ vars.REDEPLOYMENT_ROOT }}
           HTMT_API_APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
@@ -56,26 +53,45 @@ jobs:
           TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
         run: |
           if [ "${{ matrix.environment }}" = "STAGING" ]; then
-            SPOTIFY_CLIENT_ID="${SPOTIFY_CLIENT_ID_TEST}"
-            GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID_TEST}"
+            export SPOTIFY_CLIENT_ID="${SPOTIFY_CLIENT_ID_TEST}"
+            export GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID_TEST}"
           else
-            SPOTIFY_CLIENT_ID="${SPOTIFY_CLIENT_ID_PROD}"
-            GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID_PROD}"
+            export SPOTIFY_CLIENT_ID="${SPOTIFY_CLIENT_ID_PROD}"
+            export GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID_PROD}"
           fi
-          export SPOTIFY_CLIENT_ID GOOGLE_CLIENT_ID SPOTIFY_SCOPES
-          for _b in FILE_UPLOAD_ENABLED SPOTIFY_ENABLED GOOGLE_OAUTH_ENABLED MUSICBRAINZ_LOOKUP_ENABLED AFP_ENABLED; do
-            eval "_raw=\"\${${_b}}\""
-            _lc=$(printf '%s' "${_raw}" | tr '[:upper:]' '[:lower:]')
-            case "${_lc}" in
-              true|false) ;;
-              *)
-                echo "ERROR: ${_b} must be 'true' or 'false' (set Variable ${_b} on each GitHub Environment: STAGING / PROD)."
-                exit 1
-                ;;
-            esac
-          done
+          export SPOTIFY_SCOPES
+          # Integration services: always on in deployed envs (compose + Django expect explicit booleans).
+          : > fragment.env
+          printf '%s\n' \
+            'SPOTIFY_ENABLED=true' \
+            'GOOGLE_OAUTH_ENABLED=true' \
+            'MUSICBRAINZ_LOOKUP_ENABLED=true' \
+            'HTMT_API_AFP_ENABLED=true' >> fragment.env
+          # FILE_UPLOAD_ENABLED: repo/environment Variable (true or false).
+          _b=FILE_UPLOAD_ENABLED
+          eval "_raw=\"\${${_b}}\""
+          _raw="${_raw#"${_raw%%[![:space:]]*}"}"
+          _raw="${_raw%"${_raw##*[![:space:]]}"}"
+          _lc=$(printf '%s' "${_raw}" | tr '[:upper:]' '[:lower:]')
+          case "${_lc}" in
+            \"*\") _lc="${_lc#\"}"; _lc="${_lc%\"}" ;;
+            \'*\') _lc="${_lc#\'}"; _lc="${_lc%\'}" ;;
+          esac
+          case "${_lc}" in
+            true|false)
+              export FILE_UPLOAD_ENABLED="${_lc}"
+              ;;
+            "")
+              echo "ERROR: FILE_UPLOAD_ENABLED is empty. Add Variable FILE_UPLOAD_ENABLED = true or false under Settings → Secrets and variables → Actions (environment ${{ matrix.environment }} or repo/org scope)."
+              exit 1
+              ;;
+            *)
+              echo "ERROR: FILE_UPLOAD_ENABLED must be 'true' or 'false' after trim/normalize (got: $(printf '%s' "${_raw}" | head -c 80))."
+              exit 1
+              ;;
+          esac
           required=(
-            FILE_UPLOAD_ENABLED SPOTIFY_ENABLED GOOGLE_OAUTH_ENABLED MUSICBRAINZ_LOOKUP_ENABLED AFP_ENABLED
+            FILE_UPLOAD_ENABLED
             VPS_IP REDEPLOYMENT_ROOT HTMT_API_APP_NAME
             DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID
             SERVER_DEPLOY_USERNAME SERVER_DEPLOY_SSH_PRIVATE_KEY
@@ -93,61 +109,19 @@ jobs:
             exit 1
           fi
           echo "All required vars and secrets are set."
-
-      - name: Build env fragment
-        env:
-          DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
-          DB_APP_USERNAME: ${{ secrets.DB_APP_USERNAME }}
-          DB_APP_USER_PASSWORD: ${{ secrets.DB_APP_USER_PASSWORD }}
-          DB_SUPERUSER_PASSWORD: ${{ secrets.DB_SUPERUSER_PASSWORD }}
-          DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
-          DEMO_USERNAME: ${{ secrets.DEMO_USERNAME }}
-          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
-          ACOUSTID_API_KEY: ${{ secrets.ACOUSTID_API_KEY }}
-          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
-          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
-          SUPERADMIN_PASSWORD: ${{ secrets.SUPERADMIN_PASSWORD }}
-          SUPERADMIN_USERNAME: ${{ secrets.SUPERADMIN_USERNAME }}
-          TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
-          DEMO_EMAIL: ${{ vars.DEMO_EMAIL }}
-          SUPERADMIN_EMAIL: ${{ vars.SUPERADMIN_EMAIL }}
-          SPOTIFY_CLIENT_ID_TEST: ${{ vars.SPOTIFY_CLIENT_ID_TEST }}
-          SPOTIFY_CLIENT_ID_PROD: ${{ vars.SPOTIFY_CLIENT_ID_PROD }}
-          SPOTIFY_SCOPES: ${{ vars.SPOTIFY_SCOPES }}
-          GOOGLE_CLIENT_ID_TEST: ${{ vars.GOOGLE_CLIENT_ID_TEST }}
-          GOOGLE_CLIENT_ID_PROD: ${{ vars.GOOGLE_CLIENT_ID_PROD }}
-          FILE_UPLOAD_ENABLED: ${{ vars.FILE_UPLOAD_ENABLED }}
-          SPOTIFY_ENABLED: ${{ vars.SPOTIFY_ENABLED }}
-          GOOGLE_OAUTH_ENABLED: ${{ vars.GOOGLE_OAUTH_ENABLED }}
-          MUSICBRAINZ_LOOKUP_ENABLED: ${{ vars.MUSICBRAINZ_LOOKUP_ENABLED }}
-          AFP_ENABLED: ${{ vars.AFP_ENABLED }}
-        run: |
-          if [ "${{ matrix.environment }}" = "STAGING" ]; then
-            export SPOTIFY_CLIENT_ID="${SPOTIFY_CLIENT_ID_TEST}"
-            export GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID_TEST}"
-          else
-            export SPOTIFY_CLIENT_ID="${SPOTIFY_CLIENT_ID_PROD}"
-            export GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID_PROD}"
-          fi
-          export SPOTIFY_SCOPES
           for key in DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD DB_SUPERUSER_PASSWORD \
             DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY ACOUSTID_API_KEY GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET \
             SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME DEMO_EMAIL SUPERADMIN_EMAIL \
             SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID \
-            FILE_UPLOAD_ENABLED SPOTIFY_ENABLED GOOGLE_OAUTH_ENABLED MUSICBRAINZ_LOOKUP_ENABLED AFP_ENABLED; do
+            FILE_UPLOAD_ENABLED; do
             val="${!key}"
             val=$(printf '%s' "$val" | tr -d '\n\r')
-            case "$key" in
-              FILE_UPLOAD_ENABLED|SPOTIFY_ENABLED|GOOGLE_OAUTH_ENABLED|MUSICBRAINZ_LOOKUP_ENABLED|AFP_ENABLED)
-                val=$(printf '%s' "$val" | tr '[:upper:]' '[:lower:]')
-                ;;
-            esac
             [ -n "${val}" ] && printf '%s=%s\n' "$key" "$val" >> fragment.env
           done
           [ -n "${DB_SUPERUSER_PASSWORD}" ] && printf 'POSTGRES_PASSWORD=%s\n' "$(printf '%s' "$DB_SUPERUSER_PASSWORD" | tr -d '\n\r')" >> fragment.env
 
       - name: Upload fragment artifact
-        uses: actions/upload-artifact@v6.0.0
+        uses: actions/upload-artifact@v5.0.0
         with:
           name: sync-env-fragment-${{ matrix.sync_env }}
           path: fragment.env
