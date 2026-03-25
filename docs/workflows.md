@@ -61,6 +61,8 @@ Single publish workflow: collect static files, build Docker image, set image tag
 
 **Environment:** **TEST** for main push and prerelease/dev tags (staging). **PROD** for release tags (production). DB and AFP image tags must be pinned in repo variables.
 
+**Variables (org-level pool, same as Sync env):** `REDEPLOYMENT_ROOT` (e.g. `/var/webhook/redeployment`). Set once at the **organization** (Settings → Variables) so the infrastructure repo and all app repos that call set-image-tag-on-server use the same path. If unset, the tag file path is wrong and the step fails.
+
 **Versioning:** Main push uses `VERSION` file and tag `staging`. Tag push uses tag version; `workflow_call` without a tag uses latest git tag.
 
 **Migrations:** Not run by the workflow. The API container entrypoint runs `migrate` after the database is ready.
@@ -83,13 +85,13 @@ Builds the app Docker image and pushes it to Docker Hub.
 
 **File:** `.github/workflows/sync-env-to-server.yml`
 
-Manually sync app env vars and secrets to the server `scripts/.env` (test and prod). Only the listed keys are updated; other keys in `.env` (set by the infrastructure repo) are unchanged.
+Manually sync app env vars and secrets for **both STAGING and PROD** in one run. The shared workflow uploads the fragment to **`/tmp/sync-env-<HTMT_API_APP_NAME>-<env>.env`** on the VPS and merges into **`scripts/.env`**; **`generate-docker-compose.sh` requires that file** for secrets and API flags. **`FILE_UPLOAD_ENABLED`**, **`SPOTIFY_ENABLED`**, **`GOOGLE_OAUTH_ENABLED`**, **`MUSICBRAINZ_LOOKUP_ENABLED`**, and **`HTMT_API_AFP_ENABLED`** are **hardcoded `true`** in this workflow (no GitHub Variables). **Jobs:** **build-fragment** (matrix: STAGING and PROD), **sync-staging**, **sync-prod**. No `workflow_dispatch` inputs; one run syncs both environments.
 
-**Triggers:** **workflow_dispatch** (Actions → Sync env to server → Run workflow).
+**Triggers:** **workflow_dispatch** (Actions → Sync env to server → Run workflow). No inputs.
 
-**Secrets (this repo):** `DB_APP_DB_NAME`, `DB_APP_USERNAME`, `DB_APP_USER_PASSWORD`, `DB_SUPERUSER_PASSWORD`, `DEMO_PASSWORD`, `DEMO_USERNAME`, `DJANGO_SECRET_KEY`, `GOOGLE_CLIENT_SECRET`, `SPOTIFY_CLIENT_SECRET`, `SUPERADMIN_PASSWORD`, `SUPERADMIN_USERNAME`, `TMTA_USERNAME`, plus deploy secrets `SERVER_DEPLOY_USERNAME`, `SERVER_DEPLOY_SSH_PRIVATE_KEY`.
+**Secrets (this repo, per environment):** `DB_APP_DB_NAME`, `DB_APP_USERNAME`, `DB_APP_USER_PASSWORD`, `DB_SUPERUSER_PASSWORD`, `DEMO_PASSWORD`, `DEMO_USERNAME`, `DJANGO_SECRET_KEY`, `GOOGLE_CLIENT_SECRET`, `SPOTIFY_CLIENT_SECRET`, `SUPERADMIN_PASSWORD`, `SUPERADMIN_USERNAME`, `TMTA_USERNAME`, plus deploy secrets `SERVER_DEPLOY_USERNAME`, `SERVER_DEPLOY_SSH_PRIVATE_KEY`.
 
-**Variables (this repo):** `DEMO_EMAIL`, `SUPERADMIN_EMAIL`, `FILE_UPLOAD_ENABLED`, and deploy vars `DOMAIN_NAME`, `WEBHOOK_DIR`, `WEBHOOK_REDEPLOYMENT_DIR_NAME_BASE`.
+**Variables (this repo or org, per GitHub Environment):** `VPS_IP`, `REDEPLOYMENT_ROOT`, `SYNC_ENV_REMOTE_FILENAME_PREFIX_BASE`, `HTMT_API_APP_NAME`, `DEMO_EMAIL`, `SUPERADMIN_EMAIL`, `SPOTIFY_CLIENT_ID_TEST`, `SPOTIFY_CLIENT_ID_PROD`, `GOOGLE_CLIENT_ID_TEST`, `GOOGLE_CLIENT_ID_PROD`, **`SPOTIFY_SCOPES`** (see `env/dev/.env.dev.example`). The compose-required API booleans above are **not** Variables—they are written as **`true`** in the workflow. Locally and in CI you still set **`FILE_UPLOAD_ENABLED`** in `env/.env` as needed (see `api/settings.py` / `TMP_UPLOADED_FILES`).
 
 ## Static Files
 

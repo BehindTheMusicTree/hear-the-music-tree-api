@@ -1,6 +1,10 @@
+import logging
+
 from django.core.exceptions import ObjectDoesNotExist
 
 from api.model.spotify_resource.children.artist.SpotifyArtist import SpotifyArtist
+
+logger = logging.getLogger(__name__)
 from api.utils.spotify_api.SpotifyClient import get_spotify_client
 from api.utils.spotify_api.ApiFields import ApiFields
 
@@ -33,8 +37,8 @@ class SpotifyApiArtistManager:
                     for artist in results['artists']:
                         if artist:  # Skip any None results
                             artist_details[artist['id']] = artist
-            except Exception as e:
-                print(f"Error fetching artist batch: {str(e)}")
+            except Exception:
+                logger.exception("Error fetching Spotify artist batch")
                 # Continue with next batch even if one fails
 
         return artist_details

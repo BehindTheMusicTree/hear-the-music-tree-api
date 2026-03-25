@@ -44,20 +44,6 @@ RUN apt update && \
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
-RUN mkdir -p "${PROJECT_DIR}${STATIC_FILES_INTERNAL}" && \
-    ENV=collect_static \
-    STATIC_FILES="${PROJECT_DIR}${STATIC_FILES_INTERNAL}" \
-    STATIC_FILES_URL="${STATIC_FILES_URL}" \
-    APP_NAME="${APP_NAME}" \
-    APP_IS_EXPOSED=false \
-    DEBUG=false \
-    DB_IS_NEEDED=false \
-    AFP_ENABLED=false \
-    MUSICBRAINZ_LOOKUP_ENABLED=false \
-    SPOTIFY_ENABLED=false \
-    GOOGLE_OAUTH_ENABLED=false \
-    python manage.py collectstatic --noinput
-
 RUN chmod +x scripts/entrypoint.sh
 
 # Set the entrypoint using shell form to allow environment variable expansion
