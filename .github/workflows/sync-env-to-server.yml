@@ -1,5 +1,5 @@
 # Sync app env to server via shared workflow (BehindTheMusicTree/github-workflows).
-# Builds fragment per env (TEST/PROD), uploads artifact, then calls reusable sync-env-to-server.
+# Builds fragment per env (STAGING/PROD), uploads artifact, then calls reusable sync-env-to-server.
 # Writes /tmp/sync-env-<app>-<env>.env (required by infra redeploy) and merges into scripts/.env.
 name: Sync env to server
 
@@ -16,8 +16,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - environment: TEST
-            sync_env: test
+          - environment: STAGING
+            sync_env: staging
           - environment: PROD
             sync_env: prod
     environment: ${{ matrix.environment }}
@@ -50,7 +50,7 @@ jobs:
           SUPERADMIN_USERNAME: ${{ secrets.SUPERADMIN_USERNAME }}
           TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
         run: |
-          if [ "${{ matrix.environment }}" = "TEST" ]; then
+          if [ "${{ matrix.environment }}" = "STAGING" ]; then
             SPOTIFY_CLIENT_ID="${SPOTIFY_CLIENT_ID_TEST}"
             GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID_TEST}"
           else
@@ -101,7 +101,7 @@ jobs:
           GOOGLE_CLIENT_ID_PROD: ${{ vars.GOOGLE_CLIENT_ID_PROD }}
           FILE_UPLOAD_ENABLED: "true"
         run: |
-          if [ "${{ matrix.environment }}" = "TEST" ]; then
+          if [ "${{ matrix.environment }}" = "STAGING" ]; then
             export SPOTIFY_CLIENT_ID="${SPOTIFY_CLIENT_ID_TEST}"
             export GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID_TEST}"
           else
@@ -125,13 +125,13 @@ jobs:
           name: sync-env-fragment-${{ matrix.sync_env }}
           path: fragment.env
 
-  sync-test:
-    name: Sync env (test)
+  sync-staging:
+    name: Sync env (staging)
     needs: [build-fragment]
     uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-server.yml@main
     with:
-      sync_env: test
-      fragment_artifact: sync-env-fragment-test/fragment.env
+      sync_env: staging
+      fragment_artifact: sync-env-fragment-staging/fragment.env
       app_name: ${{ vars.HTMT_API_APP_NAME }}
     secrets: inherit
 
