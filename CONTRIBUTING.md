@@ -798,27 +798,22 @@ Quick release process:
 
 3. **On the release branch, prepare the release:**
 
-   - Bump the version with [bump2version](https://github.com/c4urself/bump2version) (patch / minor / major):
+   - **Automated (recommended):** from the repo root, with `bump2version` on your PATH (`pip install -r requirements.txt` in your venv):
      ```bash
-     bump2version patch   # 2.1.0 -> 2.1.1
-     # or: bump2version minor   # 2.1.0 -> 2.2.0
-     # or: bump2version major   # 2.1.0 -> 3.0.0
+     python3 scripts/prepare_release_bump.py patch   # or: minor | major
      ```
-     This updates `VERSION`, `package.json`, `schema.yml`, and `CHANGELOG.md` (moves `[Unreleased]` to the new version and adds a fresh `[Unreleased]` section). Then run:
-     ```bash
-     python scripts/fix_changelog_after_bump.py
-     ```
-     to set the release date and fix the Unreleased heading. Commit the changes.
+     This sets the live `## [Unreleased]  <!-- release -->` marker (only the heading **after** the maintainer Note—not the fenced example), runs [bump2version](https://github.com/c4urself/bump2version), runs `python scripts/fix_changelog_after_bump.py`, and adds an empty `## [Unreleased]` above the new version section. By default it passes `--allow-dirty` to bump2version so you can commit once at the end; use `--no-allow-dirty` if you need a clean tree.
+
+   - **Manual sequence** (same end state): set the live heading after the Note to `## [Unreleased]  <!-- release -->`, then `bump2version patch` (or minor/major; add `--allow-dirty` if needed), then `python scripts/fix_changelog_after_bump.py`, then ensure an empty `## [Unreleased]` sits above `## [vX.Y.Z] - …`. `.bumpversion.cfg` only replaces that one changelog line; everything below it until the next `## [` belongs to that release.
 
    - Review and finalize `CHANGELOG.md`:
-     - Review the new version entry and the content moved from `[Unreleased]`
+     - Review the new version entry and the content that was under `[Unreleased]`
      - Review and consolidate entries if needed
-     - Leave the new `[Unreleased]` section empty (or with a placeholder) for future PRs
 
    - Make any final bug fixes or adjustments on the release branch
    - Ensure all tests pass: `pytest`
 
-4. **Merge release branch into `main`**
+4. **Merge release branch into `main`** (via PR from `release/*` to `main`, or locally if your process allows):
 
    ```bash
    git checkout main

@@ -139,11 +139,12 @@ Documentation changes should be grouped under the **Documentation** category, no
 
 ## Release Process
 
-During releases, maintainers will:
-1. Move entries from `[Unreleased]` to a versioned section (e.g., `## [v0.2.8] - 2025-01-15`)
-2. Review and consolidate related entries
-3. Ensure all entries follow the format guidelines
-4. Update version numbers and dates
+Follow **CONTRIBUTING.md §7 (Releasing for maintainers)** (Git Flow: `release/*` branch). Prefer **`python3 scripts/prepare_release_bump.py`** `patch`|`minor`|`major`, which applies the `## [Unreleased]  <!-- release -->` marker (see `.bumpversion.cfg`), runs **bump2version**, **`scripts/fix_changelog_after_bump.py`**, and inserts an empty `## [Unreleased]` for the next cycle. Contributors use plain `## [Unreleased]` until the maintainer runs the script.
+
+During releases, maintainers also:
+1. Review and consolidate entries moved under the new version
+2. Ensure all entries follow the format guidelines
+3. Keep `VERSION`, `package.json`, `schema.yml`, and tags aligned (use `v` prefix on git tags)
 
 ## Checklist
 
