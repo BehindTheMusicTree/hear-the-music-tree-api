@@ -65,15 +65,15 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Fixed
 
-- **Sync env to server**: Single step validates and builds `fragment.env`; integration `*_ENABLED` keys are hardcoded `true` in the workflow YAML.
+- **Sync env to server**: Single step validates and builds `fragment.env`; **`FILE_UPLOAD_ENABLED`** and the other compose-required API `*_ENABLED` keys are hardcoded **`true`** in the workflow YAML.
 
 - **Container setup-filesystem: Django log paths**: `DJANGO_LOG_DIR` is `/var/log/django` (no trailing slash) in deploy; the script concatenated `${DJANGO_LOG_DIR}${filename}`, producing `/var/log/djangorequests_debug.log` instead of `/var/log/django/requests_debug.log`. Django log and Gunicorn log file paths now join with `${VAR%/}/filename`.
 
 ### Changed
 
-- **`FILE_UPLOAD_ENABLED` required at runtime**: No inference from `TMP_UPLOADED_FILES`. Django and `scripts/setup-filesystem.sh` fail fast if it is unset or not `true`/`false`. Set it in local `env/.env` (see `env/dev/.env.dev.example`) and in GitHub Variables for **Sync env to server**.
+- **`FILE_UPLOAD_ENABLED` required at runtime**: No inference from `TMP_UPLOADED_FILES`. Django and `scripts/setup-filesystem.sh` fail fast if it is unset or not `true`/`false`. Set it in local `env/.env` (see `env/dev/.env.dev.example`). **Sync env to server** hardcodes **`FILE_UPLOAD_ENABLED=true`** (and the other compose-required API booleans) in the server fragment.
 
-- **Sync env: service flags hardcoded**: **Sync env to server** always writes **`SPOTIFY_ENABLED=true`**, **`GOOGLE_OAUTH_ENABLED=true`**, **`MUSICBRAINZ_LOOKUP_ENABLED=true`**, **`HTMT_API_AFP_ENABLED=true`**; only **`FILE_UPLOAD_ENABLED`** remains a GitHub Variable (`true`/`false` per STAGING/PROD).
+- **Sync env: compose API booleans hardcoded**: **Sync env to server** always writes **`FILE_UPLOAD_ENABLED=true`**, **`SPOTIFY_ENABLED=true`**, **`GOOGLE_OAUTH_ENABLED=true`**, **`MUSICBRAINZ_LOOKUP_ENABLED=true`**, **`HTMT_API_AFP_ENABLED=true`** (no GitHub Variables for those keys).
 
 - **Entrypoint: collectstatic at runtime**: When `STATIC_FILES` is set, the container runs `manage.py collectstatic --noinput` on startup (after Django check, before migrate). The static root (e.g. `/app/static`) is then populated so nginx or the app can serve files without a separate build-step; same image works across envs.
 - **Sync env to server**: Fragment includes **`SPOTIFY_SCOPES`** from GitHub Variable `SPOTIFY_SCOPES` (required). Use the same scopes as in `env/dev/.env.dev.example` unless you need fewer. Redeploy compose fails if Spotify is enabled and scopes are absent.
@@ -93,10 +93,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Added
 
-- **Sync env to server workflow**: Manually triggerable workflow `sync-env-to-server.yml` that merges app secrets and vars (DB_APP_*, DJANGO_SECRET_KEY, SUPERADMIN_*, DEMO_*, TMTA_USERNAME, OAuth secrets, FILE_UPLOAD_ENABLED, DEMO_EMAIL, SUPERADMIN_EMAIL) into the server `scripts/.env` for test and prod. Use after changing these in this repo so the server has the latest values without running the full infrastructure transfer. See [docs/workflows.md](docs/workflows.md#sync-env-to-server).
+- **Sync env to server workflow**: Manually triggerable workflow `sync-env-to-server.yml` that merges app secrets and vars (DB_APP_*, DJANGO_SECRET_KEY, SUPERADMIN_*, DEMO_*, TMTA_USERNAME, OAuth secrets, DEMO_EMAIL, SUPERADMIN_EMAIL) into the server `scripts/.env` for test and prod; compose-required API booleans are written in the workflow. Use after changing these in this repo so the server has the latest values without running the full infrastructure transfer. See [docs/workflows.md](docs/workflows.md#sync-env-to-server).
 - **Metadata session (no auth)**: Two-step public flow: (1) `POST /v1/audio/metadata/session/` — upload file (or URL), get metadata plus `session_token` and `session_expires_in_seconds` (900); (2) `POST /v1/audio/metadata/session-download/` — send token (header `X-Session-Token` or body) and optional metadata, receive file with tags written. Session valid 15 minutes; multi-use (download multiple times with different metadata). No auth, no DB persistence. Session and upload temp use separate env-defined dirs (`METADATA_SESSION_DIR`, `TMP_UPLOADED_FILES`). Frontend instructions in `docs/frontend/one_time_metadata_update.md`.
 - **Audio metadata (full)**: Optional request parameter `include_musicbrainz_analysis` for `POST /v1/audio/metadata/full/`. When `true`, the response includes `musicbrainz_raw_data` with raw AcoustID/MusicBrainz lookup result (or an error payload if fingerprinting or lookup fails). No authentication required; no DB records are created. Ephemeral fingerprinting and non-persisting MusicBrainz lookup added for this flow. Integration, unit, and e2e tests added.
-- **FILE_UPLOAD_ENABLED**: Explicit env flag for file upload / media. When `true`, setup-filesystem creates upload temp, metadata session, and media dirs; when `false`, skips them. Env example, CI, and deploy use the flag; CONTRIBUTING and deploy workflow require it in GitHub vars.
+- **FILE_UPLOAD_ENABLED**: Explicit env flag for file upload / media. When `true`, setup-filesystem creates upload temp, metadata session, and media dirs; when `false`, skips them. Env example, CI, and local builds use the flag; deployed stacks get **`true`** from **Sync env to server**.
 
 ### Changed
 
