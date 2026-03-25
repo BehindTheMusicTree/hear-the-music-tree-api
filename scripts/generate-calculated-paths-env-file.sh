@@ -131,7 +131,8 @@ calculate_media_dirs(){
 
         log_with_script_prefixe "Setting up libraries directory..."
         check_required_vars_are_set "LIBRARIES_DIR_NAME"
-        LIBRARIES_DIR="${MEDIA_DIR}${LIBRARIES_DIR_NAME}/"
+        # Join with a slash; naive ${MEDIA_DIR}${LIBRARIES_DIR_NAME} breaks when MEDIA_DIR has no trailing slash (e.g. /app/media + libraries → /app/medialibraries).
+        LIBRARIES_DIR="${MEDIA_DIR%/}/${LIBRARIES_DIR_NAME#/}/"
         log_with_script_prefixe "LIBRARIES_DIR is set to $LIBRARIES_DIR"
         echo "LIBRARIES_DIR=$LIBRARIES_DIR" >> "$CALCULATED_PATHS_ENV_FILE"
         log_with_script_prefixe "Libraries directory is set up."

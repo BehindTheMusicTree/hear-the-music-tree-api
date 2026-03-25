@@ -1,10 +1,12 @@
 # yaml-language-server: $schema=https://gist.githubusercontent.com/sargunv/c2ca41a08391cd06feaad97aece309e4/raw/empty-json-schema.json
-# Release: build image with version tag, set that tag on server (set-image-tag-on-server), then trigger redeploy webhook.
+# Single publish: main push or prerelease/dev tag → TEST + staging; release tag → PROD + production.
 name: Publish
 
 on:
   workflow_call:
+  workflow_dispatch:
   push:
+    branches: [main]
     tags:
       - 'v*'
 
@@ -13,59 +15,72 @@ jobs:
     name: Determine version
     runs-on: ubuntu-latest
     outputs:
-      app_version: ${{ steps.version.outputs.version }}
+      app_version: ${{ steps.version.outputs.app_version }}
+      image_tag: ${{ steps.version.outputs.image_tag }}
       env: ${{ steps.version.outputs.env }}
       deployment_environment: ${{ steps.version.outputs.deployment_environment }}
     steps:
       - name: Checkout code
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
-        uses: actions/checkout@v4
+        if: ${{ github.ref != 'refs/heads/main' && !startsWith(github.ref, 'refs/tags/') }}
+        uses: actions/checkout@v5.0.1
         with:
           fetch-depth: 0
 
-      - name: Extract version from tag
+      - name: Checkout for main branch
+        if: github.ref == 'refs/heads/main'
+        uses: actions/checkout@v5.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Set version and environment
         id: version
         run: |
-          if [[ "$GITHUB_REF" == refs/tags/* ]]; then
+          if [[ "$GITHUB_REF" == refs/tags/v* ]]; then
             VERSION="${GITHUB_REF#refs/tags/v}"
-            echo "Using version from tag ref: $VERSION"
-          else
-            git fetch --tags --force
-            LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-            if [ -z "$LATEST_TAG" ]; then
-              echo "Error: Cannot determine version. No tag provided."
+            if [[ "$VERSION" == *-* ]]; then
+              {
+                echo "app_version=$VERSION"
+                echo "image_tag=$VERSION"
+                echo "env=staging"
+                echo "deployment_environment=STAGING"
+              } >> "$GITHUB_OUTPUT"
+              echo "Prerelease/dev tag -> STAGING, staging"
+            else
+              {
+                echo "app_version=$VERSION"
+                echo "image_tag=$VERSION"
+                echo "env=prod"
+                echo "deployment_environment=PROD"
+              } >> "$GITHUB_OUTPUT"
+              echo "Release tag -> PROD, production"
+            fi
+          elif [[ "$GITHUB_REF" == refs/heads/main ]]; then
+            VERSION=$(tr -d '[:space:]' < VERSION)
+            if [ -z "$VERSION" ]; then
+              echo "Error: VERSION file is empty or missing."
               exit 1
             fi
-            VERSION="${LATEST_TAG#v}"
-            echo "Using latest tag version: $VERSION (from tag: $LATEST_TAG)"
-          fi
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
-          if [[ "$VERSION" == *-* ]]; then
-            echo "env=test" >> "$GITHUB_OUTPUT"
-            echo "deployment_environment=TEST" >> "$GITHUB_OUTPUT"
-            echo "Prerelease version -> env test"
+            {
+              echo "app_version=${VERSION}-staging"
+              echo "image_tag=staging"
+              echo "env=staging"
+              echo "deployment_environment=STAGING"
+            } >> "$GITHUB_OUTPUT"
+            echo "Main push -> STAGING, staging"
           else
-            echo "env=prod" >> "$GITHUB_OUTPUT"
-            echo "deployment_environment=PROD" >> "$GITHUB_OUTPUT"
-            echo "Release version -> env prod"
+            echo "Error: Unsupported ref '$GITHUB_REF'."
+            echo "Only 'main' branch or tags matching 'v*' are supported."
+            exit 1
           fi
-
-  static:
-    name: Static files
-    needs: [determine-version]
-    uses: ./.github/workflows/static-files.yml
-    with:
-      app_version: ${{ needs.determine-version.outputs.app_version }}
-    secrets: inherit
 
   build-and-push:
     name: Docker image
-    needs: [static, determine-version]
+    needs: [determine-version]
     uses: ./.github/workflows/build-and-push.yml
     with:
-      commit_hash: ${{ needs.static.outputs.collect_static_files_commit_hash }}
       app_version: ${{ needs.determine-version.outputs.app_version }}
-      image_tag: ${{ needs.determine-version.outputs.app_version }}
+      image_tag: ${{ needs.determine-version.outputs.image_tag }}
+      environment: ${{ needs.determine-version.outputs.deployment_environment }}
     secrets: inherit
 
   check-pinned-tags:
@@ -76,8 +91,28 @@ jobs:
     env:
       DB_VERSION: ${{ vars.DB_VERSION }}
       AFP_VERSION: ${{ vars.AFP_VERSION }}
+      REDEPLOYMENT_ROOT: ${{ vars.REDEPLOYMENT_ROOT }}
+      HTMT_API_APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
+      DB_APP_NAME: ${{ vars.DB_APP_NAME }}
+      AFP_APP_NAME: ${{ vars.AFP_APP_NAME }}
+    outputs:
+      db_version: ${{ steps.pinned.outputs.db_version }}
+      afp_version: ${{ steps.pinned.outputs.afp_version }}
     steps:
+      - name: Require deploy and app-name vars (set-image-tag-on-server)
+        run: |
+          missing=""
+          [ -z "${REDEPLOYMENT_ROOT}" ] && missing="${missing} REDEPLOYMENT_ROOT"
+          [ -z "${HTMT_API_APP_NAME}" ] && missing="${missing} HTMT_API_APP_NAME"
+          [ -z "${DB_APP_NAME}" ] && missing="${missing} DB_APP_NAME"
+          [ -z "${AFP_APP_NAME}" ] && missing="${missing} AFP_APP_NAME"
+          if [ -n "$missing" ]; then
+            echo "ERROR: Set org-level (or this repo) Variables:$missing"
+            echo "Example: REDEPLOYMENT_ROOT=/var/webhook/redeployment, HTMT_API_APP_NAME=htmt-api, DB_APP_NAME=htmt-db, AFP_APP_NAME=afp (must match infrastructure)"
+            exit 1
+          fi
       - name: Require pinned DB and AFP image tags
+        id: pinned
         run: |
           missing=""
           [ -z "${DB_VERSION}" ] && missing="${missing} DB_VERSION"
@@ -88,15 +123,17 @@ jobs:
             exit 1
           fi
           echo "DB_VERSION=$DB_VERSION, AFP_VERSION=$AFP_VERSION"
+          echo "db_version=$DB_VERSION" >> "$GITHUB_OUTPUT"
+          echo "afp_version=$AFP_VERSION" >> "$GITHUB_OUTPUT"
 
   set-version-api:
     name: Set API version on server
-    needs: [build-and-push, determine-version]
+    needs: [build-and-push, determine-version, check-pinned-tags]
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
-      tag: ${{ needs.determine-version.outputs.app_version }}
-      app_name: htmt-api
+      tag: ${{ needs.determine-version.outputs.image_tag }}
+      app_name: ${{ vars.HTMT_API_APP_NAME }}
     secrets: inherit
 
   set-version-db:
@@ -105,8 +142,8 @@ jobs:
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
-      tag: ${{ vars.DB_VERSION }}
-      app_name: htmt-db
+      tag: ${{ needs.check-pinned-tags.outputs.db_version }}
+      app_name: ${{ vars.DB_APP_NAME }}
     secrets: inherit
 
   set-version-afp:
@@ -115,8 +152,8 @@ jobs:
     uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
     with:
       env: ${{ needs.determine-version.outputs.env }}
-      tag: ${{ vars.AFP_VERSION }}
-      app_name: afp
+      tag: ${{ needs.check-pinned-tags.outputs.afp_version }}
+      app_name: ${{ vars.AFP_APP_NAME }}
     secrets: inherit
 
   redeploy-webhook-call:
@@ -126,4 +163,3 @@ jobs:
     with:
       env: ${{ needs.determine-version.outputs.env }}
     secrets: inherit
-
