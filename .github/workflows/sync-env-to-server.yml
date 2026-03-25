@@ -24,6 +24,11 @@ jobs:
     steps:
       - name: Check required vars and secrets
         env:
+          FILE_UPLOAD_ENABLED: ${{ vars.FILE_UPLOAD_ENABLED }}
+          SPOTIFY_ENABLED: ${{ vars.SPOTIFY_ENABLED }}
+          GOOGLE_OAUTH_ENABLED: ${{ vars.GOOGLE_OAUTH_ENABLED }}
+          MUSICBRAINZ_LOOKUP_ENABLED: ${{ vars.MUSICBRAINZ_LOOKUP_ENABLED }}
+          AFP_ENABLED: ${{ vars.AFP_ENABLED }}
           VPS_IP: ${{ vars.VPS_IP }}
           REDEPLOYMENT_ROOT: ${{ vars.REDEPLOYMENT_ROOT }}
           HTMT_API_APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
@@ -58,7 +63,19 @@ jobs:
             GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID_PROD}"
           fi
           export SPOTIFY_CLIENT_ID GOOGLE_CLIENT_ID SPOTIFY_SCOPES
+          for _b in FILE_UPLOAD_ENABLED SPOTIFY_ENABLED GOOGLE_OAUTH_ENABLED MUSICBRAINZ_LOOKUP_ENABLED AFP_ENABLED; do
+            eval "_raw=\"\${${_b}}\""
+            _lc=$(printf '%s' "${_raw}" | tr '[:upper:]' '[:lower:]')
+            case "${_lc}" in
+              true|false) ;;
+              *)
+                echo "ERROR: ${_b} must be 'true' or 'false' (set Variable ${_b} on each GitHub Environment: STAGING / PROD)."
+                exit 1
+                ;;
+            esac
+          done
           required=(
+            FILE_UPLOAD_ENABLED SPOTIFY_ENABLED GOOGLE_OAUTH_ENABLED MUSICBRAINZ_LOOKUP_ENABLED AFP_ENABLED
             VPS_IP REDEPLOYMENT_ROOT HTMT_API_APP_NAME
             DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID
             SERVER_DEPLOY_USERNAME SERVER_DEPLOY_SSH_PRIVATE_KEY
@@ -99,7 +116,11 @@ jobs:
           SPOTIFY_SCOPES: ${{ vars.SPOTIFY_SCOPES }}
           GOOGLE_CLIENT_ID_TEST: ${{ vars.GOOGLE_CLIENT_ID_TEST }}
           GOOGLE_CLIENT_ID_PROD: ${{ vars.GOOGLE_CLIENT_ID_PROD }}
-          FILE_UPLOAD_ENABLED: "true"
+          FILE_UPLOAD_ENABLED: ${{ vars.FILE_UPLOAD_ENABLED }}
+          SPOTIFY_ENABLED: ${{ vars.SPOTIFY_ENABLED }}
+          GOOGLE_OAUTH_ENABLED: ${{ vars.GOOGLE_OAUTH_ENABLED }}
+          MUSICBRAINZ_LOOKUP_ENABLED: ${{ vars.MUSICBRAINZ_LOOKUP_ENABLED }}
+          AFP_ENABLED: ${{ vars.AFP_ENABLED }}
         run: |
           if [ "${{ matrix.environment }}" = "STAGING" ]; then
             export SPOTIFY_CLIENT_ID="${SPOTIFY_CLIENT_ID_TEST}"
@@ -112,15 +133,21 @@ jobs:
           for key in DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD DB_SUPERUSER_PASSWORD \
             DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY ACOUSTID_API_KEY GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET \
             SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME DEMO_EMAIL SUPERADMIN_EMAIL \
-            SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID FILE_UPLOAD_ENABLED; do
+            SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID \
+            FILE_UPLOAD_ENABLED SPOTIFY_ENABLED GOOGLE_OAUTH_ENABLED MUSICBRAINZ_LOOKUP_ENABLED AFP_ENABLED; do
             val="${!key}"
             val=$(printf '%s' "$val" | tr -d '\n\r')
+            case "$key" in
+              FILE_UPLOAD_ENABLED|SPOTIFY_ENABLED|GOOGLE_OAUTH_ENABLED|MUSICBRAINZ_LOOKUP_ENABLED|AFP_ENABLED)
+                val=$(printf '%s' "$val" | tr '[:upper:]' '[:lower:]')
+                ;;
+            esac
             [ -n "${val}" ] && printf '%s=%s\n' "$key" "$val" >> fragment.env
           done
           [ -n "${DB_SUPERUSER_PASSWORD}" ] && printf 'POSTGRES_PASSWORD=%s\n' "$(printf '%s' "$DB_SUPERUSER_PASSWORD" | tr -d '\n\r')" >> fragment.env
 
       - name: Upload fragment artifact
-        uses: actions/upload-artifact@v5.0.0
+        uses: actions/upload-artifact@v6.0.0
         with:
           name: sync-env-fragment-${{ matrix.sync_env }}
           path: fragment.env

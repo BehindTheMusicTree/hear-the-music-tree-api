@@ -69,6 +69,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Changed
 
+- **`FILE_UPLOAD_ENABLED` required at runtime**: No inference from `TMP_UPLOADED_FILES`. Django and `scripts/setup-filesystem.sh` fail fast if it is unset or not `true`/`false`. Set it in local `env/.env` (see `env/dev/.env.dev.example`) and in GitHub Variables for **Sync env to server**.
+
+- **Sync env: explicit feature flags**: **Sync env to server** requires and writes **`SPOTIFY_ENABLED`**, **`GOOGLE_OAUTH_ENABLED`**, **`MUSICBRAINZ_LOOKUP_ENABLED`**, and **`HTMT_API_AFP_ENABLED`** (each GitHub Variable `true`/`false` per STAGING/PROD), alongside **`FILE_UPLOAD_ENABLED`**, so **`generate-docker-compose.sh`** gets API toggles only from the sync fragment (infrastructure transfer stays agnostic).
+
 - **Entrypoint: collectstatic at runtime**: When `STATIC_FILES` is set, the container runs `manage.py collectstatic --noinput` on startup (after Django check, before migrate). The static root (e.g. `/app/static`) is then populated so nginx or the app can serve files without a separate build-step; same image works across envs.
 - **Sync env to server**: Fragment includes **`SPOTIFY_SCOPES`** from GitHub Variable `SPOTIFY_SCOPES` (required). Use the same scopes as in `env/dev/.env.dev.example` unless you need fewer. Redeploy compose fails if Spotify is enabled and scopes are absent.
 
