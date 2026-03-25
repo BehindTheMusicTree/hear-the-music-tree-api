@@ -82,6 +82,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **Entrypoint: collectstatic at runtime**: When `STATIC_FILES` is set, the container runs `manage.py collectstatic --noinput` on startup (after Django check, before migrate). The static root (e.g. `/app/static`) is then populated so nginx or the app can serve files without a separate build-step; same image works across envs.
 - **Sync env to server**: Fragment includes **`SPOTIFY_SCOPES`** from GitHub Variable `SPOTIFY_SCOPES` (required). Use the same scopes as in `env/dev/.env.dev.example` unless you need fewer. Redeploy compose fails if Spotify is enabled and scopes are absent.
 
+### Documentation
+
+- **Release tooling**: `scripts/prepare_release_bump.py` automates the maintainer Note → `bump2version` → `fix_changelog_after_bump.py` → empty `## [Unreleased]` steps. CONTRIBUTING.md §7, docs/versioning.md, and changelog Cursor rule updated accordingly.
+
 ## [v2.2.1] - 2026-03-17
 
 ### CI
