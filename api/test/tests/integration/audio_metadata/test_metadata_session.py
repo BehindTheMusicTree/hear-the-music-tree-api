@@ -48,8 +48,13 @@ class TestMetadataSessionUpload(AudioMetadataTestCase):
             HTTP_X_SESSION_TOKEN=token,
         )
         assert download_response.status_code == status.HTTP_200_OK
-        assert download_response.get("Content-Disposition") is not None
-        assert "attachment" in download_response.get("Content-Disposition", "")
+        content_disposition = download_response.get("Content-Disposition")
+        assert content_disposition is not None
+        assert "attachment" in content_disposition
+        assert "filename=" in content_disposition
+        assert "filename*=" in content_disposition
+        assert download_response.get("Access-Control-Expose-Headers") == "Content-Disposition"
+        assert download_response.get("Content-Type") == "audio/mpeg"
 
     def test_download_without_token_then_400(self):
         response = self.api_client.post(
