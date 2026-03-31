@@ -42,14 +42,16 @@ class AppFileResponse:
             return "download"
         _, extension = os.path.splitext(filename)
         fallback = filename.encode("ascii", "ignore").decode("ascii")
-        fallback = fallback.replace('"', "")
-        if fallback:
+        fallback = fallback.replace('"', "").replace("\\", "").strip()
+        fallback_stem = fallback[: -len(extension)] if extension and fallback.endswith(extension) else fallback
+        if fallback and fallback_stem.strip():
             return fallback
         return f"download{extension}" if extension else "download"
 
     @staticmethod
     def _build_effective_filename(filename: str) -> str:
-        basename = os.path.basename(filename or "")
+        normalized = (filename or "").replace("\\", "/")
+        basename = os.path.basename(normalized)
         sanitized_chars = []
         for char in basename:
             char_code = ord(char)
