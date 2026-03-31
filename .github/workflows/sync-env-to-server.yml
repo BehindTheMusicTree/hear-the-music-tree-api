@@ -31,10 +31,10 @@ jobs:
           HTMT_API_APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
           DEMO_EMAIL: ${{ vars.DEMO_EMAIL }}
           SUPERADMIN_EMAIL: ${{ vars.SUPERADMIN_EMAIL }}
-          SPOTIFY_CLIENT_ID_TEST: ${{ vars.SPOTIFY_CLIENT_ID_TEST }}
+          SPOTIFY_CLIENT_ID_STAGING: ${{ vars.SPOTIFY_CLIENT_ID_STAGING }}
           SPOTIFY_CLIENT_ID_PROD: ${{ vars.SPOTIFY_CLIENT_ID_PROD }}
           SPOTIFY_SCOPES: ${{ vars.SPOTIFY_SCOPES }}
-          GOOGLE_CLIENT_ID_TEST: ${{ vars.GOOGLE_CLIENT_ID_TEST }}
+          GOOGLE_CLIENT_ID_STAGING: ${{ vars.GOOGLE_CLIENT_ID_STAGING }}
           GOOGLE_CLIENT_ID_PROD: ${{ vars.GOOGLE_CLIENT_ID_PROD }}
           SERVER_DEPLOY_USERNAME: ${{ secrets.SERVER_DEPLOY_USERNAME }}
           SERVER_DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.SERVER_DEPLOY_SSH_PRIVATE_KEY }}
@@ -53,8 +53,8 @@ jobs:
           TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
         run: |
           if [ "${{ matrix.environment }}" = "STAGING" ]; then
-            export SPOTIFY_CLIENT_ID="${SPOTIFY_CLIENT_ID_TEST}"
-            export GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID_TEST}"
+            export SPOTIFY_CLIENT_ID="${SPOTIFY_CLIENT_ID_STAGING}"
+            export GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID_STAGING}"
           else
             export SPOTIFY_CLIENT_ID="${SPOTIFY_CLIENT_ID_PROD}"
             export GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID_PROD}"
