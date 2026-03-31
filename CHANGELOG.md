@@ -33,6 +33,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ```markdown
 ## [Unreleased]
 
+### Fixed
+
+- **Metadata session download headers**: File download responses now set standards-compliant `Content-Disposition` with both `filename` (ASCII fallback) and `filename*` (RFC5987 UTF-8), expose `Content-Disposition` to browser JS via `Access-Control-Expose-Headers`, and return a real MIME type (with fallback to `application/octet-stream`) instead of a generic `file` content type.
+
 ### Added
 
 - **Track API**: Added batch upload endpoint for multiple tracks
@@ -59,6 +63,12 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### CI
+
+- **Actionlint config variables**: Updated `.github/actionlint.yaml` to align workflow variable names with staging/prod conventions by using `SPOTIFY_CLIENT_ID_STAGING` and `GOOGLE_CLIENT_ID_STAGING` (and removing legacy `*_TEST` names).
+
+## [v2.2.2] - 2026-03-25
+
 ### Security
 
 - **Startup and request logging**: OAuth client ids are no longer printed in full by default (masked prefix/suffix); redirect URIs and scopes are summarized unless **`DJANGO_VERBOSE_STARTUP=true`**. **`load_required_bool_env_var`** no longer echoes the raw string before parsing. If **`APP_IS_EXPOSED`** and **`DEBUG`** are both true, a **security warning** is printed. Removed debug **`print`** from **`SpotifyLibTrackViewSet`**; **`TreeField`** criteria validation uses **`logging.debug`**; Spotify artist batch errors use **`logger.exception`**.
@@ -79,6 +89,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Entrypoint: collectstatic at runtime**: When `STATIC_FILES` is set, the container runs `manage.py collectstatic --noinput` on startup (after Django check, before migrate). The static root (e.g. `/app/static`) is then populated so nginx or the app can serve files without a separate build-step; same image works across envs.
 - **Sync env to server**: Fragment includes **`SPOTIFY_SCOPES`** from GitHub Variable `SPOTIFY_SCOPES` (required). Use the same scopes as in `env/dev/.env.dev.example` unless you need fewer. Redeploy compose fails if Spotify is enabled and scopes are absent.
+
+### Documentation
+
+- **Release tooling**: `scripts/prepare_release_bump.py` automates the maintainer Note → `bump2version` → `fix_changelog_after_bump.py` → empty `## [Unreleased]` steps. CONTRIBUTING.md §7, docs/versioning.md, and changelog Cursor rule updated accordingly.
 
 ## [v2.2.1] - 2026-03-17
 

@@ -153,21 +153,17 @@ The workflow extracts the version from the ref, uses it for the Docker image tag
 
 ### Creating a Release
 
+**Source of truth:** full Git Flow (release branch, `python3 scripts/prepare_release_bump.py` or `bump2version` by hand, `CHANGELOG.md`, PR to `main`, tag with `v` prefix, merge back to `develop`, delete release branch) is documented in [CONTRIBUTING.md](../CONTRIBUTING.md#7-releasing-for-maintainers) §7. The steps below are a short tag/publish reminder only.
+
 ```bash
-# 1. Create release branch
-git checkout -b release/v0.2.0
+# After VERSION and CHANGELOG on main match the release (see CONTRIBUTING.md §7):
 
-# 2. Merge to main
-git checkout main
-git merge release/v0.2.0
-
-# 3. Create and push the release version tag
+# 1. Tag and push (triggers publish.yml when CI allows)
 git tag v0.2.0
-git push origin v0.2.0  # Triggers publish.yml workflow
+git push origin v0.2.0
 
-# 4. Clean up pre-release version tags (dev, rc, beta, alpha)
-git tag -l "v0.2.0-dev-*" "v0.2.0-rc*" "v0.2.0-beta*" "v0.2.0-alpha*" | xargs -n 1 git tag -d
-git tag -l "v0.2.0-dev-*" "v0.2.0-rc*" "v0.2.0-beta*" "v0.2.0-alpha*" | xargs -n 1 git push origin --delete
+# 2. Clean up pre-release version tags (dev, rc, beta, alpha) for that version, or use:
+#    ./scripts/remove_prerelease_tags.sh
 ```
 
 ### Development Version Tag Testing
