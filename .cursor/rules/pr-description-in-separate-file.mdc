@@ -1,11 +1,13 @@
 ---
-description: 
+description: PR descriptions must be written to .github/pr-descriptions/ as the primary deliverable
 globs: 
 alwaysApply: true
 ---
 # PR Description in Separate File
 
-When creating Pull Requests, always provide the PR description in a separate markdown file located in `.github/pr-descriptions/` directory, rather than writing it directly in the PR body. This directory is git-ignored to keep draft descriptions out of version control.
+When creating Pull Requests **or when the user asks for a PR description** (including phrases like "PR description", "pr desc", "draft PR", or "PR body"), **write the full description to a new markdown file** under `.github/pr-descriptions/` as the primary deliverable. Do not satisfy the request with only chat text: create or update the file, then you may briefly confirm the path in the reply.
+
+When creating the GitHub PR, copy the body from that file and set the PR title from the file header (see **PR Title Required** below). This directory is git-ignored to keep draft descriptions out of version control.
 
 ## File Naming Convention
 
@@ -21,7 +23,7 @@ When a PR description file is provided, **the PR title must be present** in that
 
 ## File Structure
 
-Each PR description file should follow the structure from `.github/pull_request_template.md`:
+Each PR description file should follow the structure from `.github/pr-descriptions/pull_request_template.md`:
 
 - **PR Title** (required) — imperative, concise; e.g. `# PR Description: one-time scripts and migration 0011 fix` or `## PR Title` / `feat(scripts): add one-time DB rename script`
 - Description
@@ -37,11 +39,11 @@ Each PR description file should follow the structure from `.github/pull_request_
 
 ## Usage
 
-1. Create the PR description file in `.github/pr-descriptions/` with a descriptive name
+1. Create the PR description file in `.github/pr-descriptions/` with a descriptive kebab-case name (e.g. match the branch topic)
 2. **Include the PR title** at the top of the file (required when a PR description is provided)
 3. Write the full PR description in that file following the PR template structure
 4. When creating the GitHub PR, set the PR title from the file and copy the body content
-5. The file remains local and git-ignored (not committed to version control)
+5. The file remains local and git-ignored (not committed to version control); see root `.gitignore` under “Draft documents” for any negated paths
 
 ## Benefits
 
