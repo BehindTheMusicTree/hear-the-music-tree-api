@@ -28,8 +28,9 @@ class AppFileResponse:
 
     @staticmethod
     def _build_content_disposition(filename: str) -> str:
-        fallback_filename = AppFileResponse._build_ascii_fallback_filename(filename)
-        encoded_filename = quote(filename, safe="")
+        effective_filename = AppFileResponse._build_effective_filename(filename)
+        fallback_filename = AppFileResponse._build_ascii_fallback_filename(effective_filename)
+        encoded_filename = quote(effective_filename, safe="")
         return (
             f'attachment; filename="{fallback_filename}"; '
             f"filename*=UTF-8''{encoded_filename}"
@@ -41,7 +42,21 @@ class AppFileResponse:
             return "download"
         _, extension = os.path.splitext(filename)
         fallback = filename.encode("ascii", "ignore").decode("ascii")
-        fallback = fallback.replace('"', "")
-        if fallback:
+        fallback = fallback.replace('"', "").replace("\\", "").strip()
+        fallback_stem = fallback[: -len(extension)] if extension and fallback.endswith(extension) else fallback
+        if fallback and fallback_stem.strip():
             return fallback
         return f"download{extension}" if extension else "download"
+
+    @staticmethod
+    def _build_effective_filename(filename: str) -> str:
+        normalized = (filename or "").replace("\\", "/")
+        basename = os.path.basename(normalized)
+        sanitized_chars = []
+        for char in basename:
+            char_code = ord(char)
+            if char_code < 32 or char_code == 127:
+                continue
+            sanitized_chars.append(char)
+        sanitized_filename = "".join(sanitized_chars).strip()
+        return sanitized_filename or "download"
