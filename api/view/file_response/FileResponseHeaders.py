@@ -1,6 +1,7 @@
 class FileResponseHeaders:
     """Constants for file response headers."""
-    CONTENT_TYPE = 'file'
+    CONTENT_TYPE_DEFAULT = 'application/octet-stream'
     CONTENT_LENGTH = 'Content-Length'
     CONTENT_DISPOSITION = 'Content-Disposition'
-    CONTENT_DISPOSITION_VALUE = 'attachment; filename="%s"'
+    ACCESS_CONTROL_EXPOSE_HEADERS = 'Access-Control-Expose-Headers'
+    ACCESS_CONTROL_EXPOSE_HEADERS_CONTENT_DISPOSITION_VALUE = 'Content-Disposition'
