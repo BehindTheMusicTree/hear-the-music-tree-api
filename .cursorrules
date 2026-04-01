@@ -25,10 +25,8 @@ Always pin exact versions for all dependencies. Never use "latest", "*", or vers
 
 # Draft Documents Location
 
-All draft planning documents (PR descriptions, feature descriptions, issue descriptions) should be stored in:
-- `.github/descriptions/`
-
-This directory is gitignored to keep internal planning documents out of version control.
+- **PR descriptions**: Always draft in `.github/pr-descriptions/` (see `.cursor/rules/pr-description-in-separate-file.mdc`). That directory is git-ignored except any explicitly tracked template files.
+- **Other internal planning drafts** (feature notes, etc.): `.github/descriptions/` — git-ignored to keep planning out of version control unless committed intentionally.
 
 
 

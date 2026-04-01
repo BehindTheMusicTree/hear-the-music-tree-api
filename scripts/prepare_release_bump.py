@@ -110,13 +110,16 @@ def ensure_empty_unreleased_section(text: str) -> tuple[str, bool]:
     version_line_start = idx + m.start()
     head = text[:version_line_start]
     last_h2: str | None = None
-    for line in reversed(head.split("\n")):
+    in_fenced_code_block = False
+    for line in head.split("\n"):
         s = line.strip()
-        if not s:
+        if s.startswith("```"):
+            in_fenced_code_block = not in_fenced_code_block
+            continue
+        if in_fenced_code_block:
             continue
         if s.startswith("## ") and not s.startswith("###"):
             last_h2 = s
-            break
     if last_h2 == "## [Unreleased]":
         return text, False
     insert = "## [Unreleased]\n\n"

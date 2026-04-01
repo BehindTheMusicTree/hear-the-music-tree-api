@@ -48,7 +48,13 @@
 
 ## Introduction
 
-HearTheMusicTree API is a cloud-based audio file manager that empowers music collectors, DJs, curators, and listeners to organize and discover music through powerful metadata handling, genre intelligence, and cross-platform synchronization. This project is part of the [BehindTheMusicTree ecosystem](https://github.com/behindthemusictree) — a collection of open-source tools designed to transform music libraries into living, contextualized experiences.
+HearTheMusicTree API is a cloud-based audio file manager for collectors, DJs, curators, and listeners who want powerful metadata workflows, genre intelligence, and cross-platform synchronization.
+
+Built inside the **[BehindTheMusicTree](https://github.com/BehindTheMusicTree)** ecosystem.
+
+Want the big picture? Explore the full project universe on **[themusictree.org](https://themusictree.org)**, and see where this API fits on **[HearTheMusicTree](https://themusictree.org/projects/hear-the-music-tree)**.
+
+The portfolio website content lives in **[the-music-tree-frontend](https://github.com/BehindTheMusicTree/the-music-tree-frontend)**; this README focuses on building, running, testing, and contributing to this API.
 
 ### Mission
 
@@ -65,7 +71,7 @@ HearTheMusicTree aims to provide a user-first, extensible platform for organizin
 
 ### Ecosystem Integration
 
-HearTheMusicTree integrates seamlessly with other projects in the BehindTheMusicTree ecosystem:
+HearTheMusicTree integrates with other BehindTheMusicTree projects:
 
 - **[AudioMeta Python](https://github.com/BehindTheMusicTree/audiometa)**: Reliable metadata reading and updating across formats (ID3v1, ID3v2, Vorbis, RIFF)
 - **[GrowTheMusicTree](https://github.com/BehindTheMusicTree/grow-the-music-tree)**: Community-driven taxonomy curation for classification and playlist generation
