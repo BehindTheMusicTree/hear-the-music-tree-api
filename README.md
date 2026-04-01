@@ -50,7 +50,11 @@
 
 HearTheMusicTree API is a cloud-based audio file manager for collectors, DJs, curators, and listeners who want powerful metadata workflows, genre intelligence, and cross-platform synchronization.
 
-Built inside the **[BehindTheMusicTree ecosystem](https://github.com/BehindTheMusicTree)**. Want the big picture? Explore **[themusictree.org](https://themusictree.org)** and this API's project page: **[HearTheMusicTree](https://themusictree.org/projects/hear-the-music-tree)**. The canonical source for portfolio/marketing content is **[the-music-tree-frontend](https://github.com/BehindTheMusicTree/the-music-tree-frontend)**; this README focuses on this API implementation.
+Built inside the **[BehindTheMusicTree](https://github.com/BehindTheMusicTree)** ecosystem.
+
+Want the big picture? Explore the full project universe on **[themusictree.org](https://themusictree.org)**, and see where this API fits on **[HearTheMusicTree](https://themusictree.org/projects/hear-the-music-tree)**.
+
+The portfolio website content lives in **[the-music-tree-frontend](https://github.com/BehindTheMusicTree/the-music-tree-frontend)**; this README focuses on building, running, testing, and contributing to this API.
 
 ### Mission
 
