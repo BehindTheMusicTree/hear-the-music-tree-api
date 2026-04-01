@@ -84,7 +84,10 @@ Body example:
 
 **Response**
 
-- **200 OK**: Body is the audio file (binary). Headers include `Content-Disposition: attachment; filename="<original_filename>"`.
+- **200 OK**: Body is the audio file (binary). Headers include:
+  - `Content-Type`: MIME type inferred from the session file (typically `audio/mpeg`, `audio/flac`, or `audio/wav`; unknown extensions use `application/octet-stream`).
+  - `Content-Disposition: attachment; filename="<ascii-fallback>"; filename*=UTF-8''<url-encoded-utf8-filename>` (RFC 5987 for non-ASCII names).
+  - `Access-Control-Expose-Headers: Content-Disposition` (so browser JavaScript can read `Content-Disposition` on cross-origin responses).
 - **400 Bad Request**: Missing session token.
 - **410 Gone**: Session not found or expired. Client should create a new session (upload again).
 
