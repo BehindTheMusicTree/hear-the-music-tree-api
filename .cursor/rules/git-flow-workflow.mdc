@@ -28,6 +28,8 @@ This project follows **strict Git Flow**. All changes must follow the branching 
 - Feature branches **must** target `develop`
 - Hotfix branches **must** target `main`
 - Release branches merge into both `main` and `develop`
+- Before creating any `release/*` branch, maintainers **must** run `python3 scripts/prepare_release_bump.py` with `patch`, `minor`, or `major`
+- Create the `release/*` branch only after the bump script updates release artifacts (`CHANGELOG.md`, `VERSION`, and related versioned files)
 
 ## Examples
 
@@ -45,5 +47,6 @@ git checkout -b hotfix/critical-security-patch
 # Release branch (maintainers only)
 git checkout develop
 git pull origin develop
+python3 scripts/prepare_release_bump.py patch
 git checkout -b release/v0.2.1
 ```
