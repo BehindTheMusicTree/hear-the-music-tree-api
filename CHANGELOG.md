@@ -57,7 +57,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 **Note:** During releases, maintainers will move entries from `[Unreleased]` to a versioned section (e.g., `## [0.2.8] - 2025-01-XX`).
 
-## [Unreleased]
+## [v2.2.3] - 2026-04-01
 
 ### Changed
 
