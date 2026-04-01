@@ -7,7 +7,9 @@
 3. Runs ``fix_changelog_after_bump.py`` (release date, indent cleanup).
 4. Inserts an empty ``## [Unreleased]`` above the new ``## [vX.Y.Z] - …`` heading.
 
-Requires ``bump2version`` on PATH (``pip install -r requirements.txt``).
+Must be run **inside an activated project virtualenv** (or with that venv's
+``python``), after ``pip install -r requirements.txt`` so ``bump2version`` is
+on PATH.
 
 From repo root::
 
@@ -41,6 +43,19 @@ MARKER_HEADING = "## [Unreleased]  <!-- release -->"
 def _fail(msg: str) -> None:
     print(msg, file=sys.stderr)
     sys.exit(1)
+
+
+def _require_venv() -> None:
+    base = getattr(sys, "base_prefix", sys.prefix)
+    if sys.prefix != base:
+        return
+    _fail(
+        "prepare_release_bump.py must run inside a Python virtual environment.\n"
+        "Create and use the project venv, install deps, then retry. Example:\n"
+        "  python3 -m venv .venv && source .venv/bin/activate "
+        "&& pip install -r requirements.txt\n"
+        "  python3 scripts/prepare_release_bump.py patch"
+    )
 
 
 def _find_note_index(text: str) -> int:
@@ -111,7 +126,8 @@ def ensure_empty_unreleased_section(text: str) -> tuple[str, bool]:
 def _run_bump2version(kind: str, allow_dirty: bool) -> None:
     if not shutil.which("bump2version"):
         _fail(
-            "bump2version not found on PATH. Install with: pip install -r requirements.txt"
+            "bump2version not found on PATH. In your project venv run: "
+            "pip install -r requirements.txt"
         )
     cmd = ["bump2version", kind]
     if allow_dirty:
@@ -160,6 +176,7 @@ def main() -> None:
     args = parser.parse_args()
     allow_dirty = not args.no_allow_dirty
 
+    _require_venv()
     _warn_branch()
     raw = CHANGELOG_PATH.read_text()
     updated, changed = ensure_bump_marker(raw)
