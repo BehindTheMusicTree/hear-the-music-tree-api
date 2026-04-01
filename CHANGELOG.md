@@ -67,6 +67,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Metadata session download headers**: File download responses now set standards-compliant `Content-Disposition` with both `filename` (ASCII fallback) and `filename*` (RFC5987 UTF-8), expose `Content-Disposition` to browser JS via `Access-Control-Expose-Headers`, and return a real MIME type (with fallback to `application/octet-stream`) instead of a generic `file` content type.
 
+- **Release tooling**: `prepare_release_bump.py` no longer treats `##` headings inside fenced Markdown code blocks as real changelog sections when deciding whether to insert a new empty `## [Unreleased]` after a bump, so the in-file template example cannot mask the actual latest `[Unreleased]` heading.
+
 ### CI
 
 - **Actionlint config variables**: Updated `.github/actionlint.yaml` to align workflow variable names with staging/prod conventions by using `SPOTIFY_CLIENT_ID_STAGING` and `GOOGLE_CLIENT_ID_STAGING` (and removing legacy `*_TEST` names).
