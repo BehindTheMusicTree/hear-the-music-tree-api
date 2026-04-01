@@ -57,7 +57,11 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 **Note:** During releases, maintainers will move entries from `[Unreleased]` to a versioned section (e.g., `## [0.2.8] - 2025-01-XX`).
 
-## [Unreleased]
+## [v2.2.3] - 2026-04-01
+
+### Changed
+
+- **Release tooling**: `scripts/prepare_release_bump.py` exits unless run inside a Python virtual environment (with dependencies from `pip install -r requirements.txt`), so maintainers do not hit a missing `bump2version` when using the system interpreter.
 
 ### Fixed
 
