@@ -1,0 +1,19 @@
+---
+description: Ensure changelog entries are added in the real section, not examples
+alwaysApply: true
+---
+# Changelog Entry Placement and De-duplication
+
+When adding or updating entries in `CHANGELOG.md`:
+
+1. Add entries only under the real `## [Unreleased]` section (or the active release section when explicitly requested).
+2. Never add entries inside documentation/example fenced code blocks (e.g. inside the ` ```markdown ` example near the top).
+3. Before writing a new entry, scan the target section and avoid duplicates or near-duplicates.
+4. If a matching entry already exists, update/merge the existing bullet instead of adding another one.
+5. Keep category placement correct (`Added`, `Changed`, `Fixed`, `Documentation`, `CI`, etc.).
+
+## Quick validation checklist
+
+- The new bullet is outside any fenced code block.
+- The bullet is under the intended real section heading.
+- No equivalent bullet already exists in `Unreleased` or the target release section.

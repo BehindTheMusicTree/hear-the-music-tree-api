@@ -58,7 +58,7 @@ If your API returns camelCase (e.g. `sessionToken`, `sessionExpiresInSeconds`), 
     - Or in JSON body: `session_token: "<sessionToken>"`
   - **Metadata (optional)** — JSON body with any of: `title`, `artists_names`, `album_name`, `album_artists_names`, `genres_names` (list of strings), `rating`, `language`. Only provided fields are written; omit a field to leave it unchanged. To get the file as-is, send an empty object `{}` but still send the token (e.g. in the header).
 - **Response**:
-  - `200 OK`: Body is the **binary audio file**. Response header `Content-Disposition: attachment; filename="..."` gives the suggested filename.
+  - `200 OK`: Body is the **binary audio file**. Headers include `Content-Type` (MIME type for the file), `Content-Disposition` with both `filename="..."` (ASCII fallback) and `filename*=UTF-8''...` (preferred UTF-8 name), and `Access-Control-Expose-Headers: Content-Disposition` so frontend JS can read that header cross-origin.
   - `400 Bad Request`: Missing session token.
   - `410 Gone`: Session expired or invalid. Prompt the user to upload again.
 
@@ -89,7 +89,10 @@ if (!response.ok) {
 }
 
 const blob = await response.blob();
-const filename = response.headers.get("Content-Disposition")?.match(/filename="(.+)"/)?.[1] ?? "download.mp3";
+const contentDisposition = response.headers.get("Content-Disposition") ?? "";
+const filenameStar = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i)?.[1];
+const filenameBasic = contentDisposition.match(/filename="([^"]+)"/i)?.[1];
+const filename = filenameStar ? decodeURIComponent(filenameStar) : (filenameBasic ?? "download");
 // Trigger download: e.g. create object URL and <a download>
 const url = URL.createObjectURL(blob);
 const a = document.createElement("a");

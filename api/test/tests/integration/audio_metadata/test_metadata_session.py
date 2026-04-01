@@ -53,7 +53,10 @@ class TestMetadataSessionUpload(AudioMetadataTestCase):
         assert "attachment" in content_disposition
         assert "filename=" in content_disposition
         assert "filename*=" in content_disposition
-        assert download_response.get("Access-Control-Expose-Headers") == "Content-Disposition"
+        expose_headers = download_response.get("Access-Control-Expose-Headers")
+        assert expose_headers is not None
+        exposed_headers = [header.strip().lower() for header in expose_headers.split(",")]
+        assert "content-disposition" in exposed_headers
         assert download_response.get("Content-Type") == "audio/mpeg"
 
     def test_download_without_token_then_400(self):

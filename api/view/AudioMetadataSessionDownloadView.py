@@ -40,7 +40,10 @@ class AudioMetadataSessionDownloadView(APIView):
             "Download the file for the given session token with optional metadata written in. "
             "Send session_token in X-Session-Token header or in JSON body. Metadata fields are optional; "
             "only provided fields are written. Session is valid 15 minutes; you can call this multiple times "
-            "with different metadata. Returns 404/410 if token is missing or expired."
+            "with different metadata. Returns 404/410 if token is missing or expired. "
+            "On success, the response sets Content-Type from the file, Content-Disposition with attachment "
+            "and both filename (ASCII fallback) and filename* (RFC 5987 UTF-8), and "
+            "Access-Control-Expose-Headers: Content-Disposition for cross-origin clients."
         ),
     )
     def post(self, request):
