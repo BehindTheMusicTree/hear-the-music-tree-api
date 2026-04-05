@@ -74,7 +74,7 @@ HearTheMusicTree aims to provide a user-first, extensible platform for organizin
 HearTheMusicTree integrates with other BehindTheMusicTree projects:
 
 - **[AudioMeta Python](https://github.com/BehindTheMusicTree/audiometa)**: Reliable metadata reading and updating across formats (ID3v1, ID3v2, Vorbis, RIFF)
-- **[GrowTheMusicTree](https://github.com/BehindTheMusicTree/grow-the-music-tree)**: Community-driven taxonomy curation for classification and playlist generation
+- **[GrowTheMusicTree](https://github.com/BehindTheMusicTree/grow-the-music-tree-frontend)**: Community-driven taxonomy curation for classification and playlist generation
 - **[TheMusicTreeAPI](https://github.com/BehindTheMusicTree/the-music-tree-api)**: Authoritative RESTful endpoints for genre references, hierarchies, and detection
 
 > **⚠️ Note**: The API is currently undergoing server migration and is not available online. Please set up a local development environment to use the API. See [Getting Started](#getting-started) for setup instructions.
