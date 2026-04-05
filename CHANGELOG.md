@@ -63,6 +63,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **README**: Added ecosystem context with portfolio links (`themusictree.org`, HearTheMusicTree project page) and clarified that portfolio/marketing source-of-truth lives in `the-music-tree-frontend`.
 
+- **README**: Corrected the GrowTheMusicTree ecosystem link to the `grow-the-music-tree-frontend` repository.
+
 ## [v2.2.3] - 2026-04-01
 
 ### Changed
