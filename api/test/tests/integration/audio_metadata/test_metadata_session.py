@@ -32,6 +32,23 @@ class TestMetadataSessionUpload(AudioMetadataTestCase):
         assert session_token
         assert session_expires == 900
 
+    def test_upload_includes_unified_schema_and_supported_field_ids(self):
+        response = _post_metadata_session(
+            self.api_client,
+            UploadedTrackTestFilename.DEFAULT_MP3,
+        )
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()
+        schema = data.get("unifiedMetadataFieldSchema") or data.get("unified_metadata_field_schema")
+        supported = data.get("supportedUnifiedMetadataFieldIds") or data.get(
+            "supported_unified_metadata_field_ids"
+        )
+        assert isinstance(schema, list)
+        assert len(schema) >= 1
+        assert all("id" in item for item in schema)
+        assert isinstance(supported, list)
+        assert "title" in supported
+
     def test_upload_then_download_with_metadata_then_200_and_file(self):
         response = _post_metadata_session(
             self.api_client,
@@ -97,3 +114,19 @@ class TestMetadataSessionUpload(AudioMetadataTestCase):
             HTTP_X_SESSION_TOKEN=token,
         )
         assert r2.status_code == status.HTTP_200_OK
+
+    def test_download_with_canonical_unified_keys_then_200(self):
+        response = _post_metadata_session(
+            self.api_client,
+            UploadedTrackTestFilename.DEFAULT_MP3,
+        )
+        assert response.status_code == status.HTTP_200_OK
+        token = response.json().get("sessionToken") or response.json().get("session_token")
+        assert token
+        download_response = self.api_client.post(
+            path=reverse("audio-metadata-session-download"),
+            data={"title": "Canon", "artists": ["A", "B"], "composer": ["C"]},
+            format="json",
+            HTTP_X_SESSION_TOKEN=token,
+        )
+        assert download_response.status_code == status.HTTP_200_OK

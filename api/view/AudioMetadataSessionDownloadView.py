@@ -13,7 +13,9 @@ from rest_framework.views import APIView
 
 from api.serializer.audio_metadata.Fields import Fields
 from api.utils.audio_file_metadata import audiometa_adapter
-from api.utils.audio_file_metadata.metadata_session_app_metadata import build_app_metadata_from_payload
+from api.utils.audio_file_metadata.unified_metadata_session_payload import (
+    build_unified_metadata_patch_from_validated_data,
+)
 from api.utils.metadata_session import get_session
 from api.view.file_response.AppFileResponse import AppFileResponse
 
@@ -68,8 +70,8 @@ class AudioMetadataSessionDownloadView(APIView):
         stored_path, original_filename = session
         payload = serializer.validated_data.copy()
         payload.pop(Fields.SESSION_TOKEN, None)
-        app_metadata = build_app_metadata_from_payload(payload)
-        if not app_metadata:
+        unified_patch = build_unified_metadata_patch_from_validated_data(payload)
+        if not unified_patch:
             working_path = stored_path
         else:
             suffix = Path(stored_path).suffix or ".bin"
@@ -77,9 +79,9 @@ class AudioMetadataSessionDownloadView(APIView):
             os.close(fd)
             try:
                 shutil.copy2(stored_path, working_path)
-                audiometa_adapter.update_file_metadata(
+                audiometa_adapter.update_file_metadata_unified(
                     working_path,
-                    app_metadata,
+                    unified_patch,
                     normalized_rating_max_value=NORMALIZED_RATING_MAX,
                 )
             except Exception:

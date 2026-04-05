@@ -6,6 +6,9 @@ from rest_framework import serializers
 class WritableMetadataFieldsMixin(serializers.Serializer):
     """Mixin that declares the same metadata fields written to the audio file in both metadata-session
     download and uploaded track update_file_metadata. Add this to serializers that accept these fields.
+
+    Field names use audiometa unified ids (``UnifiedMetadataKey.value``) plus legacy aliases
+    ``artists_names``, ``album_name``, and ``album_artists_names`` for backward compatibility.
     """
 
     title = serializers.CharField(required=False, allow_blank=True)
@@ -14,8 +17,19 @@ class WritableMetadataFieldsMixin(serializers.Serializer):
         required=False,
         allow_empty=True,
     )
+    artists = serializers.ListField(
+        child=serializers.CharField(allow_blank=True),
+        required=False,
+        allow_empty=True,
+    )
     album_name = serializers.CharField(required=False, allow_blank=True)
+    album = serializers.CharField(required=False, allow_blank=True)
     album_artists_names = serializers.ListField(
+        child=serializers.CharField(allow_blank=True),
+        required=False,
+        allow_empty=True,
+    )
+    album_artists = serializers.ListField(
         child=serializers.CharField(allow_blank=True),
         required=False,
         allow_empty=True,
@@ -27,3 +41,28 @@ class WritableMetadataFieldsMixin(serializers.Serializer):
     )
     rating = serializers.IntegerField(required=False, allow_null=True, min_value=0)
     language = serializers.CharField(required=False, allow_blank=True)
+    release_date = serializers.CharField(required=False, allow_blank=True)
+    track_number = serializers.CharField(required=False, allow_blank=True)
+    disc_number = serializers.IntegerField(required=False, allow_null=True)
+    disc_total = serializers.IntegerField(required=False, allow_null=True)
+    bpm = serializers.IntegerField(required=False, allow_null=True)
+    composer = serializers.ListField(
+        child=serializers.CharField(allow_blank=True),
+        required=False,
+        allow_empty=True,
+    )
+    publisher = serializers.CharField(required=False, allow_blank=True)
+    copyright = serializers.CharField(required=False, allow_blank=True)
+    unsynchronized_lyrics = serializers.CharField(required=False, allow_blank=True)
+    comment = serializers.CharField(required=False, allow_blank=True)
+    replaygain = serializers.CharField(required=False, allow_blank=True)
+    archival_location = serializers.CharField(required=False, allow_blank=True)
+    isrc = serializers.CharField(required=False, allow_blank=True)
+    musicbrainz_trackid = serializers.CharField(required=False, allow_blank=True)
+    musicbrainz_artistids = serializers.ListField(
+        child=serializers.CharField(allow_blank=True),
+        required=False,
+        allow_empty=True,
+    )
+    description = serializers.CharField(required=False, allow_blank=True)
+    originator = serializers.CharField(required=False, allow_blank=True)
