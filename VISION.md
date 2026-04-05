@@ -95,7 +95,7 @@ Find the BehindTheMusicTree organization on GitHub for related projects:
 
 - Organization: https://github.com/BehindTheMusicTree
 - AudioMeta: https://github.com/BehindTheMusicTree/audiometa
-- GrowTheMusicTree: https://github.com/BehindTheMusicTree/grow-the-music-tree
+- GrowTheMusicTree: https://github.com/BehindTheMusicTree/grow-the-music-tree-frontend
 - TheMusicTreeAPI: https://github.com/BehindTheMusicTree/the-music-tree-api
 
 ## 🧭 Contribution Guidelines & Code of Conduct
