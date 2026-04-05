@@ -29,11 +29,12 @@ PR titles must follow the same format as commit messages: `<type>(<optional-scop
 
 ## Branch Prefixes vs PR Title Types
 
-Branch prefixes (`feature/`, `chore/`, `hotfix/`) differ from PR title types:
+Branch names use Git Flow prefixes; PR titles use Conventional Commits types — they are not the same. Allowed source branches for PRs to `develop` are `feature/`, `chore/`, `dependabot/`, and `release/` only (no `docs/`, `fix/`, etc.); see `git-flow-workflow.mdc`.
 
 - Branch `feature/add-flac-support` → PR title: `feat: add flac support` (use `feat`, not `feature`)
 - Branch `chore/update-dependencies` → PR title: `chore: update dependencies` (use `chore`)
 - Branch `hotfix/critical-bug` → PR title: `fix: critical bug` (use `fix`, not `hotfix`)
+- Dependabot branches keep the `dependabot/` prefix; PR title is usually left as the bot generated or adjusted per review
 
 ## GitHub Auto-Suggested Titles
 
@@ -55,6 +56,6 @@ Branch prefixes (`feature/`, `chore/`, `hotfix/`) differ from PR title types:
 
 ## Target Branch
 
-- Feature branches target `develop`
+- `feature/*`, `chore/*`, `dependabot/*`, and `release/*` (into `develop`) target `develop`
 - Hotfix branches target `main`
 - Release branches target both `main` and `develop` (maintainers only)
