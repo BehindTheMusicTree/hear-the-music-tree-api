@@ -37,13 +37,13 @@ Before submitting a Pull Request, ensure all checks are completed. This checklis
 ## Git Hygiene
 
 - ✅ Commit messages follow the commit message convention (see `commit-message-convention.mdc`)
-- ✅ Branch is up to date with target branch (`develop` for features, `main` for hotfixes)
-- ✅ Branch follows naming convention (`feature/`, `chore/`, `hotfix/`, `release/`)
+- ✅ Branch is up to date with target branch (`develop` for `feature/*`, `chore/*`, `dependabot/*`, `release/*`; `main` for `hotfix/*`, `release/*`)
+- ✅ Branch follows naming convention for PRs to `develop`: `feature/`, `chore/`, `dependabot/`, `release/`; for PRs to `main`: `hotfix/`, `release/` (see `git-flow-workflow.mdc` and CONTRIBUTING.md **Branch Protection**)
 - ✅ No accidental commits (large files, secrets, personal configs)
 
 ## Branch Target
 
-- ✅ Feature branches target `develop` branch
+- ✅ `feature/*`, `chore/*`, `dependabot/*`, and `release/*` (when merging into `develop`) target the `develop` branch
 - ✅ Hotfix branches target `main` branch
 - ✅ Release branches target both `main` and `develop` (maintainers only)
 

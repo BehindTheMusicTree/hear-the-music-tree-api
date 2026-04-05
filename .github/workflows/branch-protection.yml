@@ -40,12 +40,17 @@ jobs:
               echo "❌ Invalid source branch: $SOURCE_BRANCH"
               echo "Pull requests to develop must come from feature/*, chore/*, dependabot/*, or release/* branches only."
               echo ""
+              echo "Classic Git Flow integrates work into develop via feature/*; this repo also allows chore/* (maintenance, docs, CI),"
+              echo "dependabot/* (automation), and release/* (release merges back to develop)."
+              echo "Prefixes such as docs/*, fix/*, or refactor/* are not accepted — use feature/<name> or chore/<name>."
+              echo ""
               echo "Direct PRs from main to develop are not allowed."
-              echo "Examples:"
+              echo "Valid examples:"
               echo " - feature/improve-genre-classification"
               echo " - chore/update-dependencies"
               echo " - dependabot/pip/requests-2.28.0"
-              echo "See CONTRIBUTING.md for Git Flow guidelines."
+              echo " - release/v0.2.1"
+              echo "See CONTRIBUTING.md (Branching, Branch Protection) for Git Flow guidelines and how to fix a wrong branch name."
               exit 1
             fi
           fi
