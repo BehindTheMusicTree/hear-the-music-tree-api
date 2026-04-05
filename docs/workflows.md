@@ -122,7 +122,7 @@ Enforces Git Flow: only allows certain source branches for PRs to `main` and `de
 **Logic:**
 
 - **PRs to `main`:** source branch must be `hotfix/*` or `release/*`; otherwise the job fails
-- **PRs to `develop`:** source branch must be `feature/*`, `chore/*`, `dependabot/*`, or `release/*`; otherwise the job fails
+- **PRs to `develop`:** source branch must be `feature/*`, `chore/*`, `dependabot/*`, or `release/*`; otherwise the job fails (classic Git Flow uses `feature/*`; other prefixes here are documented in CONTRIBUTING.md under **Branch Protection**).
 
 **No manual or workflow_call;** runs only on PR open/sync.
 

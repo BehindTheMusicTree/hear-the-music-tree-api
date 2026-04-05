@@ -65,6 +65,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **README**: Corrected the GrowTheMusicTree ecosystem link to the `grow-the-music-tree-frontend` repository.
 
+- **Git Flow / branch protection**: CONTRIBUTING and `.cursor/rules/git-flow-workflow.mdc` state how PRs to `develop` relate to classic Git Flow (`feature/*` plus `chore/*`, `dependabot/*`, `release/*`), list disallowed prefixes (e.g. `docs/*`), and describe the usual fix when the branch-name check fails. The branch protection workflow failure message and `docs/workflows.md` point to the same guidance. **Pre-PR checklist** and **pull-request-convention** Cursor rules are aligned (`dependabot/*`, target branches, invalid prefixes).
+
 ## [v2.2.3] - 2026-04-01
 
 ### Changed
