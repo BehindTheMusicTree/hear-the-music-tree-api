@@ -1,9 +1,10 @@
 """Audio metadata handling module.
 
-This module provides a backward-compatible wrapper around audiometa-python 0.2.4.
+This module provides a backward-compatible wrapper around audiometa-python.
 """
 
 import os
+from typing import Any
 
 import audiometa
 from audiometa import UnifiedMetadata, UnifiedMetadataKey
@@ -108,6 +109,21 @@ def update_file_metadata(
     file_path = _get_file_path_util(file)
     unified_metadata = _convert_app_to_unified_metadata(app_metadata)
 
+    audiometa.update_metadata(
+        file=file_path,
+        unified_metadata=unified_metadata,
+        normalized_rating_max_value=normalized_rating_max_value,
+        warn_on_unsupported_field=False,
+    )
+
+
+def update_file_metadata_unified(
+    file: FILE_TYPE,
+    unified_metadata: dict[str, Any],
+    normalized_rating_max_value: int | None = None,
+) -> None:
+    """Update metadata using audiometa unified field ids (``UnifiedMetadataKey.value`` strings)."""
+    file_path = _get_file_path_util(file)
     audiometa.update_metadata(
         file=file_path,
         unified_metadata=unified_metadata,
