@@ -288,18 +288,30 @@ We follow **strict Git Flow** with the following branch structure:
 
 #### Develop Branch (`develop`)
 
--- The integration branch for ongoing development
--- All feature and chore branches merge into `develop`
+- The integration branch for ongoing development
+- Feature and chore branches merge into `develop` via pull requests
 - `develop` is merged into `main` via release branches
-- **No direct commits allowed** - All changes must go through Pull Requests
--- Only receives merges from `feature/*`, `chore/*`, and `dependabot/*` branches
-- **Branch protection enforced** - GitHub Actions automatically blocks PRs to `develop` that don't come from `feature/*`, `chore/*`, or `dependabot/*` branches (see `.github/workflows/branch-protection.yml`)
+- **No direct commits allowed** — all changes must go through pull requests
+- Pull requests to `develop` are only accepted from `feature/*`, `chore/*`, `dependabot/*`, or `release/*` branches (see **Branch Protection** below)
+- **Branch protection enforced** — GitHub Actions blocks PRs to `develop` that do not use one of those source branch prefixes (see `.github/workflows/branch-protection.yml`)
 
 #### 🛡️ Branch Protection
 
-- **PRs to `main`** must come from `hotfix/*` or `release/*` branches only. This ensures production fixes are traceable and carefully released.
-- **PRs to `develop`** must come from `feature/*`, `chore/*`, or `dependabot/*` branches only. PRs from other branch types (e.g., `fix/*`, `refactor/*`, etc.) will be blocked by the branch protection workflow.
-- Branch protection is enforced by the `branch-protection.yml` GitHub Actions workflow located at `.github/workflows/branch-protection.yml`.
+- **PRs to `main`** must come from `hotfix/*` or `release/*` branches only. This keeps production changes traceable and tied to releases or hotfixes.
+- **PRs to `develop`** must come from `feature/*`, `chore/*`, `dependabot/*`, or `release/*` branches only. Other prefixes (e.g. `docs/*`, `fix/*`, `refactor/*`) fail the **Branch Protection Check / Verify PR source branch** job and cannot be merged while required checks are enabled.
+
+**How this maps to Git Flow:** In the classic model, work is integrated into `develop` through **`feature/*`** branches. This repository also uses **`chore/*`** for maintenance and documentation-only changes, **`dependabot/*`** for dependency automation, and **`release/*`** when merging release-line work back into `develop`.
+
+**If your PR fails the branch name check:**
+
+1. **Rename the branch locally** (on your work branch): `git branch -m feature/<descriptive-name>` or `git branch -m chore/<descriptive-name>`.
+2. **Push the new name** and set upstream: `git push -u origin HEAD`.
+3. **Remove the old remote branch** if you already pushed it: `git push origin --delete <old-branch-name>`.
+4. **Open a new pull request** from the correctly named branch and close the previous one. (GitHub does not reliably let you retarget an existing PR to a differently named head branch.)
+
+If you had not pushed yet, only steps 1–2 and a new PR are needed. Maintainers cannot “approve past” a failing required check without changing branch protection rules or using an admin merge override — the usual fix is a correctly prefixed branch.
+
+- Enforcement lives in the `branch-protection.yml` workflow at `.github/workflows/branch-protection.yml`.
 
 
 #### Feature Branches (`feature/<name>`)
@@ -595,7 +607,7 @@ Before submitting a Pull Request, ensure the following checks are completed:
 - ✅ Commit messages follow the commit message convention
 - ✅ Branch is up to date with target branch (`develop` for features, `main` for hotfixes)
 - ✅ No accidental commits (large files, secrets, personal configs)
-- ✅ Branch follows naming convention (`feature/`, `chore/`, `hotfix/`, `release/`)
+- ✅ Branch follows naming convention (`feature/`, `chore/`, `dependabot/`, `hotfix/`, `release/`) — see **Branching** / **Branch Protection**
 
 **5. Branch Target**
 
