@@ -7,8 +7,10 @@ class WritableMetadataFieldsMixin(serializers.Serializer):
     """Mixin that declares the same metadata fields written to the audio file in both metadata-session
     download and uploaded track update_file_metadata. Add this to serializers that accept these fields.
 
-    Field names use audiometa unified ids (``UnifiedMetadataKey.value``) plus legacy aliases
-    ``artists_names``, ``album_name``, and ``album_artists_names`` for backward compatibility.
+    Field names follow ``UnifiedMetadataKey.value`` where applicable. Use ``artists_names``,
+    ``album_name``, and ``album_artists_names`` for track artists, album title, and album
+    artists; the metadata-session patch builder maps them to unified ``artists``, ``album``,
+    and ``album_artists``.
     """
 
     title = serializers.CharField(required=False, allow_blank=True)
@@ -17,19 +19,8 @@ class WritableMetadataFieldsMixin(serializers.Serializer):
         required=False,
         allow_empty=True,
     )
-    artists = serializers.ListField(
-        child=serializers.CharField(allow_blank=True),
-        required=False,
-        allow_empty=True,
-    )
     album_name = serializers.CharField(required=False, allow_blank=True)
-    album = serializers.CharField(required=False, allow_blank=True)
     album_artists_names = serializers.ListField(
-        child=serializers.CharField(allow_blank=True),
-        required=False,
-        allow_empty=True,
-    )
-    album_artists = serializers.ListField(
         child=serializers.CharField(allow_blank=True),
         required=False,
         allow_empty=True,

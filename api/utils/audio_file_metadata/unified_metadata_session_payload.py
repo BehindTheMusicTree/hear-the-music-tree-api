@@ -28,9 +28,11 @@ _SKIP_KEYS = frozenset(
 def build_unified_metadata_patch_from_validated_data(data: dict[str, Any]) -> dict[str, Any]:
     """Build a patch dict keyed by :class:`UnifiedMetadataKey` string values.
 
-    Legacy payload keys (``artists_names``, ``album_name``, ``album_artists_names``) map to
-    canonical ``artists``, ``album``, ``album_artists``. Canonical keys win when both are present.
-    Only keys present in ``data`` are included (merge / partial update semantics).
+    ``artists_names``, ``album_name``, and ``album_artists_names`` map to unified ``artists``,
+    ``album``, and ``album_artists``. If both legacy and unified keys appear for the same
+    logical field (e.g. ``artists_names`` and ``artists``), the unified key wins. Raw unified
+    keys may still appear in ``data`` from programmatic callers. Only keys present in ``data``
+    are included (partial update).
     """
     out: dict[str, Any] = {}
 

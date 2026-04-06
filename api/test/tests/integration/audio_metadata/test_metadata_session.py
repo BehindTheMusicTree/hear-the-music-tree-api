@@ -115,7 +115,7 @@ class TestMetadataSessionUpload(AudioMetadataTestCase):
         )
         assert r2.status_code == status.HTTP_200_OK
 
-    def test_download_with_canonical_unified_keys_then_200(self):
+    def test_download_with_artists_names_and_unified_extra_fields_then_200(self):
         response = _post_metadata_session(
             self.api_client,
             UploadedTrackTestFilename.DEFAULT_MP3,
@@ -125,7 +125,7 @@ class TestMetadataSessionUpload(AudioMetadataTestCase):
         assert token
         download_response = self.api_client.post(
             path=reverse("audio-metadata-session-download"),
-            data={"title": "Canon", "artists": ["A", "B"], "composer": ["C"]},
+            data={"title": "Canon", "artists_names": ["A", "B"], "composer": ["C"]},
             format="json",
             HTTP_X_SESSION_TOKEN=token,
         )
