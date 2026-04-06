@@ -59,6 +59,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Changed
+
+- **Metadata session download**: Writable metadata accepts `artists_names`, `album_name`, and `album_artists_names` only (no duplicate `artists`, `album`, or `album_artists` body fields); `build_unified_metadata_patch_from_validated_data` maps them to audiometa unified `artists`, `album`, and `album_artists`.
+
 ### Documentation
 
 - **README**: Added ecosystem context with portfolio links (`themusictree.org`, HearTheMusicTree project page) and clarified that portfolio/marketing source-of-truth lives in `the-music-tree-frontend`.
