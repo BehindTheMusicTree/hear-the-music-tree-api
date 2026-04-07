@@ -30,9 +30,9 @@ class AudioMetadataSessionDownloadView(APIView):
         request={"application/json": {"type": "object", "properties": {
             "session_token": {"type": "string"},
             "title": {"type": "string"},
-            "artists_names": {"type": "array", "items": {"type": "string"}},
-            "album_name": {"type": "string"},
-            "album_artists_names": {"type": "array", "items": {"type": "string"}},
+            "artists": {"type": "array", "items": {"type": "string"}},
+            "album": {"type": "string"},
+            "album_artists": {"type": "array", "items": {"type": "string"}},
             "genres_names": {"type": "array", "items": {"type": "string"}},
             "rating": {"type": "integer"},
             "language": {"type": "string"},

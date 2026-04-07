@@ -10,12 +10,23 @@ def test_empty_payload():
     assert build_unified_metadata_patch_from_validated_data({}) == {}
 
 
-def test_legacy_keys_map_to_canonical():
+def test_app_style_keys_not_mapped():
     patch = build_unified_metadata_patch_from_validated_data(
         {
             Fields.ARTISTS_NAMES: ["A"],
             Fields.ALBUM_NAME: "Al",
             Fields.ALBUM_ARTISTS_NAMES: ["B"],
+        }
+    )
+    assert patch == {}
+
+
+def test_unified_keys_pass_through():
+    patch = build_unified_metadata_patch_from_validated_data(
+        {
+            UnifiedMetadataKey.ARTISTS.value: ["A"],
+            UnifiedMetadataKey.ALBUM.value: "Al",
+            UnifiedMetadataKey.ALBUM_ARTISTS.value: ["B"],
         }
     )
     assert patch == {
@@ -25,31 +36,21 @@ def test_legacy_keys_map_to_canonical():
     }
 
 
-def test_canonical_wins_over_legacy():
-    patch = build_unified_metadata_patch_from_validated_data(
-        {
-            UnifiedMetadataKey.ARTISTS.value: ["Canon"],
-            Fields.ARTISTS_NAMES: ["Legacy"],
-        }
-    )
-    assert patch[UnifiedMetadataKey.ARTISTS.value] == ["Canon"]
-
-
-def test_album_key_maps_for_programmatic_payload():
+def test_album_key_only():
     patch = build_unified_metadata_patch_from_validated_data(
         {UnifiedMetadataKey.ALBUM.value: "Direct"}
     )
     assert patch == {UnifiedMetadataKey.ALBUM.value: "Direct"}
 
 
-def test_artists_key_maps_for_programmatic_payload():
+def test_artists_key_only():
     patch = build_unified_metadata_patch_from_validated_data(
         {UnifiedMetadataKey.ARTISTS.value: ["A", "B"]}
     )
     assert patch == {UnifiedMetadataKey.ARTISTS.value: ["A", "B"]}
 
 
-def test_album_artists_key_maps_for_programmatic_payload():
+def test_album_artists_key_only():
     patch = build_unified_metadata_patch_from_validated_data(
         {UnifiedMetadataKey.ALBUM_ARTISTS.value: ["AA"]}
     )

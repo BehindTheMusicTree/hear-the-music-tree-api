@@ -56,7 +56,7 @@ If your API returns camelCase (e.g. `sessionToken`, `sessionExpiresInSeconds`), 
   - **Session token** (required): send either
     - Header: `X-Session-Token: <sessionToken>`
     - Or in JSON body: `session_token: "<sessionToken>"`
-  - **Metadata (optional)** — JSON body with any of: `title`, `artists_names`, `album_name`, `album_artists_names`, `genres_names` (list of strings), `rating`, `language`. Only provided fields are written; omit a field to leave it unchanged. To get the file as-is, send an empty object `{}` but still send the token (e.g. in the header).
+  - **Metadata (optional)** — JSON body with unified field ids only (e.g. `title`, `artists`, `album`, `album_artists`, `genres_names`, `rating`, `language`). Only provided fields are written; omit a field to leave it unchanged. To get the file as-is, send an empty object `{}` but still send the token (e.g. in the header). Do not send `artists_names` / `album_name` / `album_artists_names` on download.
 - **Response**:
   - `200 OK`: Body is the **binary audio file**. Headers include `Content-Type` (MIME type for the file), `Content-Disposition` with both `filename="..."` (ASCII fallback) and `filename*=UTF-8''...` (preferred UTF-8 name), and `Access-Control-Expose-Headers: Content-Disposition` so frontend JS can read that header cross-origin.
   - `400 Bad Request`: Missing session token.
@@ -73,9 +73,9 @@ const response = await fetch("/v1/audio/metadata/session-download/", {
   },
   body: JSON.stringify({
     title: editedTitle,
-    artists_names: editedArtists,
-    album_name: editedAlbum,
-    // ... other fields the user edited
+    artists: editedArtists,
+    album: editedAlbum,
+    // ... other unified fields the user edited
   }),
 });
 
@@ -111,13 +111,17 @@ URL.revokeObjectURL(url);
 
 ## Field names
 
-Use the same field names as in the upload response (and full-metadata API):
+**Download request**: use unified metadata field ids (e.g. `artists`, `album`, `album_artists`), matching `supported_unified_metadata_field_ids` / the session upload schema—not `artists_names`, `album_name`, or `album_artists_names`.
+
+**Display after upload**: the session upload JSON may use the same unified keys as full metadata (depends on API version); map your UI labels to those keys for the download step.
+
+Common keys:
 
 - `title` (string)
-- `artists_names` (array of strings)
-- `album_name` (string)
-- `album_artists_names` (array of strings)
-- `genre_name` (string)
+- `artists` (array of strings)
+- `album` (string)
+- `album_artists` (array of strings)
+- `genres_names` (array of strings)
 - `rating` (integer, 0–100 or format-dependent)
 - `language` (string)
 

@@ -61,9 +61,21 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Changed
 
-- **Metadata session download**: Writable metadata accepts `artists_names`, `album_name`, and `album_artists_names` only (no duplicate `artists`, `album`, or `album_artists` body fields); `build_unified_metadata_patch_from_validated_data` maps them to audiometa unified `artists`, `album`, and `album_artists`.
+- **Dependencies**: `audiometa-python` `1.1.0` → `1.4.0`.
+
+- **Audio file metadata**: Added `update_file_metadata_unified()` and `build_unified_metadata_patch_from_validated_data()` for patches keyed by unified metadata field ids.
+
+- **Metadata session download**: Writes tags via unified-metadata patches instead of app-metadata conversion and `update_file_metadata`.
+
+- **Metadata session download (request fields)**: JSON body uses unified metadata field ids only (e.g. `artists`, `album`, `album_artists`); `artists_names` / `album_name` / `album_artists_names` are no longer accepted on this endpoint.
+
+- **WritableMetadataFieldsMixin**: Declares optional unified writable metadata fields for session download (e.g. release date, track/disc numbers, BPM, composer, publisher, lyrics, comment, replay gain, archival location, ISRC, MusicBrainz ids, description, originator).
+
+- **Metadata session / audio metadata**: Unit tests cover `build_unified_metadata_patch_from_validated_data`; integration tests cover session upload unified field schema and supported-field ids, and download with `artists` and additional unified fields.
 
 ### Documentation
+
+- **Metadata session**: Session-download docs and frontend guide now describe unified JSON keys (`artists`, `album`, `album_artists`) instead of app-style aliases on that endpoint.
 
 - **README**: Added ecosystem context with portfolio links (`themusictree.org`, HearTheMusicTree project page) and clarified that portfolio/marketing source-of-truth lives in `the-music-tree-frontend`.
 
