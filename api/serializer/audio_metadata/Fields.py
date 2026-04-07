@@ -1,9 +1,15 @@
+from audiometa import UnifiedMetadataKey
+
+
 class Fields:
     FILE = "file"
     INCLUDE_MUSICBRAINZ_ANALYSIS = "include_musicbrainz_analysis"
     SESSION_TOKEN = "session_token"
     SESSION_EXPIRES_IN_SECONDS = "session_expires_in_seconds"
     TITLE = "title"
+    ARTISTS = UnifiedMetadataKey.ARTISTS.value
+    ALBUM = UnifiedMetadataKey.ALBUM.value
+    ALBUM_ARTISTS = UnifiedMetadataKey.ALBUM_ARTISTS.value
     ARTISTS_NAMES = "artists_names"
     ALBUM_NAME = "album_name"
     ALBUM_ARTISTS_NAMES = "album_artists_names"

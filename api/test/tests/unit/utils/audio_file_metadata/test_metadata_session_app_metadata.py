@@ -17,9 +17,9 @@ class TestBuildAppMetadataFromPayload:
     def test_multiple_fields_then_all_mapped(self):
         payload = {
             "title": "Track",
-            "artists_names": ["A", "B"],
-            "album_name": "Album",
-            "album_artists_names": ["C"],
+            "artists": ["A", "B"],
+            "album": "Album",
+            "album_artists": ["C"],
             "genres_names": ["Rock"],
             "rating": 80,
             "language": "en",

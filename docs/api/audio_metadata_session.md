@@ -69,15 +69,15 @@ Returns the file associated with the session token, with optional metadata writt
 - **Session token**: Required. Send either:
   - Header: `X-Session-Token: <session_token>`
   - Or body: `session_token` (string) in JSON.
-- **Metadata (optional)**: JSON body with any of: `title`, `artists_names`, `album_name`, `album_artists_names`, `genres_names` (list of strings), `rating`, `language`. Only provided fields are written; others are left as in the file. To get the file unchanged, send an empty body `{}` (but still provide the token in the header).
+- **Metadata (optional)**: JSON body with unified metadata field ids only (same strings as `UnifiedMetadataKey` / `supported_unified_metadata_field_ids` from the session upload response), e.g. `title`, `artists`, `album`, `album_artists`, `genres_names` (list of strings), `rating`, `language`. Only provided fields are written; others are left as in the file. To get the file unchanged, send an empty body `{}` (but still provide the token in the header). Keys such as `artists_names`, `album_name`, and `album_artists_names` are not accepted on download.
 
 Body example:
 
 ```json
 {
   "title": "New Title",
-  "artists_names": ["Artist One", "Artist Two"],
-  "album_name": "New Album",
+  "artists": ["Artist One", "Artist Two"],
+  "album": "New Album",
   "genres_names": ["Rock", "Alternative"]
 }
 ```

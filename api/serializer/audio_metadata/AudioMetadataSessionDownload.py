@@ -8,7 +8,7 @@ from api.serializer.audio_metadata.WritableMetadataFieldsMixin import WritableMe
 class AudioMetadataSessionDownloadSerializer(WritableMetadataFieldsMixin):
     """Validates session token and optional metadata fields for the download endpoint.
 
-    Metadata fields (title, artists_names, etc.) are shared with uploaded track file metadata updates.
+    Metadata keys match unified field ids (``UnifiedMetadataKey.value``), e.g. ``artists``, ``album``.
     """
 
     session_token = serializers.CharField(required=False, allow_blank=False)
