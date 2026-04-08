@@ -102,10 +102,10 @@ def get_specific_metadata(file: FILE_TYPE, app_metadata_key: AppMetadataKey) -> 
     return value
 
 
-def update_file_metadata(
+def update_file_metadata_app(
     file: FILE_TYPE, app_metadata: AppMetadata, normalized_rating_max_value: int | None = None
 ) -> None:
-    """Update metadata in a file."""
+    """Update metadata in a file from :class:`AppMetadata` (converted to unified keys internally)."""
     file_path = _get_file_path_util(file)
     unified_metadata = _convert_app_to_unified_metadata(app_metadata)
 
