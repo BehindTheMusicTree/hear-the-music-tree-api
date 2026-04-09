@@ -2,10 +2,10 @@
 
 This API repository follows **Tier B** in [BehindTheMusicTree/python-project-standards](https://github.com/BehindTheMusicTree/python-project-standards):
 
-- **Shared:** pre-commit checks in CI via [`reusable-pre-commit.yml` @ `v2.2.0`](https://github.com/BehindTheMusicTree/python-project-standards/blob/v2.2.0/.github/workflows/reusable-pre-commit.yml) (see `.github/workflows/test.yml`).
+- **Shared:** pre-commit checks in CI via [`reusable-pre-commit.yml` @ `v2.3.0`](https://github.com/BehindTheMusicTree/python-project-standards/blob/v2.3.0/.github/workflows/reusable-pre-commit.yml) (see `.github/workflows/test.yml`).
 - **Local:** the **pytest** job stays in this repository because it needs PostgreSQL, Audio Fingerprinter containers, GitHub Environment secrets, and project scripts.
 
-The workflow uses **`@v2.2.0`**, matching the repo root [`STANDARDS_VERSION`](../../STANDARDS_VERSION). When upgrading standards, bump both the `uses: …@…` ref and `STANDARDS_VERSION`, then read [Upstream `CHANGELOG.md`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/CHANGELOG.md) and [versioning](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/versioning.md).
+The workflow uses **`@v2.3.0`**, matching the repo root [`STANDARDS_VERSION`](../../STANDARDS_VERSION). When upgrading standards, bump both the `uses: …@…` ref and `STANDARDS_VERSION`, then read [Upstream `CHANGELOG.md`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/CHANGELOG.md) and [versioning](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/versioning.md).
 
 For libraries with a multi-OS test matrix, use Tier A (`reusable-pre-commit` + `reusable-test-matrix`) instead; that pattern does not replace this API’s integration CI.
 

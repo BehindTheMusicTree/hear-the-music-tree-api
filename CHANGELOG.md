@@ -79,7 +79,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Pre-commit**: PR workflow runs `pre-commit run --all-files` (StrEnum checker, Ruff fatal rules, YAML / merge-conflict checks) instead of a separate StrEnum-only job. Added **`verify-python-project-standards`** ([`scripts/verify-standards.sh`](scripts/verify-standards.sh)) from org standards templates (Tier B + pin check vs `STANDARDS_VERSION`).
 
-- **python-project-standards**: Pre-commit job calls [`reusable-pre-commit` @ `v2.2.0`](https://github.com/BehindTheMusicTree/python-project-standards/blob/v2.2.0/.github/workflows/reusable-pre-commit.yml), matching [`STANDARDS_VERSION`](STANDARDS_VERSION); integration pytest stays local. See [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md).
+- **python-project-standards**: Pre-commit job calls [`reusable-pre-commit` @ `v2.3.0`](https://github.com/BehindTheMusicTree/python-project-standards/blob/v2.3.0/.github/workflows/reusable-pre-commit.yml), matching [`STANDARDS_VERSION`](STANDARDS_VERSION); integration pytest stays local. See [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md).
 
 ### Documentation
 
