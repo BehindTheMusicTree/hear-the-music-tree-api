@@ -38,7 +38,7 @@ env:
 jobs:
   pre-commit:
     name: Pre-commit
-    uses: BehindTheMusicTree/python-project-standards/.github/workflows/reusable-pre-commit.yml@v2.1.0
+    uses: BehindTheMusicTree/python-project-standards/.github/workflows/reusable-pre-commit.yml@v2.2.0
     with:
       runs-on: ubuntu-latest
       python-version: "3.14"
