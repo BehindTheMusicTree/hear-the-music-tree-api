@@ -85,17 +85,17 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### CI
 
-- **Pre-commit**: PR workflow runs `pre-commit run --all-files` (StrEnum checker, Ruff fatal rules, YAML / merge-conflict checks) instead of a separate StrEnum-only job.
+- **Pre-commit**: PR workflow runs `pre-commit run --all-files` (StrEnum checker, Ruff fatal rules, YAML / merge-conflict checks) instead of a separate StrEnum-only job. Added **`verify-python-project-standards`** ([`scripts/verify-standards.sh`](scripts/verify-standards.sh)) from org standards templates (Tier B + pin check vs `STANDARDS_VERSION`).
 
-- **python-project-standards**: Pre-commit job calls [`reusable-pre-commit` @ `v1.0.0`](https://github.com/BehindTheMusicTree/python-project-standards/blob/v1.0.0/.github/workflows/reusable-pre-commit.yml), matching [`STANDARDS_VERSION`](STANDARDS_VERSION); integration pytest stays local. See [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md).
+- **python-project-standards**: Pre-commit job calls [`reusable-pre-commit` @ `v2.1.0`](https://github.com/BehindTheMusicTree/python-project-standards/blob/v2.1.0/.github/workflows/reusable-pre-commit.yml), matching [`STANDARDS_VERSION`](STANDARDS_VERSION); integration pytest stays local. See [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md).
 
 ### Documentation
 
-- **Development**: [DEVELOPMENT.md](DEVELOPMENT.md) documents the `StrEnum` convention and points to the checker script.
+- **Development**: [DEVELOPMENT.md](DEVELOPMENT.md) links org-wide policy to [python-project-standards `docs/development.md`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md) (with [`string-enums.md`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/string-enums.md) for `StrEnum`); notes **Ruff UP042** as primary enforcement and **`prefer-strenum`** as an extra guardrail. [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md) references the same hub.
 
 - **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md) documents optional `pre-commit install` and the StrEnum hook; the Testing section explains when pytest feels stuck (verbose logging, DB, pyenv).
 
-- **Cursor**: `.cursor/rules/strenum-string-enums.mdc` encodes the `StrEnum` convention for contributors using Cursor.
+- **Cursor**: `.cursor/rules/strenum-string-enums.mdc` matches [python-project-standards `templates/cursor-rules/strenum-string-enums.mdc`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/templates/cursor-rules/strenum-string-enums.mdc) and encodes the `StrEnum` convention for contributors using Cursor.
 
 - **Audio file metadata (utils README)**: Examples use `update_file_metadata_app()` to match the adapter rename.
 
