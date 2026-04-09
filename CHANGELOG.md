@@ -59,7 +59,21 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Added
+
+- **Linting (audiometa-python baseline)**: [`.pre-commit-config.yaml`](.pre-commit-config.yaml) matches the audiometa-python hook stack (tool version check, YAML/JSON/TOML, shellcheck, `no-assert`, ruff-format, ruff, isort, mypy + django-stubs, pydocstringformatter, long-comment fixer, Prettier, optional PSScriptAnalyzer) plus **`prefer-strenum`**. Configuration lives in [`pyproject.toml`](pyproject.toml); linter and test dependencies are pinned under `[project.optional-dependencies] dev`. Ruff **select** matches audiometa; extra **ignores** document Django/DRF cleanup debt. Mypy is plugin-aligned but **gradual** (`ignore_missing_imports`, non-strict) until typing can match audiometa strictness.
+
+- **Packaging (PEP 621, audiometa-style)**: Runtime and dev dependencies are declared in `pyproject.toml` (`[project]` / `[project.optional-dependencies] dev`) with setuptools as the build backend. Local and CI use `pip install -e "[dev]"`; production Docker builds use `pip install .`. There is no `requirements.txt`; `pyproject.toml` is the only dependency manifest. Release bumps now update `pyproject.toml` `[project] version` via bump2version. `fake-samples-loader` is pinned to `1.0.13`; `django-dynamic-fixture` is a dev extra (tests only).
+
+- **[`.pre-commit-hooks/`](.pre-commit-hooks/)**: Shell wrappers copied from audiometa-python (`tool-wrapper`, `check-tool-versions`, shellcheck, `no-assert`, etc.).
+
 ### Changed
+
+- **Ruff**: Aligned `pyproject.toml` ignores with **0.15.x** (removed no-op `PT004` / `UP038`; `TRY302` → `TRY203`). Version remains **0.15.9**.
+
+- **String enums**: Existing `(str, Enum)` types under `api/` now subclass `StrEnum` for consistency with Python 3.11+ stdlib guidance.
+
+- **pytest**: `pytest.ini` live logging default is **INFO** instead of **DEBUG** so suites do not look hung; use `-o log_cli_level=DEBUG` when diagnosing failures.
 
 - **Dependencies**: `audiometa-python` `1.1.0` → `1.4.0`.
 
@@ -69,7 +83,19 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Audio metadata API**: `POST /v1/audio/metadata/full/`, `POST /v1/audio/metadata/session/`, and `POST /v1/audio/metadata/session-download/` moved to the standalone **AudioMeta API** service repository (`audiometa-api`). Deploy no longer requires `METADATA_SESSION_DIR` for this app.
 
+### CI
+
+- **Pre-commit**: PR workflow runs `pre-commit run --all-files` (StrEnum checker, Ruff fatal rules, YAML / merge-conflict checks) instead of a separate StrEnum-only job.
+
+- **python-project-standards**: Pre-commit job calls [`reusable-pre-commit` @ `v1.0.0`](https://github.com/BehindTheMusicTree/python-project-standards/blob/v1.0.0/.github/workflows/reusable-pre-commit.yml), matching [`STANDARDS_VERSION`](STANDARDS_VERSION); integration pytest stays local. See [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md).
+
 ### Documentation
+
+- **Development**: [DEVELOPMENT.md](DEVELOPMENT.md) documents the `StrEnum` convention and points to the checker script.
+
+- **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md) documents optional `pre-commit install` and the StrEnum hook; the Testing section explains when pytest feels stuck (verbose logging, DB, pyenv).
+
+- **Cursor**: `.cursor/rules/strenum-string-enums.mdc` encodes the `StrEnum` convention for contributors using Cursor.
 
 - **Audio file metadata (utils README)**: Examples use `update_file_metadata_app()` to match the adapter rename.
 
