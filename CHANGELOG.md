@@ -77,13 +77,15 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### CI
 
-- **Pre-commit**: PR workflow runs `pre-commit run --all-files` (StrEnum checker, Ruff fatal rules, YAML / merge-conflict checks) instead of a separate StrEnum-only job. Added **`verify-python-project-standards`** ([`scripts/verify-standards.sh`](scripts/verify-standards.sh)) from org standards templates (Tier B + pin check vs `STANDARDS_VERSION`).
+- **Pre-commit**: PR workflow runs `pre-commit run --all-files` (StrEnum checker, Ruff fatal rules, YAML / merge-conflict checks) in an **inline** job (checkout, Python 3.14, `pip install -e ".[dev]"`), not via org `reusable-pre-commit`. Integration **pytest** stays in-repo. Added **`verify-python-project-standards`** ([`scripts/verify-standards.sh`](scripts/verify-standards.sh)); removed the `STANDARDS_VERSION` file and workflow pin checks. See [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md).
 
-- **python-project-standards**: Pre-commit job calls [`reusable-pre-commit` @ `v2.3.0`](https://github.com/BehindTheMusicTree/python-project-standards/blob/v2.3.0/.github/workflows/reusable-pre-commit.yml), matching [`STANDARDS_VERSION`](STANDARDS_VERSION); integration pytest stays local. See [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md).
+### Fixed
+
+- **`verify-standards.sh`**: Synced from **python-project-standards v3.0.1**: stricter local **ruff check** detection (not **`ruff-format`** alone); optional **`STANDARDS_VERSION`** vs **`@v…`** pin scan uses a workflow file loop instead of fragile **`grep -r --include`** ordering (still accepts **astral-sh/ruff-pre-commit** remote repo).
 
 ### Documentation
 
-- **Development**: [DEVELOPMENT.md](DEVELOPMENT.md) links org-wide policy to [python-project-standards `docs/development.md`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md) (with [`string-enums.md`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/string-enums.md) for `StrEnum`); notes **Ruff UP042** as primary enforcement and **`prefer-strenum`** as an extra guardrail. [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md) references the same hub.
+- **Development**: [DEVELOPMENT.md](DEVELOPMENT.md) links org-wide policy to [python-project-standards `docs/development.md`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md) (with [`string-enums.md`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/string-enums.md) for `StrEnum`); notes **Ruff UP042** as primary enforcement and **`prefer-strenum`** as an extra guardrail. [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md) references the same hub and notes org **v3+** dropped **reusable-test-matrix** (only **reusable-pre-commit** remains for shared lint).
 
 - **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md) documents optional `pre-commit install` and the StrEnum hook; the Testing section explains when pytest feels stuck (verbose logging, DB, pyenv).
 
