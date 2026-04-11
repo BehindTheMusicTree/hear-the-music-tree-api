@@ -102,11 +102,11 @@ main() {
         echo ""
         echo -e "${RED}ERROR: Tool version mismatch detected!${NC}"
         echo ""
-        echo "To fix this:"
-        echo "  1. Activate your virtual environment (if not already active)"
-        echo "  2. Reinstall dependencies: pip install -e \".[dev]\""
+        echo "To fix this (from repo root):"
+        echo "  bash scripts/setup-dev-tools.sh"
         echo ""
-        echo "This ensures pre-commit uses the same tool versions as CI."
+        echo "That activates ./.venv or ./venv if needed, then runs pip install -e \".[dev]\" (same pins as CI)."
+        echo "Manual alternative: activate your venv, then pip install -e \".[dev]\""
         exit 1
     fi
 
