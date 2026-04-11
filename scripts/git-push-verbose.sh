@@ -9,7 +9,7 @@ LARGE_UPLOAD_THRESHOLD_MB=10
 
 estimate_push_size() {
     local remote_ref="${REMOTE}/${BRANCH}"
-    
+
     if ! git rev-parse --verify "$remote_ref" >/dev/null 2>&1; then
         git fetch "$REMOTE" "$BRANCH" --quiet 2>/dev/null || true
         if ! git rev-parse --verify "$remote_ref" >/dev/null 2>&1; then
@@ -17,19 +17,19 @@ estimate_push_size() {
             return
         fi
     fi
-    
+
     local local_commit=$(git rev-parse HEAD 2>/dev/null || echo "")
     local remote_commit=$(git rev-parse "$remote_ref" 2>/dev/null || echo "")
-    
+
     if [ -z "$local_commit" ] || [ -z "$remote_commit" ] || [ "$local_commit" = "$remote_commit" ]; then
         echo 0
         return
     fi
-    
+
     local size_bytes=$(git rev-list --objects "$remote_commit".."$local_commit" 2>/dev/null | \
         git cat-file --batch-check='%(objectsize)' 2>/dev/null | \
         awk '{sum+=$1} END {printf "%.0f", sum+0}')
-    
+
     if [ -z "$size_bytes" ] || [ "$size_bytes" = "" ]; then
         echo 0
     else

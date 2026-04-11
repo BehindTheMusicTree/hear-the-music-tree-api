@@ -12,7 +12,7 @@ calculate_static_files_dir(){
             log_with_script_prefixe "ERROR: In collect static mode, $STATIC_FILES_EXTERNAL must not be set." >&2
             exit 1
         fi
-    else 
+    else
         if [ -z "$STATIC_FILES_INTERNAL" ]; then
             log_with_script_prefixe "ENV is not set to collect_static and STATIC_FILES_INTERNAL is not set. Static files are not needed."
             if [ -n "$STATIC_FILES_EXTERNAL" ]; then
@@ -26,7 +26,7 @@ calculate_static_files_dir(){
             fi
         fi
     fi
-    
+
     if [ -n "$STATIC_FILES_INTERNAL" ]; then
         log_with_script_prefixe "STATIC_FILES_INTERNAL is set. Setting the static files default directory to internal."
         STATIC_FILES_DEFAULT="${PROJECT_DIR}${STATIC_FILES_INTERNAL}"
@@ -149,7 +149,7 @@ main () {
     calculate_media_dirs
     calculate_static_files_dir
     calculate_django_log_dir
-    
+
     log_with_script_prefixe "Generated the env file with calculated paths successfully."
 }
 
