@@ -28,6 +28,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from typing import NoReturn
 
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -41,7 +42,7 @@ RELEASE_VERSION_HEADING = re.compile(
 MARKER_HEADING = "## [Unreleased]  <!-- release -->"
 
 
-def _fail(msg: str) -> None:
+def _fail(msg: str) -> NoReturn:
     print(msg, file=sys.stderr)
     sys.exit(1)
 
@@ -90,7 +91,6 @@ def ensure_bump_marker(text: str) -> tuple[str, bool]:
         end = abs_start + len(heading)
         return text[:abs_start] + MARKER_HEADING + text[end:], True
     _fail(f"CHANGELOG.md: expected ## [Unreleased] after the Note, found {heading!r}.")
-    return None
 
 
 def ensure_empty_unreleased_section(text: str) -> tuple[str, bool]:
