@@ -6,7 +6,7 @@ source ${SCRIPTS_DIR}utils.sh
 
 log "Generating partial docker-compose files..."
 
-# One docker-compose part file for each service so that the Web Server Management add the network name for 
+# One docker-compose part file for each service so that the Web Server Management add the network name for
 # each one of them separatly.
 
 load_app_env_file_if_exists
