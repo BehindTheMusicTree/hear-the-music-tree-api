@@ -134,7 +134,7 @@ empty_db() {
 		log_with_script_prefixe "ERROR: Failed to drop the user: $output" >&2
 		exit 1
 		fi
-	else 
+	else
 		log_with_script_prefixe "User $DB_SUPERUSER_NAME does not exist."
 	fi
 }
