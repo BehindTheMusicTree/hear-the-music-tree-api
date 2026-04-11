@@ -137,6 +137,15 @@ if [[ $snippet_fail -ne 0 ]]; then
   exit 1
 fi
 
+if [[ "${VERIFY_STANDARDS_SKIP_LINT_BASELINE:-}" != "1" ]]; then
+  checker="$repo_path/scripts/check_lint_baseline.py"
+  if [[ ! -f "$checker" ]]; then
+    echo "Missing scripts/check_lint_baseline.py (copy from python-project-standards templates/scripts)."
+    exit 1
+  fi
+  python3 "$checker" "$repo_path"
+fi
+
 if [[ ! -f "$repo_path/STANDARDS_VERSION" ]]; then
   echo "Warning: missing STANDARDS_VERSION (recommended when using org python-project-standards)."
 else

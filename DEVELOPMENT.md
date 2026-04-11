@@ -4,6 +4,8 @@ This document outlines the coding standards and best practices for developing th
 
 Organization-wide Python tooling, CI adoption, and shared style baselines are documented in **[BehindTheMusicTree/python-project-standards — Development baseline](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md)**. This file focuses on conventions specific to this API (Django, DRF, project layout).
 
+This repository tracks adopted policy in root [**`STANDARDS_VERSION`**](STANDARDS_VERSION) (**`4.1.0`**) and vendors **Ruff / Mypy baselines** under [**`baselines/`**](baselines/) (digest-checked by **`verify-python-project-standards`** via [`scripts/check_lint_baseline.py`](scripts/check_lint_baseline.py)); see [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md).
+
 For information about system architecture, patterns, and design decisions, see [Architecture documentation](docs/architecture.md).
 
 ## Table of Contents
@@ -47,12 +49,14 @@ All Python files must follow the project's naming conventions:
 - **One class per file** - Each file must contain exactly one class (see [One Class Per File](.cursor/rules/one-class-per-file.mdc))
 
 - **Regular classes** (Models, Managers, etc.):
+
   - Use **PascalCase** for file names
   - File name must match the class name exactly
   - Example: `Genre.py` contains `class Genre(models.Model)`
   - Example: `GenreManager.py` contains `class GenreManager(models.Manager)`
 
 - **Serializer classes**:
+
   - Use **camelCase** (lowercase) for file names
   - File name should be shorter than the class name
   - Example: `genre.py` contains `class GenreSerializer(serializers.ModelSerializer)`
@@ -63,6 +67,7 @@ All Python files must follow the project's naming conventions:
   - Example: `_MetadataManager.py`, `_Id3v2Manager.py`
 
 **Why this matters:**
+
 - Consistent naming makes the codebase easier to navigate
 - One class per file improves code organization and maintainability
 - Clear distinction between models and serializers through naming
@@ -82,6 +87,7 @@ Follow the org **[Development baseline](https://github.com/BehindTheMusicTree/py
 - Use these constants instead of string literals throughout the codebase
 
 **Good examples:**
+
 ```python
 # Fields.py
 class Fields:
@@ -102,6 +108,7 @@ def get_genre(self, request: Request) -> Response:
 ```
 
 **Bad examples:**
+
 ```python
 # Using string literals
 assert result["name"] == "Rock"  # Bad
@@ -115,6 +122,7 @@ See [Field Name Constants](.cursor/rules/field-name-constants.mdc) for detailed 
 Private fields should start with an underscore to indicate they are internal implementation details.
 
 **Good examples:**
+
 ```python
 class Genre(models.Model):
     name = models.CharField(max_length=100)  # Public field
@@ -143,6 +151,7 @@ Docstrings should only be added when they provide value (complex logic, public A
 - Redundant comments that simply restate what the code does
 
 **Example of unnecessary docstring:**
+
 ```python
 # Bad - Redundant docstring
 def get_genre(self, name: str) -> Genre:
@@ -159,6 +168,7 @@ See [No Useless Comments](.cursor/rules/no-useless-comments.mdc) for detailed gu
 - **Type hints for public APIs** - All public API functions should have type hints
 
 **Good examples:**
+
 ```python
 def process_track(track_id: str, user: User) -> dict[str, Any]:
     """Process a track."""
@@ -250,4 +260,3 @@ For quick reference on code style conventions, see [code-style.md](code-style.md
 - [Test Naming Convention](.cursor/rules/test-naming-convention.mdc)
 - [Divide Test Cases](.cursor/rules/divide-test-cases.mdc)
 - [Use assert Instead of assertEqual](.cursor/rules/use-assert-not-assertequal.mdc)
-
