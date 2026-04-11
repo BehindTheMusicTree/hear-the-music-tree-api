@@ -1,5 +1,5 @@
 # Based on audiometa-python pre-commit layout; tools pinned in pyproject.toml ([project.optional-dependencies] dev).
-# Install: pip install -e ".[dev]" && pre-commit install
+# Install: bash scripts/setup-dev-tools.sh   (or: pip install -e ".[dev]" && pre-commit install)
 # Hooks use language: system — activate .venv before committing locally.
 fail_fast: true
 

@@ -29,6 +29,7 @@ import subprocess
 import sys
 from pathlib import Path
 
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CHANGELOG_PATH = REPO_ROOT / "CHANGELOG.md"
 NOTE_PREFIX = "**Note:** During releases, maintainers will move entries from"
@@ -53,7 +54,7 @@ def _require_venv() -> None:
         "prepare_release_bump.py must run inside a Python virtual environment.\n"
         "Create and use the project venv, install deps, then retry. Example:\n"
         "  python3 -m venv .venv && source .venv/bin/activate "
-        "&& pip install -e \".[dev]\"\n"
+        '&& pip install -e ".[dev]"\n'
         "  python3 scripts/prepare_release_bump.py patch"
     )
 
@@ -70,7 +71,7 @@ def _first_h2_after_note(text: str) -> tuple[int, str]:
     rest = text[idx:]
     m = FIRST_RELEASE_HEADING.search(rest)
     if not m:
-        _fail("CHANGELOG.md: no ## heading found after blank line following the " "maintainer Note.")
+        _fail("CHANGELOG.md: no ## heading found after blank line following the maintainer Note.")
     heading = m.group(1)
     abs_start = idx + m.start(1)
     return abs_start, heading
@@ -98,8 +99,7 @@ def ensure_empty_unreleased_section(text: str) -> tuple[str, bool]:
     m = RELEASE_VERSION_HEADING.search(tail)
     if not m:
         _fail(
-            "CHANGELOG.md: could not find ## [vX.Y.Z] - <date> after bump "
-            "(expected version heading from bump2version)."
+            "CHANGELOG.md: could not find ## [vX.Y.Z] - <date> after bump (expected version heading from bump2version)."
         )
     version_line_start = idx + m.start()
     head = text[:version_line_start]
@@ -122,9 +122,7 @@ def ensure_empty_unreleased_section(text: str) -> tuple[str, bool]:
 
 def _run_bump2version(kind: str, allow_dirty: bool) -> None:
     if not shutil.which("bump2version"):
-        _fail(
-            "bump2version not found on PATH. In your project venv run: " 'pip install -e ".[dev]"'
-        )
+        _fail('bump2version not found on PATH. In your project venv run: pip install -e ".[dev]"')
     cmd = ["bump2version", kind]
     if allow_dirty:
         cmd.append("--allow-dirty")

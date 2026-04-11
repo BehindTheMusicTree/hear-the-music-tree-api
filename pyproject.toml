@@ -187,8 +187,8 @@ ignore = [
 [tool.ruff.lint.per-file-ignores]
 "api/test/**" = ["PLR2004"]
 ".pre-commit-hooks/**" = ["PLR2004"]
-"scripts/prepare_release_bump.py" = ["TRY003", "EM101", "EM102", "PLR2004", "DTZ011", "RUF005", "T201"]
-"scripts/fix_changelog_after_bump.py" = ["T201"]
+"scripts/prepare_release_bump.py" = ["TRY003", "EM101", "EM102", "PLR2004", "DTZ011", "RUF005", "T201", "I001"]
+"scripts/fix_changelog_after_bump.py" = ["T201", "I001"]
 
 # Same plugin layout as audiometa-style projects; strictness relaxed for gradual Django typing.
 [tool.mypy]
