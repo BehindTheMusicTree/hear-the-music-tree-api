@@ -14,7 +14,7 @@ check_script_vars_are_set () {
 }
 
 setup_static_files_for_collection() {
-    check_required_vars_are_set STATIC_FILES_DEFAULT 
+    check_required_vars_are_set STATIC_FILES_DEFAULT
     log_with_script_prefixe "ENV is set to collect_static. Setting up the filesystem..."
     create_directory_if_not_exists_or_exit "$STATIC_FILES_DEFAULT"
     log_with_script_prefixe "Checking if files exist in $STATIC_FILES_DEFAULT..."
@@ -34,7 +34,7 @@ setup_static_files_for_collection() {
 setup_static_files_for_serving() {
     if [ -z "$STATIC_FILES_DEFAULT" ]; then
         log_with_script_prefixe "ENV is not set to collect_static and STATIC_FILES_DEFAULT is not set. Static files are not needed."
-    else 
+    else
         log_with_script_prefixe "ENV is not set to collect_static and STATIC_FILES_DEFAULT is set. Static files are needed. "\
             "Setting up the filesystem..."
         log_with_script_prefixe "Checking if the directory $STATIC_FILES_DEFAULT exists..."
@@ -172,7 +172,7 @@ main (){
     SCRIPTS_DIR=$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)/
     PROJECT_DIR=$(realpath "$(dirname "$SCRIPTS_DIR")")/
     source "${SCRIPTS_DIR}utils.sh"
-    
+
     log_with_script_prefixe "Setting up filesystem..."
 
     check_script_vars_are_set
