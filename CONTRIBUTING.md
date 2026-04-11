@@ -163,45 +163,43 @@ cd the-music-tree-api
 4. Create and activate a virtual environment:
 
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # (Linux/macOS)
-   venv\Scripts\activate     # (Windows)
+   python -m venv .venv
+   source .venv/bin/activate  # (Linux/macOS)
+   .venv\Scripts\activate      # (Windows)
    ```
 
-5. Install Python dependencies (editable install pulls runtime + dev extras from [`pyproject.toml`](pyproject.toml)):
+5. Install Python dev dependencies and Git hooks (editable install from [`pyproject.toml`](pyproject.toml) plus `pre-commit install` when [`.pre-commit-config.yaml`](.pre-commit-config.yaml) is present). From the repo root:
 
    ```bash
-   pip install -e ".[dev]"
+   bash scripts/setup-dev-tools.sh
    ```
 
-6. **(Recommended)** Install Git hooks so commits run checks in [`.pre-commit-config.yaml`](.pre-commit-config.yaml) (audiometa-python–style stack: ruff-format, ruff, isort, mypy, pydocstringformatter, etc., plus StrEnum). Tools must match versions in [`pyproject.toml`](pyproject.toml) (see `.pre-commit-hooks/check-tool-versions.sh`).
+   The script activates `./.venv` if it exists, otherwise `./venv`, when you are not already inside a virtual environment (local pre-commit wrappers use `./.venv` when the shell is not activated; prefer `.venv` for new clones). Tools must match versions in [`pyproject.toml`](pyproject.toml) (see `.pre-commit-hooks/check-tool-versions.sh`). Run all hooks on the tree: `pre-commit run --all-files`. Requires **shellcheck** and (for PowerShell hooks) **pwsh** locally where those hooks apply.
 
-   ```bash
-   pre-commit install
-   ```
+   Manual alternative: `pip install -e ".[dev]"` then `pre-commit install`.
 
-   Run all hooks on the tree: `pre-commit run --all-files`. Requires **shellcheck** and (for PowerShell hooks) **pwsh** locally where those hooks apply.
-
-7. Set up filesystem:
+6. Set up filesystem:
 
    ```bash
    bash scripts/setup-filesystem.sh
    ```
 
    This creates necessary directories for:
+
    - Static files
    - Django logs
    - Gunicorn logs (if app is exposed)
    - Media files and libraries
    - Temporary uploaded files
 
-8. Run database and Audio Fingerprinter containers:
+7. Run database and Audio Fingerprinter containers:
 
    ```bash
    bash scripts/run-db-and-afp-containers.sh
    ```
 
    This starts the required Docker containers:
+
    - PostgreSQL database container
    - Audio Fingerprinter (AFP) container
 
@@ -214,6 +212,7 @@ You need to set up several environment variables for development, build, and run
 **Environment Variable Handling:**
 
 The application uses strict environment variable validation:
+
 - **Required variables**: Must be set or the application will fail to start with a clear error message
 - **No fallbacks**: Required environment variables do not have default values - they must be explicitly set
 - **Path validation**: Path variables (like `MEDIA_DIR`) are validated to ensure the directories exist
@@ -225,6 +224,7 @@ Create a copy of the file `env/dev/.env.dev.template` as `env/.env` and set the 
 
 **Build:**
 The docker build requires the following environment variables:
+
 - `APP_NAME`
 - `APP_VERSION`
 - `FILE_UPLOAD_ENABLED`
@@ -246,6 +246,7 @@ Log and static filenames (e.g. `GUNICORN_LOG_ERROR_FILENAME`, `DJANGO_LOG_GENERA
 
 **Running the container:**
 Running the container requires the following environment variables:
+
 - `DJANGO_SECRET_KEY`
 - `ACOUSTID_API_KEY`
 - `CSRF_TRUSTED_ORIGINS`
@@ -321,7 +322,6 @@ We follow **strict Git Flow** with the following branch structure:
 If you had not pushed yet, only steps 1–2 and a new PR are needed. Maintainers cannot “approve past” a failing required check without changing branch protection rules or using an admin merge override — the usual fix is a correctly prefixed branch.
 
 - Enforcement lives in the `branch-protection.yml` workflow at `.github/workflows/branch-protection.yml`.
-
 
 #### Feature Branches (`feature/<name>`)
 
@@ -418,7 +418,6 @@ If you had not pushed yet, only steps 1–2 and a new PR are needed. Maintainers
 - Branch from `develop`
 - Dependabot opens Pull Requests that should target `develop` for dependency bumps and security updates
 - Merge into `develop` via Pull Request when complete; treat them like `chore/*` changes or dependency maintenance
-
 
 ### 3. Developing
 
@@ -525,6 +524,7 @@ git push origin v0.3.6-dev-improve-cicd
 ```
 
 This automatically triggers the `publish.yml` workflow which will:
+
 - Build Docker image: `username/repo:0.3.6-dev-improve-cicd`
 - Deploy to the test server
 - Allow you to validate your changes before creating a PR
@@ -534,6 +534,7 @@ This automatically triggers the `publish.yml` workflow which will:
 Git tags are immutable once pushed. If you make changes and need to republish:
 
 1. **Delete the old tag** (recommended for dev tags):
+
    ```bash
    git tag -d v0.3.6-dev-improve-cicd
    git push origin --delete v0.3.6-dev-improve-cicd
@@ -552,6 +553,7 @@ Git tags are immutable once pushed. If you make changes and need to republish:
    ```
 
 **Note:** Development tags are for testing purposes only and should not be used for releases. Delete them after testing if desired:
+
 ```bash
 git tag -d v0.3.6-dev-improve-cicd
 git push origin --delete v0.3.6-dev-improve-cicd
@@ -561,12 +563,12 @@ git push origin --delete v0.3.6-dev-improve-cicd
 
 We follow a structured commit format inspired by [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
-**IMPORTANT:** Always activate the project's virtual environment (`venv`) before committing if you're using pre-commit hooks.
+**IMPORTANT:** Always activate the project's virtual environment (`.venv`) before committing if you're using pre-commit hooks.
 
 **Quick reference:**
 
 - Format: `<type>(<scope>): <summary>`
-- Activate virtual environment: `source venv/bin/activate` (Linux/macOS) or `venv\Scripts\activate` (Windows)
+- Activate virtual environment: `source .venv/bin/activate` (Linux/macOS) or `.venv\Scripts\activate` (Windows)
 
 **Commit Types:**
 
@@ -788,16 +790,19 @@ These automations help streamline the review process and ensure consistency acro
 The project uses focused, reusable GitHub Actions workflows for CI/CD. For a full description of each workflow (triggers, steps, environments), see [GitHub Actions Workflows](docs/workflows.md).
 
 **Test Workflow** (`.github/workflows/test.yml`):
+
 - Runs automatically on pushes to `main` and `develop` branches
 - Runs automatically on pull requests targeting `main` or `develop`
 - Executes the full test suite with pytest
 - Publishes test results to GitHub Actions UI
 
 **Publish Workflow** (`.github/workflows/publish.yml`):
+
 - Runs on **push to `main`** (staging, TEST env) or **push of version tags** (e.g. `v0.2.1`; prerelease tags → staging/TEST, release tags → production/PROD)
 - Orchestrates the release process: collects/commits static files, builds and pushes Docker image, deploys to staging or production
 
 **Other Workflows**:
+
 - `build-and-push.yml` - Builds and pushes Docker images (reusable)
 - `deploy.yml` - Handles server deployment (reusable)
 - `static-files.yml` - Collects and commits static files (reusable)
@@ -805,6 +810,7 @@ The project uses focused, reusable GitHub Actions workflows for CI/CD. For a ful
 - `labeler.yml` - Automatically labels PRs based on changed files
 
 **Workflow Philosophy**:
+
 - **Separation of concerns**: Tests run on every change, publishing only on releases
 - **Reusability**: Individual workflows can be called independently or as part of a pipeline
 - **Maintainability**: Each workflow has a single, focused responsibility
@@ -833,14 +839,17 @@ Quick release process:
 3. **On the release branch, prepare the release:**
 
    - **Automated (recommended):** from the repo root, with `bump2version` on your PATH (`pip install -e ".[dev]"` in your venv):
+
      ```bash
      python3 scripts/prepare_release_bump.py patch   # or: minor | major
      ```
+
      This sets the live `## [Unreleased]  <!-- release -->` marker (only the heading **after** the maintainer Note—not the fenced example), runs [bump2version](https://github.com/c4urself/bump2version), runs `python scripts/fix_changelog_after_bump.py`, and adds an empty `## [Unreleased]` above the new version section. By default it passes `--allow-dirty` to bump2version so you can commit once at the end; use `--no-allow-dirty` if you need a clean tree.
 
    - **Manual sequence** (same end state): set the live heading after the Note to `## [Unreleased]  <!-- release -->`, then `bump2version patch` (or minor/major; add `--allow-dirty` if needed), then `python scripts/fix_changelog_after_bump.py`, then ensure an empty `## [Unreleased]` sits above `## [vX.Y.Z] - …`. `.bumpversion.cfg` only replaces that one changelog line; everything below it until the next `## [` belongs to that release.
 
    - Review and finalize `CHANGELOG.md`:
+
      - Review the new version entry and the content that was under `[Unreleased]`
      - Review and consolidate entries if needed
 
@@ -896,10 +905,11 @@ Quick release process:
 9. **CI/CD will automatically:**
 
    When you push the version tag (step 5), the `publish.yml` workflow will automatically:
+
    - Collect and commit static files
    - Build and push Docker image to Docker Hub
    - Deploy to the test server
-   
+
    See the [GitHub Actions Workflows](#github-actions-workflows) section above for details on the workflow structure.
 
 **Hotfix Release Process:**
@@ -957,6 +967,7 @@ This project maintains a [TODO list](TODO.md) that tracks future work, improveme
 - **Documentation** - Documentation improvements and guides
 
 **Important Notes**:
+
 - **Maintainers are responsible** - Project maintainers are responsible for maintaining and updating the TODO list
 - **Contributors should NOT modify it** - Contributors should not edit the TODO list directly
 - **Suggest tasks via issues** - If you'd like to suggest a new task or work on an existing one, please open a GitHub issue first for discussion
@@ -972,4 +983,3 @@ You can open:
 - **Discussions** → suggestions, architecture, or music-related topics
 
 Let's make this API grow together 🌱
-

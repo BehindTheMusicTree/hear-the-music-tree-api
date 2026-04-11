@@ -4,6 +4,7 @@
 from datetime import date
 from pathlib import Path
 
+
 CHANGELOG = Path(__file__).resolve().parent.parent / "CHANGELOG.md"
 
 
