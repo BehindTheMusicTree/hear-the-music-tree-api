@@ -1,0 +1,11 @@
+{
+  "python_version": "3.14",
+  "plugins": ["mypy_django_plugin.main"],
+  "warn_unused_configs": true,
+  "ignore_missing_imports": true,
+  "check_untyped_defs": false,
+  "disallow_untyped_defs": false,
+  "disallow_incomplete_defs": false,
+  "no_implicit_optional": false,
+  "warn_return_any": false
+}
