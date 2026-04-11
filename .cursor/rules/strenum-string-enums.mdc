@@ -1,0 +1,14 @@
+---
+alwaysApply: true
+---
+
+# String enumerations (`StrEnum`)
+
+For enumerations whose members are **strings** (API keys, serializer field keys, error codes, filter keys, etc.), subclass **`enum.StrEnum`**. Do **not** use **`class Foo(str, Enum)`**.
+
+- Policy and examples: [docs/string-enums.md](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/string-enums.md)
+- Org doc hub: [docs/development.md](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md)
+
+If a call site requires a built-in `str` (e.g. `type(x) is str` instead of `isinstance`), pass **`str(member)`**.
+
+Ruff **UP042** (`replace-str-enum`) enforces this when **`UP`** is in `select` and `target-version` is 3.11+. Optional: **`prefer-strenum`** / `scripts/check_prefer_strenum.py` as an extra guardrail.
