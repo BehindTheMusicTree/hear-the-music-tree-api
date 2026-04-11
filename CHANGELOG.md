@@ -90,11 +90,11 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### CI
 
-- **Pre-commit**: PR workflow runs `pre-commit run --all-files` (StrEnum checker, Ruff fatal rules, YAML / merge-conflict checks) in an **inline** job (checkout, Python 3.14, `pip install -e ".[dev]"`), not via org `reusable-pre-commit`. Integration **pytest** stays in-repo. Added **`verify-python-project-standards`** ([`scripts/verify-standards.sh`](scripts/verify-standards.sh)); removed the `STANDARDS_VERSION` file and workflow pin checks. See [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md).
+- **python-project-standards v4.1.0**: Vendored [`baselines/`](baselines/) (`ruff.toml`, **`DIGESTS`**, **`expected-mypy.json`**), thin **`[tool.ruff] extend`** in [`pyproject.toml`](pyproject.toml), root [`STANDARDS_VERSION`](STANDARDS_VERSION) **`4.1.0`**, and [`scripts/check_lint_baseline.py`](scripts/check_lint_baseline.py) (invoked from [`scripts/verify-standards.sh`](scripts/verify-standards.sh)). **`pre-commit-hooks`** [`rev`](.pre-commit-config.yaml) bumped to **`v6.0.0`**. PR workflow still runs **`pre-commit run --all-files`** inline (Python 3.14, `pip install -e ".[dev]"`), not via org **`reusable-pre-commit`**; integration **pytest** stays in-repo. Ruff **`I001`** is ignored for [`scripts/check_lint_baseline.py`](scripts/check_lint_baseline.py) so **isort** and Ruff do not disagree on import layout. See [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md).
 
 ### Fixed
 
-- **`verify-standards.sh`**: Synced from **python-project-standards v3.0.1**: stricter local **ruff check** detection (not **`ruff-format`** alone); optional **`STANDARDS_VERSION`** vs **`@v…`** pin scan uses a workflow file loop instead of fragile **`grep -r --include`** ordering (still accepts **astral-sh/ruff-pre-commit** remote repo).
+- **`verify-standards.sh`**: Synced from **python-project-standards v3.0.1**: stricter local **ruff check** detection (not **`ruff-format`** alone); optional **`STANDARDS_VERSION`** vs **`@v…`** pin scan uses a workflow file loop instead of fragile **`grep -r --include`** ordering (still accepts **astral-sh/ruff-pre-commit** remote repo). **v4.1.0** adds **`scripts/check_lint_baseline.py`** (Ruff baseline digest, **`pyproject.toml`** overlay, Mypy keys vs **`baselines/expected-mypy.json`**).
 
 ### Documentation
 
