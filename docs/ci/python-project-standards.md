@@ -1,19 +1,14 @@
-# python-project-standards (Tier B)
+# python-project-standards alignment
 
-This API repository follows **Tier B** in [BehindTheMusicTree/python-project-standards](https://github.com/BehindTheMusicTree/python-project-standards):
+Organization-wide Python tooling and style baselines live in [BehindTheMusicTree/python-project-standards](https://github.com/BehindTheMusicTree/python-project-standards). This API does **not** call org reusable workflows for tests or lint: **pre-commit runs inline** in [`.github/workflows/test.yml`](../../.github/workflows/test.yml), and the **pytest** job stays in this repository because it needs PostgreSQL, Audio Fingerprinter containers, GitHub Environment secrets, and project scripts.
 
-- **Shared:** pre-commit checks in CI via [`reusable-pre-commit.yml` @ `v2.3.0`](https://github.com/BehindTheMusicTree/python-project-standards/blob/v2.3.0/.github/workflows/reusable-pre-commit.yml) (see `.github/workflows/test.yml`).
-- **Local:** the **pytest** job stays in this repository because it needs PostgreSQL, Audio Fingerprinter containers, GitHub Environment secrets, and project scripts.
-
-The workflow uses **`@v2.3.0`**, matching the repo root [`STANDARDS_VERSION`](../../STANDARDS_VERSION). When upgrading standards, bump both the `uses: …@…` ref and `STANDARDS_VERSION`, then read [Upstream `CHANGELOG.md`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/CHANGELOG.md) and [versioning](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/versioning.md).
-
-For libraries with a multi-OS test matrix, use Tier A (`reusable-pre-commit` + `reusable-test-matrix`) instead; that pattern does not replace this API’s integration CI.
+For reference, libraries may call org **`reusable-pre-commit`** (python-project-standards **v3+** no longer ships a reusable test matrix—tests stay in each repo). That pattern does not replace this API’s integration CI.
 
 Org-wide Python development policy is in [python-project-standards `docs/development.md`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md) (including [string enumerations](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/string-enums.md)).
 
 ## Local lint stack (audiometa-python–style)
 
-Pre-commit includes **`verify-python-project-standards`** ([`scripts/verify-standards.sh`](../../scripts/verify-standards.sh)), aligned with [python-project-standards](https://github.com/BehindTheMusicTree/python-project-standards) templates; keep it in sync when bumping standards.
+Pre-commit includes **`verify-python-project-standards`** ([`scripts/verify-standards.sh`](../../scripts/verify-standards.sh)), aligned with [python-project-standards](https://github.com/BehindTheMusicTree/python-project-standards) templates.
 
 CI runs `pre-commit run --all-files` from a checkout with `pip install -e ".[dev]"` (same pins as local dev). The repo’s [`.pre-commit-config.yaml`](../../.pre-commit-config.yaml) follows the same **hook layout** as audiometa-python (version check, generic YAML/JSON/TOML checks, shellcheck, `no-assert`, ruff-format, ruff, isort, mypy with django-stubs, pydocstringformatter, long-comment fixer, Prettier on Markdown, optional PowerShell analyzers), plus this project’s **`prefer-strenum`** hook.
 

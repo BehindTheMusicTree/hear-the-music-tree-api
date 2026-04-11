@@ -42,7 +42,7 @@ RUN apt update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-    pip install -r requirements.txt
+    pip install .
 
 RUN chmod +x scripts/entrypoint.sh
 

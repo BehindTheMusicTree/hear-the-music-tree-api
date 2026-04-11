@@ -34,8 +34,8 @@ if [ ! -d "venv" ]; then
     echo "Installing dependencies..."
     pip install --upgrade pip
     
-    if [ -f "requirements.txt" ]; then
-        pip install -r requirements.txt
+    if [ -f "pyproject.toml" ]; then
+        pip install -e ".[dev]"
     fi
     
     echo "✓ Virtual environment created and dependencies installed"
