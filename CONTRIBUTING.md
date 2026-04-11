@@ -22,6 +22,7 @@ This project is currently maintained by a solo developer, but contributions, sug
     - [6.2. Opening a Pull Request](#62-opening-a-pull-request)
   - [7. Releasing _(For Maintainers)_](#7-releasing-for-maintainers)
 - [⚙️ GitHub Actions Workflows](docs/workflows.md)
+- [CI: python-project-standards alignment](docs/ci/python-project-standards.md)
 - [🪪 License & Attribution](#-license--attribution)
 - [📜 Code of Conduct](#-code-of-conduct)
 - [📋 TODO List](#-todo-list)
@@ -167,13 +168,21 @@ cd the-music-tree-api
    venv\Scripts\activate     # (Windows)
    ```
 
-5. Install Python dependencies:
+5. Install Python dependencies (editable install pulls runtime + dev extras from [`pyproject.toml`](pyproject.toml)):
 
    ```bash
-   pip install -r requirements.txt
+   pip install -e ".[dev]"
    ```
 
-6. Set up filesystem:
+6. **(Recommended)** Install Git hooks so commits run checks in [`.pre-commit-config.yaml`](.pre-commit-config.yaml) (audiometa-python–style stack: ruff-format, ruff, isort, mypy, pydocstringformatter, etc., plus StrEnum). Tools must match versions in [`pyproject.toml`](pyproject.toml) (see `.pre-commit-hooks/check-tool-versions.sh`).
+
+   ```bash
+   pre-commit install
+   ```
+
+   Run all hooks on the tree: `pre-commit run --all-files`. Requires **shellcheck** and (for PowerShell hooks) **pwsh** locally where those hooks apply.
+
+7. Set up filesystem:
 
    ```bash
    bash scripts/setup-filesystem.sh
@@ -186,7 +195,7 @@ cd the-music-tree-api
    - Media files and libraries
    - Temporary uploaded files
 
-7. Run database and Audio Fingerprinter containers:
+8. Run database and Audio Fingerprinter containers:
 
    ```bash
    bash scripts/run-db-and-afp-containers.sh
@@ -441,7 +450,19 @@ pytest -v
 
 # Run a specific test file
 pytest api/test/tests/integration/view/uploaded_track/test_specific.py
+
+# Quieter / faster-feeling run (disables live log streaming entirely)
+pytest -o log_cli=false
+
+# Maximum verbosity for debugging a failure
+pytest -o log_cli_level=DEBUG
 ```
+
+**If pytest seems stuck or extremely slow:**
+
+- **Live logging:** `pytest.ini` sets `log_cli = true`. At **DEBUG** every log line is printed and the suite can look frozen. The default level is **INFO**; use `-o log_cli=false` for minimal console noise or `-o log_cli_level=DEBUG` only when chasing a failure.
+- **Database:** Integration and most Django tests need **PostgreSQL** (and env) as in [Environment Setup](#1-environment-setup). A missing or unreachable DB often blocks on connect instead of failing immediately—start `run-db-and-afp-containers.sh` (or your CI-like stack) first.
+- **pyenv:** If `pytest` is not found, activate the venv or run `python -m pytest` with the interpreter that has `pip install -e ".[dev]"` applied (see [Prerequisites](#prerequisites) under Environment Setup).
 
 **Test Structure:**
 
@@ -585,6 +606,7 @@ Before submitting a Pull Request, ensure the following checks are completed:
 - ✅ Code follows Django best practices
 - ✅ Type hints are used where appropriate
 - ✅ No debug statements or commented-out code
+- ✅ With hooks installed: `pre-commit run --all-files` passes (or run `python3 scripts/check_prefer_strenum.py` before pushing)
 
 **2. Tests**
 
@@ -810,7 +832,7 @@ Quick release process:
 
 3. **On the release branch, prepare the release:**
 
-   - **Automated (recommended):** from the repo root, with `bump2version` on your PATH (`pip install -r requirements.txt` in your venv):
+   - **Automated (recommended):** from the repo root, with `bump2version` on your PATH (`pip install -e ".[dev]"` in your venv):
      ```bash
      python3 scripts/prepare_release_bump.py patch   # or: minor | major
      ```

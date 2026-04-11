@@ -149,7 +149,7 @@ python3 -m venv venv
 
 3) Install dependencies:
 ```bash
-pip install -r requirements.txt
+pip install -e ".[dev]"
 ```
 
 4) VS Code setup

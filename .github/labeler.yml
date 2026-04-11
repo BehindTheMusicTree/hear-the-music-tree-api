@@ -187,7 +187,6 @@ dependencies:
   - any:
     - changed-files:
       - any-glob-to-any-file:
-        - 'requirements.txt'
         - 'setup.py'
         - 'pyproject.toml'
         - 'Pipfile'
