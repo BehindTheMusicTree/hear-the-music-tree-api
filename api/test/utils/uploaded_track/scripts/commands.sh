@@ -1,4 +1,4 @@
-
+#!/usr/bin/env bash
 # Metadata
 
 ## Id3v1
@@ -39,10 +39,9 @@ brew install mediainfo
 mediainfo "rating_id3v2=3 star.wav"
 
 
-## Vorbis 
+## Vorbis
 ### Read
 metaflac --list test.flac
 
 ### Set rating
 metaflac --remove-tag=RATING --set-tag="RATING=80" test.flac
-
