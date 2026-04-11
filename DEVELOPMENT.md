@@ -2,6 +2,8 @@
 
 This document outlines the coding standards and best practices for developing this Django REST API project.
 
+Organization-wide Python tooling, CI adoption, and shared style baselines are documented in **[BehindTheMusicTree/python-project-standards — Development baseline](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md)**. This file focuses on conventions specific to this API (Django, DRF, project layout).
+
 For information about system architecture, patterns, and design decisions, see [Architecture documentation](docs/architecture.md).
 
 ## Table of Contents
@@ -64,6 +66,12 @@ All Python files must follow the project's naming conventions:
 - Consistent naming makes the codebase easier to navigate
 - One class per file improves code organization and maintainability
 - Clear distinction between models and serializers through naming
+
+#### String enumerations (StrEnum)
+
+Follow the org **[Development baseline](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md)**; string enums are specified in **[String enumerations (`StrEnum`)](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/string-enums.md)**.
+
+**Lint:** Ruff **[UP042](https://docs.astral.sh/ruff/rules/replace-str-enum/)** is enabled with the **`UP`** rule set in [`pyproject.toml`](pyproject.toml) (`ruff check` / pre-commit). **Pre-commit** also runs **`prefer-strenum`** ([`scripts/check_prefer_strenum.py`](scripts/check_prefer_strenum.py)) as an extra guardrail.
 
 #### Field Name Constants
 
@@ -231,7 +239,7 @@ For detailed documentation on external service integrations, see:
 
 ### Code Style Reference
 
-For quick reference on code style conventions, see [code-style.md](code-style.md). For testing guidelines, see [Testing Guidelines](testing.md). For detailed guidelines, refer to the Cursor rules in `.cursor/rules/`:
+For quick reference on code style conventions, see [code-style.md](code-style.md). For testing guidelines, see [Testing Guidelines](testing.md). Organization-wide Python baselines are summarized in the **[Development baseline](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md)** ([python-project-standards](https://github.com/BehindTheMusicTree/python-project-standards)). For detailed guidelines, refer to the Cursor rules in `.cursor/rules/` (org baselines such as [strenum-string-enums](.cursor/rules/strenum-string-enums.mdc) come from [python-project-standards `templates/cursor-rules/`](https://github.com/BehindTheMusicTree/python-project-standards/tree/main/templates/cursor-rules); copy or diff when bumping standards):
 
 - [One Class Per File](.cursor/rules/one-class-per-file.mdc)
 - [Field Name Constants](.cursor/rules/field-name-constants.mdc)

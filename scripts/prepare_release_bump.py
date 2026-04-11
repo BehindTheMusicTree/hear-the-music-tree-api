@@ -8,7 +8,7 @@
 4. Inserts an empty ``## [Unreleased]`` above the new ``## [vX.Y.Z] - …`` heading.
 
 Must be run **inside an activated project virtualenv** (or with that venv's
-``python``), after ``pip install -r requirements.txt`` so ``bump2version`` is
+``python``), after ``pip install -e ".[dev]"`` so ``bump2version`` is
 on PATH.
 
 From repo root::
@@ -53,7 +53,7 @@ def _require_venv() -> None:
         "prepare_release_bump.py must run inside a Python virtual environment.\n"
         "Create and use the project venv, install deps, then retry. Example:\n"
         "  python3 -m venv .venv && source .venv/bin/activate "
-        "&& pip install -r requirements.txt\n"
+        "&& pip install -e \".[dev]\"\n"
         "  python3 scripts/prepare_release_bump.py patch"
     )
 
@@ -61,9 +61,7 @@ def _require_venv() -> None:
 def _find_note_index(text: str) -> int:
     idx = text.find(NOTE_PREFIX)
     if idx == -1:
-        _fail(
-            f"CHANGELOG.md: missing maintainer note starting with {NOTE_PREFIX!r}."
-        )
+        _fail(f"CHANGELOG.md: missing maintainer note starting with {NOTE_PREFIX!r}.")
     return idx
 
 
@@ -72,10 +70,7 @@ def _first_h2_after_note(text: str) -> tuple[int, str]:
     rest = text[idx:]
     m = FIRST_RELEASE_HEADING.search(rest)
     if not m:
-        _fail(
-            "CHANGELOG.md: no ## heading found after blank line following the "
-            "maintainer Note."
-        )
+        _fail("CHANGELOG.md: no ## heading found after blank line following the " "maintainer Note.")
     heading = m.group(1)
     abs_start = idx + m.start(1)
     return abs_start, heading
@@ -93,9 +88,8 @@ def ensure_bump_marker(text: str) -> tuple[str, bool]:
     if heading == "## [Unreleased]":
         end = abs_start + len(heading)
         return text[:abs_start] + MARKER_HEADING + text[end:], True
-    _fail(
-        f"CHANGELOG.md: expected ## [Unreleased] after the Note, found {heading!r}."
-    )
+    _fail(f"CHANGELOG.md: expected ## [Unreleased] after the Note, found {heading!r}.")
+    return None
 
 
 def ensure_empty_unreleased_section(text: str) -> tuple[str, bool]:
@@ -129,20 +123,19 @@ def ensure_empty_unreleased_section(text: str) -> tuple[str, bool]:
 def _run_bump2version(kind: str, allow_dirty: bool) -> None:
     if not shutil.which("bump2version"):
         _fail(
-            "bump2version not found on PATH. In your project venv run: "
-            "pip install -r requirements.txt"
+            "bump2version not found on PATH. In your project venv run: " 'pip install -e ".[dev]"'
         )
     cmd = ["bump2version", kind]
     if allow_dirty:
         cmd.append("--allow-dirty")
-    proc = subprocess.run(cmd, cwd=REPO_ROOT)
+    proc = subprocess.run(cmd, cwd=REPO_ROOT, check=False)
     if proc.returncode != 0:
         sys.exit(proc.returncode)
 
 
 def _run_fix_changelog() -> None:
     fix_script = REPO_ROOT / "scripts" / "fix_changelog_after_bump.py"
-    proc = subprocess.run([sys.executable, str(fix_script)], cwd=REPO_ROOT)
+    proc = subprocess.run([sys.executable, str(fix_script)], cwd=REPO_ROOT, check=False)
     if proc.returncode != 0:
         sys.exit(proc.returncode)
 
@@ -153,6 +146,7 @@ def _warn_branch() -> None:
         cwd=REPO_ROOT,
         capture_output=True,
         text=True,
+        check=False,
     )
     if proc.returncode != 0:
         return
