@@ -41,7 +41,8 @@ const response = await fetch("/v1/audio/metadata/session/", {
 });
 const data = await response.json();
 const sessionToken = data.sessionToken ?? data.session_token;
-const expiresIn = data.sessionExpiresInSeconds ?? data.session_expires_in_seconds;
+const expiresIn =
+  data.sessionExpiresInSeconds ?? data.session_expires_in_seconds;
 // Store sessionToken; use it for download. Optionally show a countdown for expiresIn.
 ```
 
@@ -90,9 +91,13 @@ if (!response.ok) {
 
 const blob = await response.blob();
 const contentDisposition = response.headers.get("Content-Disposition") ?? "";
-const filenameStar = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i)?.[1];
+const filenameStar = contentDisposition.match(
+  /filename\*=UTF-8''([^;]+)/i,
+)?.[1];
 const filenameBasic = contentDisposition.match(/filename="([^"]+)"/i)?.[1];
-const filename = filenameStar ? decodeURIComponent(filenameStar) : (filenameBasic ?? "download");
+const filename = filenameStar
+  ? decodeURIComponent(filenameStar)
+  : (filenameBasic ?? "download");
 // Trigger download: e.g. create object URL and <a download>
 const url = URL.createObjectURL(blob);
 const a = document.createElement("a");
@@ -125,11 +130,11 @@ Send only the fields you want to write; omit others to leave them unchanged.
 
 ## Errors
 
-| Status | Meaning |
-|--------|--------|
-| 400 | Bad request (e.g. missing file, invalid format, or missing session token on download). |
-| 410 | Session not found or expired. User should create a new session (upload again). |
-| 413 | File too large. |
+| Status | Meaning                                                                                |
+| ------ | -------------------------------------------------------------------------------------- |
+| 400    | Bad request (e.g. missing file, invalid format, or missing session token on download). |
+| 410    | Session not found or expired. User should create a new session (upload again).         |
+| 413    | File too large.                                                                        |
 
 ## Summary
 
