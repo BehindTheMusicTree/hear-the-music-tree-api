@@ -127,7 +127,7 @@ FILE_UPLOAD_ENABLED: bool
 
 
 def init_logs_if_needed():
-    from api.logging.LoggersName import LoggersName
+    from api.logging.LoggersName import LoggersName  # noqa: PLC0415
 
     LOG_DIR_STR = os.getenv('DJANGO_LOG_DIR')
     if not LOG_DIR_STR:
@@ -561,7 +561,8 @@ def setup_installed_apps_and_caches():
                       'drf_multiple_model',
                       'api']
 
-    if APP_IS_EXPOSED == True:
+<<<<<<< HEAD
+    if APP_IS_EXPOSED:
         INSTALLED_APPS.append('rest_framework_simplejwt')
 
     if STATIC_FILES_STATE in [StaticFileStates.COLLECTING, StaticFileStates.SERVING]:
