@@ -6,7 +6,6 @@ from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import Uplo
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_linked_album_then_delete_it_as_nothing_linked_to_it_anymore(self):
         album_name = "Chuck"
         album = self.model_fixture_factory.create_album(name=album_name)

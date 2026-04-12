@@ -31,7 +31,8 @@ class TestCase(SpotifyLibTrackTestCase):
         track3 = self.model_fixture_factory.create_spotify_lib_track(name="Track 3", duration_ms=240000)  # 4 minutes
 
         response = self._list_spotify_lib_tracks(
-            duration_sec_min=210, duration_sec_max=270)  # 3.5 to 4.5 minutes in seconds
+            duration_sec_min=210, duration_sec_max=270
+        )  # 3.5 to 4.5 minutes in seconds
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 1

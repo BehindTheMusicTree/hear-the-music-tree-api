@@ -1,4 +1,3 @@
-
 from drf_multiple_model.pagination import MultipleModelLimitOffsetPagination
 
 from api import settings

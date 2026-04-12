@@ -1,11 +1,12 @@
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models import F, Value
-from django.contrib.postgres.fields import ArrayField
 
 from api.model.field.AppCharField import AppCharField
-from api.model.utils.ConcatOp import ConcatOp
-from api.model.spotify_resource.SpotifyResource import SpotifyResource
 from api.model.public_standard_resource.PublicStandardResource import PublicStandardResource
+from api.model.spotify_resource.SpotifyResource import SpotifyResource
+from api.model.utils.ConcatOp import ConcatOp
+
 from .Fields import Fields
 from .SpotifyArtistManager import SpotifyArtistManager
 
@@ -16,7 +17,8 @@ class SpotifyArtist(SpotifyResource, PublicStandardResource):
     spotify_link = models.GeneratedField(  # type: ignore
         expression=ConcatOp(Value("https://open.spotify.com/artist/"), F(Fields.SPOTIFY_ID)),
         output_field=AppCharField(max_length=500),
-        db_persist=True)
+        db_persist=True,
+    )
     genres = ArrayField(models.CharField(max_length=100), null=True, editable=False)
     images = models.JSONField(null=True, editable=False)
     created_on = models.DateTimeField(auto_now_add=True, editable=False)
@@ -28,7 +30,7 @@ class SpotifyArtist(SpotifyResource, PublicStandardResource):
         return self.name
 
     class Meta:
-        db_table = 'htmt_api_spotify_artist'
-        verbose_name = 'Spotify Artist'
-        verbose_name_plural = 'Spotify Artists'
-        indexes = [models.Index(fields=[Fields.SPOTIFY_ID], name='sp_artist_id_idx')]
+        db_table = "htmt_api_spotify_artist"
+        verbose_name = "Spotify Artist"
+        verbose_name_plural = "Spotify Artists"
+        indexes = [models.Index(fields=[Fields.SPOTIFY_ID], name="sp_artist_id_idx")]

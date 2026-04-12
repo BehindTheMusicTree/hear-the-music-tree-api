@@ -1,9 +1,10 @@
 from uuid import uuid4
+
 from rest_framework import status
 
-from api.test.tests.integration.spotify_lib_track.SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
-from api.serializer.model.spotify.lib_track.output.Fields import Fields as SerializerFields
 from api.model.spotify_resource.children.track.Fields import Fields as ModelFields
+from api.serializer.model.spotify.lib_track.output.Fields import Fields as SerializerFields
+from api.test.tests.integration.spotify_lib_track.SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
 from api.utils.data_transformer import to_camel_case
 
 
@@ -13,12 +14,10 @@ class TestGet(SpotifyLibTrackTestCase):
         genres_artist1 = ["Rock", "Pop"]
         genres_artist2 = ["Jazz", "Blues", "Pop"]
         self.spotify_artist1 = self.model_fixture_factory.create_spotify_artist(
-            name="Test Artist 1",
-            genres=genres_artist1
+            name="Test Artist 1", genres=genres_artist1
         )
         self.spotify_artist_2 = self.model_fixture_factory.create_spotify_artist(
-            name="Test Artist 2",
-            genres=genres_artist2
+            name="Test Artist 2", genres=genres_artist2
         )
         self.track = self.model_fixture_factory.create_spotify_lib_track(
             name="Test Track",
@@ -27,7 +26,7 @@ class TestGet(SpotifyLibTrackTestCase):
             spotify_artists=[self.spotify_artist1, self.spotify_artist_2],
             album={ModelFields.NAME: "Test Album"},
             preview_url="https://example.com/preview",
-            explicit=True
+            explicit=True,
         )
 
     def test_retrieve_spotify_lib_track_then_ok(self):
@@ -41,8 +40,10 @@ class TestGet(SpotifyLibTrackTestCase):
         assert result[to_camel_case(SerializerFields.SPOTIFY_ID)] == self.track.spotify_id
         assert result[to_camel_case(SerializerFields.NAME)] == self.track.name
         assert result[to_camel_case(SerializerFields.DURATION_MS)] == self.track.duration_ms
-        assert result[to_camel_case(SerializerFields.DURATION_STR_IN_HOUR_MIN_SEC)
-                      ] == self.track.duration_str_in_hour_min_sec
+        assert (
+            result[to_camel_case(SerializerFields.DURATION_STR_IN_HOUR_MIN_SEC)]
+            == self.track.duration_str_in_hour_min_sec
+        )
         assert result[to_camel_case(SerializerFields.POPULARITY)] == self.track.popularity
         assert result[to_camel_case(SerializerFields.SPOTIFY_LINK)] == self.track.spotify_link
         assert result[to_camel_case(SerializerFields.ALBUM)] == self.track.album[ModelFields.NAME]
@@ -55,10 +56,16 @@ class TestGet(SpotifyLibTrackTestCase):
         assert len(spotify_artists) == 2
 
         # Find artists by ID (order is non-deterministic)
-        artist1_dict = next(a for a in spotify_artists if a[to_camel_case(
-            SerializerFields.SPOTIFY_ID)] == self.spotify_artist1.spotify_id)
-        artist2_dict = next(a for a in spotify_artists if a[to_camel_case(
-            SerializerFields.SPOTIFY_ID)] == self.spotify_artist_2.spotify_id)
+        artist1_dict = next(
+            a
+            for a in spotify_artists
+            if a[to_camel_case(SerializerFields.SPOTIFY_ID)] == self.spotify_artist1.spotify_id
+        )
+        artist2_dict = next(
+            a
+            for a in spotify_artists
+            if a[to_camel_case(SerializerFields.SPOTIFY_ID)] == self.spotify_artist_2.spotify_id
+        )
 
         # Test first artist
         assert artist1_dict[to_camel_case(SerializerFields.NAME)] == self.spotify_artist1.name

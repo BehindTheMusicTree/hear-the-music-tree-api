@@ -5,7 +5,6 @@ from api.test.tests.integration.criteria.TagTestCase import TagTestCase
 
 
 class TestCase(TagTestCase):
-
     def test_ok(self):
         tag_name = "Sport"
         response = self._post_tag(**{PostFields.NAME_PUBLIC: tag_name})

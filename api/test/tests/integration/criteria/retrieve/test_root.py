@@ -7,7 +7,6 @@ from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase):
-
     def test_root(self):
         genre = self.model_fixture_factory.create_genre(name="Rock")
 

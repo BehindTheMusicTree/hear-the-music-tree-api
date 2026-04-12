@@ -4,8 +4,10 @@ Examples of malformed requests that bypass middleware validation.
 These are edge cases where the middleware might not catch validation errors,
 requiring field-level validation as a fallback.
 """
+
+from unittest.mock import MagicMock, Mock
+
 import pytest
-from unittest.mock import Mock, MagicMock
 from django.http import HttpRequest, QueryDict
 from rest_framework.request import Request
 
@@ -40,8 +42,8 @@ class TestMalformedRequestsBypassMiddleware:
 
         # Simulate request.data being a list (not a dict)
         request = MagicMock(spec=Request)
-        request.method = 'POST'
-        request.content_type = 'application/json'
+        request.method = "POST"
+        request.content_type = "application/json"
         request.data = ["Muse", ""]  # List, not dict!
 
         # Middleware skips validation because data is not a dict
@@ -70,8 +72,8 @@ class TestMalformedRequestsBypassMiddleware:
         middleware = ListValueValidationMiddleware(get_response=Mock())
 
         request = MagicMock(spec=Request)
-        request.method = 'POST'
-        request.content_type = 'application/json'
+        request.method = "POST"
+        request.content_type = "application/json"
         request.data = {"wrapper": {"artistsNames": ["Muse", ""]}}
 
         # Middleware only checks top-level, not nested
@@ -100,9 +102,9 @@ class TestMalformedRequestsBypassMiddleware:
         middleware = ListValueValidationMiddleware(get_response=Mock())
 
         request = MagicMock(spec=Request)
-        request.method = 'PUT'
-        request.content_type = 'multipart/form-data'
-        request.body = b'corrupted multipart data'
+        request.method = "PUT"
+        request.content_type = "multipart/form-data"
+        request.body = b"corrupted multipart data"
         request.META = {}
         request._body = None
         request._stream = None
@@ -111,6 +113,7 @@ class TestMalformedRequestsBypassMiddleware:
         # Simulate parsing failure
         def mock_get_response(req):
             return Mock()
+
         middleware.get_response = mock_get_response
 
         # Middleware will try to parse, fail, and skip validation
@@ -140,14 +143,15 @@ class TestMalformedRequestsBypassMiddleware:
         middleware = ListValueValidationMiddleware(get_response=Mock())
 
         request = MagicMock(spec=Request)
-        request.method = 'POST'
-        request.content_type = 'multipart/form-data'
+        request.method = "POST"
+        request.content_type = "multipart/form-data"
         request._request = MagicMock()
         request._request.POST = QueryDict()  # Empty!
         request.POST = QueryDict()  # Also empty!
 
         def mock_get_response(req):
             return Mock()
+
         middleware.get_response = mock_get_response
 
         # Middleware skips validation because POST is empty
@@ -177,12 +181,13 @@ class TestMalformedRequestsBypassMiddleware:
         middleware = ListValueValidationMiddleware(get_response=Mock())
 
         request = MagicMock(spec=Request)
-        request.method = 'POST'
-        request.content_type = 'application/json'  # Wrong! Body is actually multipart
+        request.method = "POST"
+        request.content_type = "application/json"  # Wrong! Body is actually multipart
         request.data = {}  # Empty because parsing failed or wrong format
 
         def mock_get_response(req):
             return Mock()
+
         middleware.get_response = mock_get_response
 
         # Middleware checks JSON format, but data is empty/wrong

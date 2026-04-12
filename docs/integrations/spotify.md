@@ -26,16 +26,16 @@ This document summarizes what your backend may store, what it must delete, and h
 These types of data are safe to store long‑term because they are public or non‑sensitive:
 
 ### ✔ Public or Semi‑Public Data
-- Track IDs and metadata  
-- Album IDs and metadata  
-- Artist IDs and metadata  
-- Playlist IDs (public playlists)  
-- Audio features (danceability, energy, etc.)  
-- Audio analysis  
-- Search results  
+- Track IDs and metadata
+- Album IDs and metadata
+- Artist IDs and metadata
+- Playlist IDs (public playlists)
+- Audio features (danceability, energy, etc.)
+- Audio analysis
+- Search results
 - Public user profile info (display name, profile image, country if provided)
 
-**Why allowed:**  
+**Why allowed:**
 Spotify’s policies focus on protecting user‑specific private data, not public catalog data.
 
 ---
@@ -44,17 +44,17 @@ Spotify’s policies focus on protecting user‑specific private data, not publi
 These require ongoing user consent and regular refresh:
 
 ### ⚠️ Temporarily allowed:
-- Access tokens (short‑lived)  
-- Refresh tokens (long‑lived)  
-- User’s private playlists  
-- User’s saved tracks  
-- User’s library data  
+- Access tokens (short‑lived)
+- Refresh tokens (long‑lived)
+- User’s private playlists
+- User’s saved tracks
+- User’s library data
 - User’s listening history (recently played)
 
 ### Requirements
-- Must be refreshed at least every **30 days**  
-- Must be deleted if the user revokes access  
-- Must only be used for the scopes the user approved  
+- Must be refreshed at least every **30 days**
+- Must be deleted if the user revokes access
+- Must only be used for the scopes the user approved
 
 ---
 
@@ -62,27 +62,27 @@ These require ongoing user consent and regular refresh:
 Spotify forbids storing certain sensitive or personal data:
 
 ### ❌ Forbidden:
-- User passwords  
-- Email addresses (unless user explicitly grants `user-read-email`)  
-- Long‑term storage of listening history  
-- Any data after a user disconnects your app  
-- Any data not covered by granted scopes  
+- User passwords
+- Email addresses (unless user explicitly grants `user-read-email`)
+- Long‑term storage of listening history
+- Any data after a user disconnects your app
+- Any data not covered by granted scopes
 
 ---
 
 # 5. User Consent Requirements
 Spotify requires:
 
-### ✔ Explicit user authorization  
+### ✔ Explicit user authorization
 Your app may only access and store data for scopes the user approved during OAuth.
 
-### ✔ Transparency  
+### ✔ Transparency
 You must clearly explain:
-- What data you collect  
-- Why you collect it  
-- How long you store it  
+- What data you collect
+- Why you collect it
+- How long you store it
 
-### ✔ Respect for user privacy settings  
+### ✔ Respect for user privacy settings
 If a user changes their Spotify privacy settings, your app must comply.
 
 ---
@@ -91,11 +91,11 @@ If a user changes their Spotify privacy settings, your app must comply.
 Your backend must delete:
 
 ### ✔ All user‑specific data if:
-- The user revokes access  
-- You stop refreshing the data  
-- The user requests deletion  
+- The user revokes access
+- You stop refreshing the data
+- The user requests deletion
 
-### ✔ All sensitive data after 30 days if not refreshed  
+### ✔ All sensitive data after 30 days if not refreshed
 Spotify requires periodic refresh to ensure data accuracy and user consent.
 
 ---
@@ -103,23 +103,23 @@ Spotify requires periodic refresh to ensure data accuracy and user consent.
 # 7. Recommended Backend Architecture
 
 ### **Database should store:**
-- `spotify_user_id`  
-- `refresh_token`  
-- `access_token` (short‑lived)  
-- Cached playlist/track data  
+- `spotify_user_id`
+- `refresh_token`
+- `access_token` (short‑lived)
+- Cached playlist/track data
 - App‑specific metadata (preferences, settings)
 
 ### **Do NOT store:**
-- Sensitive personal data  
-- Anything outside granted scopes  
-- Long‑term listening history  
+- Sensitive personal data
+- Anything outside granted scopes
+- Long‑term listening history
 
 ### **Flow**
-1. User logs in via Spotify OAuth  
-2. Backend stores refresh token + user ID  
-3. Backend fetches data as needed  
-4. Backend refreshes tokens and data periodically  
-5. Backend deletes data if user disconnects  
+1. User logs in via Spotify OAuth
+2. Backend stores refresh token + user ID
+3. Backend fetches data as needed
+4. Backend refreshes tokens and data periodically
+5. Backend deletes data if user disconnects
 
 ---
 
@@ -135,17 +135,17 @@ To comply with Spotify’s [User Guidelines](https://www.spotify.com/legal/user-
 
 # 9. Official Spotify Documentation Links
 
-### Spotify Developer Terms  
+### Spotify Developer Terms
 https://developer.spotify.com/terms
 
-### Spotify Developer Policy  
+### Spotify Developer Policy
 https://developer.spotify.com/policy
 
-### Spotify Web API Reference  
+### Spotify Web API Reference
 https://developer.spotify.com/documentation/web-api
 
-### Authorization Guide  
+### Authorization Guide
 https://developer.spotify.com/documentation/web-api/tutorials/code-flow
 
-### User Data & Scopes  
+### User Data & Scopes
 https://developer.spotify.com/documentation/web-api/concepts/scopes

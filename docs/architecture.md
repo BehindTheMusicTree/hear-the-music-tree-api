@@ -156,7 +156,7 @@ class Genre(PrivateStandardResource):
     name = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.CASCADE, db_index=True)
     parent = models.ForeignKey('self', null=True, on_delete=models.CASCADE)
-    
+
     class Meta:
         indexes = [
             models.Index(fields=[Fields.USER, Fields.NAME]),
@@ -261,7 +261,7 @@ from api.serializer.field.AppListField import AppListField
 class GenreSerializer(AppInputSerializer):
     name = AppCharField()
     tags = AppListField(child=AppCharField())
-    
+
     class Meta:
         fields = [Fields.NAME, Fields.TAGS]
 ```
@@ -389,7 +389,7 @@ The `ConsistentParametersFilterBackend` ensures consistent parameter handling wi
 ```python
 class GenreFilterSet(AppFilterSet):
     name = AppFilter(field_name=Fields.NAME)
-    
+
     class Meta:
         model = Genre
         fields = [Fields.NAME]

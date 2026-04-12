@@ -1,4 +1,3 @@
-
 from api import settings
 from api.exception import spotify as spotify_exception
 
@@ -15,7 +14,7 @@ class SpotifyCredentialManager:
             "client_id": self.client_id,
             "client_secret": self.client_secret,
             "redirect_uri": self.redirect_uri,
-            "scope": self.scope
+            "scope": self.scope,
         }
 
     def validate_credentials(self) -> None:
@@ -26,4 +25,5 @@ class SpotifyCredentialManager:
             missing.append("client_secret")
         if missing:
             raise spotify_exception.SpotifyAPIException(
-                f"Spotify {' and '.join(missing)} {'is' if len(missing) == 1 else 'are'} not configured")
+                f"Spotify {' and '.join(missing)} {'is' if len(missing) == 1 else 'are'} not configured"
+            )

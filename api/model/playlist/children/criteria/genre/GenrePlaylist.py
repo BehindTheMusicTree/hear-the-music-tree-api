@@ -4,8 +4,8 @@ from .GenrePlaylistManager import GenrePlaylistManager
 
 
 class GenrePlaylist(CriteriaPlaylist):
-    objects: 'GenrePlaylistManager' = GenrePlaylistManager()
+    objects: GenrePlaylistManager = GenrePlaylistManager()
 
     class Meta:
-        db_table = 'htmt_api_genre_playlist'
+        db_table = "htmt_api_genre_playlist"
         proxy = True

@@ -1,3 +1,3 @@
 from .AppPagination import AppPagination
 
-__all__ = ['AppPagination']
+__all__ = ["AppPagination"]

@@ -4,7 +4,7 @@ from api.test.tests import conftest
 from api.test.tests.integration.uploaded_track.input.update_file_metadata.artists.TestCase import (
     FlacTestCase,
     Mp3TestCase,
-    WavTestCase
+    WavTestCase,
 )
 
 
@@ -14,7 +14,9 @@ def childinstance(request, db):
 
 
 def test_3_then_ok(childinstance):
-    childinstance._test_value(value=["artist1", "artist2", "artist3"],
-                              value_expected_in_metadata=["artist1", "artist2", "artist3"],
-                              additional_data=None,
-                              file_has_metadata=False)
+    childinstance._test_value(
+        value=["artist1", "artist2", "artist3"],
+        value_expected_in_metadata=["artist1", "artist2", "artist3"],
+        additional_data=None,
+        file_has_metadata=False,
+    )

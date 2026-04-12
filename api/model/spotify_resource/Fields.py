@@ -2,4 +2,4 @@ from api.model.public_standard_resource.Fields import Fields as PublicStandardRe
 
 
 class Fields(PublicStandardResourceFields):
-    SPOTIFY_ID = 'spotify_id'
+    SPOTIFY_ID = "spotify_id"

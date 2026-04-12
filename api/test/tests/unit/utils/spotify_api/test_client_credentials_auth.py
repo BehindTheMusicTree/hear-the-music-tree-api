@@ -6,8 +6,8 @@ from api.utils.spotify_api.SpotifyClient import SpotifyClient
 
 
 class TestClientCredentialsAuth(AppTestCase):
-    @mock.patch('api.utils.spotify_api.SpotifyClient.SpotifyCredentialManager')
-    @mock.patch('spotipy.Spotify')
+    @mock.patch("api.utils.spotify_api.SpotifyClient.SpotifyCredentialManager")
+    @mock.patch("spotipy.Spotify")
     def test_authenticate_with_valid_credentials_then_succeeds(self, mock_spotify, mock_credentials):
         # Reset singleton to ensure fresh instance
         SpotifyClient._instance = None
@@ -22,7 +22,7 @@ class TestClientCredentialsAuth(AppTestCase):
             "client_id": "test_id",
             "client_secret": "test_secret",
             "redirect_uri": "http://test.com",
-            "scope": "test_scope"
+            "scope": "test_scope",
         }
         mock_credentials.return_value = mock_cred_instance
 
@@ -32,25 +32,27 @@ class TestClientCredentialsAuth(AppTestCase):
         mock_spotify.assert_called_once()
         assert service.spotify == mock_instance
 
-    @mock.patch('api.utils.spotify_api.SpotifyClient.SpotifyCredentialManager')
-    @mock.patch('spotipy.Spotify')
+    @mock.patch("api.utils.spotify_api.SpotifyClient.SpotifyCredentialManager")
+    @mock.patch("spotipy.Spotify")
     def test_authenticate_with_empty_credentials_then_raises_exception(self, mock_spotify, mock_cred_manager_class):
         # Reset singleton to ensure fresh instance
         SpotifyClient._instance = None
         SpotifyClient._initialized = False
 
         from api.exception.spotify import SpotifyAPIException
+
         mock_instance = mock.MagicMock()
         mock_instance.validate_credentials.side_effect = SpotifyAPIException(
-            "Spotify client credentials are not configured")
+            "Spotify client credentials are not configured"
+        )
         mock_cred_manager_class.return_value = mock_instance
 
         with self.assertRaises(SpotifyAPIException) as context:
             SpotifyClient()
         assert "Spotify client credentials are not configured" in str(context.exception)
 
-    @mock.patch('api.utils.spotify_api.SpotifyClient.SpotifyCredentialManager')
-    @mock.patch('spotipy.Spotify')
+    @mock.patch("api.utils.spotify_api.SpotifyClient.SpotifyCredentialManager")
+    @mock.patch("spotipy.Spotify")
     def test_authenticate_with_invalid_credentials_then_raises_exception(self, mock_spotify, mock_credentials):
         # Reset singleton to ensure fresh instance
         SpotifyClient._instance = None
@@ -62,19 +64,20 @@ class TestClientCredentialsAuth(AppTestCase):
             "client_id": "test_id",
             "client_secret": "test_secret",
             "redirect_uri": "http://test.com",
-            "scope": "test_scope"
+            "scope": "test_scope",
         }
         mock_credentials.return_value = mock_instance
 
         from api.exception.spotify import SpotifyAPIException
+
         mock_spotify.side_effect = SpotifyAPIException("Invalid client")
 
         with self.assertRaises(SpotifyAPIException) as context:
             SpotifyClient()
         assert "Invalid client" in str(context.exception)
 
-    @mock.patch('api.utils.spotify_api.SpotifyClient.SpotifyCredentialManager')
-    @mock.patch('spotipy.Spotify')
+    @mock.patch("api.utils.spotify_api.SpotifyClient.SpotifyCredentialManager")
+    @mock.patch("spotipy.Spotify")
     def test_authenticate_with_network_error_then_raises_exception(self, mock_spotify, mock_credentials):
         # Reset singleton to ensure fresh instance
         SpotifyClient._instance = None
@@ -86,7 +89,7 @@ class TestClientCredentialsAuth(AppTestCase):
             "client_id": "test_id",
             "client_secret": "test_secret",
             "redirect_uri": "http://test.com",
-            "scope": "test_scope"
+            "scope": "test_scope",
         }
         mock_credentials.return_value = mock_instance
 
@@ -96,8 +99,8 @@ class TestClientCredentialsAuth(AppTestCase):
             SpotifyClient()
         assert "Connection error" in str(context.exception)
 
-    @mock.patch('api.utils.spotify_api.SpotifyClient.SpotifyCredentialManager')
-    @mock.patch('spotipy.Spotify')
+    @mock.patch("api.utils.spotify_api.SpotifyClient.SpotifyCredentialManager")
+    @mock.patch("spotipy.Spotify")
     def test_authenticate_with_rate_limit_then_raises_exception(self, mock_spotify, mock_credentials):
         # Reset singleton to ensure fresh instance
         SpotifyClient._instance = None
@@ -109,7 +112,7 @@ class TestClientCredentialsAuth(AppTestCase):
             "client_id": "test_id",
             "client_secret": "test_secret",
             "redirect_uri": "http://test.com",
-            "scope": "test_scope"
+            "scope": "test_scope",
         }
         mock_credentials.return_value = mock_instance
 

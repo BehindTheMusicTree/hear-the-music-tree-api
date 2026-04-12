@@ -10,23 +10,22 @@ from api.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 
 class CriteriaPlaylistViewSet(AppModelViewSet[CriteriaPlaylist]):
-
     def __init__(self, model_class, **kwargs):
-        super().__init__(service=None,
-                         model_class=model_class if model_class else CriteriaPlaylist,
-                         filterset_class=CriteriaPlaylistFilterSet,
-                         simple_serializer_class=CriteriaPlaylistSimpleSerializer,
-                         detailed_serializer_class=CriteriaPlaylistDetailedSerializer,
-                         **kwargs)
+        super().__init__(
+            service=None,
+            model_class=model_class if model_class else CriteriaPlaylist,
+            filterset_class=CriteriaPlaylistFilterSet,
+            simple_serializer_class=CriteriaPlaylistSimpleSerializer,
+            detailed_serializer_class=CriteriaPlaylistDetailedSerializer,
+            **kwargs,
+        )
 
-    @extend_schema(parameters=[
-        OpenApiParameter(name=FilterFields.NAME_PUBLIC,
-                         type=OpenApiTypes.STR,
-                         location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.PARENT,
-                         type=OpenApiTypes.STR,
-                         location=OpenApiParameter.QUERY)
-    ])
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(name=FilterFields.NAME_PUBLIC, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
+            OpenApiParameter(name=FilterFields.PARENT, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
+        ]
+    )
     def list(self, *args, **kwargs):
         return self._handle_list()
 

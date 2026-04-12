@@ -44,9 +44,12 @@ class TestCase(AppTestCase):
         assert rock_playlist is not None
 
         track = self.model_fixture_factory.create_uploaded_track_with_file(
-            title="Test Track", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3)
+            title="Test Track", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3
+        )
 
-        response = uploaded_track_test_case._put_uploaded_track(track.uuid, **{UploadedTrackInputFieldKey.GENRE.value: rock_genre_name})
+        response = uploaded_track_test_case._put_uploaded_track(
+            track.uuid, **{UploadedTrackInputFieldKey.GENRE.value: rock_genre_name}
+        )
         assert response.status_code == status.HTTP_200_OK
 
         track.refresh_from_db()
@@ -60,7 +63,9 @@ class TestCase(AppTestCase):
         assert response.status_code == status.HTTP_201_CREATED
         jazz_genre = genre_test_case.saved_object
 
-        response = uploaded_track_test_case._put_uploaded_track(track.uuid, **{UploadedTrackInputFieldKey.GENRE.value: jazz_genre_name})
+        response = uploaded_track_test_case._put_uploaded_track(
+            track.uuid, **{UploadedTrackInputFieldKey.GENRE.value: jazz_genre_name}
+        )
         assert response.status_code == status.HTTP_200_OK
 
         track.refresh_from_db()

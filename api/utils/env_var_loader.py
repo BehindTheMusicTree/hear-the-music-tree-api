@@ -10,7 +10,7 @@ from api.utils.utils import print_django
 def load_required_str_env_var(var_name: str, must_print_value: bool = True, *, silent: bool = False) -> str:
     var_value = os.getenv(var_name)
     if var_value is None or var_value == "":
-        raise EnvironmentError(f"The {var_name} environment variable must be set and non-empty")
+        raise OSError(f"The {var_name} environment variable must be set and non-empty")
     if silent:
         return var_value
     if must_print_value:
@@ -35,10 +35,10 @@ def load_optional_secret_env_var(var_name: str, default: str = "") -> str:
 def load_required_bool_env_var(var_name: str) -> bool:
     raw = os.getenv(var_name)
     if raw is None or raw == "":
-        raise EnvironmentError(f"The {var_name} environment variable must be set and non-empty")
+        raise OSError(f"The {var_name} environment variable must be set and non-empty")
     lower = raw.strip().lower()
     if lower not in ("true", "false"):
-        raise EnvironmentError(f"The {var_name} environment variable must be 'true' or 'false', got '{raw}'")
+        raise OSError(f"The {var_name} environment variable must be 'true' or 'false', got '{raw}'")
     result = lower == "true"
     print_django(f"{var_name}: {result}")
     return result
@@ -49,29 +49,31 @@ def load_required_int_env_var(var_name: str) -> int:
     try:
         return int(var_value)
     except ValueError as e:
-        raise EnvironmentError(f"The {var_name} environment variable must be an integer, got '{var_value}'") from e
+        raise OSError(f"The {var_name} environment variable must be an integer, got '{var_value}'") from e
 
 
 def load_required_path_env_var(var_name: str, must_print_value: bool = True) -> Path:
     path = Path(load_required_str_env_var(var_name))
     if not path.exists():
-        raise EnvironmentError(f"The path {path} does not exist")
+        raise OSError(f"The path {path} does not exist")
     print_django(f"The path {path} exists on the system.")
     return path
 
 
 def load_calculated_env_paths(base_dir: Path):
-    CALCULATED_PATHS_ENV_FILE = base_dir / 'env/calculated_paths/.env'
-    generate_calculated_paths_env_file_script_path = base_dir / 'scripts/generate-calculated-paths-env-file.sh'
+    CALCULATED_PATHS_ENV_FILE = base_dir / "env/calculated_paths/.env"
+    generate_calculated_paths_env_file_script_path = base_dir / "scripts/generate-calculated-paths-env-file.sh"
     try:
-        subprocess.run(['bash', str(generate_calculated_paths_env_file_script_path)],
-                       check=True,
-                       stderr=subprocess.PIPE,
-                       text=True,
-                       env=os.environ.copy())
+        subprocess.run(
+            ["bash", str(generate_calculated_paths_env_file_script_path)],
+            check=True,
+            stderr=subprocess.PIPE,
+            text=True,
+            env=os.environ.copy(),
+        )
     except subprocess.CalledProcessError as e:
         print_django(f"Error while generating the paths env file: {e.stderr}")  # type: ignore
-        raise EnvironmentError("Error while generating the paths env file: {e}") from e
+        raise OSError("Error while generating the paths env file: {e}") from e
 
     dotenv.load_dotenv(CALCULATED_PATHS_ENV_FILE)
 

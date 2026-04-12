@@ -6,7 +6,6 @@ from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase):
-
     def test_malformed_uuid_then_400_bad_request(self):
         response = self._put_genre(uuid="invalid_uuid")
 

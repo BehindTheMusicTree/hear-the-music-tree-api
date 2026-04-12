@@ -14,18 +14,18 @@ class AppEmailField(AppField, serializers.EmailField):
     def to_internal_value(self, data: Any) -> str | None:
         if data is None:
             if not self.allow_null:
-                self.fail('null')
+                self.fail("null")
             return None
 
         if not isinstance(data, str):
-            self.fail('invalid')
+            self.fail("invalid")
 
         if not data and not self.allow_blank:
-            self.fail('blank')
+            self.fail("blank")
 
         # Email validation
         if not self.run_validation(data):
-            self.fail('invalid')
+            self.fail("invalid")
 
         return data
 

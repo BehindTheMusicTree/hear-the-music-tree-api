@@ -4,30 +4,34 @@ from unittest.mock import patch
 import pytest
 from rest_framework import status
 
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
 @pytest.mark.patches_musicbrainz_lookup
 class TestCase(UploadedTrackTestCase):
-
     def test_drown_7m21_mp3_with_mocked_lookup_then_ok(self):
         expected_id = "4a45b00b-273d-40ed-9ecd-42f387f59c22"
         with patch("api.utils.musicbrainz.service.acoustid.lookup") as mock_lookup:
             mock_lookup.return_value = {
-                'status': 'ok',
-                'results': [{
-                    'score': 1.0,
-                    'recordings': [{
-                        'id': expected_id,
-                        'title': 'Drown',
-                        'artists': [{'id': 'a1', 'name': 'Juan Hansen'}],
-                        'duration': 441
-                    }]
-                }]
+                "status": "ok",
+                "results": [
+                    {
+                        "score": 1.0,
+                        "recordings": [
+                            {
+                                "id": expected_id,
+                                "title": "Drown",
+                                "artists": [{"id": "a1", "name": "Juan Hansen"}],
+                                "duration": 441,
+                            }
+                        ],
+                    }
+                ],
             }
             response = self._post_uploaded_track(
-                UploadedTrackTestFilename.RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M21_MP3)
+                UploadedTrackTestFilename.RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M21_MP3
+            )
         assert response.status_code == status.HTTP_201_CREATED
         recording = self.saved_object.track_file.musicbrainz_recording
         assert recording is not None
@@ -40,7 +44,8 @@ class TestCase(UploadedTrackTestCase):
 
     def test_drown_7m21_mp3_then_ok(self):
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M21_MP3)
+            UploadedTrackTestFilename.RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M21_MP3
+        )
         assert response.status_code == status.HTTP_201_CREATED
         recording = self.saved_object.track_file.musicbrainz_recording
         if not recording:
@@ -62,14 +67,18 @@ class TestCase(UploadedTrackTestCase):
         assert response.status_code == status.HTTP_201_CREATED
         track_musicbrainz_recording = self.saved_object.track_file.musicbrainz_recording
         expected_musicbrainz_recording_id = "9f3c3b61-41a6-4bb9-a49c-33606f536784"
-        if (track_musicbrainz_recording is None
-                or track_musicbrainz_recording.musicbrainz_id != expected_musicbrainz_recording_id):
+        if (
+            track_musicbrainz_recording is None
+            or track_musicbrainz_recording.musicbrainz_id != expected_musicbrainz_recording_id
+        ):
             warnings.warn(
-                f"The expected MusicBrainz recording id {track_musicbrainz_recording} is not the one expected {expected_musicbrainz_recording_id}")
+                f"The expected MusicBrainz recording id {track_musicbrainz_recording} is not the one expected {expected_musicbrainz_recording_id}"
+            )
 
     def test_different_format_but_same_musicbrainz_recording(self):
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M20_FLAC)
+            UploadedTrackTestFilename.RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M20_FLAC
+        )
         assert response.status_code == status.HTTP_201_CREATED
         recording1 = self.saved_object.track_file.musicbrainz_recording
         if not recording1:
@@ -81,7 +90,8 @@ class TestCase(UploadedTrackTestCase):
             flac_recording_id = recording1.musicbrainz_id
 
             response = self._post_uploaded_track(
-                UploadedTrackTestFilename.RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M21_MP3)
+                UploadedTrackTestFilename.RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M21_MP3
+            )
             assert response.status_code == status.HTTP_201_CREATED
             recording2 = self.saved_object.track_file.musicbrainz_recording
             if not recording2:

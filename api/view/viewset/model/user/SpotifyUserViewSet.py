@@ -3,9 +3,9 @@ from rest_framework.exceptions import MethodNotAllowed
 
 from api.model.user.User import User
 from api.serializer.model.user.spotify.output.detailed import SpotifyUserDetailedSerializer
+from api.utils.decorators.spotify import spotify_user_required
 from api.view.permission.IsAuthenticatedReturn401 import IsAuthenticatedReturn401
 from api.view.viewset.model.AppModelViewSet import AppModelViewSet
-from api.utils.decorators.spotify import spotify_user_required
 
 
 class SpotifyUserViewSet(AppModelViewSet[User]):
@@ -18,7 +18,7 @@ class SpotifyUserViewSet(AppModelViewSet[User]):
             simple_serializer_class=SpotifyUserDetailedSerializer,
             is_private_resource=False,
             is_pk_uuid=False,
-            **kwargs
+            **kwargs,
         )
 
     def get_queryset(self):
@@ -33,8 +33,8 @@ class SpotifyUserViewSet(AppModelViewSet[User]):
         responses={
             200: SpotifyUserDetailedSerializer,
             401: {"description": "Not authenticated (1006)"},
-            403: {"description": "Spotify not linked (1005)"}
-        }
+            403: {"description": "Spotify not linked (1005)"},
+        },
     )
     @spotify_user_required
     def list(self, request, *args, **kwargs):

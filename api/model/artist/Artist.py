@@ -9,7 +9,6 @@ from api.model.uploaded_track_mixin.UploadedTrackMixin import UploadedTrackMixin
 from .ArtistManager import ArtistManager
 from .Fields import Fields
 
-
 if TYPE_CHECKING:
     from api.model.album.Album import Album
     from api.model.uploaded_track.UploadedTrack import UploadedTrack
@@ -23,16 +22,16 @@ class Artist(UploadedTrackMixin):
         return self._name
 
     if TYPE_CHECKING:
-        albums: models.QuerySet['Album']
+        albums: models.QuerySet[Album]
 
     objects: ArtistManager = ArtistManager()
 
     @property
-    def uploaded_tracks(self) -> models.QuerySet['UploadedTrack']:
+    def uploaded_tracks(self) -> models.QuerySet[UploadedTrack]:
         return getattr(self, Fields.UPLOADED_TRACKS_RELATED_NAME)
 
     class Meta:
-        db_table = 'htmt_api_artist'
+        db_table = "htmt_api_artist"
         constraints = [models.CheckConstraint(condition=~models.Q(_name=""), name="artist_non_empty_name")]
 
     def __str__(self) -> str:

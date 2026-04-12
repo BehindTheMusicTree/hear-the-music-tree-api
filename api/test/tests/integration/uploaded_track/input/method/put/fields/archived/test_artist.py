@@ -6,7 +6,6 @@ from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import Uplo
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_archived_uploaded_track_then_artist_has_plus_1_archived_uploaded_tracks(self):
         artist = self.model_fixture_factory.create_artist(name="Jojo")
         self.model_fixture_factory.create_uploaded_track_with_file(title="not archived 1", artists=[artist])
@@ -29,7 +28,8 @@ class TestCase(UploadedTrackTestCase):
         self.model_fixture_factory.create_uploaded_track_with_file(title="not archived 3", artists=[artist])
         self.model_fixture_factory.create_uploaded_track_with_file(title="archived 1", artists=[artist], archived=True)
         track = self.model_fixture_factory.create_uploaded_track_with_file(
-            title="Love", artists=[artist], archived=True)
+            title="Love", artists=[artist], archived=True
+        )
 
         response = self._put_uploaded_track(uuid=track.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: "false"})
 

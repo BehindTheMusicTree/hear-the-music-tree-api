@@ -1,23 +1,23 @@
-from rest_framework import status
 from datetime import timedelta
-from django.utils import timezone
 
+from django.utils import timezone
+from rest_framework import status
+
+from api.filtering.set.private_unique_resource.Fields import Fields as PrivateUniqueResourceFields
 from api.model.criteria.type.CriteriaTypePks import CriteriaTypePks
-from api.model.playlist.Fields import Fields
 from api.model.playlist.children.criteria.genre.GenrePlaylist import GenrePlaylist
+from api.model.playlist.Fields import Fields
 from api.serializer.model.playlist.children.criteria.output.detailed import Fields as RietrieveFields
 from api.test.tests.integration.playlist.children.criteria.genre.GenrePlaylistTestCase import GenrePlaylistTestCase
-from api.filtering.set.private_unique_resource.Fields import Fields as PrivateUniqueResourceFields
 
 
 class TestCase(GenrePlaylistTestCase):
-
     def test_combined_then_ok(self):
         genre_rock = self.model_fixture_factory.create_genre(name="Rock")
         genre_punk = self.model_fixture_factory.create_genre(name="Punk", parent=genre_rock)
         genre_punky = self.model_fixture_factory.create_genre(name="Punky", parent=genre_rock)
 
-        response = self._list_genre_playlists(name='PU', parent=genre_rock.criteria_playlist.uuid)
+        response = self._list_genre_playlists(name="PU", parent=genre_rock.criteria_playlist.uuid)
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 2
@@ -31,7 +31,8 @@ class TestCase(GenrePlaylistTestCase):
         future = now + timedelta(days=5)
 
         genreless_playlist: GenrePlaylist = GenrePlaylist.objects.get(
-            user=self.test_user1, type=CriteriaTypePks.GENRE, criteria=None)
+            user=self.test_user1, type=CriteriaTypePks.GENRE, criteria=None
+        )
         genreless_playlist.created_on = now
         genreless_playlist.save(update_fields=[Fields.CREATED_ON])
 
@@ -55,12 +56,12 @@ class TestCase(GenrePlaylistTestCase):
         self.model_fixture_factory.create_genre(name="Pop", created_on=now)
 
         response = self._list_genre_playlists(
-            name='e',  # matches "Metal" and "Indie" but not "Punk"
+            name="e",  # matches "Metal" and "Indie" but not "Punk"
             parent=genre_rock.criteria_playlist.uuid,
             **{
                 PrivateUniqueResourceFields.CREATED_ON_GTE: past.isoformat(),
-                PrivateUniqueResourceFields.CREATED_ON_LTE: now.isoformat()
-            }
+                PrivateUniqueResourceFields.CREATED_ON_LTE: now.isoformat(),
+            },
         )
 
         assert response.status_code == status.HTTP_200_OK

@@ -12,16 +12,22 @@ class PlayTestCase(AppTestCase[Play]):
 
     def _post_play(self, **kwargs):
         return self.api_client.post(
-            path=reverse('me-play-list'), data=kwargs, content_type='application/json', handle_response=self._set_results)
+            path=reverse("me-play-list"),
+            data=kwargs,
+            content_type="application/json",
+            handle_response=self._set_results,
+        )
 
     def _get_plays(self, **kwargs):
-        return self.api_client.get(path=reverse('me-play-list'), data=kwargs, handle_response=self._set_results)
+        return self.api_client.get(path=reverse("me-play-list"), data=kwargs, handle_response=self._set_results)
 
     def _put_play(self, play_uuid: UUID, **kwargs):
-        return self.api_client.put(path=reverse('me-play-detail', kwargs={'pk': play_uuid}),
-                                   data=kwargs,
-                                   content_type='application/json',
-                                   handle_response=self._set_results)
+        return self.api_client.put(
+            path=reverse("me-play-detail", kwargs={"pk": play_uuid}),
+            data=kwargs,
+            content_type="application/json",
+            handle_response=self._set_results,
+        )
 
     def _delete_play(self, uuid: UUID):
-        return self.api_client.delete(path=reverse('me-play-detail', kwargs={'pk': uuid}))
+        return self.api_client.delete(path=reverse("me-play-detail", kwargs={"pk": uuid}))

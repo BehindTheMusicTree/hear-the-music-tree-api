@@ -3,12 +3,11 @@ from rest_framework import status
 from api.model.criteria.children.genre.Genre import Genre
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
+from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
 class TestWithExistingTracks(GenreTestCase):
-
     def test_load_example_tree_with_existing_tracks_then_tracks_genres_nullified(self):
         # Create existing genres
         genre_rock = self.model_fixture_factory.create_genre(name="Rock")
@@ -19,13 +18,13 @@ class TestWithExistingTracks(GenreTestCase):
             title="Track 1",
             test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3,
             user=self.test_user1,
-            **{UploadedTrackFields.GENRE.value: genre_rock}
+            **{UploadedTrackFields.GENRE.value: genre_rock},
         )
         track2 = self.model_fixture_factory.create_uploaded_track_with_file(
             title="Track 2",
             test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3,
             user=self.test_user1,
-            **{UploadedTrackFields.GENRE.value: genre_metal}
+            **{UploadedTrackFields.GENRE.value: genre_metal},
         )
 
         # Verify tracks have genres before loading example tree
@@ -67,13 +66,13 @@ class TestWithExistingTracks(GenreTestCase):
             title="Track 1 User 1",
             test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3,
             user=self.test_user1,
-            **{UploadedTrackFields.GENRE.value: genre_rock_user1}
+            **{UploadedTrackFields.GENRE.value: genre_rock_user1},
         )
         track2_user2 = self.model_fixture_factory.create_uploaded_track_with_file(
             title="Track 2 User 2",
             test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3,
             user=self.test_user2,
-            **{UploadedTrackFields.GENRE.value: genre_rock_user2}
+            **{UploadedTrackFields.GENRE.value: genre_rock_user2},
         )
 
         # Load example tree as user1

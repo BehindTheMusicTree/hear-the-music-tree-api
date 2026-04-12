@@ -1,12 +1,11 @@
 from rest_framework import status
 
 from api import settings
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_none_then_none(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.ALBUM_KOKO_ID3V2_MP3)
 
@@ -20,7 +19,7 @@ class TestCase(UploadedTrackTestCase):
         assert self.saved_object.artists.count() == 1
         artist = self.saved_object.artists.first()
         assert artist
-        assert artist.name == 'a' * settings.ARTIST_NAME_LEN_MAX_ID3V1
+        assert artist.name == "a" * settings.ARTIST_NAME_LEN_MAX_ID3V1
 
     def test_max_id3v1_big_file_then_ok(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_LONG_A_ID3V1_BIG_MP3)
@@ -29,7 +28,7 @@ class TestCase(UploadedTrackTestCase):
         assert self.saved_object.artists.count() == 1
         artist = self.saved_object.artists.first()
         assert artist
-        assert artist.name == 'a' * settings.ARTIST_NAME_LEN_MAX_ID3V1
+        assert artist.name == "a" * settings.ARTIST_NAME_LEN_MAX_ID3V1
 
     def test_long_id3v2_then_truncated(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_LONG_A_ID3V2_SMALL_MP3)
@@ -39,7 +38,7 @@ class TestCase(UploadedTrackTestCase):
         artist = self.saved_object.artists.first()
         assert artist
         assert len(artist.name) == settings.ARTIST_NAME_LEN_MAX
-        assert artist.name == 'a' * settings.ARTIST_NAME_LEN_MAX
+        assert artist.name == "a" * settings.ARTIST_NAME_LEN_MAX
 
     def test_long_riff_then_truncated(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_LONG_A_RIFF_SMALL_WAV)
@@ -49,7 +48,7 @@ class TestCase(UploadedTrackTestCase):
         artist = self.saved_object.artists.first()
         assert artist
         assert len(artist.name) == settings.ARTIST_NAME_LEN_MAX
-        assert artist.name == 'a' * settings.ARTIST_NAME_LEN_MAX
+        assert artist.name == "a" * settings.ARTIST_NAME_LEN_MAX
 
     def test_long_vorbis_then_truncated(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_LONG_A_VORBIS_SMALL_FLAC)
@@ -59,7 +58,7 @@ class TestCase(UploadedTrackTestCase):
         artist = self.saved_object.artists.first()
         assert artist
         assert len(artist.name) == settings.ARTIST_NAME_LEN_MAX
-        assert artist.name == 'a' * settings.ARTIST_NAME_LEN_MAX
+        assert artist.name == "a" * settings.ARTIST_NAME_LEN_MAX
 
     def test_3_separated_by_antislash_then_ok(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.ARTISTS_ONE_TWO_THREE_ANTISLASH_ID3V2)
@@ -67,7 +66,7 @@ class TestCase(UploadedTrackTestCase):
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.artists.count() == 3
         artists = self.saved_object.artists.all()
-        assert set([artist.name for artist in artists]) == {'One', 'Two', 'Three'}
+        assert set([artist.name for artist in artists]) == {"One", "Two", "Three"}
 
     def test_3_separated_by_comma_then_ok(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.ARTISTS_ONE_TWO_THREE_COMMA_ID3V2)
@@ -75,7 +74,7 @@ class TestCase(UploadedTrackTestCase):
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.artists.count() == 3
         artists = self.saved_object.artists.all()
-        assert set([artist.name for artist in artists]) == {'One', 'Two', 'Three'}
+        assert set([artist.name for artist in artists]) == {"One", "Two", "Three"}
 
     def test_3_separated_by_double_antislash_then_ok(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.ARTISTS_ONE_TWO_THREE_DOUBLE_ANTISLASH_ID3V2)
@@ -83,7 +82,7 @@ class TestCase(UploadedTrackTestCase):
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.artists.count() == 3
         artists = self.saved_object.artists.all()
-        assert set(artist.name for artist in artists) == {'One', 'Two', 'Three'}
+        assert set(artist.name for artist in artists) == {"One", "Two", "Three"}
 
     def test_3_separated_by_double_slash_then_ok(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.ARTISTS_ONE_TWO_THREE_DOUBLE_SLASH_ID3V2)
@@ -91,16 +90,17 @@ class TestCase(UploadedTrackTestCase):
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.artists.count() == 3
         artists = self.saved_object.artists.all()
-        assert set([artist.name for artist in artists]) == {'One', 'Two', 'Three'}
+        assert set([artist.name for artist in artists]) == {"One", "Two", "Three"}
 
     def test_3_multi_tags_and_slash_then_ok(self):
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.ARTISTS_ONE_TWO_THREE_MULTI_TAGS_AND_SLASH_VORBIS)
+            UploadedTrackTestFilename.ARTISTS_ONE_TWO_THREE_MULTI_TAGS_AND_SLASH_VORBIS
+        )
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.artists.count() == 2
         artists = self.saved_object.artists.all()
-        assert sorted([artist.name for artist in artists]) == ['One', 'Two/Three']
+        assert sorted([artist.name for artist in artists]) == ["One", "Two/Three"]
 
     def test_3_multi_tags_then_ok(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.ARTISTS_ONE_TWO_THREE_MULTI_TAGS_VORBIS)
@@ -108,7 +108,7 @@ class TestCase(UploadedTrackTestCase):
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.artists.count() == 3
         artists = self.saved_object.artists.all()
-        assert sorted([artist.name for artist in artists]) == sorted(['One', 'Two', 'Three'])
+        assert sorted([artist.name for artist in artists]) == sorted(["One", "Two", "Three"])
 
     def test_3_separated_by_semicolon_then_ok(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.ARTISTS_ONE_TWO_THREE_SEMICOLON_ID3V2)
@@ -116,7 +116,7 @@ class TestCase(UploadedTrackTestCase):
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.artists.count() == 3
         artists = self.saved_object.artists.all()
-        assert set(artist.name for artist in artists) == {'One', 'Two', 'Three'}
+        assert set(artist.name for artist in artists) == {"One", "Two", "Three"}
 
     def test_3_separated_by_slash_then_ok(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.ARTISTS_ONE_TWO_THREE_SLASH_ID3V2)
@@ -124,4 +124,4 @@ class TestCase(UploadedTrackTestCase):
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.artists.count() == 3
         artists = self.saved_object.artists.all()
-        assert set([artist.name for artist in artists]) == {'One', 'Two', 'Three'}
+        assert set([artist.name for artist in artists]) == {"One", "Two", "Three"}

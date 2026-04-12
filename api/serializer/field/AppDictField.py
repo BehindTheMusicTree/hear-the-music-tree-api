@@ -14,10 +14,10 @@ class AppDictField(AppField, DictField):
     def to_internal_value(self, data: Any) -> dict:
         if data is None:
             if not self.allow_null:
-                self.fail('null')
+                self.fail("null")
             return {}
 
         if not isinstance(data, dict):
-            self.fail('invalid')
+            self.fail("invalid")
 
         return data

@@ -9,7 +9,6 @@ from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase):
-
     def test_from_being_root_to_first_descendant(self):
         genre_rock = self.model_fixture_factory.create_genre(name="Rock")
         genre_punk = self.model_fixture_factory.create_genre(name="Punk")
@@ -18,8 +17,7 @@ class TestCase(GenreTestCase):
 
         assert response.status_code == status.HTTP_200_OK
         updated_genre_punk: Criteria = Criteria.objects.get(user=self.test_user1, uuid=genre_punk.uuid)
-        ascendant_relations: QuerySet[CriteriaLineageRel] = \
-            updated_genre_punk.ascendants_rels.all()
+        ascendant_relations: QuerySet[CriteriaLineageRel] = updated_genre_punk.ascendants_rels.all()
         assert ascendant_relations[0].ascendant.uuid == genre_rock.uuid
         assert ascendant_relations[0].degree == 1
 
@@ -43,8 +41,9 @@ class TestCase(GenreTestCase):
         assert response.status_code == status.HTTP_200_OK
 
         updated_punkhardcore_genre: Criteria = Criteria.objects.get(uuid=punkhardcore_genre.uuid)
-        punkhardcore_ascendants_unordered: QuerySet[CriteriaLineageRel] = \
+        punkhardcore_ascendants_unordered: QuerySet[CriteriaLineageRel] = (
             updated_punkhardcore_genre.ascendants_rels.all()
+        )
         punkhardcore_ascendants_ordered = punkhardcore_ascendants_unordered.order_by(Fields.DEGREE)
         assert len(punkhardcore_ascendants_ordered) == 2
         assert punkhardcore_ascendants_ordered[0].ascendant.uuid == genre_punk.uuid
@@ -56,21 +55,24 @@ class TestCase(GenreTestCase):
         genre_rock = self.model_fixture_factory.create_genre(name="Rock")
         genre_punk = self.model_fixture_factory.create_genre(name="Punk")
         punkhardcore_genre = self.model_fixture_factory.create_genre(name="Punk hardcore", parent=genre_punk)
-        frenchpunkhardcore_genre = self.model_fixture_factory.create_genre(name="French punk hardcore",
-                                                                           parent=punkhardcore_genre)
-        bretonpunkhardcore_genre = self.model_fixture_factory.create_genre(name="Breton punk hardcore",
-                                                                           parent=frenchpunkhardcore_genre)
+        frenchpunkhardcore_genre = self.model_fixture_factory.create_genre(
+            name="French punk hardcore", parent=punkhardcore_genre
+        )
+        bretonpunkhardcore_genre = self.model_fixture_factory.create_genre(
+            name="Breton punk hardcore", parent=frenchpunkhardcore_genre
+        )
 
         response = self._put_genre(uuid=genre_punk.uuid, **{PutFields.PARENT: genre_rock.uuid})
 
         assert response.status_code == status.HTTP_200_OK
 
-        updated_bretonpunkhardcore_genre: Criteria = Criteria.objects.get(user=self.test_user1,
-                                                                          uuid=bretonpunkhardcore_genre.uuid)
-        bretonpunkhardcore_ascendants_unordered: QuerySet[CriteriaLineageRel] = \
+        updated_bretonpunkhardcore_genre: Criteria = Criteria.objects.get(
+            user=self.test_user1, uuid=bretonpunkhardcore_genre.uuid
+        )
+        bretonpunkhardcore_ascendants_unordered: QuerySet[CriteriaLineageRel] = (
             updated_bretonpunkhardcore_genre.ascendants_rels.all()
-        bretonpunkhardcore_ascendants_ordered = \
-            bretonpunkhardcore_ascendants_unordered.order_by(Fields.DEGREE)
+        )
+        bretonpunkhardcore_ascendants_ordered = bretonpunkhardcore_ascendants_unordered.order_by(Fields.DEGREE)
         assert len(bretonpunkhardcore_ascendants_ordered) == 4
         assert bretonpunkhardcore_ascendants_ordered[0].ascendant.uuid == frenchpunkhardcore_genre.uuid
         assert bretonpunkhardcore_ascendants_ordered[0].degree == 1

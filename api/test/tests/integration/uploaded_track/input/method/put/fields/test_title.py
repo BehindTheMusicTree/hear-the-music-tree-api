@@ -1,12 +1,11 @@
 from rest_framework import status
 
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
-from api.test.utils.field.body_data.method.PutBodyDataTestCase import PutBodyDataTestCase
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.field.body_data.method.PutBodyDataTestCase import PutBodyDataTestCase
 
 
 class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
-
     def test_not_empty_then_ok(self):
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="Love")
 
@@ -28,8 +27,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
     def test_empty_then_400_bad_request(self):
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="Love")
 
-        response = self._put_uploaded_track(uploaded_track.uuid, **{UploadedTrackInputFieldKey.TITLE.value: ""}
-                                            )
+        response = self._put_uploaded_track(uploaded_track.uuid, **{UploadedTrackInputFieldKey.TITLE.value: ""})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_provided_then_update(self):

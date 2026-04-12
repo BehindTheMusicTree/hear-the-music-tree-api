@@ -63,7 +63,7 @@ None
 ### Errors
 Code	Meaning
  | 00	Bad Request - Invalid parameters
- | 01	Unauthorized - Invalid token	
+ | 01	Unauthorized - Invalid token
 
 ### Versioning
 

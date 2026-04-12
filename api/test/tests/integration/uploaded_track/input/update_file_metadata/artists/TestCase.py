@@ -1,7 +1,8 @@
 from api import settings
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.tests.integration.uploaded_track.input.update_file_metadata.UploadedTrackFileMetadataUpdateStrTestCase import (
-    UploadedTrackFileMetadataUpdateStrTestCase)
+    UploadedTrackFileMetadataUpdateStrTestCase,
+)
 from api.utils.audio_file_metadata.AppMetadataKey import AppMetadataKey
 
 
@@ -13,12 +14,12 @@ class TestCase(UploadedTrackFileMetadataUpdateStrTestCase):
 
 
 class Mp3TestCase(TestCase):
-    file_extension = '.mp3'
+    file_extension = ".mp3"
 
 
 class FlacTestCase(TestCase):
-    file_extension = '.flac'
+    file_extension = ".flac"
 
 
 class WavTestCase(TestCase):
-    file_extension = '.wav'
+    file_extension = ".wav"

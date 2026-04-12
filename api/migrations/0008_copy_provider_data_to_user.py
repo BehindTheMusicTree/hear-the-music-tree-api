@@ -38,9 +38,8 @@ def noop(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('api', '0007_unified_user_providers'),
+        ("api", "0007_unified_user_providers"),
     ]
 
     operations = [

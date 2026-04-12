@@ -4,9 +4,8 @@ from api.test.tests.integration.playlist.children.criteria.tag.TagPlaylistTestCa
 
 
 class TestCase(TagPlaylistTestCase):
-
     def test_put_then_not_allowed(self):
-        tag = self.model_fixture_factory.create_tag(name='fiesta')
+        tag = self.model_fixture_factory.create_tag(name="fiesta")
 
         response = self._put_tag_playlist(tag.criteria_playlist.uuid)
 

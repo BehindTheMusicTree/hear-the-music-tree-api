@@ -3,6 +3,5 @@ from api.model.public_standard_resource.PublicStandardResource import PublicStan
 
 
 class PrivateStandardResource(PrivateModel, PublicStandardResource):
-
     class Meta:
         abstract = True

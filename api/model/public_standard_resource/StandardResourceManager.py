@@ -5,8 +5,7 @@ from api.model.public_standard_resource.PublicStandardResource import PublicStan
 
 from .Fields import Fields
 
-
-T = TypeVar('T', bound=PublicStandardResource)
+T = TypeVar("T", bound=PublicStandardResource)
 
 
 class StandardResourceManager(BaseManager, Generic[T]):

@@ -4,31 +4,29 @@ from django.core.exceptions import ImproperlyConfigured
 from django.db import transaction
 from django.db.models import QuerySet
 
+from api.model.criteria.Fields import Fields as ModelFields
 from api.model.criteria.type.CriteriaType import CriteriaType
 from api.model.criteria.type.CriteriaTypePks import CriteriaTypePks
-
-from api.model.criteria.Fields import Fields as ModelFields
 from api.model.uploaded_track_mixin.UploadedTrackMixinWithInternalNameManager import (
-    UploadedTrackMixinWithInternalNameManager
+    UploadedTrackMixinWithInternalNameManager,
 )
-from api.serializer.model.criteria.input.tree_import.Fields import Fields as TreeImportFields
 from api.serializer.model.criteria.input.Fields import Fields as InputFields
+from api.serializer.model.criteria.input.tree_import.Fields import Fields as TreeImportFields
 
 from .Fields import Fields
-
 
 if TYPE_CHECKING:
     from api.model.user.User import User
 
     from .Criteria import Criteria
 
-T = TypeVar('T', bound='Criteria')
+T = TypeVar("T", bound="Criteria")
 
 
 class CriteriaManager(UploadedTrackMixinWithInternalNameManager[T]):
     model: type[T]
 
-    def _get_criteria_type(self) -> 'CriteriaType':
+    def _get_criteria_type(self) -> CriteriaType:
         from api.model.criteria.children.genre.Genre import Genre
         from api.model.criteria.children.tag.Tag import Tag
 
@@ -51,7 +49,8 @@ class CriteriaManager(UploadedTrackMixinWithInternalNameManager[T]):
 
         while current_parent:
             CriteriaLineageRel.objects.create(
-                user=instance.user, descendant=instance, ascendant=current_parent, degree=current_degree)
+                user=instance.user, descendant=instance, ascendant=current_parent, degree=current_degree
+            )
             current_parent = current_parent.parent
             current_degree = current_degree + 1
 
@@ -80,6 +79,7 @@ class CriteriaManager(UploadedTrackMixinWithInternalNameManager[T]):
     @transaction.atomic
     def update_instance(self, instance: T, **kwargs) -> T:
         from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
+
         old_root = instance.root
         old_parent = instance.parent
         old_name = instance.name
@@ -90,18 +90,20 @@ class CriteriaManager(UploadedTrackMixinWithInternalNameManager[T]):
             self._refresh_ascendants_of_instance_and_children(updated_instance)
 
             playlist_parent = updated_instance.parent.criteria_playlist if updated_instance.parent else None
-            CriteriaPlaylist.objects.update_instance(instance=instance.criteria_playlist,
-                                                     **{Fields.PARENT: playlist_parent})
+            CriteriaPlaylist.objects.update_instance(
+                instance=instance.criteria_playlist, **{Fields.PARENT: playlist_parent}
+            )
 
             common_criteria = self.get_common_ascendant(updated_instance, old_parent)
-            CriteriaPlaylist.objects.update_ascendants_uploaded_tracks(instance=updated_instance.criteria_playlist,
-                                                                       old_parent=old_parent,
-                                                                       common_criteria=common_criteria)
+            CriteriaPlaylist.objects.update_ascendants_uploaded_tracks(
+                instance=updated_instance.criteria_playlist, old_parent=old_parent, common_criteria=common_criteria
+            )
 
             if old_root != updated_instance.root:
                 self.update_children_root(criteria=updated_instance, new_root=updated_instance.root)
-                CriteriaPlaylist.objects.update_instance_and_children_root(instance=updated_instance.criteria_playlist,
-                                                                           root=updated_instance.root.criteria_playlist)
+                CriteriaPlaylist.objects.update_instance_and_children_root(
+                    instance=updated_instance.criteria_playlist, root=updated_instance.root.criteria_playlist
+                )
 
         if old_name != updated_instance.name and updated_instance.uploaded_tracks:
             for uploaded_track in updated_instance.uploaded_tracks.all():
@@ -109,8 +111,7 @@ class CriteriaManager(UploadedTrackMixinWithInternalNameManager[T]):
 
         return updated_instance
 
-    def get_common_ascendant(
-            self, criteria_a: 'Criteria | None', criteria_b: 'Criteria | None') -> 'Criteria | None':
+    def get_common_ascendant(self, criteria_a: Criteria | None, criteria_b: Criteria | None) -> Criteria | None:
         if not criteria_a or not criteria_b:
             return None
 
@@ -139,19 +140,18 @@ class CriteriaManager(UploadedTrackMixinWithInternalNameManager[T]):
         - If it's a root criteria, tracks are moved to the criterialess playlist
         """
         from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
-
         from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
 
         criteria_uploaded_tracks = instance.uploaded_tracks.all()
         for uploaded_track in criteria_uploaded_tracks:
             uploaded_track.genre = instance.parent
-            uploaded_track.save(update_fields=[f'{UploadedTrackFields.GENRE.value}_id'])
+            uploaded_track.save(update_fields=[f"{UploadedTrackFields.GENRE.value}_id"])
             uploaded_track.update_file_metadata_from_uploaded_track_instance_values()
 
         if instance.is_root:
             CriteriaPlaylist.objects.transfer_direct_tracks_to_criterialess_playlist(
-                direct_tracks=criteria_uploaded_tracks,
-                criteria_playlist=instance.criteria_playlist)
+                direct_tracks=criteria_uploaded_tracks, criteria_playlist=instance.criteria_playlist
+            )
 
         if instance.children.exists():
             children = list(instance.children.all())
@@ -173,17 +173,17 @@ class CriteriaManager(UploadedTrackMixinWithInternalNameManager[T]):
         # This will cascade delete its playlist due to foreign key relationships
         instance.delete()
 
-    def get_roots(self, user: 'User') -> 'QuerySet[T]':
+    def get_roots(self, user: User) -> QuerySet[T]:
         return self.filter(user=user, parent__isnull=True)
 
-    def update_children_root(self, criteria: 'Criteria', new_root: 'Criteria'):
+    def update_children_root(self, criteria: Criteria, new_root: Criteria):
         children = criteria.children.all()
         if children.exists():
             children.update(root=new_root)
             for child in children:
                 self.update_children_root(child, new_root)
 
-    def build_criteria_tree(self, user: 'User') -> list[dict]:
+    def build_criteria_tree(self, user: User) -> list[dict]:
         """
         Builds a tree structure of all criteria for a given user.
         The structure follows the format:
@@ -204,7 +204,7 @@ class CriteriaManager(UploadedTrackMixinWithInternalNameManager[T]):
         criteria_by_parent = {}
         for criteria in queryset:
             # Handle both UUID and ID based parent references
-            parent_id = criteria.parent.uuid if hasattr(criteria.parent, 'uuid') else criteria.parent_id
+            parent_id = criteria.parent.uuid if hasattr(criteria.parent, "uuid") else criteria.parent_id
             if parent_id not in criteria_by_parent:
                 criteria_by_parent[parent_id] = []
             criteria_by_parent[parent_id].append(criteria)
@@ -217,11 +217,8 @@ class CriteriaManager(UploadedTrackMixinWithInternalNameManager[T]):
             result = []
             for criteria in criteria_by_parent[parent_id]:
                 # Get the appropriate ID for child references
-                child_id = criteria.uuid if hasattr(criteria, 'uuid') else criteria.id
-                node = {
-                    InputFields.NAME_PUBLIC: criteria.name,
-                    InputFields.CHILDREN: build_tree(child_id)
-                }
+                child_id = criteria.uuid if hasattr(criteria, "uuid") else criteria.id
+                node = {InputFields.NAME_PUBLIC: criteria.name, InputFields.CHILDREN: build_tree(child_id)}
                 result.append(node)
 
             return result
@@ -230,7 +227,7 @@ class CriteriaManager(UploadedTrackMixinWithInternalNameManager[T]):
         return build_tree(None)
 
     @transaction.atomic
-    def import_criteria_tree(self, user: 'User', data: dict) -> None:
+    def import_criteria_tree(self, user: User, data: dict) -> None:
         """
         Imports a tree structure of criteria, replacing all existing criteria.
         The input should be an array of criteria trees, where each tree follows the format:
@@ -267,7 +264,7 @@ class CriteriaManager(UploadedTrackMixinWithInternalNameManager[T]):
                 name = node.get(InputFields.NAME_PUBLIC)
                 criteria = self.create(name=name, parent=parent, user=user)
 
-                children = node.get('children', [])
+                children = node.get("children", [])
                 if children is None:
                     children = []
 

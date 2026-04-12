@@ -1,7 +1,7 @@
 import pytest
+from api.z.ApiFields import ApiFields
 
 from api.utils.musicbrainz.utils import create_or_update_musicbrainz_recording_instance_from_dict
-from api.z.ApiFields import ApiFields
 
 
 @pytest.mark.django_db
@@ -13,10 +13,8 @@ class TestCreateOrUpdateMusicbrainzRecordingInstanceFromDict:
             ApiFields.Names.TITLE: "Drown (Massano remix)",
             ApiFields.Names.SCORE: 0.95,
             ApiFields.Names.DURATION_IN_SEC: 440,
-            ApiFields.Names.ARTISTS: [
-                {ApiFields.Names.ID: "artist-1", ApiFields.Names.NAME: "Artist 1"}
-            ],
-            ApiFields.Names.RELEASEGROUPS: []
+            ApiFields.Names.ARTISTS: [{ApiFields.Names.ID: "artist-1", ApiFields.Names.NAME: "Artist 1"}],
+            ApiFields.Names.RELEASEGROUPS: [],
         }
 
         recording_1 = create_or_update_musicbrainz_recording_instance_from_dict(musicbrainz_id, recording_dict_1)
@@ -29,10 +27,8 @@ class TestCreateOrUpdateMusicbrainzRecordingInstanceFromDict:
             ApiFields.Names.TITLE: "Drown (Massano remix)",
             ApiFields.Names.SCORE: 0.96,
             ApiFields.Names.DURATION_IN_SEC: 441,
-            ApiFields.Names.ARTISTS: [
-                {ApiFields.Names.ID: "artist-1", ApiFields.Names.NAME: "Artist 1"}
-            ],
-            ApiFields.Names.RELEASEGROUPS: []
+            ApiFields.Names.ARTISTS: [{ApiFields.Names.ID: "artist-1", ApiFields.Names.NAME: "Artist 1"}],
+            ApiFields.Names.RELEASEGROUPS: [],
         }
 
         recording_2 = create_or_update_musicbrainz_recording_instance_from_dict(musicbrainz_id, recording_dict_2)

@@ -10,8 +10,6 @@ class Fields:
 
 
 class PlaylistMinimumSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Playlist
-        fields = [Fields.UUID,
-                  Fields.NAME]
+        fields = [Fields.UUID, Fields.NAME]

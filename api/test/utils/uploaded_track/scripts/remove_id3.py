@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-import sys
 import os
+import sys
+
 from mutagen.flac import FLAC
 from mutagen.id3 import ID3
-from mutagen.wave import WAVE
 from mutagen.mp3 import MP3
+from mutagen.wave import WAVE
 
 
 def remove_id3_tags(filename):
@@ -20,15 +21,15 @@ def remove_id3_tags(filename):
             print(f"No ID3 tags found or could not remove from {filename}")
 
         # Format-specific preservation of native metadata
-        if file_ext == '.flac':
+        if file_ext == ".flac":
             audio = FLAC(filename)
             audio.save()
             print(f"FLAC Vorbis comments preserved in {filename}")
-        elif file_ext == '.wav':
+        elif file_ext == ".wav":
             audio = WAVE(filename)
             audio.save()
             print(f"WAV RIFF metadata preserved in {filename}")
-        elif file_ext == '.mp3':
+        elif file_ext == ".mp3":
             # For MP3, we've already removed ID3 so nothing more to do
             print(f"MP3 processed {filename}")
         else:

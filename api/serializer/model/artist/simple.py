@@ -1,4 +1,3 @@
-
 from rest_framework import serializers
 
 from api.model.artist.Artist import Artist
@@ -26,11 +25,13 @@ class ArtistSimpleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Artist
-        fields = [Fields.UUID,
-                  Fields.NAME,
-                  Fields.ALBUMS,
-                  Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC,
-                  Fields.UPLOADED_TRACKS_ARCHIVED_COUNT_PUBLIC,
-                  Fields.DURATION_IN_SEC,
-                  Fields.DURATION_STR_IN_HOUR_MIN_SEC,
-                  Fields.CREATED_ON]
+        fields = [
+            Fields.UUID,
+            Fields.NAME,
+            Fields.ALBUMS,
+            Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC,
+            Fields.UPLOADED_TRACKS_ARCHIVED_COUNT_PUBLIC,
+            Fields.DURATION_IN_SEC,
+            Fields.DURATION_STR_IN_HOUR_MIN_SEC,
+            Fields.CREATED_ON,
+        ]

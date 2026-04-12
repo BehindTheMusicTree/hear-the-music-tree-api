@@ -1,33 +1,35 @@
-from django.conf import settings
 import json
+
+from django.conf import settings
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework import status
 
 from api.model.criteria.children.genre.Genre import Genre
-from api.view.viewset.model.criteria.CriteriaViewSet import CriteriaViewSet
 from api.serializer.model.criteria.input.tree_import import CriteriaTreeImportSerializer
+from api.view.viewset.model.criteria.CriteriaViewSet import CriteriaViewSet
 
 
 class GenreViewSet(CriteriaViewSet):
     def __init__(self, **kwargs):
         super().__init__(model_class=Genre, **kwargs)
 
-    @action(detail=False, methods=['post'], url_path='tree/load-example')
+    @action(detail=False, methods=["post"], url_path="tree/load-example")
     def load_example_tree(self, request):
-        data_path = settings.DATA_DIR / 'genre_example_tree.json'
+        data_path = settings.DATA_DIR / "genre_example_tree.json"
 
         if not data_path.exists():
             raise FileNotFoundError(f"Example genre tree file not found at {data_path}")
 
-        with open(data_path, 'r') as f:
+        with open(data_path, "r") as f:
             data = json.load(f)
 
-        serializer = CriteriaTreeImportSerializer(data={'tree': data['tree']})
+        serializer = CriteriaTreeImportSerializer(data={"tree": data["tree"]})
         serializer.is_valid(raise_exception=True)
 
         from api.model.uploaded_track.UploadedTrack import UploadedTrack
         from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
+
         UploadedTrack.objects.filter(user=request.user).update(**{UploadedTrackFields.GENRE.value: None})
 
         Genre.objects.import_criteria_tree(request.user, serializer.validated_data)

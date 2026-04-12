@@ -1,5 +1,5 @@
-from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
+from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
 
 from .SearchFilterSet import SearchFilterSet
 
