@@ -18,7 +18,7 @@ class ForeignKeyField(AppField, PrimaryKeyRelatedField):
     """
 
     def __init__(self, **kwargs):
-        self.additional_filters = kwargs.pop('additional_filters', {})
+        self.additional_filters = kwargs.pop("additional_filters", {})
         super().__init__(**kwargs)
 
     def get_queryset(self) -> Any:

@@ -81,7 +81,7 @@ Middleware processes requests in the order defined in `settings.py`. Each middle
 
 **Processing**:
 - **Content-Type validation**: Ensures Content-Type header is present and supported
-- **JSON structure validation**: 
+- **JSON structure validation**:
   - Rejects double-encoded JSON strings (e.g., `"{\"key\": \"value\"}"`)
   - Rejects JSON arrays as root (e.g., `["Muse", ""]`) - API expects objects
   - Validates UTF-8 encoding
@@ -218,24 +218,24 @@ The base serializer for all input validation. It handles:
 def run_validation(self, data):
     # 1. Check for malformed arrays and unknown fields
     _, unknown_fields = self._collect_known_fields_and_malformed_array_fields_names(data)
-    
+
     # 2. Normalize multipart data (extract single values from lists)
     if is_multipart:
         data = self._normalize_multipart_data(data)
-    
+
     # 3. Normalize test client empty lists ([''] → [])
     if is_test_client:
         data = self._normalize_test_client_empty_lists(data)
-    
+
     # 4. Check for duplicate fields
     self._check_duplicate_fields(...)
-    
+
     # 5. Validate fields
     validated_data = self._validate_fields(data)
-    
+
     # 6. Validate object
     validated_data = self._validate_object(validated_data)
-    
+
     return validated_data
 ```
 
@@ -262,7 +262,7 @@ For test client requests, the serializer normalizes empty list fields:
 # Output: {"artists_names[]": []}
 ```
 
-**Why in serializer?**: 
+**Why in serializer?**:
 - DRF parses `request.data` lazily, making middleware interception complex
 - Overriding `request.data` in middleware is unreliable due to DRF's internal caching
 - The serializer already has the parsed data at the right point in validation
@@ -289,7 +289,7 @@ For test client requests, the serializer normalizes empty list fields:
 5. **TestClientEmptyListMiddleware**: Does not process (handled in serializer)
 6. **ListValueValidationMiddleware**: Manually parses multipart data to validate list values
 7. **DRF Parsing**: When serializer accesses `request.data`, DRF parses from `request.body`
-8. **Serializer Validation**: 
+8. **Serializer Validation**:
    - Normalizes multipart data structure
    - Normalizes test client empty lists (`['']` → `[]`)
    - Validates fields

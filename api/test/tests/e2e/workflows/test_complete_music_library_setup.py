@@ -7,13 +7,12 @@ from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.serializer.model.criteria.input.tree_import.Fields import (
     Fields as TreeImportUploadedTrackInputFieldKey,
 )
-from api.serializer.model.playlist.children.manual.input.Fields import (
-    Fields as ManualPlaylistUploadedTrackInputFieldKey,
-)
 from api.serializer.model.play.input.schema.PostFields import (
     Fields as PlayPostUploadedTrackInputFieldKey,
 )
-from api.utils.data_transformer import to_camel_case
+from api.serializer.model.playlist.children.manual.input.Fields import (
+    Fields as ManualPlaylistUploadedTrackInputFieldKey,
+)
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 from api.test.tests.integration.play.PlayTestCase import PlayTestCase
@@ -23,6 +22,7 @@ from api.test.tests.integration.playlist.children.manual.ManualPlaylistTestCase 
 from api.test.tests.integration.search.SearchTestCase import SearchMixin
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
+from api.utils.data_transformer import to_camel_case
 
 
 @pytest.mark.e2e
@@ -50,7 +50,10 @@ class TestCase(UploadedTrackTestCase, SearchMixin):
             {
                 TreeImportUploadedTrackInputFieldKey.NAME_PUBLIC: "Electronic Music",
                 TreeImportUploadedTrackInputFieldKey.CHILDREN: [
-                    {TreeImportUploadedTrackInputFieldKey.NAME_PUBLIC: "Techno", TreeImportUploadedTrackInputFieldKey.CHILDREN: []}
+                    {
+                        TreeImportUploadedTrackInputFieldKey.NAME_PUBLIC: "Techno",
+                        TreeImportUploadedTrackInputFieldKey.CHILDREN: [],
+                    }
                 ],
             }
         ]
@@ -64,15 +67,11 @@ class TestCase(UploadedTrackTestCase, SearchMixin):
         assert response.status_code == status.HTTP_201_CREATED
         track1 = self.saved_object
 
-        response = self._post_uploaded_track(
-            UploadedTrackTestFilename.METADATA_NONE_FLAC, title="FLAC Track"
-        )
+        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_FLAC, title="FLAC Track")
         assert response.status_code == status.HTTP_201_CREATED
         track2 = self.saved_object
 
-        response = self._post_uploaded_track(
-            UploadedTrackTestFilename.METADATA_NONE_WAV, title="WAV Track"
-        )
+        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_WAV, title="WAV Track")
         assert response.status_code == status.HTTP_201_CREATED
         track3 = self.saved_object
 
@@ -85,9 +84,7 @@ class TestCase(UploadedTrackTestCase, SearchMixin):
 
         from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 
-        techno_playlist = CriteriaPlaylist.objects.get(
-            user=self.test_user1, criteria=techno_genre
-        )
+        techno_playlist = CriteriaPlaylist.objects.get(user=self.test_user1, criteria=techno_genre)
         assert techno_playlist is not None
 
         playlist_tracks = techno_playlist.playlist.uploaded_tracks.filter(user=self.test_user1)
@@ -101,7 +98,7 @@ class TestCase(UploadedTrackTestCase, SearchMixin):
         assert response.status_code == status.HTTP_201_CREATED
         manual_playlist = playlist_helper.saved_object
 
-        response = self._search(**{"query": "Track"})
+        response = self._search(query="Track")
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total >= 3
 

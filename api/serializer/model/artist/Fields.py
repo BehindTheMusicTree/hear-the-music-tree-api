@@ -1,4 +1,3 @@
-
 from api.model.artist.Fields import Fields as ArtistFields
 
 

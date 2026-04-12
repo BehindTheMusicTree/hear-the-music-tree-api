@@ -5,7 +5,6 @@ from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase):
-
     def test_ok(self):
         genre_name = "Rock"
         self.model_fixture_factory.create_genre(name=genre_name)

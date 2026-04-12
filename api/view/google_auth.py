@@ -1,20 +1,20 @@
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
-from rest_framework import status
-from django.utils import timezone
-from django.utils.crypto import get_random_string
-from django.contrib.auth import login
-
-from api.utils.google_oauth.oauth import GoogleOAuthService
-from api.utils.jwt import create_jwt_token
-from api.model.user.User import User
-from api.exception.validation.app.AppValidationException import AppValidationException
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
-from django.conf import settings
 import logging
 
+from django.conf import settings
+from django.contrib.auth import login
+from django.utils import timezone
+from django.utils.crypto import get_random_string
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+
 from api.exception.google import GoogleAuthenticationException
+from api.exception.validation.app.AppValidationException import AppValidationException
+from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
+from api.model.user.User import User
+from api.utils.google_oauth.oauth import GoogleOAuthService
+from api.utils.jwt import create_jwt_token
 
 logger = logging.getLogger(settings.APP_NAME)
 
@@ -23,7 +23,7 @@ class AuthRequestFields:
     CODE: str = "code"
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 @permission_classes([AllowAny])
 def google_auth(request):
     """
@@ -37,11 +37,8 @@ def google_auth(request):
             field_validation_error_code=FieldValidationErrorCode.REQUIRED,
         )
 
-    if not (getattr(settings, 'GOOGLE_CLIENT_ID', None) or '').strip():
-        return Response(
-            {'detail': 'Google OAuth is not configured.'},
-            status=status.HTTP_503_SERVICE_UNAVAILABLE
-        )
+    if not (getattr(settings, "GOOGLE_CLIENT_ID", None) or "").strip():
+        return Response({"detail": "Google OAuth is not configured."}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
     try:
         logger.info("Google auth: exchanging code for tokens")
@@ -62,9 +59,7 @@ def google_auth(request):
         user.google_access_token = token_info["access_token"]
         user.google_refresh_token = token_info.get("refresh_token") or user.google_refresh_token
         user.google_profile = user_info
-        user.google_token_expires_at = timezone.now() + timezone.timedelta(
-            seconds=token_info["expires_in"]
-        )
+        user.google_token_expires_at = timezone.now() + timezone.timedelta(seconds=token_info["expires_in"])
         user.save()
     elif email:
         user = User.objects.filter(email__iexact=email).first()
@@ -73,26 +68,24 @@ def google_auth(request):
             user.google_access_token = token_info["access_token"]
             user.google_refresh_token = token_info.get("refresh_token")
             user.google_profile = user_info
-            user.google_token_expires_at = timezone.now() + timezone.timedelta(
-                seconds=token_info["expires_in"]
-            )
+            user.google_token_expires_at = timezone.now() + timezone.timedelta(seconds=token_info["expires_in"])
             user.save()
         else:
             user = _create_google_user(username, email, google_id, token_info, user_info)
     else:
-        user = _create_google_user(
-            username, email or f"{google_id}@google.oauth", google_id, token_info, user_info
-        )
+        user = _create_google_user(username, email or f"{google_id}@google.oauth", google_id, token_info, user_info)
 
     logger.info("Google auth: creating session for user id=%s", user.id)
     jwt_token = create_jwt_token(user)
     login(request, user)
 
-    return Response({
-        "accessToken": jwt_token["access"],
-        "refreshToken": jwt_token["refresh"],
-        "expiresAt": jwt_token["expires_at_ms"],
-    })
+    return Response(
+        {
+            "accessToken": jwt_token["access"],
+            "refreshToken": jwt_token["refresh"],
+            "expiresAt": jwt_token["expires_at_ms"],
+        }
+    )
 
 
 def _create_google_user(username, email, google_id, token_info, user_info):
@@ -104,9 +97,7 @@ def _create_google_user(username, email, google_id, token_info, user_info):
         google_access_token=token_info["access_token"],
         google_refresh_token=token_info.get("refresh_token"),
         google_profile=user_info,
-        google_token_expires_at=timezone.now() + timezone.timedelta(
-            seconds=token_info["expires_in"]
-        ),
+        google_token_expires_at=timezone.now() + timezone.timedelta(seconds=token_info["expires_in"]),
     )
     user.set_unusable_password()
     user.save()

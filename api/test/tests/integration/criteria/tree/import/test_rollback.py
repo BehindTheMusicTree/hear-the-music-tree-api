@@ -1,4 +1,5 @@
 from typing import cast
+
 from rest_framework import status
 
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
@@ -17,8 +18,8 @@ class TestRollback(GenreTestCase):
                 Fields.NAME_PUBLIC: "Rock",
                 Fields.CHILDREN: [
                     {Fields.NAME_PUBLIC: "Punk", Fields.CHILDREN: []},
-                    {Fields.NAME_PUBLIC: "Rock", Fields.CHILDREN: []}  # This will cause a duplicate name error
-                ]
+                    {Fields.NAME_PUBLIC: "Rock", Fields.CHILDREN: []},  # This will cause a duplicate name error
+                ],
             }
         ]
         response = self._post_genres_tree_import(data={Fields.TREE: tree_data})

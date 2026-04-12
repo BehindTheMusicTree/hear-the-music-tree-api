@@ -1,23 +1,22 @@
-from rest_framework import status
 from datetime import timedelta
-from django.utils import timezone
 
+from django.utils import timezone
+from rest_framework import status
+
+from api.filtering.set.private_unique_resource.Fields import Fields as PrivateUniqueResourceFields
 from api.serializer.model.uploaded_track.output.UploadedTrackOutputFieldKey import UploadedTrackOutputFieldKey
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 from api.utils import data_transformer
-from api.filtering.set.private_unique_resource.Fields import Fields as PrivateUniqueResourceFields
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_language_and_genre_name_then_ok(self):
         genre = self.model_fixture_factory.create_genre(name="Rock")
-        track = self.model_fixture_factory.create_uploaded_track_with_file(
-            title="Life", language="en", genre=genre)
+        track = self.model_fixture_factory.create_uploaded_track_with_file(title="Life", language="en", genre=genre)
         self.model_fixture_factory.create_uploaded_track_with_file(title="Hey", language="fr")
         self.model_fixture_factory.create_uploaded_track_with_file(title="Rockaille", language="en")
 
-        response = self._list_uploaded_tracks(language='en', genre_name='Roc')
+        response = self._list_uploaded_tracks(language="en", genre_name="Roc")
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 1
@@ -30,27 +29,27 @@ class TestCase(UploadedTrackTestCase):
         artist_john = self.model_fixture_factory.create_artist(name="John")
         artist_jony = self.model_fixture_factory.create_artist(name="Jony")
 
-        self.model_fixture_factory.create_uploaded_track_with_file(
-            title="Life", language="en", genre=genre)
-        track_pascalito = self.model_fixture_factory.create_uploaded_track_with_file(title="Pascalito",
-                                                                                     album=album_best,
-                                                                                     artists=[artist_john])
-        track_mapasa = self.model_fixture_factory.create_uploaded_track_with_file(title="mapasa",
-                                                                                  album=album_besto,
-                                                                                  artists=[artist_john, artist_jony])
+        self.model_fixture_factory.create_uploaded_track_with_file(title="Life", language="en", genre=genre)
+        track_pascalito = self.model_fixture_factory.create_uploaded_track_with_file(
+            title="Pascalito", album=album_best, artists=[artist_john]
+        )
+        track_mapasa = self.model_fixture_factory.create_uploaded_track_with_file(
+            title="mapasa", album=album_besto, artists=[artist_john, artist_jony]
+        )
         self.model_fixture_factory.create_uploaded_track_with_file(title="Hey", album=album_best, artists=[artist_john])
         self.model_fixture_factory.create_uploaded_track_with_file(title="sd", album=album_besto, artists=[artist_jony])
-        self.model_fixture_factory.create_uploaded_track_with_file(title="Hey",
-                                                                   album=album_best,
-                                                                   artists=[artist_john, artist_jony])
+        self.model_fixture_factory.create_uploaded_track_with_file(
+            title="Hey", album=album_best, artists=[artist_john, artist_jony]
+        )
 
-        response = self._list_uploaded_tracks(title='pas', album_name='Best', artists_name='Joh')
+        response = self._list_uploaded_tracks(title="pas", album_name="Best", artists_name="Joh")
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 2
-        titles = self.results[0][
-            data_transformer.to_camel_case(UploadedTrackOutputFieldKey.TITLE.value)], self.results[1][
-            data_transformer.to_camel_case(UploadedTrackOutputFieldKey.TITLE.value)]
+        titles = (
+            self.results[0][data_transformer.to_camel_case(UploadedTrackOutputFieldKey.TITLE.value)],
+            self.results[1][data_transformer.to_camel_case(UploadedTrackOutputFieldKey.TITLE.value)],
+        )
         assert track_pascalito.title in titles
         assert track_mapasa.title in titles
 
@@ -64,25 +63,27 @@ class TestCase(UploadedTrackTestCase):
 
         # Track within date range and matching genre
         track_rock_in_range = self.model_fixture_factory.create_uploaded_track_with_file(
-            title="Rock Song", genre=genre_rock, created_on=now)
+            title="Rock Song", genre=genre_rock, created_on=now
+        )
 
         # Tracks outside date range or not matching genre
+        self.model_fixture_factory.create_uploaded_track_with_file(title="Old Rock", genre=genre_rock, created_on=past)
         self.model_fixture_factory.create_uploaded_track_with_file(
-            title="Old Rock", genre=genre_rock, created_on=past)
-        self.model_fixture_factory.create_uploaded_track_with_file(
-            title="Future Rock", genre=genre_rock, created_on=future)
-        self.model_fixture_factory.create_uploaded_track_with_file(
-            title="Pop Song", genre=genre_pop, created_on=now)
+            title="Future Rock", genre=genre_rock, created_on=future
+        )
+        self.model_fixture_factory.create_uploaded_track_with_file(title="Pop Song", genre=genre_pop, created_on=now)
 
         response = self._list_uploaded_tracks(
-            genre_name='Rock',
+            genre_name="Rock",
             **{
                 PrivateUniqueResourceFields.CREATED_ON_GTE: past.isoformat(),
-                PrivateUniqueResourceFields.CREATED_ON_LTE: now.isoformat()
-            }
+                PrivateUniqueResourceFields.CREATED_ON_LTE: now.isoformat(),
+            },
         )
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 2
-        titles = [result[data_transformer.to_camel_case(UploadedTrackOutputFieldKey.TITLE.value)] for result in self.results]
+        titles = [
+            result[data_transformer.to_camel_case(UploadedTrackOutputFieldKey.TITLE.value)] for result in self.results
+        ]
         assert track_rock_in_range.title in titles

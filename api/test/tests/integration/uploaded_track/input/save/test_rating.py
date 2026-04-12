@@ -2,96 +2,115 @@ from rest_framework import status
 
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
-from api.test.utils.field.body_data.type.NullablePositiveIntBodyDataTestCase import (
-    NullablePositiveIntBodyDataTestCase
-)
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.field.body_data.type.NullablePositiveIntBodyDataTestCase import NullablePositiveIntBodyDataTestCase
+from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
 class TestCase(UploadedTrackTestCase, NullablePositiveIntBodyDataTestCase):
-
     def test_empty_string_then_none(self):
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: ''})
+        response = self._post_uploaded_track(
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: ""}
+        )
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.rating == None
 
     def test_empty_then_none(self):
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: None})
+        response = self._post_uploaded_track(
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: None}
+        )
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.rating == None
 
     def test_zero(self):
         rating = 0
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: rating})
+        response = self._post_uploaded_track(
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: rating}
+        )
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.rating == rating
 
     def test_four(self):
         rating = 4
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: rating})
+        response = self._post_uploaded_track(
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: rating}
+        )
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.rating == rating
 
     def test_largest_then_ok(self):
         rating = 10
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: rating})
+        response = self._post_uploaded_track(
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: rating}
+        )
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.rating == rating
 
     def test_too_large_then_400_bad_request(self):
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: 11})
+        response = self._post_uploaded_track(
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: 11}
+        )
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1
         error = self.bad_request_result_field_errors[0]
-        assert error['field'] == UploadedTrackInputFieldKey.RATING.value
-        assert error['code'] == FieldValidationErrorCode.RATING_TOO_LARGE
+        assert error["field"] == UploadedTrackInputFieldKey.RATING.value
+        assert error["code"] == FieldValidationErrorCode.RATING_TOO_LARGE
 
     def test_negative_then_400_bad_request(self):
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: -1})
+        response = self._post_uploaded_track(
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: -1}
+        )
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1
         error = self.bad_request_result_field_errors[0]
-        assert error['field'] == UploadedTrackInputFieldKey.RATING.value
-        assert error['code'] == FieldValidationErrorCode.RATING_TOO_SMALL
+        assert error["field"] == UploadedTrackInputFieldKey.RATING.value
+        assert error["code"] == FieldValidationErrorCode.RATING_TOO_SMALL
 
     def test_multi_value_then_400_bad_request(self):
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: [1, 2]})
+        response = self._post_uploaded_track(
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: [1, 2]}
+        )
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1
         error = self.bad_request_result_field_errors[0]
-        assert error['field'] == UploadedTrackInputFieldKey.RATING.value
-        assert error['code'] == FieldValidationErrorCode.DUPLICATE
+        assert error["field"] == UploadedTrackInputFieldKey.RATING.value
+        assert error["code"] == FieldValidationErrorCode.DUPLICATE
 
     def test_float_then_400_bad_request(self):
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: 5.5})
+        response = self._post_uploaded_track(
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: 5.5}
+        )
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1
         error = self.bad_request_result_field_errors[0]
-        assert error['field'] == UploadedTrackInputFieldKey.RATING.value
-        assert error['code'] == FieldValidationErrorCode.FORMAT_INVALID
+        assert error["field"] == UploadedTrackInputFieldKey.RATING.value
+        assert error["code"] == FieldValidationErrorCode.FORMAT_INVALID
 
     def test_string_not_castable_then_400_bad_request(self):
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: 'five'})
+        response = self._post_uploaded_track(
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: "five"}
+        )
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1
         error = self.bad_request_result_field_errors[0]
-        assert error['field'] == UploadedTrackInputFieldKey.RATING.value
-        assert error['code'] == FieldValidationErrorCode.FORMAT_INVALID
+        assert error["field"] == UploadedTrackInputFieldKey.RATING.value
+        assert error["code"] == FieldValidationErrorCode.FORMAT_INVALID
 
     def test_string_castable_then_ok(self):
-        rating = '5'
-        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: rating})
+        rating = "5"
+        response = self._post_uploaded_track(
+            UploadedTrackTestFilename.METADATA_NONE_MP3, **{UploadedTrackInputFieldKey.RATING.value: rating}
+        )
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.rating == int(rating)

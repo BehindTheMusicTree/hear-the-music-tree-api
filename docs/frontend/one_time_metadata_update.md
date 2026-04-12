@@ -17,12 +17,12 @@ Base URL is your API root (e.g. `https://api.example.com/v1`).
 - **Method**: `POST`
 - **URL**: `/v1/audio/metadata/session/`
 - **Request**:
-  - **Option A (file upload)**  
-    - `Content-Type: multipart/form-data`  
-    - Body: `file` = the audio file (required)  
+  - **Option A (file upload)**
+    - `Content-Type: multipart/form-data`
+    - Body: `file` = the audio file (required)
     - Optional: `include_musicbrainz_analysis` = `true` to get MusicBrainz lookup in the response
-  - **Option B (URL)**  
-    - `Content-Type: application/json`  
+  - **Option B (URL)**
+    - `Content-Type: application/json`
     - Body: `{ "file": "https://example.com/audio.mp3", "include_musicbrainz_analysis": false }`
 - **Response**: `200 OK`, JSON. Same shape as the full metadata endpoint (`POST /v1/audio/metadata/full/`), plus:
   - `sessionToken` (or `session_token` depending on your API’s response casing)
@@ -45,7 +45,7 @@ const expiresIn = data.sessionExpiresInSeconds ?? data.session_expires_in_second
 // Store sessionToken; use it for download. Optionally show a countdown for expiresIn.
 ```
 
-**Example (camelCase response)**  
+**Example (camelCase response)**
 If your API returns camelCase (e.g. `sessionToken`, `sessionExpiresInSeconds`), use those keys. If it returns snake_case (`session_token`, `session_expires_in_seconds`), use those. Handle both for robustness.
 
 ### Step 2: Download (apply metadata and get file)

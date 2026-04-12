@@ -1,5 +1,3 @@
-
-
 from rest_framework import serializers
 
 from api.model.play.Play import Play

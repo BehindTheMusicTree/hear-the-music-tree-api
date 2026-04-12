@@ -59,12 +59,8 @@ class TestIncludeMusicbrainzAnalysisTrue(AudioMetadataTestCase):
                 "is_valid",
                 _force_include_musicbrainz_analysis_in_validated_data(AudioMetadataFullSerializer),
             ),
-            patch(
-                "api.utils.audio_fingerprinter.service.get_fingerprint_and_duration_for_analysis"
-            ) as mock_fp,
-            patch(
-                "api.utils.musicbrainz.service.get_musicbrainz_recording_analysis"
-            ) as mock_mb,
+            patch("api.utils.audio_fingerprinter.service.get_fingerprint_and_duration_for_analysis") as mock_fp,
+            patch("api.utils.musicbrainz.service.get_musicbrainz_recording_analysis") as mock_mb,
         ):
             mock_fp.return_value = {
                 audio_fingerprinter_service.RESULT_FINGERPRINT: b"\x00" * 20,
@@ -97,12 +93,8 @@ class TestIncludeMusicbrainzAnalysisTrue(AudioMetadataTestCase):
                 "is_valid",
                 _force_include_musicbrainz_analysis_in_validated_data(AudioMetadataFullSerializer),
             ),
-            patch(
-                "api.utils.audio_fingerprinter.service.get_fingerprint_and_duration_for_analysis"
-            ) as mock_fp,
-            patch(
-                "api.utils.musicbrainz.service.get_musicbrainz_recording_analysis"
-            ) as mock_mb,
+            patch("api.utils.audio_fingerprinter.service.get_fingerprint_and_duration_for_analysis") as mock_fp,
+            patch("api.utils.musicbrainz.service.get_musicbrainz_recording_analysis") as mock_mb,
         ):
             mock_fp.return_value = {
                 audio_fingerprinter_service.RESULT_FINGERPRINT: b"\x00" * 20,
@@ -129,9 +121,7 @@ class TestIncludeMusicbrainzAnalysisTrue(AudioMetadataTestCase):
                 "is_valid",
                 _force_include_musicbrainz_analysis_in_validated_data(AudioMetadataFullSerializer),
             ),
-            patch(
-                "api.utils.audio_fingerprinter.service.get_fingerprint_and_duration_for_analysis"
-            ) as mock_fp,
+            patch("api.utils.audio_fingerprinter.service.get_fingerprint_and_duration_for_analysis") as mock_fp,
         ):
             mock_fp.return_value = {
                 audio_fingerprinter_service.RESULT_FINGERPRINT: None,
@@ -159,12 +149,8 @@ class TestIncludeMusicbrainzAnalysisTrue(AudioMetadataTestCase):
                 "is_valid",
                 _force_include_musicbrainz_analysis_in_validated_data(AudioMetadataFullSerializer),
             ),
-            patch(
-                "api.utils.audio_fingerprinter.service.get_fingerprint_and_duration_for_analysis"
-            ) as mock_fp,
-            patch(
-                "api.utils.musicbrainz.service.get_musicbrainz_recording_analysis"
-            ) as mock_mb,
+            patch("api.utils.audio_fingerprinter.service.get_fingerprint_and_duration_for_analysis") as mock_fp,
+            patch("api.utils.musicbrainz.service.get_musicbrainz_recording_analysis") as mock_mb,
         ):
             mock_fp.return_value = {
                 audio_fingerprinter_service.RESULT_FINGERPRINT: b"\x00" * 20,

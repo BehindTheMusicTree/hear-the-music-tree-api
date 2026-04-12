@@ -1,4 +1,5 @@
 from typing import cast
+
 from rest_framework import status
 
 from api.model.criteria.children.genre.Genre import Genre

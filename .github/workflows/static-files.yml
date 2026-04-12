@@ -82,7 +82,7 @@ jobs:
         id: checkout-branch
         run: |
           git fetch origin
-          
+
           BRANCH=$(git branch --show-current 2>/dev/null || echo "")
           if [ -z "$BRANCH" ]; then
             # Find which branch contains the current HEAD (tag commit)
@@ -92,15 +92,15 @@ jobs:
             BRANCH=$(echo "$REMOTE_BRANCHES" | sed 's|origin/||' | grep -v '^main$' | head -1)
             BRANCH=${BRANCH:-$(echo "$REMOTE_BRANCHES" | sed 's|origin/||' | head -1)}
             BRANCH=$(echo "$BRANCH" | xargs)
-            
+
             if [ -z "$BRANCH" ]; then
               echo "Error: Could not determine branch to push static files to. The tag commit must exist on a remote branch (e.g., develop, main, or a release branch). Ensure the branch containing the tagged commit has been pushed to the remote repository."
               exit 1
             fi
-            
+
             git checkout "$BRANCH"
           fi
-          
+
           git fetch origin "$BRANCH"
           if [ "$(git rev-list --count HEAD..origin/"$BRANCH")" -gt 0 ]; then
             LOCAL_COMMIT=$(git rev-parse HEAD)

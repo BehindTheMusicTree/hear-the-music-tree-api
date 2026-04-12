@@ -1,5 +1,5 @@
-from rest_framework import status
 import pytest
+from rest_framework import status
 
 from api import settings
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
@@ -25,10 +25,7 @@ class TestNodeCount(GenreTestCase):
     def test_one_too_large_then_400_bad_request(self):
         root = {Fields.NAME_PUBLIC: "Root1", Fields.CHILDREN: []}
         for i in range(settings.CRITERIA_TREE_IMPORT_MAX_TOTAL_COUNT - 1):
-            root[Fields.CHILDREN].append({
-                Fields.NAME_PUBLIC: f"Child {i}",
-                Fields.CHILDREN: []
-            })
+            root[Fields.CHILDREN].append({Fields.NAME_PUBLIC: f"Child {i}", Fields.CHILDREN: []})
 
         data = [root, {Fields.NAME_PUBLIC: "Root2", Fields.CHILDREN: []}]
         response = self._post_genres_tree_import(data={Fields.TREE: data})
@@ -38,11 +35,17 @@ class TestNodeCount(GenreTestCase):
 
     @pytest.mark.slow
     def test_multiple_with_one_too_large_then_400_bad_request(self):
-        data = [{Fields.NAME_PUBLIC: 'Rock', Fields.CHILDREN: [
-            {Fields.NAME_PUBLIC: f'Child {i}', Fields.CHILDREN: []}
-            for i in range(settings.CRITERIA_TREE_IMPORT_MAX_TOTAL_COUNT - 1)]}]
+        data = [
+            {
+                Fields.NAME_PUBLIC: "Rock",
+                Fields.CHILDREN: [
+                    {Fields.NAME_PUBLIC: f"Child {i}", Fields.CHILDREN: []}
+                    for i in range(settings.CRITERIA_TREE_IMPORT_MAX_TOTAL_COUNT - 1)
+                ],
+            }
+        ]
 
-        data[0][Fields.CHILDREN].append({Fields.NAME_PUBLIC: 'Extra Child', Fields.CHILDREN: []})
+        data[0][Fields.CHILDREN].append({Fields.NAME_PUBLIC: "Extra Child", Fields.CHILDREN: []})
 
         response = self._post_genres_tree_import(data={Fields.TREE: data})
         assert response.status_code == status.HTTP_400_BAD_REQUEST
@@ -53,10 +56,7 @@ class TestNodeCount(GenreTestCase):
     def test_largest_then_ok(self):
         root = {Fields.NAME_PUBLIC: "Root", Fields.CHILDREN: []}
         for i in range(3000):
-            root[Fields.CHILDREN].append({
-                Fields.NAME_PUBLIC: f"Child {i}",
-                Fields.CHILDREN: []
-            })
+            root[Fields.CHILDREN].append({Fields.NAME_PUBLIC: f"Child {i}", Fields.CHILDREN: []})
 
         data = [root]
         response = self._post_genres_tree_import(data={Fields.TREE: data})

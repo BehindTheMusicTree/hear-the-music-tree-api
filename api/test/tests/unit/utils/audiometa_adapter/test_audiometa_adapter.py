@@ -5,19 +5,21 @@ import pytest
 from api.utils.audio_file_metadata import (
     AppMetadataKey,
     delete_metadata,
+    get_app_metadata,
     get_bitrate,
     get_duration_in_sec,
-    get_app_metadata,
     get_specific_metadata,
     is_flac_md5_valid,
     update_file_metadata,
 )
 from api.utils.audio_file_metadata.audiometa_adapter import (
-    UnifiedMetadataKey,  # type: ignore[attr-defined]
-    AudiometaFileCorruptedError,  # type: ignore[attr-defined]
-    MetadataFormat as AudiometaMetadataFormat,
     _APP_TO_UNIFIED_KEY_MAP,
+    AudiometaFileCorruptedError,  # type: ignore[attr-defined]
+    UnifiedMetadataKey,  # type: ignore[attr-defined]
     delete_potential_id3_metadata_with_header,
+)
+from api.utils.audio_file_metadata.audiometa_adapter import (
+    MetadataFormat as AudiometaMetadataFormat,
 )
 from api.utils.audio_file_metadata.exceptions import FileCorruptedError
 
@@ -40,9 +42,7 @@ class TestGetMergedAppMetadata:
         assert result[AppMetadataKey.TITLE] == "Test Title"
         assert result[AppMetadataKey.ARTISTS_NAMES] == ["Artist 1", "Artist 2"]
         assert result[AppMetadataKey.RATING] == 85
-        mock_get_unified.assert_called_once_with(
-            file="/path/to/file.mp3", normalized_rating_max_value=100
-        )
+        mock_get_unified.assert_called_once_with(file="/path/to/file.mp3", normalized_rating_max_value=100)
 
     @patch(ADAPTER_MODULE + ".audiometa.get_unified_metadata")
     @patch(ADAPTER_MODULE + "._get_file_path_util")
@@ -76,9 +76,7 @@ class TestGetSpecificMetadata:
         result = get_specific_metadata("/path/to/file.mp3", AppMetadataKey.TITLE)
 
         assert result == "Test Title"
-        mock_get_field.assert_called_once_with(
-            file="/path/to/file.mp3", unified_metadata_key=UnifiedMetadataKey.TITLE
-        )
+        mock_get_field.assert_called_once_with(file="/path/to/file.mp3", unified_metadata_key=UnifiedMetadataKey.TITLE)
 
     @patch(ADAPTER_MODULE + ".audiometa.get_unified_metadata_field")
     @patch(ADAPTER_MODULE + "._get_file_path_util")
@@ -201,9 +199,7 @@ class TestDeletePotentialId3MetadataWithHeader:
 
         delete_potential_id3_metadata_with_header("/path/to/file.flac")
 
-        mock_delete.assert_called_once_with(
-            file="/path/to/file.flac", metadata_format=AudiometaMetadataFormat.ID3V2
-        )
+        mock_delete.assert_called_once_with(file="/path/to/file.flac", metadata_format=AudiometaMetadataFormat.ID3V2)
 
     @patch(ADAPTER_MODULE + ".audiometa.delete_all_metadata")
     @patch(ADAPTER_MODULE + "._get_file_path_util")

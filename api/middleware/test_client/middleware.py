@@ -23,16 +23,16 @@ class TestClientEmptyListMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
-    def __call__(self, request: Union[HttpRequest, Request]) -> Union[HttpResponse, JsonResponse]:
-        is_test_client = request.META.get('HTTP_X_TEST_CLIENT') == 'true'
+    def __call__(self, request: HttpRequest | Request) -> HttpResponse | JsonResponse:
+        is_test_client = request.META.get("HTTP_X_TEST_CLIENT") == "true"
 
-        if is_test_client and request.method == 'POST':
-            content_type = request.content_type or ''
+        if is_test_client and request.method == "POST":
+            content_type = request.content_type or ""
 
-            if content_type.startswith('multipart/form-data'):
+            if content_type.startswith("multipart/form-data"):
                 # For POST requests, Django populates request.POST
                 # CamelToSnakeMiddleware has already converted it to snake_case
-                if hasattr(request, 'POST') and isinstance(request.POST, QueryDict):
+                if hasattr(request, "POST") and isinstance(request.POST, QueryDict):
                     request.POST = self._normalize_empty_lists(request.POST)  # type: ignore
 
         response = self.get_response(request)
@@ -51,7 +51,7 @@ class TestClientEmptyListMiddleware:
 
         for key, values in post_data.lists():
             # For list fields (with [] suffix), convert [''] back to []
-            if key.endswith('[]') and values == ['']:
+            if key.endswith("[]") and values == [""]:
                 result.setlist(key, [])
             else:
                 result.setlist(key, values)

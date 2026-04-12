@@ -2,5 +2,5 @@ from api.model.private_standard_resource.Fields import Fields as PrivateStandard
 
 
 class Fields(PrivateStandardResourceFields):
-    CODE = 'code'
-    MESSAGE = 'message'
+    CODE = "code"
+    MESSAGE = "message"

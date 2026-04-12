@@ -2,16 +2,18 @@ from rest_framework import status
 
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.utils.data_transformer import to_camel_case
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_album_in_both_then_take_from_data(self):
         data_album_name = "Best of"
-        data_dict = {UploadedTrackInputFieldKey.ALBUM_NAME.value: data_album_name, UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: ["Muse"]}
+        data_dict = {
+            UploadedTrackInputFieldKey.ALBUM_NAME.value: data_album_name,
+            UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: ["Muse"],
+        }
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_LONG_A_ID3V1_SMALL_MP3, **data_dict)
 
         assert response.status_code == status.HTTP_201_CREATED
@@ -22,7 +24,10 @@ class TestCase(UploadedTrackTestCase):
     def test_album_and_album_artists_in_data_and_only_album_in_metadata_then_take_from_data(self):
         data_album_name = "Best of"
         data_artist_name = "Muse"
-        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: data_album_name, UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: [data_artist_name]}
+        data = {
+            UploadedTrackInputFieldKey.ALBUM_NAME.value: data_album_name,
+            UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: [data_artist_name],
+        }
         response = self._post_uploaded_track(UploadedTrackTestFilename.ALBUM_KOKO_ID3V2_MP3, **data)
 
         assert response.status_code == status.HTTP_201_CREATED
@@ -38,7 +43,7 @@ class TestCase(UploadedTrackTestCase):
         data_album_artists_str = "oiuhgoi efe"
         data_dict = {
             UploadedTrackInputFieldKey.ALBUM_NAME.value: data_album_name,
-            UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: data_album_artists_str
+            UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: data_album_artists_str,
         }
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_LONG_A_ID3V2_SMALL_MP3, **data_dict)
 

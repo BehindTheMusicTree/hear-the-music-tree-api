@@ -1,9 +1,7 @@
 from rest_framework import serializers
 
 from api.model.uploaded_track.file.fingerprinting.missing_cause.FingerprintMissingCause import FingerprintMissingCause
-from api.serializer.model.fingerprint_missing_cause.code.detailed import (
-    FingerprintMissingCauseCodeDetailedSerializer
-)
+from api.serializer.model.fingerprint_missing_cause.code.detailed import FingerprintMissingCauseCodeDetailedSerializer
 
 from .Fields import Fields
 

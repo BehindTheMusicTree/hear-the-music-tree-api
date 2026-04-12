@@ -1,4 +1,3 @@
-
 from rest_framework import status
 
 from api import settings
@@ -6,7 +5,6 @@ from api.test.tests.integration.playlist.children.criteria.genre.GenrePlaylistTe
 
 
 class TestCase(GenrePlaylistTestCase):
-
     def test_page_provided_then_used(self):
         rock = self.model_fixture_factory.create_genre(name="Rock")
         self.model_fixture_factory.create_genre(name="Rockabilly", parent=rock)

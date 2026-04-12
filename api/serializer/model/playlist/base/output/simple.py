@@ -22,9 +22,11 @@ class PlaylistSimpleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Playlist
-        fields = [Fields.UUID,
-                  Fields.NAME,
-                  Fields.TYPE_LABEL_PUBLIC,
-                  Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC,
-                  Fields.DURATION_STR_IN_HOUR_MIN_SEC,
-                  Fields.CREATED_ON]
+        fields = [
+            Fields.UUID,
+            Fields.NAME,
+            Fields.TYPE_LABEL_PUBLIC,
+            Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC,
+            Fields.DURATION_STR_IN_HOUR_MIN_SEC,
+            Fields.CREATED_ON,
+        ]

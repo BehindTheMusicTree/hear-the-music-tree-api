@@ -1,12 +1,17 @@
 import sys
 
-from django.http.response import Http404
 from django.conf import settings
-from rest_framework_simplejwt.exceptions import InvalidToken
+from django.http.response import Http404
 from rest_framework.exceptions import (
-    NotAuthenticated, ValidationError, MethodNotAllowed, PermissionDenied, AuthenticationFailed, ParseError,
-    UnsupportedMediaType
+    AuthenticationFailed,
+    MethodNotAllowed,
+    NotAuthenticated,
+    ParseError,
+    PermissionDenied,
+    UnsupportedMediaType,
+    ValidationError,
 )
+from rest_framework_simplejwt.exceptions import InvalidToken
 
 from api.exception.google import GoogleAuthenticationException
 from api.exception.spotify import (
@@ -57,13 +62,25 @@ def custom_exception_handler(exc, context):
         None in debug mode (non-test) to let Django's default handler show the traceback page
     """
 
-    is_test_mode = 'pytest' in sys.argv[0]
+    is_test_mode = "pytest" in sys.argv[0]
 
     if settings.DEBUG and not isinstance(
         exc,
-        (ValidationError, InvalidToken, NotAuthenticated, AuthenticationFailed, MethodNotAllowed, Http404,
-         PermissionDenied, ParseError, UnsupportedMediaType, SpotifyAuthenticationException,
-         SpotifyInvalidGrantException, GoogleAuthenticationException)):
+        (
+            ValidationError,
+            InvalidToken,
+            NotAuthenticated,
+            AuthenticationFailed,
+            MethodNotAllowed,
+            Http404,
+            PermissionDenied,
+            ParseError,
+            UnsupportedMediaType,
+            SpotifyAuthenticationException,
+            SpotifyInvalidGrantException,
+            GoogleAuthenticationException,
+        ),
+    ):
         if is_test_mode:
             return _handle_exception_with_request(exc, context)
         return None
@@ -74,15 +91,15 @@ def custom_exception_handler(exc, context):
 def _handle_exception_with_request(exc, context):
     request = None
     if context:
-        request = context.get('request')
-        if request is None and context.get('view') is not None:
-            request = getattr(context['view'], 'request', None)
+        request = context.get("request")
+        if request is None and context.get("view") is not None:
+            request = getattr(context["view"], "request", None)
     is_authenticated = False
-    if request is not None and getattr(request, 'user', None) is not None:
-        is_authenticated = bool(getattr(request.user, 'is_authenticated', False))
+    if request is not None and getattr(request, "user", None) is not None:
+        is_authenticated = bool(getattr(request.user, "is_authenticated", False))
     if isinstance(exc, PermissionDenied) and not is_authenticated:
         return ErrorResponse.create_error_response(
-            error_detail={'message': 'Authentication required', 'code': 'authentication_required'},
-            api_error_code=ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED
+            error_detail={"message": "Authentication required", "code": "authentication_required"},
+            api_error_code=ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED,
         )
     return ErrorResponse.handle_exception(exc)

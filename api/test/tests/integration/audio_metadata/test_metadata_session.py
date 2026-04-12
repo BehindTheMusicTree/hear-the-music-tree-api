@@ -81,7 +81,7 @@ class TestMetadataSessionUpload(AudioMetadataTestCase):
             UploadedTrackTestFilename.DEFAULT_MP3,
         )
         assert response.status_code == status.HTTP_200_OK
-        token = (response.json().get("sessionToken") or response.json().get("session_token"))
+        token = response.json().get("sessionToken") or response.json().get("session_token")
         assert token
         r1 = self.api_client.post(
             path=reverse("audio-metadata-session-download"),

@@ -1,4 +1,3 @@
-
 from rest_framework import serializers
 
 from api.model.album.Album import Album
@@ -12,10 +11,12 @@ class AlbumSimpleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Album
-        fields = [Fields.UUID,
-                  Fields.NAME_PUBLIC,
-                  Fields.YEAR,
-                  Fields.ALBUM_ARTISTS,
-                  Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC,
-                  Fields.DURATION_STR_IN_HOUR_MIN_SEC,
-                  Fields.CREATED_ON]
+        fields = [
+            Fields.UUID,
+            Fields.NAME_PUBLIC,
+            Fields.YEAR,
+            Fields.ALBUM_ARTISTS,
+            Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC,
+            Fields.DURATION_STR_IN_HOUR_MIN_SEC,
+            Fields.CREATED_ON,
+        ]

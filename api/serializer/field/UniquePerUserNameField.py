@@ -1,4 +1,3 @@
-
 from django.utils.translation import gettext as _
 
 from api.exception.validation.app.AppValidationException import AppValidationException
@@ -14,13 +13,13 @@ class UniquePerUserNameField(AppCharField):
 
     def run_validation(self, data):
         value = super().run_validation(data)
-        request = self.context.get('request')
+        request = self.context.get("request")
         if request and value:
             user = request.user
             if self.model.objects.filter(user=user, name=value).exists():
                 raise AppValidationException(
                     field_name=ModelFields.NAME_PUBLIC,
-                    message=_('An object this name already exists'),
-                    field_validation_error_code=FieldValidationErrorCode.NAME_DUPLICATE
+                    message=_("An object this name already exists"),
+                    field_validation_error_code=FieldValidationErrorCode.NAME_DUPLICATE,
                 )
         return value

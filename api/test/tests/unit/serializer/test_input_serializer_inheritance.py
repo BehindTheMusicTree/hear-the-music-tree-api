@@ -23,6 +23,7 @@ class TestInputSerializerInheritance(AppTestCase):
     Output serializers (read-only, for API responses) do not need AppInputSerializer
     and are excluded from this test. Only input serializers (POST, PUT, etc.) are checked.
     """
+
     BASE_SERIALIZER_CLASSES = {AppInputSerializer, PutSerializer}
 
     def _is_input_serializer(self, modname: str, name: str) -> bool:
@@ -46,21 +47,13 @@ class TestInputSerializerInheritance(AppTestCase):
         name_lower = name.lower()
 
         # Exclude output serializers first (they're clearly read-only)
-        is_output = (
-            "/output/" in modname_lower
-            or ".output." in modname_lower
-            or modname_lower.endswith(".output")
-        )
+        is_output = "/output/" in modname_lower or ".output." in modname_lower or modname_lower.endswith(".output")
 
         if is_output:
             return False
 
         # Input serializers are in "input" directories
-        is_in_input_dir = (
-            "/input/" in modname_lower
-            or ".input." in modname_lower
-            or modname_lower.endswith(".input")
-        )
+        is_in_input_dir = "/input/" in modname_lower or ".input." in modname_lower or modname_lower.endswith(".input")
 
         # Or have input-related names (Post, Put, Create, Update, Input)
         has_input_name = (
@@ -84,8 +77,7 @@ class TestInputSerializerInheritance(AppTestCase):
         serializer_package_path = Path(__file__).parent.parent.parent.parent / "serializer"
 
         for importer, modname, ispkg in pkgutil.walk_packages(
-            path=[str(serializer_package_path)],
-            prefix="api.serializer."
+            path=[str(serializer_package_path)], prefix="api.serializer."
         ):
             if ispkg or modname.endswith(".Fields") or "test" in modname:
                 continue
@@ -104,7 +96,7 @@ class TestInputSerializerInheritance(AppTestCase):
                         and self._is_input_serializer(modname, name)
                     ):
                         serializer_classes.append(obj)
-            except (ImportError, AttributeError, TypeError):
+            except ImportError, AttributeError, TypeError:
                 continue
 
         return serializer_classes

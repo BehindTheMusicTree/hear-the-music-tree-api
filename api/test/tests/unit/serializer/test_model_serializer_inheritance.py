@@ -26,10 +26,7 @@ class TestModelSerializerInheritance(AppTestCase):
         serializer_classes = []
         serializer_package_path = list(serializer_package.__path__)
 
-        for importer, modname, ispkg in pkgutil.walk_packages(
-            path=serializer_package_path,
-            prefix="api.serializer."
-        ):
+        for importer, modname, ispkg in pkgutil.walk_packages(path=serializer_package_path, prefix="api.serializer."):
             if ispkg or modname.endswith(".Fields") or "test" in modname:
                 continue
 
@@ -46,7 +43,7 @@ class TestModelSerializerInheritance(AppTestCase):
                     if meta is None or not getattr(meta, "model", None):
                         continue
                     serializer_classes.append(obj)
-            except (ImportError, AttributeError, TypeError):
+            except ImportError, AttributeError, TypeError:
                 continue
 
         return serializer_classes
@@ -63,9 +60,7 @@ class TestModelSerializerInheritance(AppTestCase):
 
         for serializer_class in serializer_classes:
             if AppModelSerializer not in serializer_class.__mro__:
-                violations.append(
-                    f"{serializer_class.__name__} ({serializer_class.__module__})"
-                )
+                violations.append(f"{serializer_class.__name__} ({serializer_class.__module__})")
 
         assert not violations, (
             f"Found {len(violations)} model serializer(s) that do not inherit from AppModelSerializer:\n"

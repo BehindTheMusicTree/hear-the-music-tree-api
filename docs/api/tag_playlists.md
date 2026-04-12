@@ -84,7 +84,7 @@ None
 Code	Meaning
  | 00	Bad Request - Invalid parameters
  | 01	Unauthorized - Invalid token
- | 04	Not Found - Playlist not found	
+ | 04	Not Found - Playlist not found
 
 ### GET /{id}/
 
@@ -133,7 +133,7 @@ None
 Code	Meaning
  | 00	Bad Request - Invalid parameters
  | 01	Unauthorized - Invalid token
- | 04	Not Found - Playlist not found	
+ | 04	Not Found - Playlist not found
 
 ### Versioning
 

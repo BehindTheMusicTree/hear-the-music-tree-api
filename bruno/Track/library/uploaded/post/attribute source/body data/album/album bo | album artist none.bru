@@ -11,13 +11,13 @@ post {
 }
 
 headers {
-  : 
+  :
 }
 
 body:multipart-form {
   file: @file(api/test/utils/uploaded_track/files/metadata=none.mp3)
   albumName: bo
-  albumArtistsNames[]: 
+  albumArtistsNames[]:
 }
 
 vars:post-response {

@@ -6,10 +6,11 @@ import from the old path. This shim keeps the old import path working.
 """
 
 # Re-export everything from the new module location
-from .audio_file_metadata.audiometa_adapter import *  # noqa: F401,F403
-from .audio_file_metadata.audiometa_adapter import _APP_TO_UNIFIED_KEY_MAP  # explicit export for tests
-from .AppMetadataKey import AppMetadataKey  # explicit export for backward compatibility
 from api.utils import get_file_path as _get_file_path  # alias for backward compatibility
 
+from .AppMetadataKey import AppMetadataKey  # explicit export for backward compatibility
+from .audio_file_metadata.audiometa_adapter import *  # noqa: F403
+from .audio_file_metadata.audiometa_adapter import _APP_TO_UNIFIED_KEY_MAP  # explicit export for tests
+
 # Re-export exceptions from package-level exceptions module if necessary
-from .audio_file_metadata.exceptions import FileCorruptedError  # noqa: F401
+from .audio_file_metadata.exceptions import FileCorruptedError

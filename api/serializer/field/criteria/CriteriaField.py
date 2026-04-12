@@ -18,20 +18,23 @@ class CriteriaField(AppField, PrimaryKeyRelatedField):
     """
 
     def __init__(
-            self, input_types: list[CriteriaFieldInputType], queryset: QuerySet = Criteria.objects.all(), **kwargs):
+        self, input_types: list[CriteriaFieldInputType], queryset: QuerySet = Criteria.objects.all(), **kwargs
+    ):
         self.input_types = input_types
-        self._allow_blank = kwargs.get('allow_blank', True)
-        self._allow_null = kwargs.get('allow_null', True)
+        self._allow_blank = kwargs.get("allow_blank", True)
+        self._allow_null = kwargs.get("allow_null", True)
 
         super().__init__(queryset=queryset, **kwargs)
 
         # Create validation fields based on enabled input types
         self.char_field = None
         if CriteriaFieldInputType.NAME in input_types:
-            self.char_field = AppCharField(required=self.required,
-                                           max_length=settings.CRITERIA_NAME_LEN_MAX,
-                                           allow_blank=self._allow_blank,
-                                           allow_null=self._allow_null)
+            self.char_field = AppCharField(
+                required=self.required,
+                max_length=settings.CRITERIA_NAME_LEN_MAX,
+                allow_blank=self._allow_blank,
+                allow_null=self._allow_null,
+            )
 
         # Initialize UUID validation if enabled
         self.uuid_field = None
@@ -50,29 +53,28 @@ class CriteriaField(AppField, PrimaryKeyRelatedField):
             self.uuid_field.bind(field_name, parent)
 
     def to_internal_value(self, data: Any) -> Any:
-        if data in [None, '']:
+        if data in [None, ""]:
             if not self._allow_null:
-                self.fail('null')
+                self.fail("null")
             return None
 
         # Check if input looks like a UUID (basic format check)
-        looks_like_uuid = isinstance(data, str) and len(data.split('-')) == 5
+        looks_like_uuid = isinstance(data, str) and len(data.split("-")) == 5
 
         # If it looks like a UUID and UUID input is enabled
         if looks_like_uuid:
             if CriteriaFieldInputType.UUID in self.input_types and self.uuid_field is not None:
                 return self.uuid_field.to_internal_value(data)
-            else:
-                self.fail('invalid', detail='UUID input type is not enabled for this field.')
+            self.fail("invalid", detail="UUID input type is not enabled for this field.")
 
         # If it doesn't look like a UUID, try name validation
         if CriteriaFieldInputType.NAME in self.input_types and self.char_field:
             validated_name = self.char_field.to_internal_value(data)
             model_class = self.get_queryset().model
-            user = self.context['request'].user
+            user = self.context["request"].user
             return model_class.objects.get_or_create(user=user, name=validated_name)[0]
 
-        self.fail('invalid', detail='Field must be a valid UUID or name.')
+        self.fail("invalid", detail="Field must be a valid UUID or name.")
 
     def to_representation(self, value: Any) -> str:
         return str(value.uuid)

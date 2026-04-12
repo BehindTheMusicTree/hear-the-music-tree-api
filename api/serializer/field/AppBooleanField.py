@@ -14,8 +14,8 @@ class AppBooleanField(AppField, serializers.BooleanField):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         # Ensure error messages are properly set
-        if 'invalid' not in self.error_messages:
-            self.error_messages['invalid'] = 'Must be a valid boolean.'
+        if "invalid" not in self.error_messages:
+            self.error_messages["invalid"] = "Must be a valid boolean."
 
     def run_validation(self, data: Any = ...) -> bool | None:
         """
@@ -24,6 +24,7 @@ class AppBooleanField(AppField, serializers.BooleanField):
         AppField.to_internal_value (which returns None) via super().
         """
         from rest_framework.fields import empty as empty_sentinel
+
         if data is ...:
             data = self.get_value({})
             if data is empty_sentinel:
@@ -34,7 +35,7 @@ class AppBooleanField(AppField, serializers.BooleanField):
     def to_internal_value(self, data: Any) -> bool | None:
         if data is None:
             if not self.allow_null:
-                self.fail('null')
+                self.fail("null")
             return None
 
         # Handle boolean and string boolean representations
@@ -42,11 +43,11 @@ class AppBooleanField(AppField, serializers.BooleanField):
             return data
         if isinstance(data, str):
             data_lower = data.lower().strip()
-            if data_lower == 'true':
+            if data_lower == "true":
                 return True
-            if data_lower == 'false':
+            if data_lower == "false":
                 return False
 
         # If we get here, the value is invalid
-        self.fail('invalid')
+        self.fail("invalid")
         return None  # Never reached, just for type checking

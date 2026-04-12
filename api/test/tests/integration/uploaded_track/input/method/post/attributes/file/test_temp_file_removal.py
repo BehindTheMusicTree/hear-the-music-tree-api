@@ -1,13 +1,13 @@
 import os
+
 from rest_framework import status
 
 from api import settings
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_uploaded_track_created_then_temp_dir_empty(self):
         assert os.listdir(settings.FILE_UPLOAD_TEMP_DIR) == []
 

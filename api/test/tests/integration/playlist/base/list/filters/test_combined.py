@@ -1,34 +1,28 @@
-from rest_framework import status
 from datetime import timedelta
+
 from django.utils import timezone
+from rest_framework import status
 
 from api.filtering.set.playlist.Fields import Fields as Filters
+from api.filtering.set.private_unique_resource.Fields import Fields as PrivateUniqueResourceFields
 from api.model.criteria.type.CriteriaTypePks import CriteriaTypePks
 from api.model.playlist.children.criteria.CriterialessPlaylistNames import CriterialessPlaylistNames
-from api.model.playlist.PlaylistTypesLabel import PlaylistTypesLabel
 from api.model.playlist.children.criteria.tag.TagPlaylist import TagPlaylist
+from api.model.playlist.PlaylistTypesLabel import PlaylistTypesLabel
 from api.serializer.model.playlist.base.output.detailed import Fields as PlaylistGetFields
 from api.test.tests.integration.playlist.base.PlaylistTestCase import PlaylistTestCase
-from api.filtering.set.private_unique_resource.Fields import Fields as PrivateUniqueResourceFields
 
 
 class TestCase(PlaylistTestCase):
-
     def test_type_genre_and_name_tagless_then_no_result(self):
-        data_dict = {
-            Filters.TYPE_LABEL_PUBLIC: PlaylistTypesLabel.GENRE,
-            Filters.NAME: CriterialessPlaylistNames.TAG
-        }
+        data_dict = {Filters.TYPE_LABEL_PUBLIC: PlaylistTypesLabel.GENRE, Filters.NAME: CriterialessPlaylistNames.TAG}
         response = self._get_playlists(**data_dict)
 
         assert response.status_code == status.HTTP_200_OK
         assert len(self.results) == 0
 
     def test_type_genre_and_name_genreless_then_one_result(self):
-        data_dict = {
-            Filters.TYPE_LABEL_PUBLIC: PlaylistTypesLabel.GENRE,
-            Filters.NAME: CriterialessPlaylistNames.GENRE
-        }
+        data_dict = {Filters.TYPE_LABEL_PUBLIC: PlaylistTypesLabel.GENRE, Filters.NAME: CriterialessPlaylistNames.GENRE}
         response = self._get_playlists(**data_dict)
 
         assert response.status_code == status.HTTP_200_OK
@@ -41,10 +35,7 @@ class TestCase(PlaylistTestCase):
         genre2_name = "Punk rock"
         self.model_fixture_factory.create_genre(name=genre2_name)
 
-        data_dict = {
-            Filters.TYPE_LABEL_PUBLIC: PlaylistTypesLabel.GENRE,
-            Filters.NAME: 'rock'
-        }
+        data_dict = {Filters.TYPE_LABEL_PUBLIC: PlaylistTypesLabel.GENRE, Filters.NAME: "rock"}
         response = self._get_playlists(**data_dict)
 
         assert response.status_code == status.HTTP_200_OK
@@ -57,7 +48,7 @@ class TestCase(PlaylistTestCase):
 
         def update_creation_date(playlist, date):
             playlist.created_on = date
-            playlist.save(update_fields=['created_on'])
+            playlist.save(update_fields=["created_on"])
 
             print(f"Set {playlist.name} created_on to {date.isoformat()}")
 
@@ -65,8 +56,7 @@ class TestCase(PlaylistTestCase):
         past = now - timedelta(days=5)
         future = now + timedelta(days=5)
 
-        tagless_playlist = TagPlaylist.objects.get(
-            user=self.test_user1, type=CriteriaTypePks.TAG, criteria=None)
+        tagless_playlist = TagPlaylist.objects.get(user=self.test_user1, type=CriteriaTypePks.TAG, criteria=None)
         update_creation_date(tagless_playlist, now)
 
         tag1_name = "Summer"
@@ -87,7 +77,7 @@ class TestCase(PlaylistTestCase):
         data = {
             Filters.TYPE_LABEL_PUBLIC: PlaylistTypesLabel.TAG,
             PrivateUniqueResourceFields.CREATED_ON_GTE: past.isoformat(),
-            PrivateUniqueResourceFields.CREATED_ON_LTE: now.isoformat()
+            PrivateUniqueResourceFields.CREATED_ON_LTE: now.isoformat(),
         }
         response = self._get_playlists(**data)
 

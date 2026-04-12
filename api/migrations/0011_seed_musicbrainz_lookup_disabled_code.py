@@ -29,7 +29,6 @@ def noop(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("api", "0010_add_provider_fields_to_user_state"),
     ]

@@ -39,7 +39,7 @@ class AppApiClient(APIClient):
         Returns:
             The determined content type or None for multipart
         """
-        if format in ['multipart', 'json']:
+        if format in ["multipart", "json"]:
             return None
         return content_type
 
@@ -55,14 +55,14 @@ class AppApiClient(APIClient):
         """
         if data is None:
             # Initialize empty data for json/multipart to ensure proper content type
-            return {} if format in ['json', 'multipart'] else None
+            return {} if format in ["json", "multipart"] else None
 
         if isinstance(data, str):
             return data
 
         if isinstance(data, list):
             # For lists, we don't need to transform None values
-            if format == 'json':
+            if format == "json":
                 return transform_uuids(data)
             return data
 
@@ -71,17 +71,18 @@ class AppApiClient(APIClient):
         prepared_data = data_transformer.replace_none_with_empty_string(**prepared_data)
         if not isinstance(prepared_data, dict):
             return prepared_data
-        if format == 'json':
+        if format == "json":
             return transform_uuids(prepared_data)
         # For multipart: preserve empty list fields that DRF's test client would otherwise drop
-        if format == 'multipart':
+        if format == "multipart":
             for key, value in list(prepared_data.items()):
-                if key.endswith('[]') and isinstance(value, list) and len(value) == 0:
-                    prepared_data[key] = ['']
+                if key.endswith("[]") and isinstance(value, list) and len(value) == 0:
+                    prepared_data[key] = [""]
         return prepared_data
 
     def _prepare_request_kwargs(
-            self, extra: dict, format: str | None, content_type: str | None) -> tuple[dict, Any, str | None]:
+        self, extra: dict, format: str | None, content_type: str | None
+    ) -> tuple[dict, Any, str | None]:
         """Prepare common request keyword arguments.
 
         Args:
@@ -98,10 +99,10 @@ class AppApiClient(APIClient):
         """
         extra = extra.copy()
         content_type = self._get_content_type(format, content_type)
-        extra['HTTP_ACCEPT'] = 'application/json'
+        extra["HTTP_ACCEPT"] = "application/json"
         # Mark requests from test client so middleware can handle empty list conversion
-        extra['HTTP_X_TEST_CLIENT'] = 'true'
-        handle_response = extra.pop('handle_response', None)
+        extra["HTTP_X_TEST_CLIENT"] = "true"
+        handle_response = extra.pop("handle_response", None)
 
         return extra, handle_response, content_type
 
@@ -112,25 +113,32 @@ class AppApiClient(APIClient):
         else:
             data_url_encoded = None
 
-        extra, handle_response, content_type = self._prepare_request_kwargs(extra, 'json', content_type)
+        extra, handle_response, content_type = self._prepare_request_kwargs(extra, "json", content_type)
         response = super().get(path, data_url_encoded, follow, **extra)
         return self._handle_response(response, handle_response)
 
-    def post(self, path, data: dict | str | None = None, format='json', content_type=None, follow=False, **extra) -> HttpResponse:
+    def post(
+        self, path, data: dict | str | None = None, format="json", content_type=None, follow=False, **extra
+    ) -> HttpResponse:
         data_url_encoded = self._prepare_data(data, format)
         extra, handle_response, content_type = self._prepare_request_kwargs(extra, format, content_type)
-        response = super().post(path, data_url_encoded, follow=follow,
-                                format=format, content_type=content_type, **extra)
+        response = super().post(
+            path, data_url_encoded, follow=follow, format=format, content_type=content_type, **extra
+        )
         return self._handle_response(response, handle_response)
 
-    def put(self, path, data: dict | str | None = None, format='json', content_type=None, follow=False, **extra) -> HttpResponse:
+    def put(
+        self, path, data: dict | str | None = None, format="json", content_type=None, follow=False, **extra
+    ) -> HttpResponse:
         data_url_encoded = self._prepare_data(data, format)
         extra, handle_response, content_type = self._prepare_request_kwargs(extra, format, content_type)
 
         response = super().put(path, data_url_encoded, format, content_type, follow, **extra)
         return self._handle_response(response, handle_response)
 
-    def delete(self, path, data: dict | None = None, format=None, content_type=None, follow=False, **extra) -> HttpResponse:
+    def delete(
+        self, path, data: dict | None = None, format=None, content_type=None, follow=False, **extra
+    ) -> HttpResponse:
         data_url_encoded = self._prepare_data(data, format)
         extra, handle_response, content_type = self._prepare_request_kwargs(extra, format, content_type)
 
@@ -143,31 +151,29 @@ class AppApiClient(APIClient):
         For error responses (4xx, 5xx), we don't require JSON content-type as they
         might return HTML error pages.
         """
-        if not hasattr(response, '_json'):
-            content_type = response.get('Content-Type', '')
+        if not hasattr(response, "_json"):
+            content_type = response.get("Content-Type", "")
 
             # For error responses, don't enforce JSON content-type
             if response.status_code >= 400:
                 try:
                     response._json = json.loads(response.content)
-                except (ValueError, json.JSONDecodeError):
+                except ValueError, json.JSONDecodeError:
                     # For non-JSON error responses, create a basic error structure
                     response._json = {
-                        'detail': response.content.decode('utf-8')
-                        if hasattr(response.content, 'decode') else str(response.content),
-                        'content_type': content_type,
-                        'status_code': response.status_code
+                        "detail": response.content.decode("utf-8")
+                        if hasattr(response.content, "decode")
+                        else str(response.content),
+                        "content_type": content_type,
+                        "status_code": response.status_code,
                     }
+            # For success responses, maintain strict JSON checking
+            elif response.status_code == 204:
+                # 204 No Content responses don't have content to parse
+                response._json = {}
             else:
-                # For success responses, maintain strict JSON checking
-                if response.status_code == 204:
-                    # 204 No Content responses don't have content to parse
-                    response._json = {}
-                else:
-                    if not content_type.startswith('application/json'):
-                        raise ValueError(
-                            f'Content-Type header is "{content_type}", not "application/json"'
-                        )
-                    response._json = json.loads(response.content)
+                if not content_type.startswith("application/json"):
+                    raise ValueError(f'Content-Type header is "{content_type}", not "application/json"')
+                response._json = json.loads(response.content)
 
         return response._json

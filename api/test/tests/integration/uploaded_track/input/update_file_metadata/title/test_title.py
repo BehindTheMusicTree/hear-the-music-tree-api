@@ -1,7 +1,11 @@
 import pytest
 
 from api.test.tests import conftest
-from api.test.tests.integration.uploaded_track.input.update_file_metadata.title.TestCase import FlacTestCase, Mp3TestCase, WavTestCase
+from api.test.tests.integration.uploaded_track.input.update_file_metadata.title.TestCase import (
+    FlacTestCase,
+    Mp3TestCase,
+    WavTestCase,
+)
 
 
 @pytest.fixture(params=[Mp3TestCase, WavTestCase, FlacTestCase])

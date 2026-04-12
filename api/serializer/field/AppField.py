@@ -72,25 +72,25 @@ class AppField(Field):
 
     # Default mapping of DRF validation keys to our custom error codes
     validation_error_code_mapping: dict[str, FieldValidationErrorCode] = {
-        'required': FieldValidationErrorCode.REQUIRED,
-        'null': FieldValidationErrorCode.REQUIRED,
-        'blank': FieldValidationErrorCode.BLANK,
-        'invalid': FieldValidationErrorCode.FORMAT_INVALID,
-        'invalid_extension': FieldValidationErrorCode.TRACK_FILE_EXTENSION_INVALID,
-        'invalid_choice': FieldValidationErrorCode.ENUM_INVALID,
-        'does_not_exist': FieldValidationErrorCode.REFERENCE_INVALID,
-        'incorrect_type': FieldValidationErrorCode.FORMAT_INVALID,
-        'max_length': FieldValidationErrorCode.STRING_TOO_LONG,
-        'min_length': FieldValidationErrorCode.STRING_TOO_SHORT,
-        'max_value': FieldValidationErrorCode.RATING_TOO_LARGE,
-        'min_value': FieldValidationErrorCode.RATING_TOO_SMALL,
-        'max_size': FieldValidationErrorCode.FILE_TOO_LARGE,
-        'min_size': FieldValidationErrorCode.FILE_TOO_SMALL,
+        "required": FieldValidationErrorCode.REQUIRED,
+        "null": FieldValidationErrorCode.REQUIRED,
+        "blank": FieldValidationErrorCode.BLANK,
+        "invalid": FieldValidationErrorCode.FORMAT_INVALID,
+        "invalid_extension": FieldValidationErrorCode.TRACK_FILE_EXTENSION_INVALID,
+        "invalid_choice": FieldValidationErrorCode.ENUM_INVALID,
+        "does_not_exist": FieldValidationErrorCode.REFERENCE_INVALID,
+        "incorrect_type": FieldValidationErrorCode.FORMAT_INVALID,
+        "max_length": FieldValidationErrorCode.STRING_TOO_LONG,
+        "min_length": FieldValidationErrorCode.STRING_TOO_SHORT,
+        "max_value": FieldValidationErrorCode.RATING_TOO_LARGE,
+        "min_value": FieldValidationErrorCode.RATING_TOO_SMALL,
+        "max_size": FieldValidationErrorCode.FILE_TOO_LARGE,
+        "min_size": FieldValidationErrorCode.FILE_TOO_SMALL,
     }
 
     invalid_message_validation_error_code_mapping: dict[str, FieldValidationErrorCode] = {
-        'Not a valid string.': FieldValidationErrorCode.FORMAT_INVALID,
-        'Invalid UUID format.': FieldValidationErrorCode.FORMAT_INVALID,
+        "Not a valid string.": FieldValidationErrorCode.FORMAT_INVALID,
+        "Invalid UUID format.": FieldValidationErrorCode.FORMAT_INVALID,
     }
 
     def fail(self, key: str, **kwargs: Any) -> None:
@@ -112,21 +112,22 @@ class AppField(Field):
             class_name = self.__class__.__name__
             msg = f"Invalid input for {class_name}."
 
-        if key == 'invalid':
-            if msg.startswith('Failed to download file:'):
+        if key == "invalid":
+            if msg.startswith("Failed to download file:"):
                 code = FieldValidationErrorCode.TRACK_FILE_DOWNLOAD_FAILED
             code = self.invalid_message_validation_error_code_mapping.get(msg, FieldValidationErrorCode.DEFAULT)
         else:
             code = self.validation_error_code_mapping.get(key, FieldValidationErrorCode.DEFAULT)
 
         raise AppValidationException(
-            field_name=self.get_error_field_name(), message=msg, field_validation_error_code=code)
+            field_name=self.get_error_field_name(), message=msg, field_validation_error_code=code
+        )
 
     def get_error_field_name(self) -> str | None:
-        if hasattr(self, 'field_name') and self.field_name:
+        if hasattr(self, "field_name") and self.field_name:
             field_name = self.field_name
-            if getattr(self, 'many', False) or isinstance(self, ListField):
-                field_name += '[]'
+            if getattr(self, "many", False) or isinstance(self, ListField):
+                field_name += "[]"
             return field_name
         return None
 

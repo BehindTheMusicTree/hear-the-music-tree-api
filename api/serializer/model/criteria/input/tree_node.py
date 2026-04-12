@@ -1,8 +1,8 @@
 from rest_framework.serializers import DictField
 
 from api import settings
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.exception.validation.app.AppValidationException import AppValidationException
+from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.serializer.AppInputSerializer import AppInputSerializer
 from api.serializer.field.AppCharField import AppCharField
 from api.serializer.field.AppListField import AppListField
@@ -22,7 +22,7 @@ class CriteriaTreeNodeSerializer(AppInputSerializer):
             raise AppValidationException(
                 field_name=self.structure_field_name,
                 message="Invalid tree structure: each node must be a dictionary",
-                field_validation_error_code=FieldValidationErrorCode.TREE_MALFORMED
+                field_validation_error_code=FieldValidationErrorCode.TREE_MALFORMED,
             )
         return super().to_internal_value(data)
 
@@ -39,22 +39,19 @@ class CriteriaTreeNodeSerializer(AppInputSerializer):
             return []
 
         from api.serializer.model.criteria.input.tree_node import CriteriaTreeNodeSerializer
+
         validated_children = []
 
         for child in value:
-
             # Create a serializer for this child node
-            serializer = CriteriaTreeNodeSerializer(structure_field_name=self.structure_field_name,
-                                                    data=child)
+            serializer = CriteriaTreeNodeSerializer(structure_field_name=self.structure_field_name, data=child)
             serializer.is_valid(raise_exception=True)
 
             # Get validated data for this child
             validated_child = serializer.validated_data
 
             # Make sure children field exists and is preserved
-            if Fields.CHILDREN not in validated_child:
-                validated_child[Fields.CHILDREN] = []
-            elif validated_child[Fields.CHILDREN] is None:
+            if Fields.CHILDREN not in validated_child or validated_child[Fields.CHILDREN] is None:
                 validated_child[Fields.CHILDREN] = []
 
             validated_children.append(validated_child)

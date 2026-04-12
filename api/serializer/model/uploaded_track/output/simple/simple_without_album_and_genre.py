@@ -1,4 +1,3 @@
-
 from rest_framework import serializers
 
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
@@ -12,9 +11,11 @@ class UploadedTrackWithoutAlbumPlaylistGenreSerializer(AppInputSerializer, seria
 
     class Meta:
         model = UploadedTrack
-        fields = [UploadedTrackOutputFieldKey.UUID.value,
-                  UploadedTrackOutputFieldKey.TITLE.value,
-                  UploadedTrackOutputFieldKey.ARTISTS.value,
-                  UploadedTrackOutputFieldKey.RATING.value,
-                  UploadedTrackOutputFieldKey.LANGUAGE.value,
-                  UploadedTrackOutputFieldKey.PLAY_COUNT.value]
+        fields = [
+            UploadedTrackOutputFieldKey.UUID.value,
+            UploadedTrackOutputFieldKey.TITLE.value,
+            UploadedTrackOutputFieldKey.ARTISTS.value,
+            UploadedTrackOutputFieldKey.RATING.value,
+            UploadedTrackOutputFieldKey.LANGUAGE.value,
+            UploadedTrackOutputFieldKey.PLAY_COUNT.value,
+        ]

@@ -1,22 +1,22 @@
-from rest_framework import status
 from datetime import timedelta
-from django.utils import timezone
 
+from django.utils import timezone
+from rest_framework import status
+
+from api.filtering.set.private_unique_resource.Fields import Fields as PrivateUniqueResourceFields
 from api.serializer.model.criteria.output.CriteriaOutputFieldKey import CriteriaOutputFieldKey
 from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 from api.utils.data_transformer import to_camel_case
-from api.filtering.set.private_unique_resource.Fields import Fields as PrivateUniqueResourceFields
 
 
 class TestCase(GenreTestCase):
-
     def test_name_and_parent_uuid_then_ok(self):
         genre_rock = self.model_fixture_factory.create_genre(name="Rock")
         self.model_fixture_factory.create_genre(name="Pure Pop")
         genre_punk = self.model_fixture_factory.create_genre(name="Punk", parent=genre_rock)
         genre_punky = self.model_fixture_factory.create_genre(name="Punky", parent=genre_rock)
 
-        response = self._list_genres(name='pu', parent=genre_rock.uuid)
+        response = self._list_genres(name="pu", parent=genre_rock.uuid)
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 2
@@ -30,21 +30,17 @@ class TestCase(GenreTestCase):
         future = now + timedelta(days=5)
 
         # Create genres with different updated_on dates
-        genre_rock_new = self.model_fixture_factory.create_genre(
-            name="Rock", updated_on=now)
-        genre_rock_old = self.model_fixture_factory.create_genre(
-            name="Rock Alternative", updated_on=past)
-        self.model_fixture_factory.create_genre(
-            name="Rock Future", updated_on=future)
-        self.model_fixture_factory.create_genre(
-            name="Pop", updated_on=now)
+        genre_rock_new = self.model_fixture_factory.create_genre(name="Rock", updated_on=now)
+        genre_rock_old = self.model_fixture_factory.create_genre(name="Rock Alternative", updated_on=past)
+        self.model_fixture_factory.create_genre(name="Rock Future", updated_on=future)
+        self.model_fixture_factory.create_genre(name="Pop", updated_on=now)
 
         response = self._list_genres(
-            name='Rock',
+            name="Rock",
             **{
                 PrivateUniqueResourceFields.UPDATED_ON_GTE: past.isoformat(),
-                PrivateUniqueResourceFields.UPDATED_ON_LTE: now.isoformat()
-            }
+                PrivateUniqueResourceFields.UPDATED_ON_LTE: now.isoformat(),
+            },
         )
 
         assert response.status_code == status.HTTP_200_OK

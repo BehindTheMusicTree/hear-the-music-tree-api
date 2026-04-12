@@ -25,14 +25,12 @@ class TestGoogleAuthView(AppTestCase):
         )
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
-    @mock.patch('api.view.google_auth.GoogleOAuthService')
+    @mock.patch("api.view.google_auth.GoogleOAuthService")
     def test_invalid_code_then_401_unauthorized(self, mock_service_class):
         from api.exception.google import GoogleAuthenticationException
 
         mock_service = mock_service_class.return_value
-        mock_service.exchange_code_for_tokens.side_effect = GoogleAuthenticationException(
-            "Invalid code"
-        )
+        mock_service.exchange_code_for_tokens.side_effect = GoogleAuthenticationException("Invalid code")
 
         response = self.api_client.post(
             reverse("api-auth-google"),
@@ -41,7 +39,7 @@ class TestGoogleAuthView(AppTestCase):
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-    @mock.patch('api.view.google_auth.GoogleOAuthService')
+    @mock.patch("api.view.google_auth.GoogleOAuthService")
     def test_valid_code_then_200_and_session_shape(self, mock_service_class):
         mock_service = mock_service_class.return_value
         mock_service.exchange_code_for_tokens.return_value = {

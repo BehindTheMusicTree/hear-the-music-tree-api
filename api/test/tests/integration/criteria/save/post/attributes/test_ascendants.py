@@ -8,7 +8,6 @@ from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase):
-
     def test_no_parent_provided_then_no_ascendants(self):
         response = self._post_genre(**{PostFields.NAME_PUBLIC: "Rock"})
 
@@ -35,8 +34,7 @@ class TestCase(GenreTestCase):
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.ascendants.count() == 3
-        criteria_ascendants_rels: QuerySet[CriteriaLineageRel] = \
-            self.saved_object.ascendants_rels.all()
+        criteria_ascendants_rels: QuerySet[CriteriaLineageRel] = self.saved_object.ascendants_rels.all()
         criteria_ascendants_rels_ordered = criteria_ascendants_rels.order_by(Fields.DEGREE)
         assert criteria_ascendants_rels_ordered[0].ascendant.uuid == criteria3.uuid
         assert criteria_ascendants_rels_ordered[0].degree == 1

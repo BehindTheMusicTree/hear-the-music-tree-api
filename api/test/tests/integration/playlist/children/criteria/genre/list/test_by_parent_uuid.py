@@ -2,14 +2,11 @@ from rest_framework import status
 
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.serializer.model.playlist.children.criteria.output.detailed import Fields as RietrieveFields
-from api.test.utils.field.filter.foreign_key.PrivateForeignKeyFilterTestCase import (
-    PrivateForeignKeyFilterTestCase
-)
 from api.test.tests.integration.playlist.children.criteria.genre.GenrePlaylistTestCase import GenrePlaylistTestCase
+from api.test.utils.field.filter.foreign_key.PrivateForeignKeyFilterTestCase import PrivateForeignKeyFilterTestCase
 
 
 class TestCase(GenrePlaylistTestCase, PrivateForeignKeyFilterTestCase):
-
     def setUp(self, methods_names_to_implement=None):
         return super().setUp(allow_empty_value=True, methods_names_to_implement=methods_names_to_implement)
 
@@ -26,19 +23,19 @@ class TestCase(GenrePlaylistTestCase, PrivateForeignKeyFilterTestCase):
     def test_invalid_uuid_then_400_bad_request(self):
         self.model_fixture_factory.create_genre(name="Rock")
 
-        response = self._list_genre_playlists(**{RietrieveFields.PARENT: 'invalid-uuid'})
+        response = self._list_genre_playlists(**{RietrieveFields.PARENT: "invalid-uuid"})
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         error = self.bad_request_result_field_errors[0]
-        assert error['field'] == RietrieveFields.PARENT
-        assert error['code'] == FieldValidationErrorCode.FORMAT_INVALID
+        assert error["field"] == RietrieveFields.PARENT
+        assert error["code"] == FieldValidationErrorCode.FORMAT_INVALID
 
     def test_empty_then_results(self):
         genre_rock = self.model_fixture_factory.create_genre(name="Rock")
         genre_rockabilly = self.model_fixture_factory.create_genre(name="Rockabilly")
         genre_koko = self.model_fixture_factory.create_genre(name="Koko", parent=genre_rock)
 
-        response = self._list_genre_playlists(**{RietrieveFields.PARENT: ''})
+        response = self._list_genre_playlists(**{RietrieveFields.PARENT: ""})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 3

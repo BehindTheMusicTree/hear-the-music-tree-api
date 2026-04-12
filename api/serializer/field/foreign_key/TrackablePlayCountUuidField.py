@@ -23,8 +23,8 @@ class TrackablePlayCountUuidField(PrivateUuidField):
         super().__init__(queryset=Playlist.objects.none(), **kwargs)
 
     def _get_object_by_uuid(
-            self, uuid_value: UUID, user: Union[User, AnonymousUser],
-            model_class: Type[Model]) -> Model | None:
+        self, uuid_value: UUID, user: User | AnonymousUser, model_class: type[Model]
+    ) -> Model | None:
         """Helper method to get an object by UUID and user."""
         if isinstance(user, AnonymousUser):
             return None
@@ -35,27 +35,26 @@ class TrackablePlayCountUuidField(PrivateUuidField):
             return None
 
     def to_internal_value(self, data):
-        if data in [None, ''] and self.allow_null:
+        if data in [None, ""] and self.allow_null:
             return None
 
         uuid_value = super(PrivateUuidField, self).to_internal_value(data)
-        request = self.context.get('request')
+        request = self.context.get("request")
 
         if not isinstance(request, Request):
             raise ValueError("TrackablePlayCountUuidField requires request in the context")
 
         user = request.user
 
-        content_object = (
-            self._get_object_by_uuid(uuid_value, user, Playlist) or
-            self._get_object_by_uuid(uuid_value, user, UploadedTrack)
+        content_object = self._get_object_by_uuid(uuid_value, user, Playlist) or self._get_object_by_uuid(
+            uuid_value, user, UploadedTrack
         )
 
         if not content_object:
             raise AppValidationException(
-                field_name=self.field_name or 'trackable_play_count_uuid',
-                message='Invalid content object UUID',
-                field_validation_error_code=FieldValidationErrorCode.RESOURCE_NOT_OWNED
+                field_name=self.field_name or "trackable_play_count_uuid",
+                message="Invalid content object UUID",
+                field_validation_error_code=FieldValidationErrorCode.RESOURCE_NOT_OWNED,
             )
 
         return uuid_value

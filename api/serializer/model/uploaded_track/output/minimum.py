@@ -11,6 +11,8 @@ class UploadedTrackMinimumSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UploadedTrack
-        fields = [UploadedTrackOutputFieldKey.UUID.value,
-                  UploadedTrackOutputFieldKey.TITLE.value,
-                  UploadedTrackOutputFieldKey.ARTISTS.value]
+        fields = [
+            UploadedTrackOutputFieldKey.UUID.value,
+            UploadedTrackOutputFieldKey.TITLE.value,
+            UploadedTrackOutputFieldKey.ARTISTS.value,
+        ]

@@ -1,11 +1,11 @@
 import pytest
 from rest_framework import status
 
+from api.filtering.set.search.Fields import Fields as SearchFields
 from api.model.album.Album import Album
 from api.model.artist.Artist import Artist
 from api.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
-from api.filtering.set.search.Fields import Fields as SearchFields
 from api.test.tests.integration.search.SearchTestCase import SearchTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
@@ -30,7 +30,8 @@ class TestCase(SearchTestCase):
         artist = self.model_fixture_factory.create_artist(name=f"{search_term} Artist")
         album = self.model_fixture_factory.create_album(name=f"{search_term} Album")
         track = self.model_fixture_factory.create_uploaded_track_with_file(
-            title=f"{search_term} Track", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3)
+            title=f"{search_term} Track", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3
+        )
         genre = self.model_fixture_factory.create_genre(name=f"{search_term} Genre")
         tag = self.model_fixture_factory.create_tag(name=f"{search_term} Tag")
         playlist = self.model_fixture_factory.create_manual_playlist(name=f"{search_term} Playlist")
@@ -41,22 +42,22 @@ class TestCase(SearchTestCase):
 
         if UploadedTrack.__name__ in self.results:
             track_results = self.results[UploadedTrack.__name__]
-            track_titles = [t.get('title') for t in track_results]
+            track_titles = [t.get("title") for t in track_results]
             assert track.title in track_titles
 
         if Artist.__name__ in self.results:
             artist_results = self.results[Artist.__name__]
-            artist_names = [a.get('name') for a in artist_results]
+            artist_names = [a.get("name") for a in artist_results]
             assert artist.name in artist_names
 
         if Album.__name__ in self.results:
             album_results = self.results[Album.__name__]
-            album_names = [a.get('name') for a in album_results]
+            album_names = [a.get("name") for a in album_results]
             assert album.name in album_names
 
         if ManualPlaylist.__name__ in self.results:
             playlist_results = self.results[ManualPlaylist.__name__]
-            playlist_names = [p.get('name') for p in playlist_results]
+            playlist_names = [p.get("name") for p in playlist_results]
             assert playlist.name in playlist_names
 
         response = self._search(**{SearchFields.QUERY: search_term.upper()})

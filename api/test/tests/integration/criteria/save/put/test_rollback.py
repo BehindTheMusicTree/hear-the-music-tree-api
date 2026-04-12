@@ -7,13 +7,12 @@ from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase):
-
     def test_exception_then_rollback(self):
         genre_rock = self.model_fixture_factory.create_genre(name="Rock")
         genre_punk = self.model_fixture_factory.create_genre(name="Punk", parent=genre_rock)
         genre_metal = self.model_fixture_factory.create_genre(name="Metal")
 
-        with patch('api.model.playlist.children.criteria.CriteriaPlaylist.CriteriaPlaylist.save') as mock:
+        with patch("api.model.playlist.children.criteria.CriteriaPlaylist.CriteriaPlaylist.save") as mock:
             exception_message = "Save failed!"
             mock.side_effect = Exception(exception_message)
 
