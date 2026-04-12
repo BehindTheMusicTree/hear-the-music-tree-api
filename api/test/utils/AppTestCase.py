@@ -147,7 +147,8 @@ class AppTestCase(TestCase, Generic[T]):
         self.saved_uploaded_track_metadata_with_raw_rating = audio_file_metadata.get_app_metadata(
             file=saved_uploaded_track.track_file.file)
 
-    # Defined here and not in UploadedTrackTestCase because other views needs sometimes to post a track for testing purposes
+    # Defined here and not in UploadedTrackTestCase because other views needs sometimes to post a track for testing
+    # purposes
     # (testing metadata updates for example)
     def _post_uploaded_track(self, test_uploaded_track_filename: UploadedTrackTestFilename = UploadedTrackTestFilename.DEFAULT_MP3,
                              **kwargs) -> Union[JsonResponse, HttpResponse]:
@@ -164,7 +165,8 @@ class AppTestCase(TestCase, Generic[T]):
                 path=reverse('me-uploaded-track-list'),
                 data=kwargs, format='multipart', handle_response=self._set_results)
 
-    # Defined here and not in UploadedTrackTestCase because other views needs sometimes to put a track for testing purposes
+    # Defined here and not in UploadedTrackTestCase because other views needs sometimes to put a track for testing
+    # purposes
     # (testing Genre deletion for example)
     def _put_uploaded_track(self, uuid, **kwargs):
         if self.is_from_uploaded_track_test_case and self.model_class == UploadedTrack:

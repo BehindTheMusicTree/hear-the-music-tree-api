@@ -49,7 +49,7 @@ class TestCase(UploadedTrackTestCase):
                 )
                 pytest.skip(f"Fingerprint not generated. Missing cause: {code_label} - {message}")
             else:
-                assert False, "Fingerprint is None but no fingerprint_missing_cause is set"
+                raise AssertionError("Fingerprint is None but no fingerprint_missing_cause is set")
 
         assert fingerprint_bytes is not None
         assert len(fingerprint_bytes) > 0
@@ -72,7 +72,7 @@ class TestCase(UploadedTrackTestCase):
                     MbRecordingMissingCauseCode.Codes.LOOKUP_FAILED_WITH_UNKNOWN_RESPONSE_ERROR_CODE,
                 ]
             else:
-                assert False, "MusicBrainz recording is None but no musicbrainz_recording_missing_cause is set"
+                raise AssertionError("MusicBrainz recording is None but no musicbrainz_recording_missing_cause is set")
 
         response = self._retrieve_uploaded_track(track.uuid)
         assert response.status_code == status.HTTP_200_OK
