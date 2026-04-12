@@ -33,6 +33,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ```markdown
 ## [Unreleased]
 
+### CI
+
+- **python-project-standards v4.1.0 layout**: Vendored [**`baselines/`**](baselines/) (`ruff.toml`, **`DIGESTS`**, **`expected-mypy.json`**), thin **`[tool.ruff] extend`** in [`pyproject.toml`](pyproject.toml), [**`STANDARDS_VERSION`**](STANDARDS_VERSION) **`4.1.0`**, and [**`scripts/check_lint_baseline.py`**](scripts/check_lint_baseline.py) (with [**`verify-standards.sh`**](scripts/verify-standards.sh) invoking it). [**`pre-commit-hooks`**](.pre-commit-config.yaml) **`rev`** bumped to **`v6.0.0`**. Pre-commit still runs **inline** in [`.github/workflows/test.yml`](.github/workflows/test.yml) (no org **`reusable-pre-commit`** job).
+
 ### Added
 
 - **Track API**: Added batch upload endpoint for multiple tracks
@@ -59,6 +63,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 **Note:** During releases, maintainers will move entries from `[Unreleased]` to a versioned section (e.g., `## [0.2.8] - 2025-01-XX`).
 
 ## [Unreleased]
+
+### CI
+
+- **python-project-standards v4.2.0** ([org **`v4.2.0`**](https://github.com/BehindTheMusicTree/python-project-standards/releases/tag/v4.2.0)): Root [**`STANDARDS_VERSION`**](STANDARDS_VERSION) **`4.2.0`**. [**`scripts/verify-standards.sh`**](scripts/verify-standards.sh) and [**`scripts/check_lint_baseline.py`**](scripts/check_lint_baseline.py) match **`templates/scripts/`** on that tag. [**.cursor/rules/changelog-alignment.mdc**](.cursor/rules/changelog-alignment.mdc) matches org **`templates/cursor-rules/`**. Retains **v4.1.1** alignment: [**`baselines/DIGESTS`**](baselines/DIGESTS) lists **`expected-mypy.json`**; [**`scripts/publish_github_release.py`**](scripts/publish_github_release.py) and [**.github/workflows/release-on-tag.yml**](.github/workflows/release-on-tag.yml) publish a **GitHub Release** from **`CHANGELOG.md`** for **`v*.*.*`** tags (including **`## [vX.Y.Z]`** headings).
 
 ### Added
 
@@ -90,11 +98,11 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### CI
 
-- **python-project-standards v4.1.0**: Vendored [`baselines/`](baselines/) (`ruff.toml`, **`DIGESTS`**, **`expected-mypy.json`**), thin **`[tool.ruff] extend`** in [`pyproject.toml`](pyproject.toml), root [`STANDARDS_VERSION`](STANDARDS_VERSION) **`4.1.0`**, and [`scripts/check_lint_baseline.py`](scripts/check_lint_baseline.py) (invoked from [`scripts/verify-standards.sh`](scripts/verify-standards.sh)). **`pre-commit-hooks`** [`rev`](.pre-commit-config.yaml) bumped to **`v6.0.0`**. PR workflow still runs **`pre-commit run --all-files`** inline (Python 3.14, `pip install -e ".[dev]"`), not via org **`reusable-pre-commit`**; integration **pytest** stays in-repo. Ruff **`I001`** is ignored for [`scripts/check_lint_baseline.py`](scripts/check_lint_baseline.py) so **isort** and Ruff do not disagree on import layout. See [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md).
+- **Pre-commit**: PR workflow runs `pre-commit run --all-files` (StrEnum checker, Ruff fatal rules, YAML / merge-conflict checks) in an **inline** job (checkout, Python 3.14, `pip install -e ".[dev]"`), not via org `reusable-pre-commit`. Integration **pytest** stays in-repo. Added **`verify-python-project-standards`** ([`scripts/verify-standards.sh`](scripts/verify-standards.sh)); removed the `STANDARDS_VERSION` file and workflow pin checks. See [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md).
 
 ### Fixed
 
-- **`verify-standards.sh`**: Synced from **python-project-standards v3.0.1**: stricter local **ruff check** detection (not **`ruff-format`** alone); optional **`STANDARDS_VERSION`** vs **`@v…`** pin scan uses a workflow file loop instead of fragile **`grep -r --include`** ordering (still accepts **astral-sh/ruff-pre-commit** remote repo). **v4.1.0** adds **`scripts/check_lint_baseline.py`** (Ruff baseline digest, **`pyproject.toml`** overlay, Mypy keys vs **`baselines/expected-mypy.json`**).
+- **`verify-standards.sh`**: Synced from **python-project-standards v3.0.1**: stricter local **ruff check** detection (not **`ruff-format`** alone); optional **`STANDARDS_VERSION`** vs **`@v…`** pin scan uses a workflow file loop instead of fragile **`grep -r --include`** ordering (still accepts **astral-sh/ruff-pre-commit** remote repo).
 
 ### Documentation
 
