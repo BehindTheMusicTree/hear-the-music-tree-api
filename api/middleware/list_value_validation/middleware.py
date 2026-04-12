@@ -80,7 +80,7 @@ class ListValueValidationMiddleware:
                             request._body if hasattr(request, "_body") and request._body else request.body
                         )
                         parser = DjangoMultiPartParser(request.META, body_stream, [TemporaryFileUploadHandler()])
-                        parsed_data, files = parser.parse()
+                        parsed_data, _files = parser.parse()
                         if isinstance(parsed_data, QueryDict) and len(parsed_data) > 0:
                             data_to_check = parsed_data
 

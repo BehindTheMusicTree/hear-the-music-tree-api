@@ -28,9 +28,7 @@ class SpotifyProfileFields:
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def spotify_auth(request):
-    """
-    Exchange Spotify code for session. One account can link both Spotify and Google (matched by email).
-    """
+    """Exchange Spotify code for session. One account can link both Spotify and Google (matched by email)."""
     code = request.data.get("code")
     if not code:
         raise AppValidationException(

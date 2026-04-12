@@ -47,7 +47,7 @@ def dict_to_snake_case(data: Any) -> dict[str, Any] | str:
 
 
 def get_copy_of_dict_including_only_specified_keys(data_dict: dict, keys) -> dict[str, Any]:
-    dict2 = dict()
+    dict2 = {}
     for parameter_key in keys:
         if parameter_key in data_dict:
             dict2[parameter_key] = data_dict[parameter_key]
@@ -62,8 +62,8 @@ def remove_none_or_empty_key_from_dict(data_dict: dict):
 
 
 def update_dict_converting_empty_string_to_none(data: dict):
-    for key in data:
-        if data[key] == "":
+    for key, val in data.items():
+        if val == "":
             data[key] = None
 
 
@@ -107,6 +107,7 @@ def get_first_value_str_if_exists_in_str_dict_or_none(str_dict: dict, key: str) 
             return value[0] if value else None
     else:
         return None
+    return None
 
 
 def get_first_value_int_if_exists_in_str_dict_or_none(str_dict: dict, key: str) -> int | None:

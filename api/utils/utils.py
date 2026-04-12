@@ -8,7 +8,9 @@ def print_django(message):
 
 
 def is_django_startup_verbose() -> bool:
-    """When true, settings startup logs full OAuth client ids, redirect URIs, etc. Default: off (safer for container logs)."""
+    """When true, settings startup logs full OAuth client ids, redirect URIs, etc. Default: off (safer for container
+    logs).
+    """
     return os.environ.get("DJANGO_VERBOSE_STARTUP", "").strip().lower() in ("1", "true", "yes")
 
 

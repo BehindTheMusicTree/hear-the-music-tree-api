@@ -61,7 +61,7 @@ def _get_musicbrainz_best_recording_dict_from_fingerprint_and_duration(
         raise musicbrainz_exception.UnknownStatusMusicbrainzRecordingLookupException(lookup_status)
     except Exception as exception:
         if isinstance(exception, musicbrainz_exception.MusicbrainzRecordingLookupException):
-            raise exception
+            raise
         if isinstance(exception, WebServiceError):
             try:
                 exc_str = str(exception)
