@@ -31,7 +31,7 @@ class CamelToSnakeMiddleware:
 
             if request.FILES:
                 original_files = request.FILES
-                request._files = dict()  # type: ignore
+                request._files = {}  # type: ignore
                 for key, files in original_files.items():
                     request._files[data_transformer.to_snake_case(key)] = files
 

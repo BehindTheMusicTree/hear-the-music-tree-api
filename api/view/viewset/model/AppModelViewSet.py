@@ -1,6 +1,6 @@
 import re
 from collections.abc import Sequence
-from typing import Any, Generic, Type, TypeVar, Union, cast
+from typing import Any, Generic, TypeVar, cast
 
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import QuerySet
@@ -27,7 +27,7 @@ UUID_PATTERN = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-
 T = TypeVar("T", bound=BaseModel)
 
 
-class AppModelViewSet(viewsets.ModelViewSet, Generic[T]):
+class AppModelViewSet[T: BaseModel](viewsets.ModelViewSet):
     pagination_class = AppPagination
     permission_classes = [IsAuthenticated]
     filter_backends = [ConsistentParametersFilterBackend]

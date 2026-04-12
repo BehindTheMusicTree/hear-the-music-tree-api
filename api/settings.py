@@ -127,7 +127,7 @@ FILE_UPLOAD_ENABLED: bool
 
 
 def init_logs_if_needed():
-    from api.logging.LoggersName import LoggersName  # noqa: PLC0415
+    from api.logging.LoggersName import LoggersName
 
     LOG_DIR_STR = os.getenv('DJANGO_LOG_DIR')
     if not LOG_DIR_STR:

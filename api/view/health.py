@@ -1,7 +1,5 @@
 # api/view/health.py
-"""
-Health check endpoint pour monitoring et orchestration Docker
-"""
+"""Health check endpoint pour monitoring et orchestration Docker"""
 
 import time
 
@@ -73,9 +71,7 @@ class HealthCheckView(APIView):
             return False
 
     def _check_cache(self, health_status):
-        """
-        Vérifie le cache (non-critique)
-        """
+        """Vérifie le cache (non-critique)"""
         try:
             test_key = "health_check_test"
             cache.set(test_key, "ok", timeout=10)

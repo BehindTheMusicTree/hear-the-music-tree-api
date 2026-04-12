@@ -105,7 +105,7 @@ class DuplicateFieldsMiddleware:
                         # Manually parse multipart data from raw body to detect duplicates
                         # This is necessary because Django doesn't populate request.POST for PUT/PATCH
                         parser = DjangoMultiPartParser(request.META, request, [TemporaryFileUploadHandler()])
-                        parsed_data, files = parser.parse()
+                        parsed_data, _files = parser.parse()
                         if isinstance(parsed_data, QueryDict) and len(parsed_data) > 0:
                             data_to_check = parsed_data
 
@@ -139,7 +139,7 @@ class DuplicateFieldsMiddleware:
                     duplicates = []
 
                     # Check for duplicates while allowing list fields
-                    for field_name in data_to_check.keys():
+                    for field_name in data_to_check:
                         # Skip list fields (fields with [] suffix are allowed to have multiple values)
                         if field_name.endswith("[]"):
                             continue

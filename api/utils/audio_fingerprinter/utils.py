@@ -70,11 +70,11 @@ def post_fingerprint_audio(filename: str, title: str, user_id: str) -> tuple[byt
                 raise exception.FpcalcStatusException(response_json)
             raise exception.UnprocessableEntityException(response_json)
         if response.status_code == 404:
-            raise exception.ServiceNotFoundException()
+            raise exception.ServiceNotFoundException
         raise exception.AudioFingerprinterException(response_json)
     except requests.exceptions.ConnectionError as e:
         if str(e).find("Errno 61") != -1 or str(e).find("Errno 111") != -1:
-            raise exception.ServiceNotFoundException()
+            raise exception.ServiceNotFoundException
         raise ConnectionError(str(e))
     except urllib3.exceptions.MaxRetryError as e:
-        raise exception.ServiceNotFoundException()
+        raise exception.ServiceNotFoundException

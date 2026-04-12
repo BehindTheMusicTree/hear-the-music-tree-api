@@ -508,9 +508,7 @@ class ErrorResponse:
 
     @staticmethod
     def handle_exception(exc: Exception) -> JsonResponse:
-        """
-        Routes different types of exceptions to their appropriate handlers.
-        """
+        """Routes different types of exceptions to their appropriate handlers."""
         if isinstance(exc, DrfValidationError):
             converted = AppValidationException._detect_and_convert_from_drf_exception(exc)
             if converted:
