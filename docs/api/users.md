@@ -1,23 +1,28 @@
 # users
 
 ## Overview
+
 Manage user accounts (admin only)
 
 ## Base URL
+
 /v1/users/
 
 ## Authentication
+
 JWT token required
 
 ## Permissions
+
 Admin users only (IsAdminUser)
 
 ## Endpoints
-| Method | Path | Action | Description |
-|------|------|--------|-------------|
-| GET | / | list | List all users |
-| GET | /{id}/ | retrieve | Get user details |
-| DELETE | /{id}/ | destroy | Delete user |
+
+| Method | Path   | Action   | Description      |
+| ------ | ------ | -------- | ---------------- |
+| GET    | /      | list     | List all users   |
+| GET    | /{id}/ | retrieve | Get user details |
+| DELETE | /{id}/ | destroy  | Delete user      |
 
 ## Request / Response
 
@@ -34,15 +39,17 @@ Query params:
 page, page_size (pagination)
 
 Body:
+
 ```json
 {}
 ```
 
 **Response**
 Status codes:
- | 00 OK
+| 00 OK
 
 Body:
+
 ```json
 {
   "count": 10,
@@ -64,23 +71,28 @@ Body:
 ```
 
 ### Validation Rules
+
 None
 
 ### Business Rules
+
 None
 
 ### Errors
-| Code | Meaning |
-|------|----------|
-| 400 | Bad Request - Invalid parameters |
-| 401 | Unauthorized - Invalid token |
-| 403 | Forbidden - Not admin |
-| 404 | Not Found - User not found |
+
+| Code | Meaning                          |
+| ---- | -------------------------------- |
+| 400  | Bad Request - Invalid parameters |
+| 401  | Unauthorized - Invalid token     |
+| 403  | Forbidden - Not admin            |
+| 404  | Not Found - User not found       |
 
 ### Versioning
+
 TODO
 
 ### Notes
+
 TODO
 
 ### GET /{id}/
@@ -96,15 +108,17 @@ Query params:
 None
 
 Body:
+
 ```json
 {}
 ```
 
 **Response**
 Status codes:
- | 00 OK
+| 00 OK
 
 Body:
+
 ```json
 {
   "id": "uuid",
@@ -119,23 +133,28 @@ Body:
 ```
 
 ### Validation Rules
+
 None
 
 ### Business Rules
+
 None
 
 ### Errors
-| Code | Meaning |
-|------|----------|
-| 400 | Bad Request - Invalid parameters |
-| 401 | Unauthorized - Invalid token |
-| 403 | Forbidden - Not admin |
-| 404 | Not Found - User not found |
+
+| Code | Meaning                          |
+| ---- | -------------------------------- |
+| 400  | Bad Request - Invalid parameters |
+| 401  | Unauthorized - Invalid token     |
+| 403  | Forbidden - Not admin            |
+| 404  | Not Found - User not found       |
 
 ### Versioning
+
 TODO
 
 ### Notes
+
 TODO
 
 ### DELETE /{id}/
@@ -151,35 +170,42 @@ Query params:
 None
 
 Body:
+
 ```json
 {}
 ```
 
 **Response**
 Status codes:
- | 04 No Content
+| 04 No Content
 
 Body:
+
 ```json
 {}
 ```
 
 ### Validation Rules
+
 None
 
 ### Business Rules
+
 None
 
 ### Errors
-| Code | Meaning |
-|------|----------|
-| 400 | Bad Request - Invalid parameters |
-| 401 | Unauthorized - Invalid token |
-| 403 | Forbidden - Not admin |
-| 404 | Not Found - User not found |
+
+| Code | Meaning                          |
+| ---- | -------------------------------- |
+| 400  | Bad Request - Invalid parameters |
+| 401  | Unauthorized - Invalid token     |
+| 403  | Forbidden - Not admin            |
+| 404  | Not Found - User not found       |
 
 ### Versioning
+
 TODO
 
 ### Notes
+
 TODO

@@ -15,6 +15,6 @@ Scripts that need DB access exit with a clear error if required vars are missing
 
 ### db/
 
-| Script | Description |
-|--------|-------------|
+| Script                                                                     | Description                                                                                                                       |
+| -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | `rename-htmt-api-tables-to-htmt_api.sql` / `run-rename-htmt-api-tables.sh` | Rename tables from `htmt-api_*` to `htmt_api_*`. Run on DBs that still have the old names (e.g. before deploy, or after restore). |

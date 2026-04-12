@@ -162,6 +162,7 @@ recording = create_or_update_musicbrainz_recording_instance_from_dict(
 ```
 
 **Note**: This function will:
+
 - Create a new recording if it doesn't exist
 - Update existing recording fields (title, score, duration, release date) if it already exists
 - Create or update associated artists
@@ -400,11 +401,13 @@ When a lookup fails, the system stores a `MbRecordingMissingCause` with one of t
 The MusicBrainz integration includes several models:
 
 1. **`MusicbrainzRecording`**: Represents a recording from MusicBrainz
+
    - Fields: `musicbrainz_id`, `title`, `score`, `duration_in_sec`, `release_date`
    - Many-to-many relationship with `MbArtist`
    - Auto-generated `musicbrainz_link` field
 
 2. **`MbArtist`**: Represents an artist from MusicBrainz
+
    - Fields: `musicbrainz_id`, `name`
    - Many-to-many relationship with recordings
 
