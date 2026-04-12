@@ -95,7 +95,7 @@ class UploadedTrackManager(StandardResourceManager["UploadedTrack"]):
 
         with transaction.atomic():
             artists = kwargs.pop(Fields.ARTISTS.value, None)
-            track_file_model_data = dict()
+            track_file_model_data = {}
             track_file_model_data[TrackFileFields.FILE] = kwargs.pop(Fields.TRACK_FILE_INTERNAL.value)
 
             instance: UploadedTrack = super().create(**kwargs)

@@ -134,7 +134,7 @@ class Criteria(UploadedTrackMixin):
                     field_validation_error_code=FieldValidationErrorCode.NAME_DUPLICATE,
                 )
             # Let other database integrity errors propagate to be handled as system errors
-            raise e
+            raise
 
     def is_descendant_of(self, other_criteria: Criteria) -> bool:
         if self.parent == other_criteria:

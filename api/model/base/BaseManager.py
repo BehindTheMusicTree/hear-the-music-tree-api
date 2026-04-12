@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound="BaseModel")  # type: ignore
 
 
-class BaseManager(models.Manager, Generic[T]):
+class BaseManager[T: "BaseModel"](models.Manager):
     model: type[T]
 
     def get_or_create(self, defaults: MutableMapping[str, Any] | None = None, **kwargs: Any) -> tuple[T, bool]:

@@ -1,4 +1,4 @@
-from typing import Any, Type
+from typing import Any
 
 from django.core.exceptions import FieldDoesNotExist, ObjectDoesNotExist
 from django.db import models
