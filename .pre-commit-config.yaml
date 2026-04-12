@@ -76,11 +76,6 @@ repos:
         entry: bash -c '.pre-commit-hooks/tool-wrapper.sh ruff check --fix --line-length=120 "$@"' --
         language: system
         files: ^(api/|\.pre-commit-hooks/|scripts/).*\.py$
-      - id: isort
-        name: isort
-        entry: bash -c '.pre-commit-hooks/tool-wrapper.sh isort --profile black --line-length=120 "$@"' --
-        language: system
-        files: ^(api/|\.pre-commit-hooks/|scripts/).*\.py$
       - id: mypy
         name: mypy
         entry: bash -c '.pre-commit-hooks/tool-wrapper.sh mypy --config-file=pyproject.toml api'
