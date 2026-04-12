@@ -11,7 +11,7 @@ from api.serializer.field.foreign_key.ForeignKeyField import ForeignKeyField
 T = TypeVar("T", bound=models.Model)
 
 
-class PrivateUuidField(ForeignKeyField, AppUuidField, Generic[T]):
+class PrivateUuidField[T: models.Model](ForeignKeyField, AppUuidField):
     """
     Field for UUID-based foreign keys that require user ownership verification.
     Extends RelatedField for proper type handling while incorporating functionality

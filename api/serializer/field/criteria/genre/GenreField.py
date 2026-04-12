@@ -1,5 +1,3 @@
-from typing import List, Optional
-
 from api.model.criteria.children.genre.Genre import Genre
 from api.serializer.field.criteria.CriteriaField import CriteriaField
 

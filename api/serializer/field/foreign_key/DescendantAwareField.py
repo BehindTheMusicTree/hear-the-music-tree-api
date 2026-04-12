@@ -17,7 +17,7 @@ class HasDescendantCheck(Protocol):
 T = TypeVar("T", bound=models.Model)
 
 
-class DescendantAwareField(NonSelfReferencingField[T], Generic[T]):
+class DescendantAwareField[T: models.Model](NonSelfReferencingField[T]):
     """
     A field that ensures the referenced object is not a descendant of the current object.
     Extends NonSelfReferencingField to prevent self-referencing and adds descendant checking.
