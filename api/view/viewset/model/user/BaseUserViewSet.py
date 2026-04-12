@@ -13,12 +13,14 @@ class BaseUserViewSet(AppModelViewSet[User]):
     permission_classes = [IsAdminUser]
 
     def __init__(self, **kwargs):
-        super().__init__(model_class=User,
-                         simple_serializer_class=UserDetailedSerializer,
-                         detailed_serializer_class=UserDetailedSerializer,
-                         is_private_resource=False,
-                         is_pk_uuid=False,
-                         **kwargs)
+        super().__init__(
+            model_class=User,
+            simple_serializer_class=UserDetailedSerializer,
+            detailed_serializer_class=UserDetailedSerializer,
+            is_private_resource=False,
+            is_pk_uuid=False,
+            **kwargs,
+        )
 
     def list(self, *args: Any, **kwargs: Any) -> Response:
         return self._handle_list()

@@ -1,25 +1,15 @@
 from rest_framework import status
 
-from api.serializer.model.criteria.input.tree_import.Fields import Fields
 from api.model.criteria.children.genre.Genre import Genre
+from api.serializer.model.criteria.input.tree_import.Fields import Fields
 from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestMultiple(GenreTestCase):
     def test_multiple_roots_then_multiple_trees(self):
         tree_data = [
-            {
-                Fields.NAME_PUBLIC: "Rock",
-                Fields.CHILDREN: [
-                    {Fields.NAME_PUBLIC: "Punk", Fields.CHILDREN: []}
-                ]
-            },
-            {
-                Fields.NAME_PUBLIC: "Jazz",
-                Fields.CHILDREN: [
-                    {Fields.NAME_PUBLIC: "Blues", Fields.CHILDREN: []}
-                ]
-            }
+            {Fields.NAME_PUBLIC: "Rock", Fields.CHILDREN: [{Fields.NAME_PUBLIC: "Punk", Fields.CHILDREN: []}]},
+            {Fields.NAME_PUBLIC: "Jazz", Fields.CHILDREN: [{Fields.NAME_PUBLIC: "Blues", Fields.CHILDREN: []}]},
         ]
         response = self._post_genres_tree_import(data={Fields.TREE: tree_data})
 
@@ -47,13 +37,15 @@ class TestMultiple(GenreTestCase):
         # Create a tree with 15 nodes (5 roots with 2 children each)
         tree_data = []
         for i in range(5):
-            tree_data.append({
-                Fields.NAME_PUBLIC: f"Root {i}",
-                Fields.CHILDREN: [
-                    {Fields.NAME_PUBLIC: f"Child {i}-1", Fields.CHILDREN: []},
-                    {Fields.NAME_PUBLIC: f"Child {i}-2", Fields.CHILDREN: []}
-                ]
-            })
+            tree_data.append(
+                {
+                    Fields.NAME_PUBLIC: f"Root {i}",
+                    Fields.CHILDREN: [
+                        {Fields.NAME_PUBLIC: f"Child {i}-1", Fields.CHILDREN: []},
+                        {Fields.NAME_PUBLIC: f"Child {i}-2", Fields.CHILDREN: []},
+                    ],
+                }
+            )
 
         response = self._post_genres_tree_import(data={Fields.TREE: tree_data})
 

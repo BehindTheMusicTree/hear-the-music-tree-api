@@ -38,18 +38,27 @@ class TestCase(AppTestCase):
                     {
                         TreeImportUploadedTrackInputFieldKey.NAME_PUBLIC: "Techno",
                         TreeImportUploadedTrackInputFieldKey.CHILDREN: [
-                            {TreeImportUploadedTrackInputFieldKey.NAME_PUBLIC: "Minimal Techno", TreeImportUploadedTrackInputFieldKey.CHILDREN: []}
-                        ]
+                            {
+                                TreeImportUploadedTrackInputFieldKey.NAME_PUBLIC: "Minimal Techno",
+                                TreeImportUploadedTrackInputFieldKey.CHILDREN: [],
+                            }
+                        ],
                     },
-                    {TreeImportUploadedTrackInputFieldKey.NAME_PUBLIC: "House", TreeImportUploadedTrackInputFieldKey.CHILDREN: []}
-                ]
+                    {
+                        TreeImportUploadedTrackInputFieldKey.NAME_PUBLIC: "House",
+                        TreeImportUploadedTrackInputFieldKey.CHILDREN: [],
+                    },
+                ],
             },
             {
                 TreeImportUploadedTrackInputFieldKey.NAME_PUBLIC: "Rock",
                 TreeImportUploadedTrackInputFieldKey.CHILDREN: [
-                    {TreeImportUploadedTrackInputFieldKey.NAME_PUBLIC: "Metal", TreeImportUploadedTrackInputFieldKey.CHILDREN: []}
-                ]
-            }
+                    {
+                        TreeImportUploadedTrackInputFieldKey.NAME_PUBLIC: "Metal",
+                        TreeImportUploadedTrackInputFieldKey.CHILDREN: [],
+                    }
+                ],
+            },
         ]
 
         response = genre_test_case._post_genres_tree_import(data={TreeImportUploadedTrackInputFieldKey.TREE: tree_data})
@@ -73,25 +82,32 @@ class TestCase(AppTestCase):
         assert metal.parent == rock
 
         imported_genre_names = {"Electronic Music", "Techno", "Minimal Techno", "House", "Rock", "Metal"}
-        playlists = CriteriaPlaylist.objects.filter(
-            user=self.test_user1, criteria__name__in=imported_genre_names
-        )
+        playlists = CriteriaPlaylist.objects.filter(user=self.test_user1, criteria__name__in=imported_genre_names)
         assert playlists.count() == 6
 
         track1 = self.model_fixture_factory.create_uploaded_track_with_file(
-            title="Track 1", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3)
+            title="Track 1", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3
+        )
         track2 = self.model_fixture_factory.create_uploaded_track_with_file(
-            title="Track 2", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3)
+            title="Track 2", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3
+        )
         track3 = self.model_fixture_factory.create_uploaded_track_with_file(
-            title="Track 3", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3)
+            title="Track 3", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3
+        )
 
-        response = uploaded_track_test_case._put_uploaded_track(track1.uuid, **{UploadedTrackInputFieldKey.GENRE.value: "Minimal Techno"})
+        response = uploaded_track_test_case._put_uploaded_track(
+            track1.uuid, **{UploadedTrackInputFieldKey.GENRE.value: "Minimal Techno"}
+        )
         assert response.status_code == status.HTTP_200_OK
 
-        response = uploaded_track_test_case._put_uploaded_track(track2.uuid, **{UploadedTrackInputFieldKey.GENRE.value: "House"})
+        response = uploaded_track_test_case._put_uploaded_track(
+            track2.uuid, **{UploadedTrackInputFieldKey.GENRE.value: "House"}
+        )
         assert response.status_code == status.HTTP_200_OK
 
-        response = uploaded_track_test_case._put_uploaded_track(track3.uuid, **{UploadedTrackInputFieldKey.GENRE.value: "Metal"})
+        response = uploaded_track_test_case._put_uploaded_track(
+            track3.uuid, **{UploadedTrackInputFieldKey.GENRE.value: "Metal"}
+        )
         assert response.status_code == status.HTTP_200_OK
 
         track1.refresh_from_db()

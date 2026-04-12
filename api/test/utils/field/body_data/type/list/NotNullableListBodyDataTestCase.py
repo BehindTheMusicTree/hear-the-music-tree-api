@@ -37,13 +37,15 @@ from api.test.utils.AppTestCase import AppTestCase
 
 class NotNullableListBodyDataTestCase(AppTestCase):
     def setUp(self, methods_names_to_implement: list[str] | None = None) -> None:
-        class_methods_names_to_implement = ['test_largest_then_ok',
-                                            'test_empty_then_400_bad_request',
-                                            'test_one_too_large_then_400_bad_request',
-                                            'test_multiple_with_one_too_large_then_400_bad_request',
-                                            'test_multiple_with_one_empty_then_400_bad_request',
-                                            'test_malformed_array_then_400_bad_request',
-                                            'test_duplicate_values_then_400_bad_request',]
+        class_methods_names_to_implement = [
+            "test_largest_then_ok",
+            "test_empty_then_400_bad_request",
+            "test_one_too_large_then_400_bad_request",
+            "test_multiple_with_one_too_large_then_400_bad_request",
+            "test_multiple_with_one_empty_then_400_bad_request",
+            "test_malformed_array_then_400_bad_request",
+            "test_duplicate_values_then_400_bad_request",
+        ]
         if methods_names_to_implement:
             class_methods_names_to_implement += methods_names_to_implement
 

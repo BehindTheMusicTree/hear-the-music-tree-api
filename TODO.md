@@ -2,7 +2,7 @@
 
 This file tracks future work, improvements, and testing tasks for HearTheMusicTree API.
 
-**Note for Contributors**: 
+**Note for Contributors**:
 - **Do NOT modify this file directly** - Contributors should not edit the TODO list
 - **Suggest tasks via issues** - If you'd like to suggest a new task or work on an existing one, please open a GitHub issue first for discussion
 - **Maintainers manage the TODO list** - Project maintainers are responsible for maintaining and updating this file

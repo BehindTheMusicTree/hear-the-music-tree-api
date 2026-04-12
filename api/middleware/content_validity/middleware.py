@@ -34,11 +34,11 @@ class ContentValidityMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
-    def __call__(self, request: Union[HttpRequest, Request]) -> Union[HttpResponse, JsonResponse]:
-        if request.method in ['POST', 'PUT', 'PATCH']:
-            content_type = request.content_type or ''
+    def __call__(self, request: HttpRequest | Request) -> HttpResponse | JsonResponse:
+        if request.method in ["POST", "PUT", "PATCH"]:
+            content_type = request.content_type or ""
 
-            if content_type == 'application/json':
+            if content_type == "application/json":
                 # For JSON requests, CamelToSnakeMiddleware should have set request.data
                 # If accessing it fails, the request is malformed
                 if isinstance(request, Request):
@@ -46,46 +46,55 @@ class ContentValidityMiddleware:
                         _ = request.data  # type: ignore
                     except Exception as e:
                         logger.warning(f"[ContentValidityMiddleware] Failed to access request.data: {e}")
-                        return self._handle_parse_error(ParseError(
-                            'Failed to parse request data. The request may be malformed or corrupted.'))
+                        return self._handle_parse_error(
+                            ParseError("Failed to parse request data. The request may be malformed or corrupted.")
+                        )
 
-            elif content_type.startswith('multipart/form-data'):
+            elif content_type.startswith("multipart/form-data"):
                 # For POST requests, validate that request.POST is accessible
-                if request.method == 'POST':
+                if request.method == "POST":
                     try:
-                        if isinstance(request, Request) and hasattr(request, '_request'):
+                        if isinstance(request, Request) and hasattr(request, "_request"):
                             _ = request._request.POST
-                        elif hasattr(request, 'POST'):
+                        elif hasattr(request, "POST"):
                             _ = request.POST
                     except Exception as e:
                         logger.warning(f"[ContentValidityMiddleware] Failed to access request.POST: {e}")
-                        return self._handle_parse_error(ParseError(
-                            'Failed to parse multipart form data. The request may be malformed or corrupted.'))
+                        return self._handle_parse_error(
+                            ParseError(
+                                "Failed to parse multipart form data. The request may be malformed or corrupted."
+                            )
+                        )
 
                 # For PUT/PATCH requests, manually parse multipart data using Django's MultiPartParser
                 # to validate parsing before other middleware (like ListValueValidationMiddleware) use it
-                elif request.method in ['PUT', 'PATCH']:
+                elif request.method in ["PUT", "PATCH"]:
                     try:
-                        from django.core.files.uploadhandler import TemporaryFileUploadHandler
-                        from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
                         from io import BytesIO
 
-                        if not hasattr(request, '_body') or request._body is None:
+                        from django.core.files.uploadhandler import TemporaryFileUploadHandler
+                        from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
+
+                        if not hasattr(request, "_body") or request._body is None:
                             request._body = request.body
 
-                        body_stream = BytesIO(request._body if hasattr(request, '_body')
-                                              and request._body else request.body)
+                        body_stream = BytesIO(
+                            request._body if hasattr(request, "_body") and request._body else request.body
+                        )
                         parser = DjangoMultiPartParser(request.META, body_stream, [TemporaryFileUploadHandler()])
                         parser.parse()
 
                         # Restore the body stream so DRF can parse it later
-                        if hasattr(request, '_body') and request._body:
+                        if hasattr(request, "_body") and request._body:
                             request._stream = BytesIO(request._body)  # type: ignore
                             request._read_started = False  # type: ignore
                     except Exception as e:
                         logger.warning(f"[ContentValidityMiddleware] Failed to parse multipart data: {e}")
-                        return self._handle_parse_error(ParseError(
-                            'Failed to parse multipart form data. The request may be malformed or corrupted.'))
+                        return self._handle_parse_error(
+                            ParseError(
+                                "Failed to parse multipart form data. The request may be malformed or corrupted."
+                            )
+                        )
 
         response = self.get_response(request)
         return response

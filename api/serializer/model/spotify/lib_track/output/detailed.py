@@ -23,8 +23,8 @@ class SpotifyLibTrackDetailedSerializer(serializers.ModelSerializer):
             Fields.EXPLICIT,
             Fields.SPOTIFY_ARTISTS,
             Fields.IS_REMOVED,
-            Fields.GENRES
+            Fields.GENRES,
         ]
 
     def get_album(self, obj):
-        return obj.album.get('name') if obj.album else None
+        return obj.album.get("name") if obj.album else None

@@ -3,27 +3,24 @@ from rest_framework import status
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.filtering.set.criteria.Fields import Fields as FilterfFields
 from api.model.criteria.Fields import Fields as ModelFields
-from api.test.utils.field.filter.foreign_key.PrivateForeignKeyFilterTestCase import (
-    PrivateForeignKeyFilterTestCase
-)
 from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
+from api.test.utils.field.filter.foreign_key.PrivateForeignKeyFilterTestCase import PrivateForeignKeyFilterTestCase
 
 
 class TestCase(GenreTestCase, PrivateForeignKeyFilterTestCase):
-
     def setUp(self):
         super().setUp(allow_empty_value=True)
 
     def test_invalid_uuid_then_400_bad_request(self):
         self.model_fixture_factory.create_genre(name="Rock")
 
-        response = self._list_genres(**{FilterfFields.PARENT: 'invalid-uuid'})
+        response = self._list_genres(**{FilterfFields.PARENT: "invalid-uuid"})
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1
         error = self.bad_request_result_field_errors[0]
-        assert error['field'] == FilterfFields.PARENT
-        assert error['code'] == FieldValidationErrorCode.FORMAT_INVALID
+        assert error["field"] == FilterfFields.PARENT
+        assert error["code"] == FieldValidationErrorCode.FORMAT_INVALID
 
     def test_of_another_user_then_empty(self):
         test_user1_genre = self.model_fixture_factory.create_genre(name="Rock")
@@ -50,7 +47,7 @@ class TestCase(GenreTestCase, PrivateForeignKeyFilterTestCase):
         genre_rock = self.model_fixture_factory.create_genre(name="Rock")
         self.model_fixture_factory.create_genre(name="Pop", parent=genre_rock)
 
-        response = self._list_genres(**{FilterfFields.PARENT: ''})
+        response = self._list_genres(**{FilterfFields.PARENT: ""})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 2

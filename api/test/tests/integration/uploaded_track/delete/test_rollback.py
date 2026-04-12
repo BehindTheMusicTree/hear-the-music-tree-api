@@ -5,12 +5,11 @@ from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import Uplo
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_exception_then_rollback(self):
         album = self.model_fixture_factory.create_album(name="album")
         track = self.model_fixture_factory.create_uploaded_track_with_file(title="joie", album=album)
 
-        with patch('api.model.album.Album.Album.save') as mock:
+        with patch("api.model.album.Album.Album.save") as mock:
             exception_message = "Save failed!"
             mock.side_effect = Exception(exception_message)
 

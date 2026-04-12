@@ -1,9 +1,8 @@
-
-
 from rest_framework import status
 
 from api.test.tests.integration.uploaded_track.input.update_file_metadata.UploadedTrackFileMetadataUpdateTestCase import (
-    UploadedTrackFileMetadataUpdateTestCase)
+    UploadedTrackFileMetadataUpdateTestCase,
+)
 
 
 class UploadedTrackFileMetadataUpdatePositiveIntTestCase(UploadedTrackFileMetadataUpdateTestCase):
@@ -12,11 +11,14 @@ class UploadedTrackFileMetadataUpdatePositiveIntTestCase(UploadedTrackFileMetada
     value_min_expected_in_metadata: int
     value_max_expected_in_metadata: int
 
-    def _test_value(self, value: int | None,
-                    value_expected_in_metadata: int | None = None,
-                    additional_data=None,
-                    file_has_metadata=False):
-        value_str = str(value) if value else ''
+    def _test_value(
+        self,
+        value: int | None,
+        value_expected_in_metadata: int | None = None,
+        additional_data=None,
+        file_has_metadata=False,
+    ):
+        value_str = str(value) if value else ""
         data = {self.save_field: value_str}
         if additional_data:
             data.update(additional_data)
@@ -34,4 +36,7 @@ class UploadedTrackFileMetadataUpdatePositiveIntTestCase(UploadedTrackFileMetada
                 assert True
         else:
             assert self.uploaded_track_app_metadata_key in self.saved_uploaded_track_metadata_with_raw_rating
-            assert self.saved_uploaded_track_metadata_with_raw_rating[self.uploaded_track_app_metadata_key] == value_expected_in_metadata
+            assert (
+                self.saved_uploaded_track_metadata_with_raw_rating[self.uploaded_track_app_metadata_key]
+                == value_expected_in_metadata
+            )

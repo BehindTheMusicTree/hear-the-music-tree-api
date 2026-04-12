@@ -38,7 +38,8 @@ class TestStructure(GenreTestCase):
 
     def test_children_is_str_then_400_bad_request(self):
         response = self._post_genres_tree_import(
-            data={Fields.TREE: [{Fields.NAME_PUBLIC: "Rock", Fields.CHILDREN: "invalid"}]})
+            data={Fields.TREE: [{Fields.NAME_PUBLIC: "Rock", Fields.CHILDREN: "invalid"}]}
+        )
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert self.bad_request_result_field_errors[0]["field"] == Fields.TREE
@@ -46,7 +47,8 @@ class TestStructure(GenreTestCase):
 
     def test_children_is_none_then_ok(self):
         response = self._post_genres_tree_import(
-            data={Fields.TREE: [{Fields.NAME_PUBLIC: "Rock", Fields.CHILDREN: None}]})
+            data={Fields.TREE: [{Fields.NAME_PUBLIC: "Rock", Fields.CHILDREN: None}]}
+        )
 
         assert response.status_code == status.HTTP_201_CREATED
         genres = Genre.objects.filter(user=self.test_user1)
@@ -58,7 +60,8 @@ class TestStructure(GenreTestCase):
 
     def test_children_is_empty_list_then_ok(self):
         response = self._post_genres_tree_import(
-            data={Fields.TREE: [{Fields.NAME_PUBLIC: "Rock", Fields.CHILDREN: []}]})
+            data={Fields.TREE: [{Fields.NAME_PUBLIC: "Rock", Fields.CHILDREN: []}]}
+        )
 
         assert response.status_code == status.HTTP_201_CREATED
         genres = Genre.objects.filter(user=self.test_user1)
@@ -84,7 +87,7 @@ class TestStructure(GenreTestCase):
             {Fields.NAME_PUBLIC: "Rock"},  # No children
             {Fields.NAME_PUBLIC: "Jazz", Fields.CHILDREN: None},  # Null children
             {Fields.NAME_PUBLIC: "Metal", Fields.CHILDREN: []},  # Empty list
-            {Fields.NAME_PUBLIC: "Punk", Fields.CHILDREN: [{Fields.NAME_PUBLIC: "Hardcore"}]}  # With children
+            {Fields.NAME_PUBLIC: "Punk", Fields.CHILDREN: [{Fields.NAME_PUBLIC: "Hardcore"}]},  # With children
         ]
         response = self._post_genres_tree_import(data={Fields.TREE: tree_data})
         assert response.status_code == status.HTTP_201_CREATED

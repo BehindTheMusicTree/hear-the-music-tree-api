@@ -1,37 +1,41 @@
-from drf_spectacular.utils import OpenApiParameter  # type: ignore
+from django.db import transaction
 from drf_spectacular.types import OpenApiTypes  # type: ignore
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import (
+    OpenApiParameter,  # type: ignore
+    extend_schema,
+)
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.db import transaction
 
-from api.utils.decorators.spotify import spotify_user_required
-from api.filtering.set.spotify.lib_track.SpotifyLibTrackFilterSet import SpotifyLibTrackFilterSet
 from api.filtering.set.spotify.lib_track.Fields import Fields as FilterFields
-from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
+from api.filtering.set.spotify.lib_track.SpotifyLibTrackFilterSet import SpotifyLibTrackFilterSet
 from api.model.spotify_resource.children.track.Fields import Fields
-from api.utils.spotify_api.managers.SpotifyApiLibTrackManager import SpotifyApiLibTrackManager
+from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
 from api.serializer.model.spotify.lib_track.output.detailed import SpotifyLibTrackDetailedSerializer
 from api.serializer.model.spotify.lib_track.output.simple import SpotifyLibTrackSimpleSerializer
+from api.utils.decorators.spotify import spotify_user_required
+from api.utils.spotify_api.managers.SpotifyApiLibTrackManager import SpotifyApiLibTrackManager
 from api.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 
 class SpotifyLibTrackViewSet(AppModelViewSet[SpotifyLibTrack]):
     def __init__(self, **kwargs):
-        super().__init__(model_class=SpotifyLibTrack,
-                         filterset_class=SpotifyLibTrackFilterSet,
-                         detailed_serializer_class=SpotifyLibTrackDetailedSerializer,
-                         simple_serializer_class=SpotifyLibTrackSimpleSerializer,
-                         is_private_resource=False,
-                         is_pk_uuid=False,
-                         **kwargs)
+        super().__init__(
+            model_class=SpotifyLibTrack,
+            filterset_class=SpotifyLibTrackFilterSet,
+            detailed_serializer_class=SpotifyLibTrackDetailedSerializer,
+            simple_serializer_class=SpotifyLibTrackSimpleSerializer,
+            is_private_resource=False,
+            is_pk_uuid=False,
+            **kwargs,
+        )
 
     def get_queryset(self):
         if not self.request.user.is_authenticated:
             return super().get_queryset().none()
         queryset = super().get_queryset()
-        is_removed_param = self.request.query_params.get('is_removed')
+        is_removed_param = self.request.query_params.get("is_removed")
         if is_removed_param is None:
             queryset = queryset.filter(**{Fields.IS_REMOVED: False})
         return queryset
@@ -40,31 +44,65 @@ class SpotifyLibTrackViewSet(AppModelViewSet[SpotifyLibTrack]):
         queryset = super().filter_queryset(queryset)
         return queryset.distinct()
 
-    @extend_schema(parameters=[
-        OpenApiParameter(name=FilterFields.NAME, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.ALBUM_ARTIST_NAME, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.DURATION_SEC_MIN, type=OpenApiTypes.INT, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.DURATION_SEC_MAX, type=OpenApiTypes.INT, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.POPULARITY_MIN, type=OpenApiTypes.INT, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.POPULARITY_MAX, type=OpenApiTypes.INT, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.EXPLICIT, type=OpenApiTypes.BOOL, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.LAST_SYNCED_AT, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.LAST_SYNCED_AT_GT, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.LAST_SYNCED_AT_LT, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.LAST_SYNCED_AT_GTE, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.LAST_SYNCED_AT_LTE, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.IS_REMOVED, type=OpenApiTypes.BOOL, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.CREATED_ON, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.CREATED_ON_GT, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.CREATED_ON_LT, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.CREATED_ON_GTE, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.CREATED_ON_LTE, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.UPDATED_ON, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.UPDATED_ON_GT, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.UPDATED_ON_LT, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.UPDATED_ON_GTE, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
-        OpenApiParameter(name=FilterFields.UPDATED_ON_LTE, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
-    ])
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(name=FilterFields.NAME, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
+            OpenApiParameter(
+                name=FilterFields.ALBUM_ARTIST_NAME, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY
+            ),
+            OpenApiParameter(
+                name=FilterFields.DURATION_SEC_MIN, type=OpenApiTypes.INT, location=OpenApiParameter.QUERY
+            ),
+            OpenApiParameter(
+                name=FilterFields.DURATION_SEC_MAX, type=OpenApiTypes.INT, location=OpenApiParameter.QUERY
+            ),
+            OpenApiParameter(name=FilterFields.POPULARITY_MIN, type=OpenApiTypes.INT, location=OpenApiParameter.QUERY),
+            OpenApiParameter(name=FilterFields.POPULARITY_MAX, type=OpenApiTypes.INT, location=OpenApiParameter.QUERY),
+            OpenApiParameter(name=FilterFields.EXPLICIT, type=OpenApiTypes.BOOL, location=OpenApiParameter.QUERY),
+            OpenApiParameter(
+                name=FilterFields.LAST_SYNCED_AT, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY
+            ),
+            OpenApiParameter(
+                name=FilterFields.LAST_SYNCED_AT_GT, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY
+            ),
+            OpenApiParameter(
+                name=FilterFields.LAST_SYNCED_AT_LT, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY
+            ),
+            OpenApiParameter(
+                name=FilterFields.LAST_SYNCED_AT_GTE, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY
+            ),
+            OpenApiParameter(
+                name=FilterFields.LAST_SYNCED_AT_LTE, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY
+            ),
+            OpenApiParameter(name=FilterFields.IS_REMOVED, type=OpenApiTypes.BOOL, location=OpenApiParameter.QUERY),
+            OpenApiParameter(name=FilterFields.CREATED_ON, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
+            OpenApiParameter(
+                name=FilterFields.CREATED_ON_GT, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY
+            ),
+            OpenApiParameter(
+                name=FilterFields.CREATED_ON_LT, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY
+            ),
+            OpenApiParameter(
+                name=FilterFields.CREATED_ON_GTE, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY
+            ),
+            OpenApiParameter(
+                name=FilterFields.CREATED_ON_LTE, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY
+            ),
+            OpenApiParameter(name=FilterFields.UPDATED_ON, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY),
+            OpenApiParameter(
+                name=FilterFields.UPDATED_ON_GT, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY
+            ),
+            OpenApiParameter(
+                name=FilterFields.UPDATED_ON_LT, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY
+            ),
+            OpenApiParameter(
+                name=FilterFields.UPDATED_ON_GTE, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY
+            ),
+            OpenApiParameter(
+                name=FilterFields.UPDATED_ON_LTE, type=OpenApiTypes.DATETIME, location=OpenApiParameter.QUERY
+            ),
+        ]
+    )
     @spotify_user_required
     def list(self, request, *args, **kwargs):
         return self._handle_list()
@@ -73,7 +111,7 @@ class SpotifyLibTrackViewSet(AppModelViewSet[SpotifyLibTrack]):
     def retrieve(self, *args, **kwargs):
         return self._handle_retrieve()
 
-    @action(detail=False, methods=['post'], url_path='sync/quick')
+    @action(detail=False, methods=["post"], url_path="sync/quick")
     @spotify_user_required
     def quick_sync(self, request):
         """
@@ -83,27 +121,24 @@ class SpotifyLibTrackViewSet(AppModelViewSet[SpotifyLibTrack]):
         with transaction.atomic():
             if request.user.spotify_sync_in_progress:
                 return Response(
-                    {'error': 'A sync is already in progress. Please wait for it to complete.'},
-                    status=status.HTTP_409_CONFLICT
+                    {"error": "A sync is already in progress. Please wait for it to complete."},
+                    status=status.HTTP_409_CONFLICT,
                 )
             request.user.spotify_sync_in_progress = True
-            request.user.save(update_fields=['spotify_sync_in_progress'])
+            request.user.save(update_fields=["spotify_sync_in_progress"])
 
         try:
             tracks = SpotifyApiLibTrackManager().quick_sync(request.user)
             return Response(
-                {
-                    'message': 'Spotify library quick sync completed successfully',
-                    'new_tracks_count': len(tracks)
-                },
-                status=status.HTTP_200_OK
+                {"message": "Spotify library quick sync completed successfully", "new_tracks_count": len(tracks)},
+                status=status.HTTP_200_OK,
             )
         finally:
             with transaction.atomic():
                 request.user.spotify_sync_in_progress = False
-                request.user.save(update_fields=['spotify_sync_in_progress'])
+                request.user.save(update_fields=["spotify_sync_in_progress"])
 
-    @action(detail=False, methods=['post'], url_path='sync/full')
+    @action(detail=False, methods=["post"], url_path="sync/full")
     @spotify_user_required
     def full_sync(self, request):
         """
@@ -113,19 +148,16 @@ class SpotifyLibTrackViewSet(AppModelViewSet[SpotifyLibTrack]):
         with transaction.atomic():
             if request.user.spotify_sync_in_progress:
                 return Response(
-                    {'error': 'A sync is already in progress. Please wait for it to complete.'},
-                    status=status.HTTP_409_CONFLICT
+                    {"error": "A sync is already in progress. Please wait for it to complete."},
+                    status=status.HTTP_409_CONFLICT,
                 )
             request.user.spotify_sync_in_progress = True
-            request.user.save(update_fields=['spotify_sync_in_progress'])
+            request.user.save(update_fields=["spotify_sync_in_progress"])
 
         try:
             SpotifyApiLibTrackManager().full_sync(request.user)
-            return Response(
-                {'message': 'Spotify library synced successfully'},
-                status=status.HTTP_200_OK
-            )
+            return Response({"message": "Spotify library synced successfully"}, status=status.HTTP_200_OK)
         finally:
             with transaction.atomic():
                 request.user.spotify_sync_in_progress = False
-                request.user.save(update_fields=['spotify_sync_in_progress'])
+                request.user.save(update_fields=["spotify_sync_in_progress"])

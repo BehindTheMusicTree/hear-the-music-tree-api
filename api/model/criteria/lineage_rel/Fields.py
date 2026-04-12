@@ -2,6 +2,6 @@ from api.model.private_standard_resource.Fields import Fields as PrivateRelation
 
 
 class Fields(PrivateRelationFields):
-    DESCENDANT = 'descendant'
-    ASCENDANT = 'ascendant'
+    DESCENDANT = "descendant"
+    ASCENDANT = "ascendant"
     DEGREE = "degree"

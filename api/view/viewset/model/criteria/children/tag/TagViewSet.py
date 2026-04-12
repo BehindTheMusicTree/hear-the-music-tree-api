@@ -1,4 +1,3 @@
-
 from api.model.criteria.children.tag.Tag import Tag
 from api.view.viewset.model.criteria.CriteriaViewSet import CriteriaViewSet
 

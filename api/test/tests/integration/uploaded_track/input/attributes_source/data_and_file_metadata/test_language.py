@@ -1,12 +1,11 @@
 from rest_framework import status
 
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_title_in_both_then_take_data(self):
         data_language = "fr"
         data_dict = {UploadedTrackInputFieldKey.LANGUAGE.value: data_language}

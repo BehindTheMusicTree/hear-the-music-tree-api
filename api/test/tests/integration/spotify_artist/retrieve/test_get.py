@@ -1,4 +1,5 @@
 from uuid import uuid4
+
 from rest_framework import status
 
 from api.model.spotify_resource.children.artist.Fields import Fields
@@ -10,10 +11,10 @@ class TestGet(SpotifyArtistTestCase):
     def setUp(self):
         super().setUp()
         self.artist = self.model_fixture_factory.create_spotify_artist(
-            name='Test Artist',
+            name="Test Artist",
             popularity=90,
             genres=[Fields.GENRES],
-            images=[{'url': 'https://example.com/image.jpg', 'height': 640, 'width': 640}]
+            images=[{"url": "https://example.com/image.jpg", "height": 640, "width": 640}],
         )
 
     def test_retrieve_spotify_artist_then_ok(self):

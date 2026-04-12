@@ -1,1 +1,1 @@
-VALUE = 'manual'
+VALUE = "manual"

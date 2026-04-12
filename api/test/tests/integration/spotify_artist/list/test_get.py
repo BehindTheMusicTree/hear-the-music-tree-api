@@ -9,16 +9,16 @@ class TestGet(SpotifyArtistTestCase):
     def setUp(self):
         super().setUp()
         self.artist1 = self.model_fixture_factory.create_spotify_artist(
-            name='Artist 1',
+            name="Artist 1",
             popularity=90,
             genres=[Fields.GENRES],
-            images=[{'url': 'https://example.com/image1.jpg', 'height': 640, 'width': 640}]
+            images=[{"url": "https://example.com/image1.jpg", "height": 640, "width": 640}],
         )
         self.artist2 = self.model_fixture_factory.create_spotify_artist(
-            name='Artist 2',
+            name="Artist 2",
             popularity=80,
             genres=[Fields.GENRES],
-            images=[{'url': 'https://example.com/image2.jpg', 'height': 640, 'width': 640}]
+            images=[{"url": "https://example.com/image2.jpg", "height": 640, "width": 640}],
         )
 
     def test_list_spotify_artists_then_ok(self):

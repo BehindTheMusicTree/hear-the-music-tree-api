@@ -311,7 +311,7 @@ class MusicbrainzRecording:
     release_date: date | None     # Earliest release date (nullable)
     musicbrainz_link: str        # Auto-generated MusicBrainz URL (read-only)
     musicbrainz_artists: ManyToMany[MbArtist]  # Related artists
-    
+
     # Computed properties:
     duration_str_in_hour_min_sec: str | None  # Formatted duration string
 ```

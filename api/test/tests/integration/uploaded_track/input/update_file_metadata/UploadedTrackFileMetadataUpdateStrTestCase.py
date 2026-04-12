@@ -1,23 +1,24 @@
-
-
 from rest_framework import status
 
-from api.test.tests.integration.uploaded_track.input.update_file_metadata.UploadedTrackFileMetadataUpdateTestCase import UploadedTrackFileMetadataUpdateTestCase
+from api.test.tests.integration.uploaded_track.input.update_file_metadata.UploadedTrackFileMetadataUpdateTestCase import (
+    UploadedTrackFileMetadataUpdateTestCase,
+)
 
 
 class UploadedTrackFileMetadataUpdateStrTestCase(UploadedTrackFileMetadataUpdateTestCase):
-
-    VALUE_EXPECTED_IN_METADATA_WHEN_NOT_PROVIDED = 'LJjksjsksjldkjlksjdlksjkdjskljdslkdjsldslnccsdvkjbvkvb'
+    VALUE_EXPECTED_IN_METADATA_WHEN_NOT_PROVIDED = "LJjksjsksjldkjlksjdlksjkdjskljdslkdjsldslnccsdvkjbvkvb"
     value_expected_in_metadata_is_list = False
 
     length_max: int
 
-    def _test_value(self,
-                    value: str | None,
-                    additional_data,
-                    value_expected_in_metadata=VALUE_EXPECTED_IN_METADATA_WHEN_NOT_PROVIDED,
-                    file_has_metadata=False):
-        save_field_key = getattr(self.save_field, 'value', self.save_field)
+    def _test_value(
+        self,
+        value: str | None,
+        additional_data,
+        value_expected_in_metadata=VALUE_EXPECTED_IN_METADATA_WHEN_NOT_PROVIDED,
+        file_has_metadata=False,
+    ):
+        save_field_key = getattr(self.save_field, "value", self.save_field)
         data = {save_field_key: value}
 
         if additional_data:
@@ -53,4 +54,4 @@ class UploadedTrackFileMetadataUpdateStrTestCase(UploadedTrackFileMetadataUpdate
         self._test_value("a", additional_data=additional_data, file_has_metadata=True)
 
     def test_largest_then_ok(self, additional_data=None):
-        self._test_value('a' * self.length_max, additional_data=additional_data, file_has_metadata=False)
+        self._test_value("a" * self.length_max, additional_data=additional_data, file_has_metadata=False)

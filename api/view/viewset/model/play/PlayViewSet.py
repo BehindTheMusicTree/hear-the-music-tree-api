@@ -10,12 +10,14 @@ from api.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 class PlayViewSet(AppModelViewSet[Play]):
     def __init__(self, **kwargs):
-        super().__init__(model_class=Play,
-                         filterset_class=PlayFilterSet,
-                         simple_serializer_class=PlayDetailedSerializer,
-                         detailed_serializer_class=PlayDetailedSerializer,
-                         create_serializer_class=PlayPostSerializer,
-                         **kwargs)
+        super().__init__(
+            model_class=Play,
+            filterset_class=PlayFilterSet,
+            simple_serializer_class=PlayDetailedSerializer,
+            detailed_serializer_class=PlayDetailedSerializer,
+            create_serializer_class=PlayPostSerializer,
+            **kwargs,
+        )
 
     def list(self, *args, **kwargs) -> Response:
         return self._handle_list()

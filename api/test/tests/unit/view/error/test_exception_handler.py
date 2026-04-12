@@ -14,29 +14,29 @@ class TestExceptionHandlerPermissionDenied(TestCase):
         exc = PermissionDenied()
         request = MagicMock()
         request.user.is_authenticated = False
-        context = {'request': request}
+        context = {"request": request}
 
         response = _handle_exception_with_request(exc, context)
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         data = json.loads(response.content)
-        assert data['code'] == ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED
-        assert data['details']['code'] == 'authentication_required'
-        assert data['details']['message'] == 'Authentication required'
-        assert data['success'] is False
+        assert data["code"] == ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED
+        assert data["details"]["code"] == "authentication_required"
+        assert data["details"]["message"] == "Authentication required"
+        assert data["success"] is False
 
     def test_permission_denied_with_authenticated_request_then_403_forbidden(self):
         exc = PermissionDenied()
         request = MagicMock()
         request.user.is_authenticated = True
-        context = {'request': request}
+        context = {"request": request}
 
         response = _handle_exception_with_request(exc, context)
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
         data = json.loads(response.content)
-        assert data['code'] == ApiErrorCodeNumeric.AUTH_INSUFFICIENT_PERMISSIONS
-        assert data['success'] is False
+        assert data["code"] == ApiErrorCodeNumeric.AUTH_INSUFFICIENT_PERMISSIONS
+        assert data["success"] is False
 
     def test_permission_denied_with_no_request_in_context_then_401_unauthorized(self):
         exc = PermissionDenied()
@@ -46,8 +46,8 @@ class TestExceptionHandlerPermissionDenied(TestCase):
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         data = json.loads(response.content)
-        assert data['code'] == ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED
-        assert data['success'] is False
+        assert data["code"] == ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED
+        assert data["success"] is False
 
     def test_permission_denied_with_none_context_then_401_unauthorized(self):
         exc = PermissionDenied()
@@ -56,5 +56,5 @@ class TestExceptionHandlerPermissionDenied(TestCase):
 
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         data = json.loads(response.content)
-        assert data['code'] == ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED
-        assert data['success'] is False
+        assert data["code"] == ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED
+        assert data["success"] is False

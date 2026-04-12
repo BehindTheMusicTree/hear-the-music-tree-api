@@ -9,14 +9,11 @@ from api.exception.validation.FieldValidationErrorCode import FieldValidationErr
 from api.model.uuid.UuidModel import UuidModel
 from api.serializer.field.foreign_key.PrivateUuidField import PrivateUuidField
 
-
-T = TypeVar('T', bound=models.Model)
+T = TypeVar("T", bound=models.Model)
 
 
 class NonSelfReferencingField(PrivateUuidField[T], Generic[T]):
-    default_error_messages = {
-        'self_reference': _('The object cannot reference itself.')
-    }
+    default_error_messages = {"self_reference": _("The object cannot reference itself.")}
 
     def to_internal_value(self, data: Any) -> T | None:
         object: UuidModel | None = PrivateUuidField.to_internal_value(self, data)
@@ -28,8 +25,8 @@ class NonSelfReferencingField(PrivateUuidField[T], Generic[T]):
         if instance and object.uuid and instance.uuid == object.uuid:
             raise AppValidationException(
                 field_name=str(self.field_name),
-                message=self.error_messages['self_reference'],
-                field_validation_error_code=FieldValidationErrorCode.SELF_REFERENCE
+                message=self.error_messages["self_reference"],
+                field_validation_error_code=FieldValidationErrorCode.SELF_REFERENCE,
             )
 
         if object.uuid:

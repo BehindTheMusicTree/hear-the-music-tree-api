@@ -5,7 +5,6 @@ from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase):
-
     def test_parent_none_then_root_itself(self):
         genre_rock = self.model_fixture_factory.create_genre(name="Rock")
         genre_punk = self.model_fixture_factory.create_genre(name="Punk", parent=genre_rock)
@@ -27,8 +26,9 @@ class TestCase(GenreTestCase):
         genre_rock = self.model_fixture_factory.create_genre(name="Rock")
         genre_punk = self.model_fixture_factory.create_genre(name="Punk", parent=genre_rock)
 
-        response = self._post_genre(**{CriteriaInputFields.NAME_PUBLIC: "Punk hardcore",
-                                    CriteriaInputFields.PARENT: genre_punk.uuid})
+        response = self._post_genre(
+            **{CriteriaInputFields.NAME_PUBLIC: "Punk hardcore", CriteriaInputFields.PARENT: genre_punk.uuid}
+        )
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.root == genre_rock
@@ -38,8 +38,12 @@ class TestCase(GenreTestCase):
         genre_punk = self.model_fixture_factory.create_genre(name="Punk", parent=genre_rock)
         hardcoregenre_punk = self.model_fixture_factory.create_genre(name="Hardcore Punk", parent=genre_punk)
 
-        response = self._post_genre(**{CriteriaInputFields.NAME_PUBLIC: "Punk hardcore japonais",
-                                    CriteriaInputFields.PARENT: hardcoregenre_punk.uuid})
+        response = self._post_genre(
+            **{
+                CriteriaInputFields.NAME_PUBLIC: "Punk hardcore japonais",
+                CriteriaInputFields.PARENT: hardcoregenre_punk.uuid,
+            }
+        )
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.root == genre_rock

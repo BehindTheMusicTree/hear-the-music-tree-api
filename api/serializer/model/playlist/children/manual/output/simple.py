@@ -20,7 +20,4 @@ class ManualPlaylistSimpleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ManualPlaylist
-        fields = [Fields.UUID,
-                  Fields.NAME,
-                  Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC,
-                  Fields.CREATED_ON]
+        fields = [Fields.UUID, Fields.NAME, Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC, Fields.CREATED_ON]

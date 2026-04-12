@@ -1,5 +1,8 @@
-from drf_spectacular.utils import OpenApiParameter  # type: ignore
-from drf_spectacular.utils import OpenApiTypes, extend_schema
+from drf_spectacular.utils import (
+    OpenApiParameter,  # type: ignore
+    OpenApiTypes,
+    extend_schema,
+)
 
 from api.filtering.set.playlist.Fields import Fields as QueryParamsFields
 from api.filtering.set.playlist.PlaylistFilterSet import PlaylistFilterSet
@@ -10,24 +13,27 @@ from api.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 
 class PlaylistViewSet(AppModelViewSet[Playlist]):
-
     def __init__(self, **kwargs):
-        super().__init__(model_class=Playlist,
-                         filterset_class=PlaylistFilterSet,
-                         simple_serializer_class=PlaylistSimpleSerializer,
-                         detailed_serializer_class=PlaylistDetailedSerializer,
-                         **kwargs)
+        super().__init__(
+            model_class=Playlist,
+            filterset_class=PlaylistFilterSet,
+            simple_serializer_class=PlaylistSimpleSerializer,
+            detailed_serializer_class=PlaylistDetailedSerializer,
+            **kwargs,
+        )
 
     @staticmethod
     def _get_queryset_str_filter_value_to_filter_nothing():
-        return ''
+        return ""
 
-    @extend_schema(parameters=[OpenApiParameter(name=QueryParamsFields.NAME,
-                                                type=OpenApiTypes.STR,
-                                                location=OpenApiParameter.QUERY),
-                               OpenApiParameter(name=QueryParamsFields.TYPE_LABEL_INTERNAL,
-                                                type=OpenApiTypes.STR,
-                                                location=OpenApiParameter.QUERY)])
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(name=QueryParamsFields.NAME, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
+            OpenApiParameter(
+                name=QueryParamsFields.TYPE_LABEL_INTERNAL, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY
+            ),
+        ]
+    )
     def list(self, *args, **kwargs):
         return self._handle_list()
 

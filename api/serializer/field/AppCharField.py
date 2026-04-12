@@ -22,19 +22,19 @@ class AppCharField(AppField, serializers.CharField):
     def to_internal_value(self, data: Any) -> str | None:
         if data is None:
             if not self.allow_null:
-                self.fail('null')
+                self.fail("null")
             return None
 
         if not isinstance(data, str):
-            self.fail('invalid')
+            self.fail("invalid")
 
         if not data and not self.allow_blank:
-            self.fail('blank')
+            self.fail("blank")
 
         if self.max_length is not None and len(data) > self.max_length:
-            self.fail('max_length', max_length=self.max_length, length=len(data))
+            self.fail("max_length", max_length=self.max_length, length=len(data))
 
         if self.min_length is not None and len(data) < self.min_length:
-            self.fail('min_length', min_length=self.min_length, length=len(data))
+            self.fail("min_length", min_length=self.min_length, length=len(data))
 
         return data

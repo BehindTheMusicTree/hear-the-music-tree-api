@@ -20,15 +20,15 @@ class AppListField(AppField, ListField):
     def to_internal_value(self, data: Any) -> Any:
         if data is None:
             if not self.allow_null:
-                self.fail('null')
+                self.fail("null")
             return None
 
         if not data:
             if not self.allow_empty:
-                self.fail('required')
+                self.fail("required")
             return []
 
         if not isinstance(data, list):
-            self.fail('not_a_list')
+            self.fail("not_a_list")
 
         return super().to_internal_value(data)

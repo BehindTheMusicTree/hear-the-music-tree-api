@@ -4,7 +4,6 @@ from api.test.tests.integration.user.UserTestCase import UserTestCase
 
 
 class TestCase(UserTestCase):
-
     def test_list_then_ok(self):
         self._login_as_test_admin()
         response = self._get_users()

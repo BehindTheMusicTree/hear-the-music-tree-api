@@ -3,8 +3,8 @@ from unittest.mock import MagicMock, Mock, patch
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
 
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.exception.validation.app.AppValidationException import AppValidationException
+from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.validator.TrackFileValidator import TrackFileValidator
 
 
@@ -13,8 +13,9 @@ class TestTrackFileValidator:
         validator = TrackFileValidator()
         file = SimpleUploadedFile("test.mp3", b"fake content", content_type="audio/mpeg")
 
-        with patch.object(validator, "_validate_file_size"), patch.object(
-            validator, "_validate_content_type_is_audio_from_magic_bytes_and_content"
+        with (
+            patch.object(validator, "_validate_file_size"),
+            patch.object(validator, "_validate_content_type_is_audio_from_magic_bytes_and_content"),
         ):
             validator(file)
 
@@ -29,13 +30,15 @@ class TestTrackFileValidator:
 
     def test_file_too_large_then_raises_app_validation_exception(self):
         from api import settings
+
         validator = TrackFileValidator()
         max_size_bytes = settings.UPLOADED_TRACK_FILE_SIZE_MAX_IN_MO * 1000000
         large_content = b"x" * (max_size_bytes + 1)
         file = SimpleUploadedFile("test.mp3", large_content, content_type="audio/mpeg")
 
-        with patch.object(validator, "_validate_extension"), patch.object(
-            validator, "_validate_content_type_is_audio_from_magic_bytes_and_content"
+        with (
+            patch.object(validator, "_validate_extension"),
+            patch.object(validator, "_validate_content_type_is_audio_from_magic_bytes_and_content"),
         ):
             with pytest.raises(AppValidationException) as exc_info:
                 validator(file)
@@ -45,6 +48,7 @@ class TestTrackFileValidator:
     @patch("api.validator.TrackFileValidator.settings")
     def test_file_too_small_then_raises_app_validation_exception(self, mock_settings):
         from api import settings
+
         mock_settings.UPLOADED_TRACK_FILE_EXTENSIONS = settings.UPLOADED_TRACK_FILE_EXTENSIONS
         mock_settings.UPLOADED_TRACK_FILE_SIZE_MAX_IN_MO = settings.UPLOADED_TRACK_FILE_SIZE_MAX_IN_MO
         mock_settings.UPLOADED_TRACK_FILE_SIZE_MIN_IN_MO = 0.01
@@ -53,8 +57,9 @@ class TestTrackFileValidator:
         tiny_content = b"x" * (min_size_bytes - 1)
         file = SimpleUploadedFile("test.mp3", tiny_content, content_type="audio/mpeg")
 
-        with patch.object(validator, "_validate_extension"), patch.object(
-            validator, "_validate_content_type_is_audio_from_magic_bytes_and_content"
+        with (
+            patch.object(validator, "_validate_extension"),
+            patch.object(validator, "_validate_content_type_is_audio_from_magic_bytes_and_content"),
         ):
             with pytest.raises(AppValidationException) as exc_info:
                 validator(file)
@@ -101,9 +106,7 @@ class TestTrackFileValidator:
 
     @patch("api.validator.TrackFileValidator.audiometa.get_unified_metadata")
     @patch("api.validator.TrackFileValidator.get_file_path")
-    def test_invalid_audio_file_then_raises_app_validation_exception(
-        self, mock_get_path, mock_get_metadata
-    ):
+    def test_invalid_audio_file_then_raises_app_validation_exception(self, mock_get_path, mock_get_metadata):
         validator = TrackFileValidator()
         file = SimpleUploadedFile("test.mp3", b"fake content", content_type="audio/mpeg")
         file.size = 1024 * 1024

@@ -1,20 +1,19 @@
 from rest_framework import status
 
-from api.serializer.model.album.Fields import Fields as AlbumFields
-from api.test.utils.field.filter.char.NullableCharFilterTestCase import NullableCharFilterTestCase
-from api.test.tests.integration.album.AlbumTestCase import AlbumTestCase
 from api.filtering.set.album.Fields import Fields as FilterFields
+from api.serializer.model.album.Fields import Fields as AlbumFields
+from api.test.tests.integration.album.AlbumTestCase import AlbumTestCase
+from api.test.utils.field.filter.char.NullableCharFilterTestCase import NullableCharFilterTestCase
 
 
 class TestCase(AlbumTestCase, NullableCharFilterTestCase):
-
     def test_empty_then_results(self):
         album_koko = self.model_fixture_factory.create_album(name="KOKO")
         album_kill = self.model_fixture_factory.create_album(name="Kill")
         artist = self.model_fixture_factory.create_artist(name="Muse")
         album_jon = self.model_fixture_factory.create_album(name="Jon", album_artists=[artist])
 
-        response = self._list_albums(**{FilterFields.ALBUM_ARTIST_NAME: ''})
+        response = self._list_albums(**{FilterFields.ALBUM_ARTIST_NAME: ""})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 2
@@ -28,7 +27,7 @@ class TestCase(AlbumTestCase, NullableCharFilterTestCase):
         album = self.model_fixture_factory.create_album(name="Dark", album_artists=[artist])
         self.model_fixture_factory.create_album(name="Jon")
 
-        response = self._list_albums(**{FilterFields.ALBUM_ARTIST_NAME: 'MUs'})
+        response = self._list_albums(**{FilterFields.ALBUM_ARTIST_NAME: "MUs"})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 1

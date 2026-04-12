@@ -1,6 +1,6 @@
-import pytest
 from datetime import timedelta
 
+import pytest
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from rest_framework import status
@@ -29,11 +29,14 @@ class TestCase(PlayTestCase):
 
     def test_play_history_tracking_then_ok(self):
         track1 = self.model_fixture_factory.create_uploaded_track_with_file(
-            title="Track 1", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3)
+            title="Track 1", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3
+        )
         track2 = self.model_fixture_factory.create_uploaded_track_with_file(
-            title="Track 2", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3)
+            title="Track 2", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3
+        )
         track3 = self.model_fixture_factory.create_uploaded_track_with_file(
-            title="Track 3", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3)
+            title="Track 3", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3
+        )
 
         response = self._post_play(**{to_camel_case(PlayPostFields.CONTENT): str(track1.uuid)})
         assert response.status_code == status.HTTP_201_CREATED

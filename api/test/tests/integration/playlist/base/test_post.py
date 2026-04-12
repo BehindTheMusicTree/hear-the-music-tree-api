@@ -4,7 +4,6 @@ from api.test.tests.integration.playlist.base.PlaylistTestCase import PlaylistTe
 
 
 class TestCase(PlaylistTestCase):
-
     def test_post_then_not_allowed(self):
         response = self._post_playlist()
 

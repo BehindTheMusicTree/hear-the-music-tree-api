@@ -1,7 +1,9 @@
 import pytest
 from rest_framework import status
 
-from api.model.musicbrainz_resource.children.recording.missing_cause.code.MbRecordingMissingCauseCode import MbRecordingMissingCauseCode
+from api.model.musicbrainz_resource.children.recording.missing_cause.code.MbRecordingMissingCauseCode import (
+    MbRecordingMissingCauseCode,
+)
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
@@ -40,11 +42,12 @@ class TestCase(UploadedTrackTestCase):
         if fingerprint_bytes is None:
             if fingerprint_missing_cause:
                 code_label = fingerprint_missing_cause.code.label if fingerprint_missing_cause else "Unknown"
-                message = fingerprint_missing_cause.message if fingerprint_missing_cause and fingerprint_missing_cause.message else "No message"
-                pytest.skip(
-                    f"Fingerprint not generated. "
-                    f"Missing cause: {code_label} - {message}"
+                message = (
+                    fingerprint_missing_cause.message
+                    if fingerprint_missing_cause and fingerprint_missing_cause.message
+                    else "No message"
                 )
+                pytest.skip(f"Fingerprint not generated. Missing cause: {code_label} - {message}")
             else:
                 assert False, "Fingerprint is None but no fingerprint_missing_cause is set"
 
@@ -66,7 +69,7 @@ class TestCase(UploadedTrackTestCase):
                     MbRecordingMissingCauseCode.Codes.LOOKUP_FAILED_DNS_RESOLUTION_ERROR,
                     MbRecordingMissingCauseCode.Codes.LOOKUP_FAILED_WITH_INTERNAL_ERROR,
                     MbRecordingMissingCauseCode.Codes.LOOKUP_FAILED_WITH_UNKNOWN_RESPONSE_STATUS_CODE,
-                    MbRecordingMissingCauseCode.Codes.LOOKUP_FAILED_WITH_UNKNOWN_RESPONSE_ERROR_CODE
+                    MbRecordingMissingCauseCode.Codes.LOOKUP_FAILED_WITH_UNKNOWN_RESPONSE_ERROR_CODE,
                 ]
             else:
                 assert False, "MusicBrainz recording is None but no musicbrainz_recording_missing_cause is set"

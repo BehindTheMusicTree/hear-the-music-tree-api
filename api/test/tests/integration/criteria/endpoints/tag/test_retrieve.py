@@ -5,9 +5,8 @@ from api.test.tests.integration.criteria.TagTestCase import TagTestCase
 
 
 class TestCase(TagTestCase):
-
     def test_ok(self):
-        name = 'Sport'
+        name = "Sport"
         uuid = self.model_fixture_factory.create_tag(name=name).uuid
 
         response = self._retrieve_tag(uuid=uuid)

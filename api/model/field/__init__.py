@@ -8,14 +8,13 @@ from api.model.field.foreign_key.PrivateOneToOneField import PrivateOneToOneFiel
 from .AppCharField import AppCharField
 from .AppFileField import AppFileField
 
-
 __all__ = [
-    'AppCharField',
-    'AppFileField',
-    'AppForeignKey',
-    'AppOneToOneField',
-    'PrivateForeignKey',
-    'AppManyToManyField',
-    'PrivateManyToManyField',
-    'PrivateOneToOneField',
+    "AppCharField",
+    "AppFileField",
+    "AppForeignKey",
+    "AppManyToManyField",
+    "AppOneToOneField",
+    "PrivateForeignKey",
+    "PrivateManyToManyField",
+    "PrivateOneToOneField",
 ]

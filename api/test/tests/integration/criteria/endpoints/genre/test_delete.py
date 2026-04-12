@@ -5,9 +5,8 @@ from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase):
-
     def test_delete_then_405(self):
-        genre = self.model_fixture_factory.create_genre(name='rock')
+        genre = self.model_fixture_factory.create_genre(name="rock")
 
         response = self._delete_genre(uuid=genre.uuid)
 

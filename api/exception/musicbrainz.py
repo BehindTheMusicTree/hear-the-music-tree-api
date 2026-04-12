@@ -1,4 +1,3 @@
-
 from abc import abstractmethod
 
 
@@ -28,8 +27,7 @@ class ErrorStatusMusicbrainzRecordingLookupException(MusicbrainzRecordingLookupE
         super().__init__(exception_message)
 
 
-class InvalidFingerprintMusicbrainzRecordingLookupException(
-        ErrorStatusMusicbrainzRecordingLookupException):
+class InvalidFingerprintMusicbrainzRecordingLookupException(ErrorStatusMusicbrainzRecordingLookupException):
     def __init__(self, exception_message: str):
         super().__init__(exception_message)
 

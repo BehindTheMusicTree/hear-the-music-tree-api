@@ -6,11 +6,10 @@ from .GenreManager import GenreManager
 
 
 class Genre(Criteria):
-
-    objects: 'GenreManager' = GenreManager()
+    objects: GenreManager = GenreManager()
 
     class Meta:
-        db_table = 'htmt_api_genre'
+        db_table = "htmt_api_genre"
         proxy = True
 
     def save(self, *args, **kwargs):

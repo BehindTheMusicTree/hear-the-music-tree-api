@@ -13,62 +13,63 @@ from django.utils import timezone
 from django_dynamic_fixture import global_settings
 
 from api.model.album.Album import Album
+from api.model.album.Fields import Fields as AlbumModelFields
 from api.model.artist.Artist import Artist
 from api.model.artist.Fields import Fields as ArtistFields
+from api.model.artist.Fields import Fields as ArtistModelFields
 from api.model.criteria.children.genre.Genre import Genre
 from api.model.criteria.children.tag.Tag import Tag
 from api.model.criteria.Criteria import Criteria
 from api.model.criteria.Criteria import Fields as CriteriaFields
-from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
-from api.model.uploaded_track_playlist_rel.Fields import Fields as UploadedTrackPlaylistRelFields
 from api.model.musicbrainz_resource.children.artist.Fields import Fields as MusicbrainzArtistFields
 from api.model.musicbrainz_resource.children.artist.MbArtist import MbArtist
 from api.model.musicbrainz_resource.children.recording.MbRecording import Fields as MusicbrainzRecordingFields
 from api.model.musicbrainz_resource.children.recording.MbRecording import MbRecording
 from api.model.play.Fields import Fields as PlayFields
 from api.model.play.Play import Play
-from api.model.playlist.Playlist import Playlist
 from api.model.playlist.children.manual.Fields import Fields as ManualPlayListFields
 from api.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
 from api.model.playlist.Fields import Fields as PlayListFields
-from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
-from api.model.uploaded_track.UploadedTrack import UploadedTrack
-from api.model.trackable_play_count.TrackablePlayCount import TrackablePlayCount
-from api.model.user.User import User
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
+from api.model.playlist.Playlist import Playlist
+from api.model.spotify_resource.children.artist.Fields import Fields as ArtistFields
 from api.model.spotify_resource.children.artist.SpotifyArtist import SpotifyArtist
 from api.model.spotify_resource.children.track.Fields import Fields as TrackFields
-from api.model.spotify_resource.children.artist.Fields import Fields as ArtistFields
-from api.model.artist.Fields import Fields as ArtistModelFields
-from api.model.album.Fields import Fields as AlbumModelFields
+from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
+from api.model.trackable_play_count.TrackablePlayCount import TrackablePlayCount
+from api.model.uploaded_track.UploadedTrack import UploadedTrack
+from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
+from api.model.uploaded_track_playlist_rel.Fields import Fields as UploadedTrackPlaylistRelFields
+from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
+from api.model.user.User import User
+from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
-
-global_settings.DDF_FIELD_FIXTURES['django.db.models.fields.generated.GeneratedField'] = lambda: None  # type: ignore
+global_settings.DDF_FIELD_FIXTURES["django.db.models.fields.generated.GeneratedField"] = lambda: None  # type: ignore
 
 
 class ModelFixtureFactory:
-    default_test_user: 'User'
+    default_test_user: User
     test_uploaded_track_dir: Path
 
-    def __init__(self, default_test_user: 'User', test_uploaded_track_dir: Path) -> None:
+    def __init__(self, default_test_user: User, test_uploaded_track_dir: Path) -> None:
         self.default_test_user = default_test_user
         self.test_uploaded_track_dir = test_uploaded_track_dir
 
     @staticmethod
-    def create_user(username=None, email=None, password='password123', **kwargs) -> 'User':
+    def create_user(username=None, email=None, password="password123", **kwargs) -> User:
         UserModel = get_user_model()
         unique_id = str(uuid.uuid4())[:8]
-        user = N(UserModel,
-                 username=username or f'testuser_{unique_id}',
-                 email=email or f'testuser_{unique_id}@example.com',
-                 is_test_user=True,
-                 **kwargs)
+        user = N(
+            UserModel,
+            username=username or f"testuser_{unique_id}",
+            email=email or f"testuser_{unique_id}@example.com",
+            is_test_user=True,
+            **kwargs,
+        )
         user.set_password(password)
         user.save()
-        return cast('User', user)
+        return cast("User", user)
 
-    T = TypeVar('T', bound='Criteria')
+    T = TypeVar("T", bound="Criteria")
 
     def __create_criteria(self, name: str, model_class: type[T], user: User | None = None, **kwargs) -> T:
         now = timezone.make_aware(datetime.now())
@@ -99,7 +100,11 @@ class ModelFixtureFactory:
         return uploaded_track
 
     def create_uploaded_track_playlist_rel(
-            self, playlist: Playlist, uploaded_track: UploadedTrack, user: User | None = None,) -> UploadedTrackPlaylistRel:
+        self,
+        playlist: Playlist,
+        uploaded_track: UploadedTrack,
+        user: User | None = None,
+    ) -> UploadedTrackPlaylistRel:
         model_fields = {
             UploadedTrackPlaylistRelFields.USER: user or self.default_test_user,
             UploadedTrackPlaylistRelFields.PLAYLIST: playlist,
@@ -113,7 +118,7 @@ class ModelFixtureFactory:
         test_uploaded_track_filename: UploadedTrackTestFilename | None = UploadedTrackTestFilename.DEFAULT_MP3,
         user: User | None = None,
         use_manager_for_genre_playlist_adding: bool = False,
-        **kwargs
+        **kwargs,
     ) -> UploadedTrack:
         user = user or self.default_test_user
 
@@ -144,7 +149,7 @@ class ModelFixtureFactory:
                 ) from e
             raise
 
-        with open(track_file_path_in_lib, 'rb') as f:
+        with open(track_file_path_in_lib, "rb") as f:
             django_file = File(f, name=str(track_file_path_in_lib))
             model_fields.update({UploadedTrackFields.TRACK_FILE_INTERNAL.value: django_file})
             uploaded_track = UploadedTrack.objects.create(**model_fields)
@@ -152,14 +157,14 @@ class ModelFixtureFactory:
             from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import (
                 UploadedTrackPlaylistRel,
             )
-            UploadedTrackPlaylistRel.objects.filter(
-                user=user, uploaded_track=uploaded_track
-            ).delete()
+
+            UploadedTrackPlaylistRel.objects.filter(user=user, uploaded_track=uploaded_track).delete()
 
         return uploaded_track
 
     def create_play(self, content: TrackablePlayCount, user: User | None = None, **kwargs) -> Play:
         from django.contrib.contenttypes.models import ContentType
+
         content_type = ContentType.objects.get_for_model(content)
 
         model_fields = {
@@ -167,7 +172,7 @@ class ModelFixtureFactory:
             PlayFields.CREATED_ON: timezone.make_aware(datetime.now()),
             PlayFields.UPDATED_ON: timezone.make_aware(datetime.now()),
             PlayFields.CONTENT_TYPE: content_type,
-            PlayFields.CONTENT: content.pk
+            PlayFields.CONTENT: content.pk,
         }
         model_fields.update(kwargs)
         return G(Play, **model_fields)
@@ -177,7 +182,7 @@ class ModelFixtureFactory:
             ArtistModelFields.CREATED_ON: timezone.make_aware(datetime.now()),
             ArtistModelFields.UPDATED_ON: timezone.make_aware(datetime.now()),
             ArtistModelFields.USER: user or self.default_test_user,
-            ArtistModelFields.NAME_INTERNAL: name
+            ArtistModelFields.NAME_INTERNAL: name,
         }
         model_fields.update(kwargs)
         return G(Artist, **model_fields)
@@ -189,7 +194,7 @@ class ModelFixtureFactory:
             AlbumModelFields.USER: user or self.default_test_user,
             AlbumModelFields.ALBUM_ARTISTS: [],
             AlbumModelFields.YEAR: None,
-            AlbumModelFields.NAME_INTERNAL: name
+            AlbumModelFields.NAME_INTERNAL: name,
         }
         model_fields.update(kwargs)
         return G(Album, **model_fields)
@@ -226,7 +231,7 @@ class ModelFixtureFactory:
             MusicbrainzRecordingFields.DURATION_IN_SEC: 200,
             MusicbrainzRecordingFields.RELEASE_DATE: None,
             MusicbrainzRecordingFields.MUSICBRAINZ_ID: musicbrainz_id,
-            MusicbrainzRecordingFields.TITLE: title
+            MusicbrainzRecordingFields.TITLE: title,
         }
         model_fields.update(kwargs)
         return G(MbRecording, **model_fields)
@@ -236,7 +241,7 @@ class ModelFixtureFactory:
             MusicbrainzArtistFields.CREATED_ON: timezone.make_aware(datetime.now()),
             MusicbrainzArtistFields.UPDATED_ON: timezone.make_aware(datetime.now()),
             MusicbrainzArtistFields.MUSICBRAINZ_ID: musicbrainz_id,
-            MusicbrainzArtistFields.NAME: name
+            MusicbrainzArtistFields.NAME: name,
         }
         model_fields.update(kwargs)
         return G(MbArtist, **model_fields)
@@ -251,11 +256,11 @@ class ModelFixtureFactory:
             TrackFields.PREVIEW_URL: kwargs.get(TrackFields.PREVIEW_URL),
             TrackFields.EXPLICIT: kwargs.get(TrackFields.EXPLICIT, False),
             TrackFields.LAST_SYNCED_AT: kwargs.get(TrackFields.LAST_SYNCED_AT, timezone.make_aware(datetime.now())),
-            TrackFields.IS_REMOVED: kwargs.get(TrackFields.IS_REMOVED, False)
+            TrackFields.IS_REMOVED: kwargs.get(TrackFields.IS_REMOVED, False),
         }
         track = G(SpotifyLibTrack, **model_fields)
-        if 'spotify_artists' in kwargs:
-            track.spotify_artists.set(kwargs['spotify_artists'])
+        if "spotify_artists" in kwargs:
+            track.spotify_artists.set(kwargs["spotify_artists"])
         return track
 
     def create_spotify_artist(self, name: str, **kwargs) -> SpotifyArtist:
@@ -266,6 +271,6 @@ class ModelFixtureFactory:
             ArtistFields.GENRES: kwargs.get(ArtistFields.GENRES, []),
             ArtistFields.IMAGES: kwargs.get(ArtistFields.IMAGES, []),
             ArtistFields.CREATED_ON: timezone.make_aware(datetime.now()),
-            ArtistFields.UPDATED_ON: timezone.make_aware(datetime.now())
+            ArtistFields.UPDATED_ON: timezone.make_aware(datetime.now()),
         }
         return G(SpotifyArtist, **model_fields)

@@ -230,7 +230,7 @@ is_valid = audiometa_adapter.is_flac_md5_valid(file=flac_file)
 # Fix MD5 checksum and return corrected file
 if not is_valid:
     corrected_file = audiometa_adapter.fix_md5_checking(file=flac_file)
-    
+
 # Remove ID3 metadata header from FLAC files (if present)
     audiometa_adapter.delete_potential_id3_metadata_with_header(file=flac_file)
 ```
