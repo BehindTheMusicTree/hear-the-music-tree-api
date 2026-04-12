@@ -15,7 +15,7 @@ def create_superadmin_user(apps, schema_editor):
     if not password:
         raise CommandError("SUPERADMIN_PASSWORD must be set in environment variables before running migrations.")
     email = os.getenv("SUPERADMIN_EMAIL", "").strip() or f"{username}@example.com"
-    user, created = User.objects.get_or_create(
+    user, _created = User.objects.get_or_create(
         username=username,
         defaults={
             "email": email,
@@ -42,7 +42,7 @@ def create_demo_user(apps, schema_editor):
     if not password:
         raise CommandError("DEMO_PASSWORD must be set in environment variables before running migrations.")
     email = os.getenv("DEMO_EMAIL", "").strip() or f"{username}@example.com"
-    user, created = User.objects.get_or_create(
+    user, _created = User.objects.get_or_create(
         username=username,
         defaults={
             "email": email,
