@@ -64,4 +64,3 @@ class ExceptionLoggingMiddleware:
                 self.logger.error(
                     f"[{request_id}] Error formatting traceback: {type(traceback_error).__name__} - {traceback_error_str}"
                 )
-

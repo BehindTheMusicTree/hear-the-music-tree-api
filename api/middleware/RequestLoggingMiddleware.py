@@ -195,4 +195,3 @@ class RequestLoggingMiddleware:
                 self.requestDebugLogger.error(
                     f"[{request_id}] Error logging ErrorResponse handling error: {type(log_error).__name__}: {log_error_str}"
                 )
-
