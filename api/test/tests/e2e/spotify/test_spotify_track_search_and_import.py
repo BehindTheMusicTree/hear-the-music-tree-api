@@ -1,14 +1,14 @@
-import pytest
 from unittest import mock
 
+import pytest
 from django.urls import reverse
 from rest_framework import status
 
 from api.model.spotify_resource.children.track.Fields import Fields as SpotifyLibTrackFields
 from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
 from api.test.tests.integration.spotify.lib_track.SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
-from api.utils.spotify_api.ApiFields import ApiFields
 from api.utils.data_transformer import to_camel_case
+from api.utils.spotify_api.ApiFields import ApiFields
 from api.utils.spotify_api.managers.SpotifyApiLibTrackManager import SpotifyApiLibTrackManager
 
 
@@ -38,18 +38,11 @@ class TestCase(SpotifyLibTrackTestCase):
             ApiFields.Names.NAME: "Searched Track",
             ApiFields.Names.POPULARITY: 90,
             ApiFields.Names.DURATION_MS: 180000,
-            ApiFields.Names.ARTISTS: [
-                {ApiFields.Names.ID: "artist_456", ApiFields.Names.NAME: "Searched Artist"}
-            ],
-            ApiFields.Names.ALBUM: {
-                ApiFields.Names.ID: "album_456",
-                ApiFields.Names.NAME: "Searched Album"
-            }
+            ApiFields.Names.ARTISTS: [{ApiFields.Names.ID: "artist_456", ApiFields.Names.NAME: "Searched Artist"}],
+            ApiFields.Names.ALBUM: {ApiFields.Names.ID: "album_456", ApiFields.Names.NAME: "Searched Album"},
         }
         self.mock_spotify_client.search_track.return_value = {
-            ApiFields.Names.TRACKS: {
-                ApiFields.Names.ITEMS: [self.mock_track_data]
-            }
+            ApiFields.Names.TRACKS: {ApiFields.Names.ITEMS: [self.mock_track_data]}
         }
 
     def test_spotify_track_search_and_import_then_ok(self):
@@ -70,9 +63,7 @@ class TestCase(SpotifyLibTrackTestCase):
             assert track.spotify_id is not None
             assert track.name is not None
 
-            response = self.api_client.get(
-                reverse("me-spotify-lib-track-detail", kwargs={"pk": track.spotify_id})
-            )
+            response = self.api_client.get(reverse("me-spotify-lib-track-detail", kwargs={"pk": track.spotify_id}))
             assert response.status_code == status.HTTP_200_OK
 
             data = response.json()

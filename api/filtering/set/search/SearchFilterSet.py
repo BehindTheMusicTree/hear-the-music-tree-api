@@ -1,20 +1,18 @@
 from django_filters import rest_framework as filters
 
-from api.filtering.set.private_unique_resource.PrivateUniqueResourceFilterSet import (
-    PrivateUniqueResourceFilterSet
-)
+from api.filtering.set.private_unique_resource.PrivateUniqueResourceFilterSet import PrivateUniqueResourceFilterSet
 
 from .Fields import Fields
 
 
 class SearchFilterSet(PrivateUniqueResourceFilterSet):
-    query = filters.CharFilter(method='filter_query')
+    query = filters.CharFilter(method="filter_query")
 
     def filter_query(self, queryset, name, value):
         if not value:
             return queryset
 
-        search_fields = getattr(self.Meta, 'search_fields', [])
+        search_fields = getattr(self.Meta, "search_fields", [])
         if not search_fields:
             return queryset
 

@@ -1,3 +1,3 @@
 class Fields:
-    CODE = 'code'
-    LABEL = 'label'
+    CODE = "code"
+    LABEL = "label"

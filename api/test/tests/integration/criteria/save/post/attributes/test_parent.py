@@ -5,7 +5,6 @@ from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase):
-
     def test_not_provided_then_none(self):
         response = self._post_genre(**{PostFields.NAME_PUBLIC: "Rock"})
 

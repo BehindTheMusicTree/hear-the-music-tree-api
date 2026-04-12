@@ -6,7 +6,6 @@ from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase):
-
     def test_not_provided_then_unchanged(self):
         genre_rock = self.model_fixture_factory.create_genre(name="Rock")
         genre_punk = self.model_fixture_factory.create_genre(name="Punk", parent=genre_rock)
@@ -26,8 +25,8 @@ class TestCase(GenreTestCase):
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1
         error = self.bad_request_result_field_errors[0]
-        assert error['field'] == PutFields.PARENT
-        assert error['code'] == FieldValidationErrorCode.ANCESTOR_REFERENCE
+        assert error["field"] == PutFields.PARENT
+        assert error["code"] == FieldValidationErrorCode.ANCESTOR_REFERENCE
 
     def test_error_when_parent_is_itself(self):
         genre_rock = self.model_fixture_factory.create_genre(name="Rock")
@@ -37,5 +36,5 @@ class TestCase(GenreTestCase):
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1
         error = self.bad_request_result_field_errors[0]
-        assert error['field'] == PutFields.PARENT
-        assert error['code'] == FieldValidationErrorCode.SELF_REFERENCE
+        assert error["field"] == PutFields.PARENT
+        assert error["code"] == FieldValidationErrorCode.SELF_REFERENCE

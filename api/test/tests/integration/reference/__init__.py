@@ -28,6 +28,7 @@ class ReferenceTestCase(AppTestCase):
             obj_uuid = item.get(uuid_field)
             if obj_uuid is None:
                 continue
-            obj = model_class.objects.get(**{uuid_field: UUID(str(obj_uuid))
-                                          if isinstance(obj_uuid, str) else obj_uuid})
-            assert getattr(obj, "user_id") == self._system_user.id
+            obj = model_class.objects.get(
+                **{uuid_field: UUID(str(obj_uuid)) if isinstance(obj_uuid, str) else obj_uuid}
+            )
+            assert obj.user_id == self._system_user.id

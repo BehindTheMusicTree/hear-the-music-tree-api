@@ -1,7 +1,9 @@
 import pytest
 from rest_framework import status
 
-from api.model.uploaded_track.file.fingerprinting.missing_cause.code.FingerprintMissingCauseCode import FingerprintMissingCauseCode
+from api.model.uploaded_track.file.fingerprinting.missing_cause.code.FingerprintMissingCauseCode import (
+    FingerprintMissingCauseCode,
+)
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
@@ -43,7 +45,7 @@ class TestCase(UploadedTrackTestCase):
                     FingerprintMissingCauseCode.Codes.WRONG_FILE_EXTENSION,
                     FingerprintMissingCauseCode.Codes.WRONG_FILE_TYPE,
                     FingerprintMissingCauseCode.Codes.INTERNAL_ERROR,
-                    FingerprintMissingCauseCode.Codes.UNKNOWN_CONNEXION_ERROR
+                    FingerprintMissingCauseCode.Codes.UNKNOWN_CONNEXION_ERROR,
                 ]
             else:
                 assert False, "Fingerprint is None but no fingerprint_missing_cause is set"

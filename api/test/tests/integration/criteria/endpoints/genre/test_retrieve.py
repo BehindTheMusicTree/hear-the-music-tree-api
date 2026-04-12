@@ -5,9 +5,8 @@ from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase):
-
     def test_ok(self):
-        name = 'rock'
+        name = "rock"
         uuid = self.model_fixture_factory.create_genre(name=name).uuid
 
         response = self._retrieve_genre(uuid=uuid)

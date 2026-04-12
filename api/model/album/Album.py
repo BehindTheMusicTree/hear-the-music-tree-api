@@ -1,4 +1,3 @@
-
 from typing import TYPE_CHECKING
 
 from django.db import models
@@ -11,11 +10,10 @@ from api.model.artist.Artist import Artist
 from api.model.artist.Fields import Fields as ArtistFields
 from api.model.field.AppCharField import AppCharField
 from api.model.field.foreign_key.PrivateManyToManyField import PrivateManyToManyField
-from api.model.uploaded_track_mixin.UploadedTrackMixin import UploadedTrackMixin
 from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
+from api.model.uploaded_track_mixin.UploadedTrackMixin import UploadedTrackMixin
 
 from .Fields import Fields
-
 
 if TYPE_CHECKING:
     from api.model.uploaded_track.UploadedTrack import UploadedTrack
@@ -33,24 +31,24 @@ class Album(UploadedTrackMixin):
         return self._name
 
     @property
-    def uploaded_tracks(self) -> models.QuerySet['UploadedTrack']:
+    def uploaded_tracks(self) -> models.QuerySet[UploadedTrack]:
         return getattr(self, Fields.UPLOADED_TRACKS_RELATED_NAME)
 
     @property
-    def uploaded_tracks_not_archived_sorted(self) -> models.QuerySet['UploadedTrack']:
-        return self.uploaded_tracks_not_archived.annotate(
-            null_position=Q(track_number__isnull=True)).order_by(
-            'null_position', UploadedTrackFields.TRACK_NUMBER.value, UploadedTrackFields.TITLE.value)
+    def uploaded_tracks_not_archived_sorted(self) -> models.QuerySet[UploadedTrack]:
+        return self.uploaded_tracks_not_archived.annotate(null_position=Q(track_number__isnull=True)).order_by(
+            "null_position", UploadedTrackFields.TRACK_NUMBER.value, UploadedTrackFields.TITLE.value
+        )
 
     class Meta:
-        db_table = 'htmt_api_album'
+        db_table = "htmt_api_album"
         constraints = [models.CheckConstraint(condition=~models.Q(_name=""), name="album_non_empty_name")]
 
     def __str__(self) -> str:
         string = f"{self.uuid} | {self._name}"
 
         # Get artist names directly from the database to avoid recursion
-        artist_names = self.album_artists.values_list('_name', flat=True)
+        artist_names = self.album_artists.values_list("_name", flat=True)
         if artist_names:
             string += f" by {', '.join(artist_names)}"
         else:

@@ -5,7 +5,6 @@ from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import Uplo
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_without_a_file_and_a_title_then_ok(self):
         track = self.model_fixture_factory.create_uploaded_track_with_file(title="Foire")
         response = self._put_uploaded_track(uuid=track.uuid, **{UploadedTrackInputFieldKey.TITLE.value: "Jobo"})

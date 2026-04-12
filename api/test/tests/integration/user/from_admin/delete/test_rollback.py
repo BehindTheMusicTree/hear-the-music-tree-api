@@ -5,11 +5,10 @@ from api.test.tests.integration.user.UserTestCase import UserTestCase
 
 
 class TestCase(UserTestCase):
-
     def test_exception_then_rollback(self):
-        user = self.model_fixture_factory.create_user('jojo')
+        user = self.model_fixture_factory.create_user("jojo")
         self.model_fixture_factory.create_uploaded_track_with_file(user=user, title="joie")
-        with patch('api.model.uploaded_track.UploadedTrack.UploadedTrack.save') as mock:
+        with patch("api.model.uploaded_track.UploadedTrack.UploadedTrack.save") as mock:
             exception_message = "Save failed!"
             mock.side_effect = Exception(exception_message)
 

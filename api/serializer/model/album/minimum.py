@@ -17,6 +17,4 @@ class AlbumMinimumSerializer(AppInputSerializer, serializers.ModelSerializer):
 
     class Meta:
         model = Album
-        fields = [Fields.UUID,
-                  Fields.NAME,
-                  Fields.ALBUM_ARTISTS]
+        fields = [Fields.UUID, Fields.NAME, Fields.ALBUM_ARTISTS]

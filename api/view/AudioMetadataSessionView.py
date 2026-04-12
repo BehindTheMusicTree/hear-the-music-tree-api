@@ -13,7 +13,7 @@ from api.serializer.audio_metadata.Fields import Fields
 from api.utils import audio_fingerprinter, musicbrainz
 from api.utils.audio_file_metadata import audiometa_adapter
 from api.utils.audio_file_metadata.audiometa_adapter import FILE_TYPE
-from api.utils.file_path_utils import get_file_path, get_file_name_original
+from api.utils.file_path_utils import get_file_name_original, get_file_path
 from api.utils.metadata_session import create_session
 from api.utils.musicbrainz.service import (
     ANALYSIS_CODE,
@@ -54,9 +54,7 @@ class AudioMetadataSessionView(APIView):
             full_metadata = audiometa_adapter.get_full_metadata(file, include_raw_binary_data=False)
             if include_musicbrainz_analysis:
                 title = getattr(file, "name", "") or ""
-                fp_result = audio_fingerprinter.service.get_fingerprint_and_duration_for_analysis(
-                    file, title=title
-                )
+                fp_result = audio_fingerprinter.service.get_fingerprint_and_duration_for_analysis(file, title=title)
                 fingerprint = fp_result.get(audio_fingerprinter.service.RESULT_FINGERPRINT)
                 if fingerprint is None:
                     full_metadata[MUSICBRAINZ_RAW_DATA] = {

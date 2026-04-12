@@ -1,12 +1,11 @@
 from rest_framework import status
 
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_no_genre_then_in_genreless_playlists(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3)
 

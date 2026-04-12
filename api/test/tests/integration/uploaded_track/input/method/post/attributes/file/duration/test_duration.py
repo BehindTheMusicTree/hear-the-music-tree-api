@@ -1,12 +1,10 @@
 from rest_framework import status
 
-
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_short_wav_then_ok(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.DURATION_LESS_THAN_1_SEC_WAV)
         assert response.status_code == status.HTTP_201_CREATED
@@ -30,7 +28,8 @@ class TestCase(UploadedTrackTestCase):
 
     def test_wav_with_issues_while_reading_duration_from_mutagen_and_tynitag_then_ok(self):
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.DURATION_1S_ISSUE_READING_FROM_MUTAGEN_AND_TYNITAG_WAV)
+            UploadedTrackTestFilename.DURATION_1S_ISSUE_READING_FROM_MUTAGEN_AND_TYNITAG_WAV
+        )
         assert response.status_code == status.HTTP_201_CREATED
 
     def test_normal_mp3_then_ok(self):

@@ -1,37 +1,37 @@
 import re
-from typing import Any, Mapping, Union, cast
+from collections.abc import Mapping
+from typing import Any, Union, cast
 
 from django.http import QueryDict
 
 
 def remove_substrings_from_string(string_a: str, substrings: list) -> str:
     for substring in substrings:
-        string_a = string_a.replace(substring, '')
+        string_a = string_a.replace(substring, "")
     return string_a
 
 
-def convert_data_to_dict(data: Union[QueryDict, dict[str, Any], Any]) -> dict[str, Any]:
+def convert_data_to_dict(data: QueryDict | dict[str, Any] | Any) -> dict[str, Any]:
     if isinstance(data, QueryDict):
         return data.dict()
-    elif isinstance(data, dict):
+    if isinstance(data, dict):
         return data
-    else:
-        return {k: v for k, v in data.items()}
+    return {k: v for k, v in data.items()}
 
 
 def to_camel_case(snake_str):
-    components = snake_str.split('_')
-    return components[0] + ''.join(x.title() for x in components[1:])
+    components = snake_str.split("_")
+    return components[0] + "".join(x.title() for x in components[1:])
 
 
 def to_snake_case(name: str) -> str:
-    name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).lower()
+    name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
+    return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).lower()
 
 
-def to_dict(data: Any) -> Union[QueryDict, dict[str, Any], Mapping[str, Any], str]:
+def to_dict(data: Any) -> QueryDict | dict[str, Any] | Mapping[str, Any] | str:
     if isinstance(data, (QueryDict, dict, Mapping)):
-        return cast(Union[QueryDict, dict[str, Any], Mapping[str, Any]], data)
+        return cast(QueryDict | dict[str, Any] | Mapping[str, Any], data)
     if isinstance(data, str):
         return data
     return dict(data)
@@ -69,7 +69,7 @@ def update_dict_converting_empty_string_to_none(data: dict):
 
 def update_dict_converting_str_to_int_value_if_set(key: str, data: dict):
     if key in data:
-        if data[key] is not None and data[key] != '':
+        if data[key] is not None and data[key] != "":
             rating = int(data[key])
         else:
             rating = None
@@ -97,7 +97,7 @@ def merge_two_dicts(dict1, dict2):
 def replace_none_with_empty_string(**kwargs):
     if kwargs is None:
         return {}
-    return {k: ('' if v is None else v) for k, v in kwargs.items()}
+    return {k: ("" if v is None else v) for k, v in kwargs.items()}
 
 
 def get_first_value_str_if_exists_in_str_dict_or_none(str_dict: dict, key: str) -> str | None:

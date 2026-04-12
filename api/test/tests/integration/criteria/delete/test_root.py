@@ -4,18 +4,17 @@ from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase):
-
     def test_delete_as_root_then_update_descendants_root(self):
-        rock = self.model_fixture_factory.create_genre(name='rock')
+        rock = self.model_fixture_factory.create_genre(name="rock")
 
         # Save genres and their UUIDs before deletion for later retrieval
-        punk = self.model_fixture_factory.create_genre(name='punk', parent=rock)
+        punk = self.model_fixture_factory.create_genre(name="punk", parent=rock)
         punk_uuid = punk.uuid
 
-        hardcore_punk = self.model_fixture_factory.create_genre(name='hardcore punk', parent=punk)
+        hardcore_punk = self.model_fixture_factory.create_genre(name="hardcore punk", parent=punk)
         hardcore_punk_uuid = hardcore_punk.uuid
 
-        indie = self.model_fixture_factory.create_genre(name='indie', parent=rock)
+        indie = self.model_fixture_factory.create_genre(name="indie", parent=rock)
         indie_uuid = indie.uuid
 
         response = self._delete_genre(uuid=rock.uuid)

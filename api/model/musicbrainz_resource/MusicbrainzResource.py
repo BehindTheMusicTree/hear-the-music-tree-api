@@ -1,4 +1,3 @@
-
 from api import settings
 from api.model.field.AppCharField import AppCharField
 from api.model.public_standard_resource.PublicStandardResource import PublicStandardResource

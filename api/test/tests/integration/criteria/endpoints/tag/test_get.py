@@ -5,7 +5,6 @@ from api.test.tests.integration.criteria.TagTestCase import TagTestCase
 
 
 class TestCase(TagTestCase):
-
     def test_ok(self):
         tag_name = "Sport"
         self.model_fixture_factory.create_tag(name=tag_name)

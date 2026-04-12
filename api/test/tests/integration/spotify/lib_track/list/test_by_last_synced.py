@@ -53,8 +53,7 @@ class TestCase(SpotifyLibTrackTestCase):
         track3 = self.model_fixture_factory.create_spotify_lib_track(name="Track 3", last_synced_at=self.future)
 
         response = self._list_spotify_lib_tracks(
-            last_synced_at_gte=self.past.isoformat(),
-            last_synced_at_lte=self.now.isoformat()
+            last_synced_at_gte=self.past.isoformat(), last_synced_at_lte=self.now.isoformat()
         )
 
         assert response.status_code == status.HTTP_200_OK

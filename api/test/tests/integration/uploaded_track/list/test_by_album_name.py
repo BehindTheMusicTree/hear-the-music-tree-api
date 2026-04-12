@@ -1,12 +1,11 @@
 from rest_framework import status
 
 from api.serializer.model.uploaded_track.output.UploadedTrackOutputFieldKey import UploadedTrackOutputFieldKey
-from api.test.utils.field.filter.char.NullableCharFilterTestCase import NullableCharFilterTestCase
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.field.filter.char.NullableCharFilterTestCase import NullableCharFilterTestCase
 
 
 class TestCase(UploadedTrackTestCase, NullableCharFilterTestCase):
-
     def test_not_provided_then_results(self):
         self.model_fixture_factory.create_uploaded_track_with_file(title="Life")
         self.model_fixture_factory.create_uploaded_track_with_file(title="Hey")
@@ -22,7 +21,7 @@ class TestCase(UploadedTrackTestCase, NullableCharFilterTestCase):
         album = self.model_fixture_factory.create_album(name="John")
         self.model_fixture_factory.create_uploaded_track_with_file(title="Hey", album=album)
 
-        response = self._list_uploaded_tracks(album_name='')
+        response = self._list_uploaded_tracks(album_name="")
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 2
@@ -30,7 +29,7 @@ class TestCase(UploadedTrackTestCase, NullableCharFilterTestCase):
     def test_filter_not_empty_then_dont_return_track_with_no_album(self):
         self.model_fixture_factory.create_uploaded_track_with_file(title="Life")
 
-        response = self._list_uploaded_tracks(album_name='jo')
+        response = self._list_uploaded_tracks(album_name="jo")
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 0
@@ -41,7 +40,7 @@ class TestCase(UploadedTrackTestCase, NullableCharFilterTestCase):
         album_hey = self.model_fixture_factory.create_album(name="Hey")
         self.model_fixture_factory.create_uploaded_track_with_file(title="Hey", album=album_hey)
 
-        response = self._list_uploaded_tracks(album_name='Lif')
+        response = self._list_uploaded_tracks(album_name="Lif")
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 1

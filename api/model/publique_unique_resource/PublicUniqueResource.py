@@ -3,6 +3,5 @@ from api.model.uuid.UuidModel import UuidModel
 
 
 class PublicUniqueResource(PublicStandardResource, UuidModel):
-
     class Meta:
         abstract = True

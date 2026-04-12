@@ -4,4 +4,4 @@ from . import settings
 
 
 class ApiConfig(AppConfig):
-    name = 'api'
+    name = "api"

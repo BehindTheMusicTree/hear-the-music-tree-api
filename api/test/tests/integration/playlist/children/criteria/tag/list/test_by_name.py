@@ -4,27 +4,25 @@ from api.exception.validation.FieldValidationErrorCode import FieldValidationErr
 from api.filtering.set.playlist.Fields import Fields as FilterFields
 from api.model.playlist.children.criteria.tag.TagPlaylist import TagPlaylist
 from api.serializer.model.playlist.children.criteria.output.detailed import Fields as RietrieveFields
-from api.test.utils.field.filter.char.NotNullableFreeCharFilterTestCase import NotNullableFreeCharFilterTestCase
 from api.test.tests.integration.playlist.children.criteria.tag.TagPlaylistTestCase import TagPlaylistTestCase
+from api.test.utils.field.filter.char.NotNullableFreeCharFilterTestCase import NotNullableFreeCharFilterTestCase
 
 
 class TestCase(TagPlaylistTestCase, NotNullableFreeCharFilterTestCase):
-
     def test_empty_then_400_bad_request(self):
         self.model_fixture_factory.create_tag(name="Fiesta")
 
-        response = self._list_tag_playlists(**{FilterFields.NAME: ''})
+        response = self._list_tag_playlists(**{FilterFields.NAME: ""})
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert self.bad_request_result_field_errors[0]['field'] == FilterFields.NAME
-        assert self.bad_request_result_field_errors[0][
-            'code'] == FieldValidationErrorCode.BLANK
+        assert self.bad_request_result_field_errors[0]["field"] == FilterFields.NAME
+        assert self.bad_request_result_field_errors[0]["code"] == FieldValidationErrorCode.BLANK
 
     def test_genre_playlists_then_not_in_results(self):
         tag = self.model_fixture_factory.create_tag(name="foot")
         gnere = self.model_fixture_factory.create_genre(name="footcode")
 
-        response = self._list_tag_playlists(**{FilterFields.NAME: 'foot'})
+        response = self._list_tag_playlists(**{FilterFields.NAME: "foot"})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 1
@@ -37,7 +35,7 @@ class TestCase(TagPlaylistTestCase, NotNullableFreeCharFilterTestCase):
         criteria2 = self.model_fixture_factory.create_tag(name="Fiestaabilly")
         self.model_fixture_factory.create_tag(name="Punk")
 
-        response = self._list_tag_playlists(**{FilterFields.NAME: 'Fi'})
+        response = self._list_tag_playlists(**{FilterFields.NAME: "Fi"})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 2
@@ -63,7 +61,7 @@ class TestCase(TagPlaylistTestCase, NotNullableFreeCharFilterTestCase):
         tag_tag = self.model_fixture_factory.create_tag(name="tag")
         tag_fiesta = self.model_fixture_factory.create_tag(name="Fiesta")
 
-        response = self._list_tag_playlists(**{FilterFields.NAME: 'taG'})
+        response = self._list_tag_playlists(**{FilterFields.NAME: "taG"})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 2

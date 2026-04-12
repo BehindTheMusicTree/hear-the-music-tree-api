@@ -13,6 +13,7 @@ class ApiErrorCodeNumeric(int, Enum):
     5000-5999: External service errors
     9000-9999: System/Internal errors
     """
+
     # Authentication/Authorization (1000-1999)
     AUTH_INVALID_CREDENTIALS = 1001
     AUTH_TOKEN_EXPIRED = 1002

@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: false
 ---
 # Use | None Instead of Optional
@@ -55,4 +55,4 @@ def get_genre_data(self) -> Optional[dict[str, str]]:  # Bad
 - Better readability
 - Consistent type hinting style
 - Modern Python syntax
-- Reduced imports 
+- Reduced imports

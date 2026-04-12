@@ -26,8 +26,9 @@ class FingerprintMissingCauseCode(BaseModel):
         return f"{self.pk} {self.label}"
 
     class Meta:
-        db_table = 'htmt_api_fingerprint_missing_cause_code'
+        db_table = "htmt_api_fingerprint_missing_cause_code"
         constraints = [
-            models.CheckConstraint(condition=~models.Q(label=""), name="fingerprint_missing_cause_non_empty_label")]
-        verbose_name = 'Fingerprinting Error Code'
-        verbose_name_plural = 'Fingerprinting Error Codes'
+            models.CheckConstraint(condition=~models.Q(label=""), name="fingerprint_missing_cause_non_empty_label")
+        ]
+        verbose_name = "Fingerprinting Error Code"
+        verbose_name_plural = "Fingerprinting Error Codes"

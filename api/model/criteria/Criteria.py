@@ -19,7 +19,6 @@ from api.utils.model import SaveContext
 from .Fields import Fields
 from .type.CriteriaType import CriteriaType
 
-
 if TYPE_CHECKING:
     from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
     from api.model.uploaded_track.UploadedTrack import UploadedTrack
@@ -29,25 +28,26 @@ if TYPE_CHECKING:
 
 class Criteria(UploadedTrackMixin):
     _name = AppCharField(max_length=settings.CRITERIA_NAME_LEN_MAX, db_column=Fields.NAME_PUBLIC)
-    ascendants: QuerySet['Criteria'] = PrivateManyToManyField('self',
-                                                              through='CriteriaLineageRel',
-                                                              through_fields=(CriteriaLineageRelFields.DESCENDANT,
-                                                                              CriteriaLineageRelFields.ASCENDANT),
-                                                              symmetrical=False,)  # type: ignore
-    parent: 'Criteria | None' = PrivateForeignKey(
-        'self', on_delete=models.SET_NULL, null=True, related_name=Fields.CHILDREN)  # type: ignore
+    ascendants: QuerySet[Criteria] = PrivateManyToManyField(
+        "self",
+        through="CriteriaLineageRel",
+        through_fields=(CriteriaLineageRelFields.DESCENDANT, CriteriaLineageRelFields.ASCENDANT),
+        symmetrical=False,
+    )  # type: ignore
+    parent: Criteria | None = PrivateForeignKey(
+        "self", on_delete=models.SET_NULL, null=True, related_name=Fields.CHILDREN
+    )  # type: ignore
 
-    root: 'Criteria' = PrivateForeignKey(
-        'self', on_delete=models.DO_NOTHING, related_name=Fields.DESCENDANTS)  # type: ignore
+    root: Criteria = PrivateForeignKey("self", on_delete=models.DO_NOTHING, related_name=Fields.DESCENDANTS)  # type: ignore
 
     type = AppForeignKey(CriteriaType, on_delete=models.CASCADE)
 
     if TYPE_CHECKING:
-        ascendants_rels: QuerySet['CriteriaLineageRel']
-        descendants: QuerySet['Criteria']
-        descendants_rels: QuerySet['CriteriaLineageRel']
-        children: QuerySet['Criteria']
-        criteria_playlist: 'CriteriaPlaylist'
+        ascendants_rels: QuerySet[CriteriaLineageRel]
+        descendants: QuerySet[Criteria]
+        descendants_rels: QuerySet[CriteriaLineageRel]
+        children: QuerySet[Criteria]
+        criteria_playlist: CriteriaPlaylist
 
     objects: CriteriaManager = CriteriaManager()
 
@@ -56,7 +56,7 @@ class Criteria(UploadedTrackMixin):
         return self._name
 
     @property
-    def uploaded_tracks(self) -> models.QuerySet['UploadedTrack']:
+    def uploaded_tracks(self) -> models.QuerySet[UploadedTrack]:
         return getattr(self, Fields.UPLOADED_TRACKS_RELATED_NAME)
 
     @property
@@ -64,7 +64,7 @@ class Criteria(UploadedTrackMixin):
         return not self.parent
 
     @property
-    def descendant_list(self) -> list['Criteria']:
+    def descendant_list(self) -> list[Criteria]:
         """
         Get all descendants of this criteria using the lineage system.
         This is more efficient than recursive traversal as it uses the pre-computed relationships.
@@ -75,20 +75,20 @@ class Criteria(UploadedTrackMixin):
         return list(self.descendants.all())
 
     class Meta:
-        db_table = 'htmt_api_criteria'
-        verbose_name = 'Criteria'
-        verbose_name_plural = 'Criterias'
+        db_table = "htmt_api_criteria"
+        verbose_name = "Criteria"
+        verbose_name_plural = "Criterias"
         constraints = [
-            models.CheckConstraint(condition=~models.Q(_name=""), name='%(class)s_non_empty_name'),
-            models.UniqueConstraint(fields=[Fields.USER, Fields.NAME_INTERNAL], name='unique_name_per_user')
+            models.CheckConstraint(condition=~models.Q(_name=""), name="%(class)s_non_empty_name"),
+            models.UniqueConstraint(fields=[Fields.USER, Fields.NAME_INTERNAL], name="unique_name_per_user"),
         ]
         indexes = [
-            models.Index(fields=[Fields.USER, Fields.NAME_INTERNAL], name='%(class)s_user_name_idx'),
-            models.Index(fields=[Fields.USER, Fields.UUID], name='%(class)s_user_uuid_idx')
+            models.Index(fields=[Fields.USER, Fields.NAME_INTERNAL], name="%(class)s_user_name_idx"),
+            models.Index(fields=[Fields.USER, Fields.UUID], name="%(class)s_user_uuid_idx"),
         ]
 
     def __str__(self) -> str:
-        parent_str = f'{Fields.PARENT}: {self.parent.name}' if self.parent else f"[no {Fields.PARENT}]"
+        parent_str = f"{Fields.PARENT}: {self.parent.name}" if self.parent else f"[no {Fields.PARENT}]"
         created_on_str = f"{Fields.CREATED_ON}: {self.created_on}"
         updated_on_str = f"{Fields.UPDATED_ON}: {self.updated_on}"
 
@@ -113,7 +113,7 @@ class Criteria(UploadedTrackMixin):
         self._set_uuid_if_necessary()
         root_has_changed = self._set_root()
         if not self._state.adding and root_has_changed:
-            ctx.add_modified_field(f'{Fields.ROOT}_id')
+            ctx.add_modified_field(f"{Fields.ROOT}_id")
         return ctx.kwargs
 
     def save(self, *args: Any, **kwargs: Any) -> None:
@@ -121,24 +121,24 @@ class Criteria(UploadedTrackMixin):
             super().save(*args, **kwargs)
         except IntegrityError as e:
             error_message = str(e)
-            if 'non_empty_name' in error_message:
+            if "non_empty_name" in error_message:
                 raise AppValidationException(
                     field_name=Fields.NAME_PUBLIC,
-                    message=_('Name cannot be empty'),
-                    field_validation_error_code=FieldValidationErrorCode.NAME_EMPTY
+                    message=_("Name cannot be empty"),
+                    field_validation_error_code=FieldValidationErrorCode.NAME_EMPTY,
                 )
-            elif 'unique_name_per_user' in error_message:
+            if "unique_name_per_user" in error_message:
                 raise AppValidationException(
                     field_name=Fields.NAME_PUBLIC,
                     message=_(f'The name "{self.name}" is already used'),
-                    field_validation_error_code=FieldValidationErrorCode.NAME_DUPLICATE
+                    field_validation_error_code=FieldValidationErrorCode.NAME_DUPLICATE,
                 )
             # Let other database integrity errors propagate to be handled as system errors
             raise e
 
-    def is_descendant_of(self, other_criteria: 'Criteria') -> bool:
+    def is_descendant_of(self, other_criteria: Criteria) -> bool:
         if self.parent == other_criteria:
             return True
-        elif self.parent:
+        if self.parent:
             return self.parent.is_descendant_of(other_criteria)
         return False

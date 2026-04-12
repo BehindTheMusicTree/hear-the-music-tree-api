@@ -22,6 +22,6 @@ class MbRecordingMissingCauseCode(BaseModel):
     label = AppCharField(unique=True, max_length=settings.MB_RECORDING_MISSING_CAUSE_CODE_LABEL_LEN_MAX)
 
     class Meta:
-        db_table = 'htmt_api_mb_recording_missing_cause_code'
-        verbose_name = 'MusicBrainz Recording Missing Cause Code'
-        verbose_name_plural = 'MusicBrainz Recording Missing Causes Codes'
+        db_table = "htmt_api_mb_recording_missing_cause_code"
+        verbose_name = "MusicBrainz Recording Missing Cause Code"
+        verbose_name_plural = "MusicBrainz Recording Missing Causes Codes"

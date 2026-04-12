@@ -1,8 +1,8 @@
 from rest_framework import serializers
 
 from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
-from api.serializer.model.spotify.lib_track.output.Fields import Fields
 from api.serializer.model.spotify.artist.output.detailed import SpotifyArtistDetailedSerializer
+from api.serializer.model.spotify.lib_track.output.Fields import Fields
 
 
 class SpotifyLibTrackSimpleSerializer(serializers.ModelSerializer):
@@ -19,8 +19,8 @@ class SpotifyLibTrackSimpleSerializer(serializers.ModelSerializer):
             Fields.ALBUM,
             Fields.SPOTIFY_ARTISTS,
             Fields.IS_REMOVED,
-            Fields.GENRES
+            Fields.GENRES,
         ]
 
     def get_album(self, obj):
-        return obj.album.get('name') if obj.album else None
+        return obj.album.get("name") if obj.album else None

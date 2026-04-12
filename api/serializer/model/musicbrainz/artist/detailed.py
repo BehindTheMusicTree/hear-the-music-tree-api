@@ -1,4 +1,3 @@
-
 from rest_framework import serializers
 
 from api.model.musicbrainz_resource.children.artist.MbArtist import Fields as ModelFields

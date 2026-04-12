@@ -1,6 +1,7 @@
 import json
+from collections.abc import Mapping
 from json.decoder import JSONDecodeError
-from typing import Any, Mapping
+from typing import Any
 
 from django.http import QueryDict
 from rest_framework.request import Request
@@ -13,9 +14,9 @@ class CamelToSnakeMiddleware:
         self.get_response = get_response
 
     def __call__(self, request: Request):
-        content_type = request.headers.get('Content-Type', '')
+        content_type = request.headers.get("Content-Type", "")
 
-        if content_type.startswith('application/json'):
+        if content_type.startswith("application/json"):
             try:
                 if request.body:
                     json_data = json.loads(request.body)
@@ -25,7 +26,7 @@ class CamelToSnakeMiddleware:
             except JSONDecodeError:
                 request.data = {}  # type: ignore
 
-        if content_type.startswith('multipart/form-data'):
+        if content_type.startswith("multipart/form-data"):
             request.POST = self._form_data_to_snake_case(request.POST)  # type: ignore
 
             if request.FILES:

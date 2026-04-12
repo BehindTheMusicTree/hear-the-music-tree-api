@@ -24,29 +24,35 @@ if TYPE_CHECKING:
 
 class CriteriaPlaylist(Playlist):
     playlist = PrivateOneToOneField(
-        Playlist, on_delete=models.CASCADE, parent_link=True, related_name=PlayListFields.CRITERIA_PLAYLIST)
+        Playlist, on_delete=models.CASCADE, parent_link=True, related_name=PlayListFields.CRITERIA_PLAYLIST
+    )
 
-    criteria: 'Criteria | None' = PrivateOneToOneField(  # type: ignore
-        Criteria, on_delete=models.CASCADE, blank=True, null=True, related_name=CriteriaFields.CRITERIA_PLAYLIST)
+    criteria: Criteria | None = PrivateOneToOneField(  # type: ignore
+        Criteria, on_delete=models.CASCADE, blank=True, null=True, related_name=CriteriaFields.CRITERIA_PLAYLIST
+    )
 
-    parent: 'CriteriaPlaylist | None' = PrivateForeignKey(
-        'self', on_delete=models.SET_NULL, null=True, related_name=Fields.CHILDREN)  # type: ignore
+    parent: CriteriaPlaylist | None = PrivateForeignKey(
+        "self", on_delete=models.SET_NULL, null=True, related_name=Fields.CHILDREN
+    )  # type: ignore
 
-    root: 'CriteriaPlaylist' = PrivateForeignKey(
-        'self', on_delete=models.DO_NOTHING, related_name=Fields.ROOT_DESCENDANTS)  # type: ignore
+    root: CriteriaPlaylist = PrivateForeignKey(
+        "self", on_delete=models.DO_NOTHING, related_name=Fields.ROOT_DESCENDANTS
+    )  # type: ignore
 
     type = AppForeignKey(CriteriaType, on_delete=models.CASCADE)
 
     if TYPE_CHECKING:
-        children: models.QuerySet['CriteriaPlaylist']
+        children: models.QuerySet[CriteriaPlaylist]
 
     objects: CriteriaPlaylistManager = CriteriaPlaylistManager()
 
     class Meta:
-        db_table = 'htmt_api_criteria_playlist'
-        verbose_name = 'Criteria Playlist'
-        verbose_name_plural = 'Criteria Playlists'
-        indexes = [models.Index(fields=[Fields.CRITERIA], name='crit_playlist_criteria_idx'),]
+        db_table = "htmt_api_criteria_playlist"
+        verbose_name = "Criteria Playlist"
+        verbose_name_plural = "Criteria Playlists"
+        indexes = [
+            models.Index(fields=[Fields.CRITERIA], name="crit_playlist_criteria_idx"),
+        ]
 
     @property
     def type_label(self) -> str:
@@ -58,8 +64,7 @@ class CriteriaPlaylist(Playlist):
             return CriterialessPlaylistNames.GENRE
         if self.type.pk == int(CriteriaTypePks.TAG):
             return CriterialessPlaylistNames.TAG
-        else:
-            raise ImproperlyConfigured(f'Unknown criteria type: {self.type.pk}')
+        raise ImproperlyConfigured(f"Unknown criteria type: {self.type.pk}")
 
     @property
     def name(self):
@@ -70,9 +75,9 @@ class CriteriaPlaylist(Playlist):
         return self.root == self
 
     def __str__(self) -> str:
-        parent_str = f'Parent: {self.parent.name}' if self.parent else 'Parent: None'
-        root_str = f'Root: {self.root.name}' if self.root else 'Root: None'
-        return f'{self.uuid} | {self.name} | {parent_str} | {root_str}'
+        parent_str = f"Parent: {self.parent.name}" if self.parent else "Parent: None"
+        root_str = f"Root: {self.root.name}" if self.root else "Root: None"
+        return f"{self.uuid} | {self.name} | {parent_str} | {root_str}"
 
     def _set_parent(self) -> bool:
         current_parent_pk = getattr(self, f"{Fields.PARENT}_id", None)
@@ -94,8 +99,7 @@ class CriteriaPlaylist(Playlist):
         if current_root_id != new_root_id:
             self.root_id = new_root_id
             return True
-        else:
-            return False
+        return False
 
     def _prepare_save(self, ctx: SaveContext) -> dict:
         self._set_uuid_if_necessary()
@@ -108,11 +112,11 @@ class CriteriaPlaylist(Playlist):
 
         root_has_changed = self._set_root()
         if not adding and root_has_changed:
-            ctx.add_modified_field(f'{Fields.ROOT}_id')
+            ctx.add_modified_field(f"{Fields.ROOT}_id")
 
         super()._perform_save(adding=adding, ctx=ctx)
 
     def _post_save(self, adding: bool) -> None:
         if adding:
             self.root_id = self.pk
-            super().save(update_fields=[f'{Fields.ROOT}_id'])
+            super().save(update_fields=[f"{Fields.ROOT}_id"])

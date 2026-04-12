@@ -5,18 +5,15 @@ from typing import Any
 @dataclass
 class SaveContext:
     """Context for save operations"""
+
     kwargs: dict[str, Any]
     modified_fields: list[str]
     update_fields: list[str] | None
 
     @staticmethod
-    def create(**kwargs) -> 'SaveContext':
+    def create(**kwargs) -> SaveContext:
         """Factory method to create SaveContext instances"""
-        return SaveContext(
-            kwargs=kwargs,
-            modified_fields=[],
-            update_fields=kwargs.get('update_fields')
-        )
+        return SaveContext(kwargs=kwargs, modified_fields=[], update_fields=kwargs.get("update_fields"))
 
     @property
     def should_track_fields(self) -> bool:
@@ -40,11 +37,11 @@ def ensure_update_field(kwargs: dict, field_name: str) -> dict:
     Returns:
         Modified kwargs dict with field_name added to update_fields if needed
     """
-    if 'update_fields' not in kwargs:
-        kwargs['update_fields'] = [field_name]
-    elif kwargs['update_fields'] is not None:
-        if field_name not in kwargs['update_fields']:
-            kwargs['update_fields'].append(field_name)
+    if "update_fields" not in kwargs:
+        kwargs["update_fields"] = [field_name]
+    elif kwargs["update_fields"] is not None:
+        if field_name not in kwargs["update_fields"]:
+            kwargs["update_fields"].append(field_name)
     return kwargs
 
 
@@ -59,10 +56,10 @@ def ensure_update_fields(kwargs: dict, field_names: list[str]) -> dict:
     Returns:
         Modified kwargs dict with field_names added to update_fields if needed
     """
-    if 'update_fields' not in kwargs:
-        kwargs['update_fields'] = field_names
-    elif kwargs['update_fields'] is not None:
+    if "update_fields" not in kwargs:
+        kwargs["update_fields"] = field_names
+    elif kwargs["update_fields"] is not None:
         for field in field_names:
-            if field not in kwargs['update_fields']:
-                kwargs['update_fields'].append(field)
+            if field not in kwargs["update_fields"]:
+                kwargs["update_fields"].append(field)
     return kwargs

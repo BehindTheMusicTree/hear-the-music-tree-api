@@ -6,7 +6,6 @@ from api.middleware.RequestLoggingMiddleware import RequestLoggingMiddleware
 
 
 class TestRequestLoggingMiddleware:
-
     def test_multipart_post_then_passes_through_without_reading_body(self):
         """Multipart request must not read request.body (stream already consumed by POST/FILES)."""
         mock_response = Mock()

@@ -5,7 +5,6 @@ from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import Uplo
 
 
 class TrackDeleteViewTestCase(UploadedTrackTestCase):
-
     def test_delete_then_remove_from_the_genre_playlists(self):
         genre1_name = "Rock"
         genre1 = self.model_fixture_factory.create_genre(name=genre1_name)

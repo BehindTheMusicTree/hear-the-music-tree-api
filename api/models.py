@@ -1,5 +1,5 @@
-from api.model.user.User import User
 from api.model.spotify_resource.children.artist.SpotifyArtist import SpotifyArtist
 from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
+from api.model.user.User import User
 
-__all__ = ["User", "SpotifyArtist", "SpotifyLibTrack"]
+__all__ = ["SpotifyArtist", "SpotifyLibTrack", "User"]

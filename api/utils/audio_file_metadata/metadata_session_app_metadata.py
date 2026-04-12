@@ -1,8 +1,8 @@
 """Build AppMetadata from a request payload (e.g. metadata-session download metadata body)."""
 
 from api.utils.audio_file_metadata.AppMetadataKey import (
-    AppMetadataKey,
     APP_METADATA_WRITABLE_KEYS,
+    AppMetadataKey,
 )
 from api.utils.audio_file_metadata.types import AppMetadata
 
@@ -23,7 +23,7 @@ def build_app_metadata_from_payload(payload: dict) -> AppMetadata:
         if app_key == AppMetadataKey.RATING and value is not None:
             try:
                 value = int(value)
-            except (TypeError, ValueError):
+            except TypeError, ValueError:
                 value = None
         app_metadata[app_key] = value
     return app_metadata

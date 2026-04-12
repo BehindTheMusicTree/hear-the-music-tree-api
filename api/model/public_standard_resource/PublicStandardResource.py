@@ -12,7 +12,7 @@ class PublicStandardResource(BaseModel):
     def _perform_save(self, adding: bool, ctx: SaveContext) -> None:
         if not adding:
             self.updated_on = timezone.now()
-            ctx.add_modified_field('updated_on')
+            ctx.add_modified_field("updated_on")
 
     class Meta:
         abstract = True

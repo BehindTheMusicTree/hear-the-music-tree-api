@@ -1,2 +1,2 @@
 class Fields:
-    PLAY_COUNT = 'play_count'
+    PLAY_COUNT = "play_count"
