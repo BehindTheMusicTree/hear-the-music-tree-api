@@ -1,0 +1,23 @@
+# After you push an annotated SemVer tag (vX.Y.Z), publish the GitHub Release
+# from the matching CHANGELOG.md section (scripts/publish_github_release.py).
+name: Release on tag
+
+on:
+  push:
+    tags:
+      # Glob (not regex): SemVer tags like v4.1.0
+      - "v[0-9]*.[0-9]*.[0-9]*"
+
+permissions:
+  contents: write
+
+jobs:
+  github-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Publish GitHub Release from CHANGELOG
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/publish_github_release.py "${GITHUB_REF_NAME}"
