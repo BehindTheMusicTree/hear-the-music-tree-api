@@ -10,7 +10,7 @@ class JsonDuplicateKeyDetectingDecoder(json.JSONDecoder):
 
     def object_pairs_hook(self, pairs):
         self.tracker.enter_object()
-        for key, value in pairs:
+        for key, _value in pairs:
             self.tracker.check_key(key)
         self.tracker.exit_object()
         return dict(pairs)

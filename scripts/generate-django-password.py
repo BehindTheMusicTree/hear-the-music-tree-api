@@ -35,7 +35,7 @@ def main():
     parser = argparse.ArgumentParser(description="Hash a password with a random salt.")
     parser.add_argument("password", type=str, help="The password to hash")
     args = parser.parse_args()
-    hashed_password, salt = hash_password_with_random_salt(args.password)
+    _hashed_password, _salt = hash_password_with_random_salt(args.password)
 
 
 if __name__ == "__main__":

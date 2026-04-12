@@ -28,7 +28,7 @@ from rest_framework.utils.model_meta import get_field_info
 
 class AppAutoSchema(AutoSchema):
     """
-    drf-spectacular AutoSchema that supports GeneratedField and DecimalField.
+    Drf-spectacular AutoSchema that supports GeneratedField and DecimalField.
 
     Overrides _map_model_field to avoid TypeError when generating the OpenAPI
     schema for serializers whose models use Django GeneratedField (e.g. computed

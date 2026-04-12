@@ -1,5 +1,5 @@
 from json import JSONEncoder
-from typing import Any, Tuple, Union
+from typing import Any
 from uuid import UUID
 
 
@@ -21,7 +21,7 @@ def transform_uuids(obj: Any) -> Any:
     stack: list[tuple[dict | list, dict | list | None, str | int | None]] = [(obj, None, None)]
 
     while stack:
-        current, parent, key = stack.pop()
+        current, _parent, _key = stack.pop()
 
         if isinstance(current, dict):
             for k, v in current.items():

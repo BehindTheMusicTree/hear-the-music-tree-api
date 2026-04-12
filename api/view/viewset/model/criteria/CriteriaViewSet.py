@@ -1,5 +1,3 @@
-from typing import Type
-
 from drf_spectacular.types import OpenApiTypes  # type: ignore
 from drf_spectacular.utils import OpenApiParameter, extend_schema  # type: ignore
 from rest_framework import status  # type: ignore
