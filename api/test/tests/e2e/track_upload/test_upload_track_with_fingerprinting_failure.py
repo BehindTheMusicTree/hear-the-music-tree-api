@@ -48,7 +48,7 @@ class TestCase(UploadedTrackTestCase):
                     FingerprintMissingCauseCode.Codes.UNKNOWN_CONNEXION_ERROR,
                 ]
             else:
-                assert False, "Fingerprint is None but no fingerprint_missing_cause is set"
+                raise AssertionError("Fingerprint is None but no fingerprint_missing_cause is set")
 
         if fingerprint_missing_cause:
             assert fingerprint_missing_cause.code is not None
