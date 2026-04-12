@@ -106,10 +106,12 @@ Release candidate version tags are used to test builds and deployments from **re
 #### Pre-Release Identifiers
 
 - **`rc`** (Release Candidate): A version that is feature-complete and ready for final testing before release. **RC** stands for "Release Candidate" - it's a candidate for becoming the final release if testing passes.
+
   - Format: `v0.2.0-rc1`, `v0.2.0-rc2`, etc.
   - Example: `v0.2.0-rc1` → Docker image: `username/repo:0.2.0-rc1`
 
 - **`beta`** (Beta Release): An early release for testing with most features complete but may have known issues.
+
   - Format: `v0.2.0-beta1`, `v0.2.0-beta2`, etc.
   - Example: `v0.2.0-beta1` → Docker image: `username/repo:0.2.0-beta1`
 

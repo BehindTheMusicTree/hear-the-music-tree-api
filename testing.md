@@ -31,11 +31,13 @@ Unit tests test individual functions, classes, or modules in isolation with mock
 **Location:** `api/test/tests/unit/`
 
 **Examples:**
+
 - `tests/unit/utils/audiometa_adapter/` - Tests for audiometa adapter functions
 - `tests/unit/utils/file_path_utils/` - Tests for file path utility functions
 - `tests/unit/validator/` - Tests for validators
 
 **Characteristics:**
+
 - Fast execution
 - No database access
 - Mocked external dependencies
@@ -48,12 +50,14 @@ Integration tests test how multiple components work together, typically through 
 **Location:** `api/test/tests/integration/`
 
 **Examples:**
+
 - `tests/integration/view/uploaded_track/` - Tests for uploaded track API endpoints
 - `tests/integration/middleware/` - Tests for middleware components
 - `tests/integration/private_resource/` - Tests for private resource filtering
 - Tests that verify metadata reading/writing through the full API stack
 
 **Characteristics:**
+
 - Use database
 - Test API endpoints
 - Test component interactions
@@ -66,6 +70,7 @@ End-to-end tests test complete user workflows and critical paths.
 **Location:** `api/test/tests/e2e/`
 
 **Examples:**
+
 - `tests/e2e/track_upload/` - Complete track upload workflows
 - `tests/e2e/genre_hierarchy/` - Genre hierarchy and playlist generation
 - `tests/e2e/spotify/` - Spotify OAuth and library sync
@@ -73,6 +78,7 @@ End-to-end tests test complete user workflows and critical paths.
 - Critical system integrations (audio fingerprinting, Spotify integration)
 
 **Characteristics:**
+
 - Full system tests
 - Test complete workflows
 - May include external service integrations
@@ -87,10 +93,12 @@ All tests are located in `api/test/tests/` directory, organized by category. Thi
 All test functions must follow the pattern: `test_{scenario}_then_{expected_result}`
 
 **Components:**
+
 - `scenario`: The scenario being tested, including the action and any relevant conditions (e.g., `import_empty_tree`, `create_genre_with_duplicate_name`, `update_genre_with_invalid_parent`)
 - `expected_result`: The expected outcome or error code
 
 **Examples:**
+
 - `test_import_empty_tree_then_400_bad_request`
 - `test_create_genre_with_duplicate_name_then_400_bad_request`
 - `test_update_genre_with_invalid_parent_then_400_bad_request`
@@ -99,6 +107,7 @@ All test functions must follow the pattern: `test_{scenario}_then_{expected_resu
 - `test_invalid_extension_then_raises_app_validation_exception`
 
 **Guidelines:**
+
 1. Use descriptive names that explain the test's purpose without reading the code
 2. Include relevant conditions in the scenario part that make the test case unique
 3. For error cases, specify the expected HTTP status code
@@ -108,6 +117,7 @@ All test functions must follow the pattern: `test_{scenario}_then_{expected_resu
 7. Test class names should be descriptive and follow the pattern `Test{Feature}` (e.g., `TestGenreImport`)
 
 **Bad examples:**
+
 - `test_import` (too generic)
 - `test_import_tree` (missing conditions and expected result)
 - `test_import_with_children` (missing expected result)
@@ -119,6 +129,7 @@ All test functions must follow the pattern: `test_{scenario}_then_{expected_resu
 Each test should focus on a single scenario. Large test cases that test multiple scenarios should be divided into multiple focused tests.
 
 **Good examples:**
+
 ```python
 # Good - Multiple focused tests
 def test_empty_name_then_400_bad_request(self):
@@ -136,6 +147,7 @@ def test_duplicate_name_then_400_bad_request(self):
 ```
 
 **Bad examples:**
+
 ```python
 # Bad - Testing multiple scenarios in one test
 def test_invalid_input_then_error(self):
@@ -154,6 +166,7 @@ def test_invalid_input_then_error(self):
 ```
 
 **Benefits:**
+
 - Easier to identify which specific scenario failed
 - Better test isolation
 - Clearer test documentation
@@ -167,6 +180,7 @@ def test_invalid_input_then_error(self):
 Use the `assert` statement instead of `assertEqual` for better readability and consistency.
 
 **Good examples:**
+
 ```python
 # Good - Using assert
 def test_create_genre(self):
@@ -176,6 +190,7 @@ def test_create_genre(self):
 ```
 
 **Bad examples:**
+
 ```python
 # Bad - Using assertEqual
 def test_create_genre(self):
@@ -185,6 +200,7 @@ def test_create_genre(self):
 ```
 
 **Guidelines:**
+
 1. Use `assert` for all equality checks
 2. Use `assert` with `is` for identity checks
 3. Use `assert` with `in` for membership checks
@@ -194,11 +210,13 @@ def test_create_genre(self):
 ## Running Tests
 
 Run all tests:
+
 ```bash
 pytest
 ```
 
 Run specific category:
+
 ```bash
 pytest api/test/tests/unit/
 pytest api/test/tests/integration/
@@ -206,11 +224,13 @@ pytest api/test/tests/e2e/
 ```
 
 Run specific test file:
+
 ```bash
 pytest api/test/tests/unit/utils/audiometa_adapter/test_audiometa_adapter.py
 ```
 
 Run specific test:
+
 ```bash
 pytest api/test/tests/integration/view/uploaded_track/test_specific.py::TestCase::test_specific_scenario
 ```
@@ -230,12 +250,14 @@ Tests that verify MusicBrainz recording ID retrieval should **not fail** when th
 - Rate limiting
 
 **Guidelines:**
+
 - Use `pytest.skip()` instead of `assert` when MusicBrainz recording lookup fails
 - Provide descriptive skip messages explaining why the lookup failed
 - Check both `musicbrainz_recording_missing_cause` and `fingerprint_missing_cause` to provide context
 - This ensures tests don't fail due to external service issues while still validating application logic
 
 **Example:**
+
 ```python
 def test_drown_7m21_mp3_then_ok(self):
     response = self._post_uploaded_track(
@@ -276,4 +298,3 @@ This configuration improves test output clarity while still showing actionable w
 - CI runs tests with fail-fast flag (`-x`) - stops on first failure for faster feedback
 - Test results are published to GitHub Actions UI
 - Tests run automatically on pushes to `main`, `develop`, `release/*`, `hotfix/*` branches and pull requests
-

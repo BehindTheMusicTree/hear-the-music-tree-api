@@ -1,22 +1,27 @@
 # spotify-artists
 
 ## Overview
+
 Manage Spotify artists
 
 ## Base URL
+
 /v1/spotify-artists/
 
 ## Authentication
+
 JWT token required
 
 ## Permissions
+
 Authenticated users only (IsAuthenticated)
 
 ## Endpoints
-| Method | Path | Action | Description |
-|------|------|--------|-------------|
-| GET | / | list | List Spotify artists |
-| GET | /{id}/ | retrieve | Get Spotify artist details |
+
+| Method | Path   | Action   | Description                |
+| ------ | ------ | -------- | -------------------------- |
+| GET    | /      | list     | List Spotify artists       |
+| GET    | /{id}/ | retrieve | Get Spotify artist details |
 
 ## Request / Response
 
@@ -33,15 +38,17 @@ Query params:
 page, page_size, name, popularity_min, popularity_max, created_on, updated_on
 
 Body:
+
 ```json
 {}
 ```
 
 **Response**
 Status codes:
- | 00 OK
+| 00 OK
 
 Body:
+
 ```json
 {
   "count": 10,
@@ -61,22 +68,27 @@ Body:
 ```
 
 ### Validation Rules
+
 None
 
 ### Business Rules
+
 None
 
 ### Errors
-| Code | Meaning |
-|------|----------|
-| 400 | Bad Request - Invalid parameters |
-| 401 | Unauthorized - Invalid token |
-| 404 | Not Found - Artist not found |
+
+| Code | Meaning                          |
+| ---- | -------------------------------- |
+| 400  | Bad Request - Invalid parameters |
+| 401  | Unauthorized - Invalid token     |
+| 404  | Not Found - Artist not found     |
 
 ### Versioning
+
 TODO
 
 ### Notes
+
 TODO
 
 ### GET /{id}/
@@ -92,15 +104,17 @@ Query params:
 None
 
 Body:
+
 ```json
 {}
 ```
 
 **Response**
 Status codes:
- | 00 OK
+| 00 OK
 
 Body:
+
 ```json
 {
   "spotify_id": "string",
@@ -113,20 +127,25 @@ Body:
 ```
 
 ### Validation Rules
+
 None
 
 ### Business Rules
+
 None
 
 ### Errors
-| Code | Meaning |
-|------|----------|
-| 400 | Bad Request - Invalid parameters |
-| 401 | Unauthorized - Invalid token |
-| 404 | Not Found - Artist not found |
+
+| Code | Meaning                          |
+| ---- | -------------------------------- |
+| 400  | Bad Request - Invalid parameters |
+| 401  | Unauthorized - Invalid token     |
+| 404  | Not Found - Artist not found     |
 
 ### Versioning
+
 API path prefix uses the major version only (e.g. `v1`), derived from `APP_VERSION`.
 
 ### Notes
+
 None

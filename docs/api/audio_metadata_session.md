@@ -103,9 +103,9 @@ Session files are stored in the env-defined directory `METADATA_SESSION_DIR`. Th
 
 ## Summary
 
-| Step | Endpoint | Action |
-|------|----------|--------|
-| 1 | `POST /v1/audio/metadata/session/` | Upload file (or URL); get metadata + `session_token` + `session_expires_in_seconds` (900). |
-| 2 | `POST /v1/audio/metadata/session-download/` | Send `X-Session-Token` (or `session_token` in body) + optional metadata; get file with tags written. Repeatable until session expires. |
+| Step | Endpoint                                    | Action                                                                                                                                 |
+| ---- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | `POST /v1/audio/metadata/session/`          | Upload file (or URL); get metadata + `session_token` + `session_expires_in_seconds` (900).                                             |
+| 2    | `POST /v1/audio/metadata/session-download/` | Send `X-Session-Token` (or `session_token` in body) + optional metadata; get file with tags written. Repeatable until session expires. |
 
 Session TTL: **15 minutes**. Multi-use: **yes** (multiple downloads per session).
