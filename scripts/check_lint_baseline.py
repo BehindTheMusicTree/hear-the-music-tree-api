@@ -10,7 +10,6 @@ import sys
 import tomllib
 from pathlib import Path
 
-
 REQUIRED_RUFF_EXTEND = "baselines/ruff.toml"
 ALLOWED_RUFF_TOP = {"extend", "exclude", "extend-exclude", "lint"}
 ALLOWED_RUFF_LINT_OVERLAY = {"per-file-ignores", "extend-per-file-ignores"}
