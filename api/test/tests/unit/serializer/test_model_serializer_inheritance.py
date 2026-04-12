@@ -26,7 +26,7 @@ class TestModelSerializerInheritance(AppTestCase):
         serializer_classes = []
         serializer_package_path = list(serializer_package.__path__)
 
-        for importer, modname, ispkg in pkgutil.walk_packages(path=serializer_package_path, prefix="api.serializer."):
+        for _importer, modname, ispkg in pkgutil.walk_packages(path=serializer_package_path, prefix="api.serializer."):
             if ispkg or modname.endswith(".Fields") or "test" in modname:
                 continue
 

@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 from rest_framework import status
 
@@ -33,9 +33,9 @@ class TestCase(AudioMetadataTestCase):
         assert response.json() is not None
 
     def test_full_metadata_ok_then_temp_dir_empty(self):
-        assert os.listdir(settings.FILE_UPLOAD_TEMP_DIR) == []
+        assert list(Path(settings.FILE_UPLOAD_TEMP_DIR).iterdir()) == []
 
         response = self._post_get_full_metadata(test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3)
 
         assert response.status_code == status.HTTP_200_OK
-        assert os.listdir(settings.FILE_UPLOAD_TEMP_DIR) == []
+        assert list(Path(settings.FILE_UPLOAD_TEMP_DIR).iterdir()) == []

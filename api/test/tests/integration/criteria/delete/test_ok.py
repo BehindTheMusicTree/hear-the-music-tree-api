@@ -12,4 +12,4 @@ class TestCase(GenreTestCase):
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
-        assert Genre.objects.filter(uuid=criteria.uuid).exists() == False
+        assert not Genre.objects.filter(uuid=criteria.uuid).exists()

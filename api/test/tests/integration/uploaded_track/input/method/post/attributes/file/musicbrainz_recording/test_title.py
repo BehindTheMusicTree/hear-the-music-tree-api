@@ -32,7 +32,7 @@ class TestCase(UploadedTrackTestCase):
         assert response.status_code == status.HTTP_201_CREATED
         if self.saved_object.track_file.musicbrainz_recording_missing_cause:
             print(self.saved_object.track_file.musicbrainz_recording_missing_cause)
-            assert False
+            raise AssertionError
 
         assert self.saved_object.track_file.musicbrainz_recording
         assert self.saved_object.track_file.musicbrainz_recording.title == "Total Eclipse of the Heart"

@@ -60,7 +60,7 @@ class TestFieldInheritance(AppTestCase):
         serializer_classes = []
         serializer_package_path = Path(__file__).parent.parent.parent.parent / "serializer"
 
-        for importer, modname, ispkg in pkgutil.walk_packages(
+        for _importer, modname, ispkg in pkgutil.walk_packages(
             path=[str(serializer_package_path)], prefix="api.serializer."
         ):
             if ispkg or modname.endswith(".Fields") or "test" in modname:
