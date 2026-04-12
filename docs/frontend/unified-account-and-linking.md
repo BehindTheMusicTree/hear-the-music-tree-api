@@ -6,9 +6,9 @@ One user account can sign in with **Google**, **Spotify**, or both. The backend 
 
 ### Endpoints (no auth required)
 
-| Action | Endpoint | Body | Response |
-|--------|----------|------|----------|
-| Exchange Google code for session | `POST /v1/auth/google/` | `{ "code": "<authorization_code>" }` | Session (see below) |
+| Action                            | Endpoint                 | Body                                 | Response                         |
+| --------------------------------- | ------------------------ | ------------------------------------ | -------------------------------- |
+| Exchange Google code for session  | `POST /v1/auth/google/`  | `{ "code": "<authorization_code>" }` | Session (see below)              |
 | Exchange Spotify code for session | `POST /v1/auth/spotify/` | `{ "code": "<authorization_code>" }` | Session + optional `spotifyUser` |
 
 ### Session response shape
@@ -46,19 +46,19 @@ Use **`details.code`** to choose the right message or flow.
 
 ### Spotify auth `details.code` values
 
-| `details.code` | Meaning | Suggested frontend action |
-|----------------|---------|---------------------------|
-| `spotify_authentication_error` | Generic Spotify auth failure (e.g. user denied, invalid/expired code). | Show `details.message`; retry or redirect to app login. |
+| `details.code`                  | Meaning                                                                       | Suggested frontend action                                                                                                                                                            |
+| ------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `spotify_authentication_error`  | Generic Spotify auth failure (e.g. user denied, invalid/expired code).        | Show `details.message`; retry or redirect to app login.                                                                                                                              |
 | `spotify_user_not_in_allowlist` | App is in Development Mode and this user is not in the Spotify app allowlist. | Show: “Your Spotify account is not authorized for this app. The app owner must add you in the Spotify Developer Dashboard (User Management).” Do not treat as generic login failure. |
 
 ### Google auth `details.code` values
 
-| `details.code` | Meaning | Suggested frontend action |
-|----------------|---------|---------------------------|
-| `google_authentication_error` | Generic Google auth failure. | Show `details.message`; retry or redirect to app login. |
-| `google_oauth_code_invalid_or_expired` | Code already used or expired. | Ask user to sign in with Google again. |
-| `google_oauth_redirect_uri_mismatch` | Redirect URI does not match Google Console. | Show: “Sign-in is temporarily misconfigured. Please try again later or contact support.” (Backend may return 500.) |
-| `google_oauth_invalid_client` | Client id/secret misconfigured. | Same as above. |
+| `details.code`                         | Meaning                                     | Suggested frontend action                                                                                          |
+| -------------------------------------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `google_authentication_error`          | Generic Google auth failure.                | Show `details.message`; retry or redirect to app login.                                                            |
+| `google_oauth_code_invalid_or_expired` | Code already used or expired.               | Ask user to sign in with Google again.                                                                             |
+| `google_oauth_redirect_uri_mismatch`   | Redirect URI does not match Google Console. | Show: “Sign-in is temporarily misconfigured. Please try again later or contact support.” (Backend may return 500.) |
+| `google_oauth_invalid_client`          | Client id/secret misconfigured.             | Same as above.                                                                                                     |
 
 ### Checking if Spotify is linked
 
@@ -108,10 +108,10 @@ Google linked state is not exposed by a dedicated endpoint; it can be inferred f
 
 ## Summary
 
-| Frontend concern | Behavior |
-|------------------|----------|
-| Session storage | One format for both Google and Spotify: `accessToken`, `refreshToken`, `expiresAt`. |
-| Linking | Automatic by email; no extra UI required. |
-| “Link Spotify” / “Link Google” | Same as “Sign in with Spotify” / “Sign in with Google”; backend links if email matches. |
-| Checking if Spotify is linked | `GET /me/spotify/` → 200 = linked, 403 = not linked. |
-| Checking if Google is linked | Not exposed via a dedicated endpoint; can be inferred from login method or a future “linked providers” API. |
+| Frontend concern               | Behavior                                                                                                    |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| Session storage                | One format for both Google and Spotify: `accessToken`, `refreshToken`, `expiresAt`.                         |
+| Linking                        | Automatic by email; no extra UI required.                                                                   |
+| “Link Spotify” / “Link Google” | Same as “Sign in with Spotify” / “Sign in with Google”; backend links if email matches.                     |
+| Checking if Spotify is linked  | `GET /me/spotify/` → 200 = linked, 403 = not linked.                                                        |
+| Checking if Google is linked   | Not exposed via a dedicated endpoint; can be inferred from login method or a future “linked providers” API. |

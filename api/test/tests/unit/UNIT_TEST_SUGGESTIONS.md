@@ -15,7 +15,9 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### `api/utils/json_utils.py` - **High Priority**
 
 **Functions to test:**
+
 - `transform_uuids(obj)` - Transform UUID objects to strings in nested data structures
+
   - Test with nested dictionaries containing UUIDs
   - Test with lists containing UUIDs
   - Test with mixed structures (dicts, lists, UUIDs)
@@ -35,7 +37,9 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### `api/utils/model.py` - **High Priority**
 
 **Classes/Functions to test:**
+
 - `SaveContext` dataclass
+
   - Test `create()` factory method with various kwargs
   - Test `should_track_fields` property (True when update_fields is not None)
   - Test `add_modified_field()` - adds to modified_fields
@@ -43,6 +47,7 @@ This document outlines suggested unit tests to improve test coverage across the 
   - Test `add_modified_field()` - doesn't add duplicate fields to update_fields
 
 - `ensure_update_field(kwargs, field_name)` - Ensure field in update_fields
+
   - Test when update_fields doesn't exist (creates it)
   - Test when update_fields is None (creates it)
   - Test when update_fields exists (appends if not present)
@@ -61,13 +66,16 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### `api/utils/utils.py` - **Medium Priority**
 
 **Functions to test:**
+
 - `generate_short_uu(length)` - Generate short UUID-like string
+
   - Test with different lengths
   - Test that output contains only uppercase letters and digits
   - Test that output length matches input
   - Test randomness (multiple calls produce different results)
 
 - `get_substring_after_last_slash(string)` - Extract filename from path
+
   - Test with full paths
   - Test with URLs
   - Test with no slashes (returns entire string)
@@ -86,24 +94,29 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### `api/utils/env_var_loader.py` - **High Priority**
 
 **Functions to test:**
+
 - `load_required_str_env_var(var_name, must_print_value)` - Load required string env var
+
   - Test with existing env var
   - Test with missing env var (raises EnvironmentError)
   - Test with `must_print_value=True` (prints value)
   - Test with `must_print_value=False` (prints "is set")
 
 - `load_required_bool_env_var(var_name)` - Load required boolean env var
+
   - Test with "true" (returns True)
   - Test with "false" (returns False)
   - Test with invalid value (raises EnvironmentError)
   - Test with missing var (raises EnvironmentError)
 
 - `load_required_int_env_var(var_name)` - Load required integer env var
+
   - Test with valid integer string
   - Test with invalid integer string (raises EnvironmentError)
   - Test with missing var (raises EnvironmentError)
 
 - `load_required_path_env_var(var_name, must_print_value)` - Load required path env var
+
   - Test with existing path
   - Test with non-existent path (raises EnvironmentError)
   - Test with missing var (raises EnvironmentError)
@@ -122,56 +135,67 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### `api/utils/data_transformer.py` - **Medium Priority**
 
 **Functions to test:**
+
 - `remove_substrings_from_string(string_a, substrings)` - Remove substrings
+
   - Test removing single substring
   - Test removing multiple substrings
   - Test with overlapping substrings
   - Test with empty string
 
 - `convert_data_to_dict(data)` - Convert QueryDict/dict to dict
+
   - Test with QueryDict
   - Test with dict
   - Test with other iterable (converts to dict)
 
 - `to_camel_case(snake_str)` - Convert snake_case to camelCase
+
   - Test simple cases
   - Test with multiple underscores
   - Test with single word (no underscores)
 
 - `to_snake_case(name)` - Convert camelCase/PascalCase to snake_case
+
   - Test camelCase
   - Test PascalCase
   - Test with acronyms
   - Test with numbers
 
 - `dict_to_snake_case(data)` - Convert dict keys to snake_case
+
   - Test with dict
   - Test with QueryDict
   - Test with string (returns as-is)
   - Test nested conversion
 
 - `get_copy_of_dict_including_only_specified_keys(data_dict, keys)` - Filter dict by keys
+
   - Test with existing keys
   - Test with missing keys (ignored)
   - Test with empty keys list
 
 - `remove_none_or_empty_key_from_dict(data_dict)` - Remove None/empty values
+
   - Test with None values
   - Test with empty strings
   - Test with valid values (preserved)
 
 - `update_dict_converting_empty_string_to_none(data)` - Convert "" to None
+
   - Test with empty strings
   - Test with None (unchanged)
   - Test with valid values (unchanged)
 
 - `update_dict_converting_str_to_int_value_if_set(key, data)` - Convert string to int
+
   - Test with valid integer string
   - Test with invalid string (sets to None)
   - Test with empty string (sets to None)
   - Test with None (unchanged)
 
 - `get_first_value_str_if_exists_in_str_dict_or_none(str_dict, key)` - Get first list value
+
   - Test with list (returns first)
   - Test with empty list (returns None)
   - Test with non-list value (returns value)
@@ -191,6 +215,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### `api/utils/jwt.py` - **Medium Priority**
 
 **Functions to test:**
+
 - `create_jwt_token(user)` - Create JWT tokens for user
   - Test that access token is created
   - Test that refresh token is created
@@ -206,10 +231,12 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### `api/utils/audio_fingerprinter/` - **High Priority**
 
 **Files to test:**
+
 - `utils.py` - Utility functions for fingerprinting
 - `service.py` - Fingerprinting service logic
 
 **Test scenarios:**
+
 - Fingerprint generation with valid audio
 - Fingerprint generation failure handling
 - Error code mapping
@@ -223,7 +250,9 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### `api/utils/audio_file_metadata/` - **High Priority**
 
 **Functions to test:**
+
 - `is_flac_md5_valid(file_path)` - Validate FLAC MD5 checksum
+
   - Test with valid FLAC file
   - Test with invalid/corrupted FLAC file
   - Test with non-FLAC file (should handle gracefully)
@@ -243,6 +272,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### Serializer Fields - **High Priority**
 
 #### `AppEmailField` - **High Priority**
+
 - Test valid email addresses
 - Test invalid email formats
 - Test None value with `allow_null=True`
@@ -256,6 +286,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ---
 
 #### `AppUrlField` - **High Priority**
+
 - Test valid URLs
 - Test invalid URL formats
 - Test None value handling
@@ -267,6 +298,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ---
 
 #### `AppUuidField` - **High Priority**
+
 - Test valid UUID strings
 - Test invalid UUID formats
 - Test None value with `allow_null=True`
@@ -278,6 +310,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ---
 
 #### `AppFileField` - **High Priority**
+
 - Test valid file uploads
 - Test invalid file types
 - Test file size validation
@@ -289,6 +322,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ---
 
 #### `AppDictField` - **Medium Priority**
+
 - Test valid dictionary values
 - Test invalid types (not dict)
 - Test nested validation
@@ -301,6 +335,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### Foreign Key Fields - **High Priority**
 
 #### `PrivateUuidField` - **High Priority**
+
 - Test with valid UUID owned by user
 - Test with UUID not owned by user (raises error)
 - Test with non-existent UUID (raises error)
@@ -312,6 +347,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ---
 
 #### `NonSelfReferencingField` - **High Priority**
+
 - Test with valid parent UUID (different from self)
 - Test with self-reference (raises error)
 - Test with None value handling
@@ -322,6 +358,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ---
 
 #### `DescendantAwareField` - **High Priority**
+
 - Test with valid descendant UUID
 - Test with ancestor UUID (raises error - circular reference)
 - Test with self-reference (raises error)
@@ -333,6 +370,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ---
 
 #### `UserContentObjectUuidField` - **High Priority**
+
 - Test with valid UUID owned by user
 - Test with UUID not owned by user (raises error)
 - Test with None value handling
@@ -343,6 +381,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ---
 
 #### `TrackablePlayCountUuidField` - **Medium Priority**
+
 - Test with valid trackable UUID
 - Test with non-trackable UUID (raises error)
 - Test with None value handling
@@ -354,6 +393,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### Specialized Fields - **Medium Priority**
 
 #### `RatingField` - **Medium Priority**
+
 - Test valid rating values (0-10)
 - Test out-of-range values (raises error)
 - Test None value handling
@@ -364,6 +404,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ---
 
 #### `TrackNumberField` - **Medium Priority**
+
 - Test valid track numbers
 - Test invalid track numbers (negative, zero, too large)
 - Test None value handling
@@ -374,6 +415,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ---
 
 #### `UniquePerUserNameField` - **High Priority**
+
 - Test with unique name for user
 - Test with duplicate name for same user (raises error)
 - Test with duplicate name for different user (allowed)
@@ -385,6 +427,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ---
 
 #### `ArtistsNamesField` - **Medium Priority**
+
 - Test with valid artist names list
 - Test with empty list
 - Test with duplicate names (if not allowed)
@@ -396,6 +439,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ---
 
 #### `TreeField` - **High Priority**
+
 - Test with valid tree structure
 - Test with invalid tree structure (raises error)
 - Test with empty tree
@@ -410,6 +454,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### Serializer Classes - **Medium Priority**
 
 #### `PutSerializer` - **Medium Priority**
+
 - Test `validate()` method
 - Test that it requires at least one field to be updated
 - Test with empty data (raises error)
@@ -424,7 +469,9 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### `TrackUrlValidator` - **High Priority**
 
 **Test scenarios:**
+
 - `__call__(value)` - Main validation method
+
   - Test with valid audio URL
   - Test with non-string value (raises AppValidationException)
   - Test with invalid URL format (raises error)
@@ -432,12 +479,14 @@ This document outlines suggested unit tests to improve test coverage across the 
   - Test with non-existent remote file (raises error)
 
 - `_validate_url_format(value)` - URL format validation
+
   - Test with http:// URLs
   - Test with https:// URLs
   - Test with non-http URLs (raises error)
   - Test with invalid URL format (raises error)
 
 - `_validate_audio_extension(value)` - Audio extension validation
+
   - Test with valid extensions (from settings)
   - Test with invalid extensions (raises error)
   - Test case-insensitive matching
@@ -459,6 +508,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### `CamelToSnakeMiddleware` - **High Priority**
 
 **Test scenarios:**
+
 - Test converting camelCase request data to snake_case
 - Test converting camelCase query parameters to snake_case
 - Test with nested dictionaries
@@ -476,6 +526,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### `DuplicateFieldsMiddleware` - **Medium Priority**
 
 **Test scenarios:**
+
 - Test detecting duplicate fields in JSON requests
 - Test detecting duplicate fields in multipart requests
 - Test allowing list fields with [] suffix
@@ -491,6 +542,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### `TestClientEmptyListMiddleware` - **Low Priority**
 
 **Test scenarios:**
+
 - Test normalizing [''] back to [] for list fields
 - Test only processing requests with X-Test-Client header
 - Test only processing POST requests
@@ -504,6 +556,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### `HostValidationMiddleware` - **Medium Priority**
 
 **Test scenarios:**
+
 - Test with allowed hosts
 - Test with disallowed hosts (raises error)
 - Test error response format
@@ -516,6 +569,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### `RequestLoggingMiddleware` - **Low Priority**
 
 **Test scenarios:**
+
 - Test that requests are logged
 - Test log format
 - Test with different request types
@@ -530,6 +584,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### `ExceptionLoggingMiddleware` - **Low Priority**
 
 **Test scenarios:**
+
 - Test that exceptions are logged
 - Test log format
 - Test with different exception types
@@ -546,7 +601,9 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### `AppValidationException` - **High Priority**
 
 **Test scenarios:**
+
 - Test `__init__()` - Exception initialization
+
   - Test with all parameters
   - Test with default field name
   - Test error structure (errors dict format)
@@ -566,6 +623,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### Spotify Exceptions - **Low Priority**
 
 **Test scenarios:**
+
 - Test `SpotifyException` base class
 - Test `SpotifyAuthenticationException`
 - Test `SpotifyResourceNotFoundException`
@@ -580,6 +638,7 @@ This document outlines suggested unit tests to improve test coverage across the 
 ### MusicBrainz Exceptions - **Low Priority**
 
 **Test scenarios:**
+
 - Test `MusicbrainzRecordingLookupException` base class
 - Test concrete exception classes
 - Test `get_error_message()` method
@@ -627,4 +686,3 @@ api/test/tests/unit/
 1. **Phase 1 (High Priority)**: Utils (json_utils, model, env_var_loader), Serializer Fields (AppEmailField, AppUrlField, AppUuidField, PrivateUuidField), Validators (TrackUrlValidator), Exceptions (AppValidationException)
 2. **Phase 2 (Medium Priority)**: Remaining serializer fields, middleware (CamelToSnakeMiddleware, HostValidationMiddleware), Utils (data_transformer, jwt)
 3. **Phase 3 (Low Priority)**: Logging middleware, exception classes, edge cases
-
