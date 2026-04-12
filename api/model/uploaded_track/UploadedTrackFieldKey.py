@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class UploadedTrackFieldKey(str, Enum):
+class UploadedTrackFieldKey(StrEnum):
     USER = "user"
     UUID = "uuid"
     CREATED_ON = "created_on"
