@@ -90,6 +90,8 @@ max-line-length = 120
 extend = "baselines/ruff.toml"
 
 [tool.ruff.lint.per-file-ignores]
+# Deferred imports are used deliberately across Django models, serializers, and tests.
+"api/**" = ["PLC0415"]
 "api/test/**" = ["PLR2004"]
 ".pre-commit-hooks/**" = ["PLR2004"]
 "scripts/prepare_release_bump.py" = ["TRY003", "EM101", "EM102", "PLR2004", "DTZ011", "RUF005", "T201", "I001"]
