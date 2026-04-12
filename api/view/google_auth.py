@@ -26,9 +26,7 @@ class AuthRequestFields:
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def google_auth(request):
-    """
-    Exchange Google code for session. One account can link both Google and Spotify (matched by email).
-    """
+    """Exchange Google code for session. One account can link both Google and Spotify (matched by email)."""
     code = request.data.get(AuthRequestFields.CODE)
     if not code:
         raise AppValidationException(

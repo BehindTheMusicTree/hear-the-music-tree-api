@@ -5,9 +5,7 @@ from api.view.error.ErrorResponse import ErrorResponse
 
 
 def spotify_user_required(view_func):
-    """
-    Decorator for view methods that require the current user to have Spotify linked.
-    """
+    """Decorator for view methods that require the current user to have Spotify linked."""
 
     @wraps(view_func)
     def wrapper(self, request, *args, **kwargs):

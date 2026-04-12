@@ -1,5 +1,4 @@
 import logging
-from typing import List, Optional
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.utils import timezone
