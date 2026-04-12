@@ -13,7 +13,7 @@ def create_tmta_user(apps, schema_editor):
     if not username:
         raise CommandError("⚠️ TMTA_USERNAME must be set in environment variables before running migrations.")
 
-    user, created = User.objects.get_or_create(
+    user, _created = User.objects.get_or_create(
         username=username,
         defaults={
             "is_system": True,

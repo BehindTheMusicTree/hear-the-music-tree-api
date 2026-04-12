@@ -62,7 +62,7 @@ class AlbumManager(UploadedTrackMixinWithInternalNameManager["Album"]):
             self.delete_instance_with_tracks_and_potentially_artists(instance)
 
     def delete_instance_with_tracks_and_potentially_artists(self, instance: Album):
-        from api.model.uploaded_track.UploadedTrack import UploadedTrack  # noqa: PLC0415
+        from api.model.uploaded_track.UploadedTrack import UploadedTrack
 
         # Keep this deletion order for rollback tests: first delete tracks, then delete album, then delete artists
 
