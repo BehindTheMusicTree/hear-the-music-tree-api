@@ -3,13 +3,13 @@ from typing import TYPE_CHECKING
 from django.db import transaction
 from django.db.models import QuerySet
 
+from api.model.artist.Artist import Artist
 from api.model.uploaded_track_mixin.Fields import Fields
 from api.model.uploaded_track_mixin.UploadedTrackMixinWithInternalNameManager import (
     UploadedTrackMixinWithInternalNameManager,
 )
 
 if TYPE_CHECKING:
-    from api.model.artist.Artist import Artist
     from api.model.user.User import User
 
     from .Album import Album
@@ -37,9 +37,7 @@ class AlbumManager(UploadedTrackMixinWithInternalNameManager["Album"]):
     def get_default_ordering(self) -> list[str]:
         return [Fields.NAME_INTERNAL]
 
-    def create_instance_with_album_artists_list(
-        self, user: User, name: str, album_artists_list: list[Artist]
-    ) -> Album:
+    def create_instance_with_album_artists_list(self, user: User, name: str, album_artists_list: list[Artist]) -> Album:
         album: Album = self.create(user=user, name=name)
         if album_artists_list:
             album.album_artists.set(album_artists_list)
@@ -48,8 +46,6 @@ class AlbumManager(UploadedTrackMixinWithInternalNameManager["Album"]):
     def get_album_from_name_and_album_artists_names_after_potential_creations(
         self, user: User, name: str, album_artists_names: list
     ) -> Album | None:
-        from api.model.artist.Artist import Artist
-
         if album_artists_names and len(album_artists_names):
             album_artists = [
                 Artist.objects.get_or_create(user=user, name=artist_name)[0] for artist_name in album_artists_names
@@ -66,8 +62,7 @@ class AlbumManager(UploadedTrackMixinWithInternalNameManager["Album"]):
             self.delete_instance_with_tracks_and_potentially_artists(instance)
 
     def delete_instance_with_tracks_and_potentially_artists(self, instance: Album):
-        from api.model.artist.Artist import Artist
-        from api.model.uploaded_track.UploadedTrack import UploadedTrack
+        from api.model.uploaded_track.UploadedTrack import UploadedTrack  # noqa: PLC0415
 
         # Keep this deletion order for rollback tests: first delete tracks, then delete album, then delete artists
 
@@ -90,8 +85,6 @@ class AlbumManager(UploadedTrackMixinWithInternalNameManager["Album"]):
             Artist.objects.delete_instance_if_nothing_linked(artist)
 
     def delete_instance_if_no_track_linked_with_potential_album_artist_deletion(self, instance: Album):
-        from api.model.artist.Artist import Artist
-
         if instance.uploaded_tracks.count() == 0:
             album_artists = list(instance.album_artists.all())  # Copy the list before the deletion
             instance.delete()
