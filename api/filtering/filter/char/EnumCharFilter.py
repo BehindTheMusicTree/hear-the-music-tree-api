@@ -1,5 +1,3 @@
-from typing import Type
-
 from django.utils.translation import gettext_lazy as _
 
 from api.exception.validation.app.AppValidationException import AppValidationException

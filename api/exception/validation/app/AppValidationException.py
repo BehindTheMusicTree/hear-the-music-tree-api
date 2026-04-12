@@ -83,9 +83,7 @@ class AppValidationException(DrfValidationError):
             return None
 
         def has_error_type(error_dict: dict[str, Any]) -> bool:
-            """
-            Recursively check if the error_type marker exists in the dictionary or its nested values.
-            """
+            """Recursively check if the error_type marker exists in the dictionary or its nested values."""
             if not isinstance(error_dict, dict):
                 return False
 
