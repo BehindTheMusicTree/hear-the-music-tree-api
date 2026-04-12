@@ -13,7 +13,7 @@ class TestCase(GenreTestCase):
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
-        assert GenrePlaylist.objects.filter(criteria=criteria).exists() == False
+        assert not GenrePlaylist.objects.filter(criteria=criteria).exists()
 
     def test_delete_with_children_then_parent_playlist_not_changed(self):
         genre_rock = self.model_fixture_factory.create_genre(name="rock")

@@ -210,6 +210,7 @@ def pytest_sessionstart(session: Session) -> None:
         [ffprobe, "-version"],
         capture_output=True,
         timeout=5,
+        check=False,
     )
     if result.returncode != 0:
         err = (result.stderr or result.stdout or b"").decode("utf-8", errors="replace").strip()
@@ -225,6 +226,7 @@ def pytest_sessionstart(session: Session) -> None:
             [ffprobe, "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", str(wav_fixture)],
             capture_output=True,
             timeout=30,
+            check=False,
         )
         if probe_result.returncode != 0:
             err = (probe_result.stderr or probe_result.stdout or b"").decode("utf-8", errors="replace").strip()
