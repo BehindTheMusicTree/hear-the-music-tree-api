@@ -16,7 +16,7 @@ class AppFilterSet(FilterSet):
         valid_filters = set(self.filters.keys())
         invalid_filters = []
 
-        for param in self.data.keys():
+        for param in self.data:
             if param not in valid_filters and param not in self.allowed_non_filter_params:
                 invalid_filters.append(data_transformer.to_camel_case(param))
 

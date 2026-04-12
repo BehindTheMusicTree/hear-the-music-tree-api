@@ -167,6 +167,7 @@ class TrackFileField(AppField):
             return validated_file
 
         self.fail("invalid", detail="Field must be either a valid audio file or URL.")
+        return None
 
     def to_representation(self, value: Any) -> str:
         if value is None:

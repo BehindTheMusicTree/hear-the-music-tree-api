@@ -75,6 +75,7 @@ class CriteriaField(AppField, PrimaryKeyRelatedField):
             return model_class.objects.get_or_create(user=user, name=validated_name)[0]
 
         self.fail("invalid", detail="Field must be a valid UUID or name.")
+        return None
 
     def to_representation(self, value: Any) -> str:
         return str(value.uuid)

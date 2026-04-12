@@ -1,4 +1,3 @@
-from typing import Type, Union
 from uuid import UUID
 
 from django.contrib.auth.models import AnonymousUser, User

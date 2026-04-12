@@ -12,7 +12,7 @@ from api.serializer.field.foreign_key.PrivateUuidField import PrivateUuidField
 T = TypeVar("T", bound=models.Model)
 
 
-class NonSelfReferencingField(PrivateUuidField[T], Generic[T]):
+class NonSelfReferencingField[T: models.Model](PrivateUuidField[T]):
     default_error_messages = {"self_reference": _("The object cannot reference itself.")}
 
     def to_internal_value(self, data: Any) -> T | None:

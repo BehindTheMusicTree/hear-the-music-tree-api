@@ -15,7 +15,7 @@ from api.exception.validation.FieldValidationErrorCode import FieldValidationErr
 T = TypeVar("T")
 
 
-class AppInputSerializer(serializers.Serializer, Generic[T]):
+class AppInputSerializer[T](serializers.Serializer):
     """
     Base serializer class for input validation (POST, PUT, etc.).
 
@@ -270,10 +270,10 @@ class AppInputSerializer(serializers.Serializer, Generic[T]):
                         message="This field is required.",
                         field_validation_error_code=FieldValidationErrorCode.REQUIRED,
                     )
-                raise SkipField()
+                raise SkipField
             return field.run_validation(value)
         except AppValidationException as exc:
-            raise exc
+            raise
         except SkipField:
             raise
         except ValidationError as exc:
@@ -431,7 +431,7 @@ class AppInputSerializer(serializers.Serializer, Generic[T]):
                     if e.field in field_name_mapping:
                         e.errors = {field_name_mapping[e.field]: e.errors[e.field]}
                         e.field = field_name_mapping[e.field]
-                    raise e
+                    raise
             else:
                 # For non-dict data, let the serializer's to_internal_value handle it
                 validated_data = self.to_internal_value(data)
@@ -444,7 +444,7 @@ class AppInputSerializer(serializers.Serializer, Generic[T]):
                 field_name=str(e), message=str(e), field_validation_error_code=FieldValidationErrorCode.FORMAT_INVALID
             )
         except AppValidationException as e:
-            raise e
+            raise
         except ValidationError as e:
             raise AppValidationException(
                 field_name=str(e), message=str(e), field_validation_error_code=FieldValidationErrorCode.FORMAT_INVALID

@@ -43,7 +43,9 @@ class TrackUrlValidator(BaseValidator):
             )
 
     def _validate_remote_file_exists(self, value: str):
-        """HEAD/GET with Range to check reachability. Accept 200 or 206 (many servers return 200 for Range or after redirects)."""
+        """HEAD/GET with Range to check reachability. Accept 200 or 206 (many servers return 200 for Range or after
+        redirects).
+        """
         try:
             response = requests.get(value, headers={"Range": "bytes=0-10"}, allow_redirects=True, timeout=10)
             if response.status_code not in (200, 206):
