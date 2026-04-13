@@ -22,7 +22,7 @@ create_directory_if_not_exists_or_exit() {
             exit 1
         fi
         log_with_utils_prefixe "Directory $dir_path created successfully."
-        
+
     else
         log_with_utils_prefixe "Directory $dir_path already exists"
     fi
@@ -131,7 +131,7 @@ load_project_calculated_paths_env_vars() {
         log_with_utils_prefixe "ERROR: failed to generate calculated paths env file: $output" >&2
         exit 1
     fi
-    
+
     log_with_utils_prefixe "Loading calculated paths from ${CALCULATED_PATHS_ENV_FILE}"
     while IFS='=' read -r key value; do
         # Skip comments and empty lines

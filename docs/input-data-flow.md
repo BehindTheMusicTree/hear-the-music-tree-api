@@ -44,6 +44,7 @@ The input data processing pipeline consists of several stages:
 ## Request Reception
 
 When a request arrives, Django creates an `HttpRequest` object containing:
+
 - `request.body` - Raw request body bytes
 - `request.META` - HTTP headers and metadata
 - `request.POST` - Form data (populated by Django for POST requests only)
@@ -80,13 +81,15 @@ Middleware processes requests in the order defined in `settings.py`. Each middle
 **Purpose**: Validates Content-Type header and JSON request structure.
 
 **Processing**:
+
 - **Content-Type validation**: Ensures Content-Type header is present and supported
-- **JSON structure validation**: 
+- **JSON structure validation**:
   - Rejects double-encoded JSON strings (e.g., `"{\"key\": \"value\"}"`)
   - Rejects JSON arrays as root (e.g., `["Muse", ""]`) - API expects objects
   - Validates UTF-8 encoding
 
 **Example**:
+
 ```python
 # ✅ Valid: {"artistName": "Muse"}
 # ❌ Invalid: ["Muse", ""]  # Arrays rejected
@@ -98,12 +101,14 @@ Middleware processes requests in the order defined in `settings.py`. Each middle
 **Purpose**: Converts camelCase field names to snake_case for consistency.
 
 **Processing**:
+
 - **JSON requests**: Parses JSON body, converts field names, sets `request.data` directly
 - **Multipart POST requests**: Converts `request.POST` field names (Django populates this)
 - **Multipart PUT/PATCH requests**: Does not process (Django doesn't populate `request.POST` for these methods)
 - **GET requests**: Converts query parameter field names
 
 **Example**:
+
 ```python
 # Input: {"artistName": "Muse"}
 # Output: {"artist_name": "Muse"}
@@ -114,12 +119,14 @@ Middleware processes requests in the order defined in `settings.py`. Each middle
 **Purpose**: Validates that request data is accessible and properly parsed.
 
 **Processing**:
+
 - **JSON requests**: Validates that `request.data` is accessible after `CamelToSnakeMiddleware`
 - **Multipart POST requests**: Validates that `request.POST` is accessible
 - **Multipart PUT/PATCH requests**: Validates that `request.data` can be accessed (DRF will parse it)
 - **Rejects requests**: If accessing request data raises an exception, rejects with `400 ParseError`
 
 **Example**:
+
 ```python
 # If request.data access fails → 400 ParseError: "Failed to parse request data..."
 # If request.POST access fails → 400 ParseError: "Failed to parse multipart form data..."
@@ -134,10 +141,12 @@ Middleware processes requests in the order defined in `settings.py`. Each middle
 **Problem**: DRF's test client drops empty lists (`[]`) in multipart form data. To preserve them, `AppApiClient` converts `[]` to `['']` for list fields. This middleware normalizes `['']` back to `[]`.
 
 **Processing**:
+
 - **POST requests**: Normalizes `request.POST` directly (after `CamelToSnakeMiddleware`)
 - **PUT/PATCH requests**: Not handled in middleware (see Serializer Processing)
 
 **Example**:
+
 ```python
 # Input: {"artists_names[]": ['']}
 # Output: {"artists_names[]": []}
@@ -150,12 +159,14 @@ Middleware processes requests in the order defined in `settings.py`. Each middle
 **Purpose**: Detects and rejects list fields containing both empty and non-empty values.
 
 **Processing**:
+
 - **POST requests**: Validates `request.POST` for multipart requests (after TestClientEmptyListMiddleware normalization)
 - **PUT/PATCH requests**: Manually parses multipart data to validate
 - **JSON requests**: Validates `request.data` (after ContentValidityMiddleware ensures it's accessible)
 - **Validation rule**: List fields cannot contain both empty values (`''`, `None`) and non-empty values
 
 **Example**:
+
 ```python
 # ✅ Valid: {"artists_names[]": ["Muse", "Radiohead"]}  # All non-empty
 # ✅ Valid: {"artists_names[]": []}  # All empty
@@ -169,6 +180,7 @@ Middleware processes requests in the order defined in `settings.py`. Each middle
 **Purpose**: Detects and rejects duplicate fields in multipart/form-data requests.
 
 **Processing**:
+
 - **POST requests**: Checks `request.POST` for duplicates
 - **PUT/PATCH requests**: Manually parses multipart data to detect duplicates
 - **Exception**: List fields with `[]` suffix are allowed to have multiple values
@@ -192,6 +204,7 @@ Django REST Framework parses the request body lazily when `request.data` is firs
 ### Lazy Parsing
 
 DRF uses lazy parsing - `request.data` is only parsed when first accessed. This means:
+
 - Middleware that accesses `request.data` triggers parsing
 - The parsed data is cached in `request._full_data`
 - Subsequent accesses return the cached data
@@ -218,24 +231,24 @@ The base serializer for all input validation. It handles:
 def run_validation(self, data):
     # 1. Check for malformed arrays and unknown fields
     _, unknown_fields = self._collect_known_fields_and_malformed_array_fields_names(data)
-    
+
     # 2. Normalize multipart data (extract single values from lists)
     if is_multipart:
         data = self._normalize_multipart_data(data)
-    
+
     # 3. Normalize test client empty lists ([''] → [])
     if is_test_client:
         data = self._normalize_test_client_empty_lists(data)
-    
+
     # 4. Check for duplicate fields
     self._check_duplicate_fields(...)
-    
+
     # 5. Validate fields
     validated_data = self._validate_fields(data)
-    
+
     # 6. Validate object
     validated_data = self._validate_object(validated_data)
-    
+
     return validated_data
 ```
 
@@ -247,6 +260,7 @@ For multipart form data, the serializer normalizes the structure:
 - **Non-list fields**: Single values extracted from lists
 
 **Example**:
+
 ```python
 # Input QueryDict: {"title": ["My Title"], "artists_names[]": ["Muse", "Radiohead"]}
 # Output: {"title": "My Title", "artists_names[]": ["Muse", "Radiohead"]}
@@ -257,12 +271,14 @@ For multipart form data, the serializer normalizes the structure:
 For test client requests, the serializer normalizes empty list fields:
 
 **Example**:
+
 ```python
 # Input: {"artists_names[]": ['']}
 # Output: {"artists_names[]": []}
 ```
 
-**Why in serializer?**: 
+**Why in serializer?**:
+
 - DRF parses `request.data` lazily, making middleware interception complex
 - Overriding `request.data` in middleware is unreliable due to DRF's internal caching
 - The serializer already has the parsed data at the right point in validation
@@ -289,7 +305,7 @@ For test client requests, the serializer normalizes empty list fields:
 5. **TestClientEmptyListMiddleware**: Does not process (handled in serializer)
 6. **ListValueValidationMiddleware**: Manually parses multipart data to validate list values
 7. **DRF Parsing**: When serializer accesses `request.data`, DRF parses from `request.body`
-8. **Serializer Validation**: 
+8. **Serializer Validation**:
    - Normalizes multipart data structure
    - Normalizes test client empty lists (`['']` → `[]`)
    - Validates fields
@@ -306,12 +322,12 @@ For test client requests, the serializer normalizes empty list fields:
 
 ## Key Differences: POST vs PUT/PATCH
 
-| Aspect | POST | PUT/PATCH |
-|--------|------|-----------|
-| `request.POST` | Populated by Django | Empty |
-| CamelCase conversion | Via `request.POST` | Via `request.data` (in serializer) |
-| Empty list normalization | Via `request.POST` (middleware) | Via `request.data` (serializer) |
-| DRF parsing | Uses `request.POST` | Parses from `request.body` |
+| Aspect                   | POST                            | PUT/PATCH                          |
+| ------------------------ | ------------------------------- | ---------------------------------- |
+| `request.POST`           | Populated by Django             | Empty                              |
+| CamelCase conversion     | Via `request.POST`              | Via `request.data` (in serializer) |
+| Empty list normalization | Via `request.POST` (middleware) | Via `request.data` (serializer)    |
+| DRF parsing              | Uses `request.POST`             | Parses from `request.body`         |
 
 ## Test Client Special Handling
 
@@ -332,13 +348,14 @@ This workaround is necessary because DRF's test client drops empty lists in mult
 ## Error Handling
 
 Validation errors are raised as `AppValidationException` with:
+
 - `field_name`: The field that caused the error
 - `message`: Human-readable error message
 - `field_validation_error_code`: Specific error code (enum)
 
 Common error codes:
+
 - `UNKNOWN`: Unknown field
 - `LIST_MALFORMED`: List field without `[]` suffix
 - `LIST_VALUE_EMPTY`: Empty value in list
 - `NAME_DUPLICATE`: Duplicate field name
-

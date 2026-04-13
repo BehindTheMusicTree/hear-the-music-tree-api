@@ -6,7 +6,6 @@ from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import Uplo
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_no_field_specified_then_400_bad_request(self):
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="Polo")
 
@@ -14,5 +13,5 @@ class TestCase(UploadedTrackTestCase):
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         error = self.bad_request_result_field_errors[0]
-        assert error['field'] == PutSerializer.REQUEST_FIELD
-        assert error['code'] == FieldValidationErrorCode.NO_UPDATES
+        assert error["field"] == PutSerializer.REQUEST_FIELD
+        assert error["code"] == FieldValidationErrorCode.NO_UPDATES

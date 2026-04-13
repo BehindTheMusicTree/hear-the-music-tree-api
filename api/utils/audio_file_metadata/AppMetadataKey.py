@@ -1,11 +1,11 @@
 """Canonical keys for app-level file metadata (read/write tags, metadata API)."""
 
-from enum import Enum
+from enum import StrEnum
 
 from django.core.exceptions import ImproperlyConfigured
 
 
-class AppMetadataKey(str, Enum):
+class AppMetadataKey(StrEnum):
     """Keys used in AppMetadata dicts and metadata API payloads. Defined here as single source of truth."""
 
     TITLE = "title"
@@ -19,7 +19,7 @@ class AppMetadataKey(str, Enum):
     def may_contain_separated_values(self) -> bool:
         result = self in (AppMetadataKey.ARTISTS_NAMES, AppMetadataKey.ALBUM_ARTISTS_NAMES)
         if result and self.get_optional_type() != list[str]:
-            raise ImproperlyConfigured(f'Optional type for {self} is not list')
+            raise ImproperlyConfigured(f"Optional type for {self} is not list")
         return result
 
     def get_optional_type(self) -> type:
@@ -34,7 +34,7 @@ class AppMetadataKey(str, Enum):
         }
         type = APP_METADATA_KEYS_OPTIONAL_TYPES_MAP.get(self)
         if not type:
-            raise ImproperlyConfigured(f'No optional type defined for {self}')
+            raise ImproperlyConfigured(f"No optional type defined for {self}")
         return type
 
 

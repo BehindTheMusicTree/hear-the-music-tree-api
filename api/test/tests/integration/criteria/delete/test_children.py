@@ -4,12 +4,11 @@ from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase):
-
     def test_delete_with_parentA_and_children_then_set_children_parent_to_parentA(self):
-        parent = self.model_fixture_factory.create_genre(name='parent')
-        criteria = self.model_fixture_factory.create_genre(name='criteria', parent=parent)
-        child_first = self.model_fixture_factory.create_genre(name='child first', parent=criteria)
-        child_second = self.model_fixture_factory.create_genre(name='child second', parent=criteria)
+        parent = self.model_fixture_factory.create_genre(name="parent")
+        criteria = self.model_fixture_factory.create_genre(name="criteria", parent=parent)
+        child_first = self.model_fixture_factory.create_genre(name="child first", parent=criteria)
+        child_second = self.model_fixture_factory.create_genre(name="child second", parent=criteria)
 
         response = self._delete_genre(uuid=criteria.uuid)
 
@@ -27,9 +26,9 @@ class TestCase(GenreTestCase):
         assert child_second.parent == parent
 
     def test_delete_as_root_then_set_children_as_root(self):
-        criteria = self.model_fixture_factory.create_genre(name='criteria')
-        child_first = self.model_fixture_factory.create_genre(name='child first', parent=criteria)
-        child_second = self.model_fixture_factory.create_genre(name='child second', parent=criteria)
+        criteria = self.model_fixture_factory.create_genre(name="criteria")
+        child_first = self.model_fixture_factory.create_genre(name="child first", parent=criteria)
+        child_second = self.model_fixture_factory.create_genre(name="child second", parent=criteria)
 
         response = self._delete_genre(uuid=criteria.uuid)
 
@@ -46,9 +45,9 @@ class TestCase(GenreTestCase):
         assert child_second.is_root
 
     def delete_then_update_ascendants_of_children(self):
-        rock = self.model_fixture_factory.create_genre(name='rock')
-        punk = self.model_fixture_factory.create_genre(name='punk', parent=rock)
-        hardcore = self.model_fixture_factory.create_genre(name='hardcore', parent=punk)
+        rock = self.model_fixture_factory.create_genre(name="rock")
+        punk = self.model_fixture_factory.create_genre(name="punk", parent=rock)
+        hardcore = self.model_fixture_factory.create_genre(name="hardcore", parent=punk)
 
         assert punk.ascendants == [rock]
         assert hardcore.ascendants == [punk, rock]

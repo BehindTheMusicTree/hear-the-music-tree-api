@@ -10,7 +10,6 @@ class Fields:
 
 
 class PlaylistModelSerializer(AppInputSerializer, serializers.ModelSerializer):
-
     class Meta:
         model = Playlist
         fields = [Fields.USER]

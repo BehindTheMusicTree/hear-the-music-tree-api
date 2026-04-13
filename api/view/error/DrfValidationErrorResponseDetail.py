@@ -1,9 +1,7 @@
-
 from dataclasses import dataclass
 from typing import Any
 
 from rest_framework.exceptions import ErrorDetail as DRFErrorDetail
-
 
 """
 Error Response Detail Module
@@ -174,6 +172,7 @@ class DrfValidationErrorResponseDetail:
         code (str): Machine-readable error code
         details (dict[str, Any] | None): Additional error context
     """
+
     message: str
     code: str = "error"
     details: dict[str, Any] | None = None
@@ -199,10 +198,7 @@ class DrfValidationErrorResponseDetail:
                 }
             }
         """
-        result: dict[str, Any] = {
-            'message': self.message,
-            'code': self.code
-        }
+        result: dict[str, Any] = {"message": self.message, "code": self.code}
         if self.details is not None:
             if isinstance(self.details, dict):
                 processed_details = {}
@@ -211,9 +207,9 @@ class DrfValidationErrorResponseDetail:
                         processed_details[k] = str(v)
                     else:
                         processed_details[k] = v
-                result['details'] = processed_details
+                result["details"] = processed_details
             else:
-                result['details'] = str(self.details)
+                result["details"] = str(self.details)
         return result
 
     @staticmethod
@@ -229,20 +225,19 @@ class DrfValidationErrorResponseDetail:
         """
         if isinstance(obj, DrfValidationErrorResponseDetail):
             return obj.to_dict()
-        elif isinstance(obj, list):
+        if isinstance(obj, list):
             return [DrfValidationErrorResponseDetail.convert_error_detail_to_dict(item) for item in obj]
-        elif isinstance(obj, dict):
-            if 'unknown_fields' in obj:
-                unknown_fields = obj['unknown_fields']
+        if isinstance(obj, dict):
+            if "unknown_fields" in obj:
+                unknown_fields = obj["unknown_fields"]
                 return {
-                    'message': str(unknown_fields['message']),
-                    'code': str(unknown_fields['code']),
-                    'fields': [str(f) for f in unknown_fields['fields']]
+                    "message": str(unknown_fields["message"]),
+                    "code": str(unknown_fields["code"]),
+                    "fields": [str(f) for f in unknown_fields["fields"]],
                 }
-            return {key: DrfValidationErrorResponseDetail.convert_error_detail_to_dict(value) for key, value in obj.items()}
-        elif isinstance(obj, DRFErrorDetail):
             return {
-                'message': str(obj),
-                'code': obj.code if hasattr(obj, 'code') else 'validation_error'
+                key: DrfValidationErrorResponseDetail.convert_error_detail_to_dict(value) for key, value in obj.items()
             }
+        if isinstance(obj, DRFErrorDetail):
+            return {"message": str(obj), "code": obj.code if hasattr(obj, "code") else "validation_error"}
         return obj

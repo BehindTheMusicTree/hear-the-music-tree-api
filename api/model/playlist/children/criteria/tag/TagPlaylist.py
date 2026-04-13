@@ -4,8 +4,8 @@ from .TagPlaylistManager import TagPlaylistManager
 
 
 class TagPlaylist(CriteriaPlaylist):
-    objects: 'TagPlaylistManager' = TagPlaylistManager()
+    objects: TagPlaylistManager = TagPlaylistManager()
 
     class Meta:
-        db_table = 'htmt_api_tag_playlist'
+        db_table = "htmt_api_tag_playlist"
         proxy = True

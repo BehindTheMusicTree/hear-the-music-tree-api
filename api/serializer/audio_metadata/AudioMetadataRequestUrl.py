@@ -8,6 +8,4 @@ class AudioMetadataRequestUrlSerializer(serializers.Serializer):
     """
 
     file = serializers.URLField(required=True)
-    include_musicbrainz_analysis = serializers.BooleanField(
-        required=False, default=False
-    )
+    include_musicbrainz_analysis = serializers.BooleanField(required=False, default=False)

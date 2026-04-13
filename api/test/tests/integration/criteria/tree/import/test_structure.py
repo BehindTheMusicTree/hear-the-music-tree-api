@@ -19,10 +19,7 @@ class TestStructure(GenreTestCase):
         assert rock.parent is None
 
     def test_multiple_roots_then_ok(self):
-        data = [
-            {Fields.NAME_PUBLIC: "Rock", Fields.CHILDREN: []},
-            {Fields.NAME_PUBLIC: "Jazz", Fields.CHILDREN: []}
-        ]
+        data = [{Fields.NAME_PUBLIC: "Rock", Fields.CHILDREN: []}, {Fields.NAME_PUBLIC: "Jazz", Fields.CHILDREN: []}]
         response = self._post_genres_tree_import(data={Fields.TREE: data})
         assert response.status_code == status.HTTP_201_CREATED
 
@@ -36,17 +33,17 @@ class TestStructure(GenreTestCase):
         assert jazz.parent is None
 
     def test_nested_structure_then_ok(self):
-        data = [{
-            Fields.NAME_PUBLIC: "Rock",
-            Fields.CHILDREN: [
-                {
-                    Fields.NAME_PUBLIC: "Metal",
-                    Fields.CHILDREN: [
-                        {Fields.NAME_PUBLIC: "Heavy Metal", Fields.CHILDREN: []}
-                    ]
-                }
-            ]
-        }]
+        data = [
+            {
+                Fields.NAME_PUBLIC: "Rock",
+                Fields.CHILDREN: [
+                    {
+                        Fields.NAME_PUBLIC: "Metal",
+                        Fields.CHILDREN: [{Fields.NAME_PUBLIC: "Heavy Metal", Fields.CHILDREN: []}],
+                    }
+                ],
+            }
+        ]
         response = self._post_genres_tree_import(data={Fields.TREE: data})
         assert response.status_code == status.HTTP_201_CREATED
 
@@ -63,27 +60,27 @@ class TestStructure(GenreTestCase):
         assert heavy_metal.parent == metal
 
     def test_deep_nesting_then_ok(self):
-        data = [{
-            Fields.NAME_PUBLIC: "Rock",
-            Fields.CHILDREN: [
-                {
-                    Fields.NAME_PUBLIC: "Metal",
-                    Fields.CHILDREN: [
-                        {
-                            Fields.NAME_PUBLIC: "Heavy Metal",
-                            Fields.CHILDREN: [
-                                {
-                                    Fields.NAME_PUBLIC: "Classic Metal",
-                                    Fields.CHILDREN: [
-                                        {Fields.NAME_PUBLIC: "Power Metal", Fields.CHILDREN: []}
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        }]
+        data = [
+            {
+                Fields.NAME_PUBLIC: "Rock",
+                Fields.CHILDREN: [
+                    {
+                        Fields.NAME_PUBLIC: "Metal",
+                        Fields.CHILDREN: [
+                            {
+                                Fields.NAME_PUBLIC: "Heavy Metal",
+                                Fields.CHILDREN: [
+                                    {
+                                        Fields.NAME_PUBLIC: "Classic Metal",
+                                        Fields.CHILDREN: [{Fields.NAME_PUBLIC: "Power Metal", Fields.CHILDREN: []}],
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                ],
+            }
+        ]
         response = self._post_genres_tree_import(data={Fields.TREE: data})
         assert response.status_code == status.HTTP_201_CREATED
 
@@ -106,14 +103,16 @@ class TestStructure(GenreTestCase):
         assert power_metal.parent == classic_metal
 
     def test_multiple_children_then_ok(self):
-        data = [{
-            Fields.NAME_PUBLIC: "Rock",
-            Fields.CHILDREN: [
-                {Fields.NAME_PUBLIC: "Metal", Fields.CHILDREN: []},
-                {Fields.NAME_PUBLIC: "Punk", Fields.CHILDREN: []},
-                {Fields.NAME_PUBLIC: "Blues", Fields.CHILDREN: []}
-            ]
-        }]
+        data = [
+            {
+                Fields.NAME_PUBLIC: "Rock",
+                Fields.CHILDREN: [
+                    {Fields.NAME_PUBLIC: "Metal", Fields.CHILDREN: []},
+                    {Fields.NAME_PUBLIC: "Punk", Fields.CHILDREN: []},
+                    {Fields.NAME_PUBLIC: "Blues", Fields.CHILDREN: []},
+                ],
+            }
+        ]
         response = self._post_genres_tree_import(data={Fields.TREE: data})
         assert response.status_code == status.HTTP_201_CREATED
 
@@ -141,25 +140,25 @@ class TestStructure(GenreTestCase):
                         Fields.NAME_PUBLIC: "Metal",
                         Fields.CHILDREN: [
                             {Fields.NAME_PUBLIC: "Heavy Metal", Fields.CHILDREN: []},
-                            {Fields.NAME_PUBLIC: "Death Metal", Fields.CHILDREN: []}
-                        ]
+                            {Fields.NAME_PUBLIC: "Death Metal", Fields.CHILDREN: []},
+                        ],
                     },
                     {
                         Fields.NAME_PUBLIC: "Punk",
                         Fields.CHILDREN: [
                             {Fields.NAME_PUBLIC: "Hardcore", Fields.CHILDREN: []},
-                            {Fields.NAME_PUBLIC: "Pop Punk", Fields.CHILDREN: []}
-                        ]
-                    }
-                ]
+                            {Fields.NAME_PUBLIC: "Pop Punk", Fields.CHILDREN: []},
+                        ],
+                    },
+                ],
             },
             {
                 Fields.NAME_PUBLIC: "Jazz",
                 Fields.CHILDREN: [
                     {Fields.NAME_PUBLIC: "Bebop", Fields.CHILDREN: []},
-                    {Fields.NAME_PUBLIC: "Fusion", Fields.CHILDREN: []}
-                ]
-            }
+                    {Fields.NAME_PUBLIC: "Fusion", Fields.CHILDREN: []},
+                ],
+            },
         ]
         response = self._post_genres_tree_import(data={Fields.TREE: data})
         assert response.status_code == status.HTTP_201_CREATED

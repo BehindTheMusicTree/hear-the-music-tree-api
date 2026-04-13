@@ -1,25 +1,25 @@
 #!/usr/bin/env python3
-import wave
-import sys
 import os
-import tempfile
 import shutil
+import sys
+import tempfile
+import wave
 
 
 def remove_riff_metadata(input_file):
     """Remove RIFF metadata by copying only audio params and frames to temp file, then replace original"""
     # Create temporary file
-    fd, temp_path = tempfile.mkstemp(suffix='.wav')
+    fd, temp_path = tempfile.mkstemp(suffix=".wav")
     os.close(fd)
 
     try:
         # Extract essential audio data
-        with wave.open(input_file, 'rb') as src:
+        with wave.open(input_file, "rb") as src:
             params = src.getparams()
             frames = src.readframes(src.getnframes())
 
         # Write to temporary file without metadata
-        with wave.open(temp_path, 'wb') as dst:
+        with wave.open(temp_path, "wb") as dst:
             dst.setparams(params)
             dst.writeframes(frames)
 

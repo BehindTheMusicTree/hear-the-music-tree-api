@@ -45,9 +45,7 @@ class TestCase(GenreTestCase):
         )
 
         user1_playlist_name = "User1 Playlist"
-        response = playlist_helper._post_manual_playlist(
-            **{ManualPlaylistFields.NAME_PUBLIC: user1_playlist_name}
-        )
+        response = playlist_helper._post_manual_playlist(**{ManualPlaylistFields.NAME_PUBLIC: user1_playlist_name})
         assert response.status_code == status.HTTP_201_CREATED
         user1_playlist = playlist_helper.saved_object
 
@@ -76,9 +74,7 @@ class TestCase(GenreTestCase):
         )
 
         user2_playlist_name = "User2 Playlist"
-        response = playlist_helper._post_manual_playlist(
-            **{ManualPlaylistFields.NAME_PUBLIC: user2_playlist_name}
-        )
+        response = playlist_helper._post_manual_playlist(**{ManualPlaylistFields.NAME_PUBLIC: user2_playlist_name})
         assert response.status_code == status.HTTP_201_CREATED
         user2_playlist = playlist_helper.saved_object
 

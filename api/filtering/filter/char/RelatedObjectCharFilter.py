@@ -1,5 +1,3 @@
-
-
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Q, QuerySet
 
@@ -12,28 +10,26 @@ class RelatedObjectCharFilter(EmptiableCharFilter):
     When the filter value is empty, it returns results with no related instance.
     """
 
-    def __init__(self, primary_field: str, lookup_expr: str = 'iexact', *args, **kwargs):
+    def __init__(self, primary_field: str, lookup_expr: str = "iexact", *args, **kwargs):
         if not primary_field:
-            raise ImproperlyConfigured(
-                f'{self.__class__.__name__} requires a primary_field argument.'
-            )
+            raise ImproperlyConfigured(f"{self.__class__.__name__} requires a primary_field argument.")
 
         self.primary_field = primary_field
         # Pass lookup_expr through kwargs instead of setting it directly as self.lookup_expr
         # to ensure proper field-level configuration in CharFilter parent class
-        kwargs['lookup_expr'] = lookup_expr
+        kwargs["lookup_expr"] = lookup_expr
         super().__init__(*args, **kwargs)
 
     def filter(self, qs: QuerySet, value: str | None) -> QuerySet:
         if not self.field_name:
-            raise ImproperlyConfigured(f'field_name must be set.')
+            raise ImproperlyConfigured("field_name must be set.")
 
         # Handle None values
         if value is None:
             return qs
 
         # For empty strings, check if the parameter is in the URL
-        if value == '':
+        if value == "":
             # If parameter wasn't in the URL, don't filter
             if not self.is_param_in_request():
                 return qs

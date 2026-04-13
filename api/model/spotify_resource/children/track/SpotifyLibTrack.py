@@ -1,18 +1,18 @@
 import datetime
+
 from django.db import models
 from django.db.models import F, Value
 
 from api.model.field.AppCharField import AppCharField
 from api.model.field.foreign_key.AppManyToManyField import AppManyToManyField
-from api.model.utils.ConcatOp import ConcatOp
 from api.model.spotify_resource.children.artist.SpotifyArtist import SpotifyArtist
-from api.model.spotify_resource.SpotifyResource import SpotifyResource
 from api.model.spotify_resource.children.track.Fields import Fields
 from api.model.spotify_resource.children.track.SpotifyLibTrackManager import SpotifyLibTrackManager
+from api.model.spotify_resource.SpotifyResource import SpotifyResource
+from api.model.utils.ConcatOp import ConcatOp
 
 
 class SpotifyLibTrack(SpotifyResource):
-
     name = AppCharField(max_length=256, editable=False, db_column=Fields.NAME)
     duration_ms = models.IntegerField(editable=False, db_column=Fields.DURATION_MS)
     popularity = models.IntegerField(null=True, editable=False, db_column=Fields.POPULARITY)
@@ -20,17 +20,19 @@ class SpotifyLibTrack(SpotifyResource):
         expression=ConcatOp(Value("https://open.spotify.com/track/"), F(Fields.SPOTIFY_ID)),
         output_field=AppCharField(max_length=500),
         db_persist=True,
-        db_column=Fields.SPOTIFY_LINK
+        db_column=Fields.SPOTIFY_LINK,
     )
     album = models.JSONField(null=True, editable=False, db_column=Fields.ALBUM)
     preview_url = models.URLField(null=True, blank=True, editable=False, max_length=512, db_column=Fields.PREVIEW_URL)
     explicit = models.BooleanField(default=False, editable=False, db_column=Fields.EXPLICIT)
     spotify_artists = AppManyToManyField(SpotifyArtist, db_column=Fields.SPOTIFY_ARTISTS)
     last_synced_at = models.DateTimeField(null=True, editable=False, db_column=Fields.LAST_SYNCED_AT)
-    is_removed = models.BooleanField(default=False,
-                                     editable=False,
-                                     help_text="Indicates if the track has been removed from Spotify",
-                                     db_column=Fields.IS_REMOVED)
+    is_removed = models.BooleanField(
+        default=False,
+        editable=False,
+        help_text="Indicates if the track has been removed from Spotify",
+        db_column=Fields.IS_REMOVED,
+    )
     followers = models.IntegerField(null=True, editable=False, db_column=Fields.FOLLOWERS)
     href = models.URLField(null=True, blank=True, editable=False, max_length=512, db_column=Fields.HREF)
     type = AppCharField(max_length=50, null=True, editable=False, db_column=Fields.TYPE)
@@ -65,7 +67,7 @@ class SpotifyLibTrack(SpotifyResource):
         return f"{minutes}:{seconds:02d}"
 
     class Meta:
-        db_table = 'htmt_api_spotify_lib_track'
-        verbose_name = 'Spotify Library Track'
-        verbose_name_plural = 'Spotify Library Tracks'
-        indexes = [models.Index(fields=[Fields.SPOTIFY_ID], name='sp_track_id_idx')]
+        db_table = "htmt_api_spotify_lib_track"
+        verbose_name = "Spotify Library Track"
+        verbose_name_plural = "Spotify Library Tracks"
+        indexes = [models.Index(fields=[Fields.SPOTIFY_ID], name="sp_track_id_idx")]

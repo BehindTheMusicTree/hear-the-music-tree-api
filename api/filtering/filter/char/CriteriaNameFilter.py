@@ -1,4 +1,3 @@
-
 from django.db.models import Case, Q, Value, When
 
 from api.filtering.filter.char.NonEmptiableCharFilter import NonEmptiableCharFilter
@@ -10,7 +9,6 @@ from api.model.playlist.children.criteria.CriterialessPlaylistNames import Crite
 
 
 class CriteriaNameFilter(NonEmptiableCharFilter):
-
     def filter(self, qs: BaseQuerySet, value: str) -> BaseQuerySet:
         if not value:
             return super().filter(qs, value)
@@ -30,12 +28,10 @@ class CriteriaNameFilter(NonEmptiableCharFilter):
         # For playlists with criteria, filter by the criteria's name
         # Use a subquery to get the criteria name to avoid the OneToOneField lookup issue
         criteria_name_filter = Q(criteria__isnull=False) & Q(
-            criteria__uuid__in=Criteria.objects.filter(name__icontains=value).values('uuid'))
+            criteria__uuid__in=Criteria.objects.filter(name__icontains=value).values("uuid")
+        )
 
         # Annotate with special name and apply the combined filter
-        return qs.annotate(
-            special_name=special_name
-        ).filter(
-            (special_names_filter & Q(special_name__icontains=value_lower)) |
-            criteria_name_filter
+        return qs.annotate(special_name=special_name).filter(
+            (special_names_filter & Q(special_name__icontains=value_lower)) | criteria_name_filter
         )

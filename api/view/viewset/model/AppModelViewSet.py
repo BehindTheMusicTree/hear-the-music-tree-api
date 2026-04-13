@@ -1,9 +1,9 @@
 import re
-from typing import Any, Generic, Sequence, Type, TypeVar, Union, cast
+from collections.abc import Sequence
+from typing import Any, Generic, TypeVar, cast
 
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import QuerySet
-from api.filtering.backend.ConsistentParametersFilterBackend import ConsistentParametersFilterBackend
 from rest_framework import status, viewsets
 from rest_framework.exceptions import MethodNotAllowed
 from rest_framework.permissions import IsAuthenticated
@@ -11,41 +11,47 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer, ModelSerializer, Serializer
 
+from api.filtering.backend.ConsistentParametersFilterBackend import ConsistentParametersFilterBackend
 from api.filtering.set.AppFilterSet import AppFilterSet
 from api.model.base.BaseModel import BaseModel
 from api.model.private.Fields import Fields as PrivateFields
 from api.serializer.SerializerType import SerializerType
 from api.view.file_response.AppFileResponse import AppFileResponse
+
 from ...pagination.AppPagination import AppPagination
+
 # UUID format: 8-4-4-4-12 hexadecimal digits
-UUID_PATTERN = re.compile(r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$')
+UUID_PATTERN = re.compile(r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$")
 
 
-T = TypeVar('T', bound=BaseModel)
+T = TypeVar("T", bound=BaseModel)
 
 
-class AppModelViewSet(viewsets.ModelViewSet, Generic[T]):
+class AppModelViewSet[T: BaseModel](viewsets.ModelViewSet):
     pagination_class = AppPagination
     permission_classes = [IsAuthenticated]
     filter_backends = [ConsistentParametersFilterBackend]
-    model_class: Type[T]
-    filterset_class: Type[AppFilterSet] = AppFilterSet
-    simple_serializer_class: Type[ModelSerializer] | None = None
-    detailed_serializer_class: Type[ModelSerializer] | None = None
-    create_serializer_class: Type[Serializer] | None = None
-    update_serializer_class: Type[Serializer] | None = None
+    model_class: type[T]
+    filterset_class: type[AppFilterSet] = AppFilterSet
+    simple_serializer_class: type[ModelSerializer] | None = None
+    detailed_serializer_class: type[ModelSerializer] | None = None
+    create_serializer_class: type[Serializer] | None = None
+    update_serializer_class: type[Serializer] | None = None
     is_private_resource: bool = True
     is_pk_uuid: bool = True
 
-    def __init__(self, model_class: Type[T],
-                 filterset_class: Type[AppFilterSet] = AppFilterSet,
-                 simple_serializer_class: Type[ModelSerializer] | None = None,
-                 detailed_serializer_class: Type[ModelSerializer] | None = None,
-                 update_serializer_class: Type[Serializer] | None = None,
-                 create_serializer_class: Type[Serializer] | None = None,
-                 is_private_resource: bool = True,
-                 is_pk_uuid: bool = True,
-                 **kwargs):
+    def __init__(
+        self,
+        model_class: type[T],
+        filterset_class: type[AppFilterSet] = AppFilterSet,
+        simple_serializer_class: type[ModelSerializer] | None = None,
+        detailed_serializer_class: type[ModelSerializer] | None = None,
+        update_serializer_class: type[Serializer] | None = None,
+        create_serializer_class: type[Serializer] | None = None,
+        is_private_resource: bool = True,
+        is_pk_uuid: bool = True,
+        **kwargs,
+    ):
         super().__init__(**kwargs)
         self.model_class = model_class
         self.filterset_class = filterset_class
@@ -56,15 +62,15 @@ class AppModelViewSet(viewsets.ModelViewSet, Generic[T]):
         self.is_private_resource = is_private_resource
         self.is_pk_uuid = is_pk_uuid
 
-    def _require_serializer(self, serializer_type: SerializerType) -> Type[Union[ModelSerializer, Serializer]]:
+    def _require_serializer(self, serializer_type: SerializerType) -> type[ModelSerializer | Serializer]:
         serializer = getattr(self, serializer_type.class_name, None)
         if not serializer:
             raise ImproperlyConfigured(f"Serializer {serializer_type.class_name} not defined in viewset")
         return serializer
 
-    def _get_validated_data(self, serializer: Union[Serializer, ModelSerializer, BaseSerializer]) -> dict[str, Any]:
+    def _get_validated_data(self, serializer: Serializer | ModelSerializer | BaseSerializer) -> dict[str, Any]:
         serializer.is_valid(raise_exception=True)
-        validated_data_dict = getattr(serializer, 'validated_data', {})
+        validated_data_dict = getattr(serializer, "validated_data", {})
         if PrivateFields.USER not in validated_data_dict:
             validated_data_dict[PrivateFields.USER] = self.request.user
         return validated_data_dict
@@ -76,19 +82,20 @@ class AppModelViewSet(viewsets.ModelViewSet, Generic[T]):
 
     def _create_instance(self, request: Request, create_data: dict[str, Any]) -> T:
         serializer_class = self._require_serializer(SerializerType.CREATE)
-        serializer = serializer_class(data=create_data, context={'request': request})
+        serializer = serializer_class(data=create_data, context={"request": request})
         validated_data = self._get_validated_data(serializer)
 
         return self.model_class.objects.create(**validated_data)
 
     def _update_instance(self, request: Request, instance: T, update_data: dict[str, Any]) -> T:
         serializer_class = self._require_serializer(SerializerType.UPDATE)
-        serializer = serializer_class(instance=instance, data=update_data, partial=True, context={'request': request})
+        serializer = serializer_class(instance=instance, data=update_data, partial=True, context={"request": request})
         validated_data = self._get_validated_data(serializer)
         return self.model_class.objects.update_instance(instance, **validated_data)
 
-    def _get_paginated_list_response(self, queryset, serializer_type=SerializerType.SIMPLE,
-                                     status_code=status.HTTP_200_OK) -> Response:
+    def _get_paginated_list_response(
+        self, queryset, serializer_type=SerializerType.SIMPLE, status_code=status.HTTP_200_OK
+    ) -> Response:
         """
         Get a paginated response for a list view.
 
@@ -139,7 +146,7 @@ class AppModelViewSet(viewsets.ModelViewSet, Generic[T]):
         self.model_class.objects.delete_instance(self.get_object())
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def paginate_queryset(self, queryset) -> Union[list[T], QuerySet[T]] | None:
+    def paginate_queryset(self, queryset) -> list[T] | QuerySet[T] | None:
         if self.paginator is None:
             return None
         if isinstance(queryset, Sequence) and not isinstance(queryset, QuerySet):
@@ -155,19 +162,16 @@ class AppModelViewSet(viewsets.ModelViewSet, Generic[T]):
         lookup_value = self.kwargs[lookup_url_kwarg]
 
         # Validate eventually UUID format if the field is 'pk'
-        if self.lookup_field == 'pk' and self.is_pk_uuid and not UUID_PATTERN.match(lookup_value):
+        if self.lookup_field == "pk" and self.is_pk_uuid and not UUID_PATTERN.match(lookup_value):
             raise AppValidationException(
                 message=f"Invalid UUID format: {lookup_value}",
                 field_validation_error_code=FieldValidationErrorCode.FORMAT_INVALID,
-                field_name=self.lookup_field
+                field_name=self.lookup_field,
             )
 
         try:
             if self.is_private_resource:
-                filter_kwargs = {
-                    self.lookup_field: lookup_value,
-                    'user': self.request.user
-                }
+                filter_kwargs = {self.lookup_field: lookup_value, "user": self.request.user}
             else:
                 filter_kwargs = {
                     self.lookup_field: lookup_value,
@@ -179,24 +183,23 @@ class AppModelViewSet(viewsets.ModelViewSet, Generic[T]):
             # Fall back to the standard DRF lookup if direct lookup fails
             return super().get_object()
 
-    def get_serializer_class_for_non_standard_action(self) -> Type[Serializer]:
+    def get_serializer_class_for_non_standard_action(self) -> type[Serializer]:
         raise NotImplementedError(f"Action {self.action} not defined in viewset")
 
-    def get_serializer_class(self) -> Type[Serializer]:
-        if self.action == 'list':
+    def get_serializer_class(self) -> type[Serializer]:
+        if self.action == "list":
             return self._require_serializer(SerializerType.SIMPLE)
-        elif self.action == 'retrieve':
+        if self.action == "retrieve":
             return self._require_serializer(SerializerType.DETAILED)
-        elif self.action == 'create':
+        if self.action == "create":
             return self._require_serializer(SerializerType.CREATE)
-        elif self.action in ['update', 'partial_update']:
+        if self.action in ["update", "partial_update"]:
             return self._require_serializer(SerializerType.UPDATE)
-        else:
-            return self.get_serializer_class_for_non_standard_action()
+        return self.get_serializer_class_for_non_standard_action()
 
     @property
     def queryset(self):
-        if not hasattr(self, 'request') or self.request is None:
+        if not hasattr(self, "request") or self.request is None:
             return self.model_class.objects.none()
         request: Request = cast(Request, self.request)
         if self.is_private_resource:
@@ -219,19 +222,19 @@ class AppModelViewSet(viewsets.ModelViewSet, Generic[T]):
         return queryset
 
     def get_file_response(self, file_path: str):
-        return AppFileResponse.from_file(file_path=file_path, filename=file_path.split('/')[-1])
+        return AppFileResponse.from_file(file_path=file_path, filename=file_path.rsplit("/", maxsplit=1)[-1])
 
     def retrieve(self, *args, **kwargs) -> Response:
-        raise MethodNotAllowed('GET', detail='Retrieve operation not allowed for this resource')
+        raise MethodNotAllowed("GET", detail="Retrieve operation not allowed for this resource")
 
     def create(self, *args: Any, **kwargs: Any) -> Response:
-        raise MethodNotAllowed('POST', detail='Create operation not allowed for this resource')
+        raise MethodNotAllowed("POST", detail="Create operation not allowed for this resource")
 
     def list(self, *args: Any, **kwargs: Any) -> Response:
-        raise MethodNotAllowed('GET', detail='list operation not allowed for this resource')
+        raise MethodNotAllowed("GET", detail="list operation not allowed for this resource")
 
     def update(self, *args: Any, **kwargs: Any) -> Response:
-        raise MethodNotAllowed('PUT', detail='Update operation not allowed for this resource')
+        raise MethodNotAllowed("PUT", detail="Update operation not allowed for this resource")
 
     def destroy(self, *args, **kwargs) -> Response:
-        raise MethodNotAllowed('DELETE', detail='Delete operation not allowed for this resource')
+        raise MethodNotAllowed("DELETE", detail="Delete operation not allowed for this resource")

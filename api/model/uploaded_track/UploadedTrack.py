@@ -23,7 +23,6 @@ from .file.TrackFile import TrackFile
 from .UploadedTrackFieldKey import UploadedTrackFieldKey as Fields
 from .UploadedTrackManager import UploadedTrackManager
 
-
 if TYPE_CHECKING:
     from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
 
@@ -32,42 +31,51 @@ class UploadedTrack(TrackablePlayCount):
     title = AppCharField(max_length=settings.UPLOADED_TRACK_TITLE_LEN_MAX)
     track_file_fingerprint_must_be_unique = models.BooleanField(default=False)
     artists = PrivateManyToManyField(Artist, blank=True, related_name=ArtistFields.UPLOADED_TRACKS_RELATED_NAME)
-    album: Album = PrivateForeignKey(Album,  # type: ignore
-                                     on_delete=models.CASCADE,
-                                     null=True,
-                                     blank=True,
-                                     related_name=AlbumFields.UPLOADED_TRACKS_RELATED_NAME,)
+    album: Album = PrivateForeignKey(
+        Album,  # type: ignore
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name=AlbumFields.UPLOADED_TRACKS_RELATED_NAME,
+    )
     track_number = models.PositiveIntegerField(
         null=True,
         blank=True,
-        validators=[MinValueValidator(1), MaxValueValidator(settings.UPLOADED_TRACK_TRACK_NUMBER_MAX)])
-    genre = PrivateForeignKey(Genre,
-                              on_delete=models.DO_NOTHING,
-                              null=True,
-                              blank=True,
-                              related_name=CriteriaFields.UPLOADED_TRACKS_RELATED_NAME)
+        validators=[MinValueValidator(1), MaxValueValidator(settings.UPLOADED_TRACK_TRACK_NUMBER_MAX)],
+    )
+    genre = PrivateForeignKey(
+        Genre,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+        related_name=CriteriaFields.UPLOADED_TRACKS_RELATED_NAME,
+    )
     rating = models.IntegerField(
         null=True,
         blank=True,
-        validators=[MinValueValidator(0), MaxValueValidator(settings.UPLOADED_TRACK_RATING_VALUE_MAX)])
+        validators=[MinValueValidator(0), MaxValueValidator(settings.UPLOADED_TRACK_RATING_VALUE_MAX)],
+    )
     language = AppCharField(max_length=settings.LANGUAGE_LEN_MAX, blank=True, default=None, null=True)
     archived = models.BooleanField(default=False)
     playlists = PrivateManyToManyField(
-        Playlist, through='UploadedTrackPlaylistRel', related_name=PlayListFields.UPLOADED_TRACKS_RELATED_NAME)
+        Playlist, through="UploadedTrackPlaylistRel", related_name=PlayListFields.UPLOADED_TRACKS_RELATED_NAME
+    )
 
     if TYPE_CHECKING:
         track_file: TrackFile
-        uploaded_track_playlist_rels: models.QuerySet['UploadedTrackPlaylistRel']
+        uploaded_track_playlist_rels: models.QuerySet[UploadedTrackPlaylistRel]
 
     objects: UploadedTrackManager = UploadedTrackManager()
 
     class Meta:
-        db_table = 'htmt_api_uploaded_track'
-        verbose_name = 'Uploaded Track'
-        verbose_name_plural = 'Uploaded Tracks'
-        indexes = [models.Index(fields=[Fields.USER.value, Fields.TITLE.value]),
-                   models.Index(fields=[Fields.USER.value, Fields.GENRE.value]),
-                   models.Index(fields=[Fields.USER.value, Fields.ALBUM.value]),]
+        db_table = "htmt_api_uploaded_track"
+        verbose_name = "Uploaded Track"
+        verbose_name_plural = "Uploaded Tracks"
+        indexes = [
+            models.Index(fields=[Fields.USER.value, Fields.TITLE.value]),
+            models.Index(fields=[Fields.USER.value, Fields.GENRE.value]),
+            models.Index(fields=[Fields.USER.value, Fields.ALBUM.value]),
+        ]
 
     @property
     def relative_url(self) -> str:
@@ -77,8 +85,9 @@ class UploadedTrack(TrackablePlayCount):
         position_str = f"#{self.track_number}" if self.track_number else "#--"
 
         artists: QuerySet[Artist] = self.artists.all()
-        artists_str = ", ".join(
-            artist.name for artist in artists) if self.artists.exists() else f"[no {Fields.ARTISTS.value}]"
+        artists_str = (
+            ", ".join(artist.name for artist in artists) if self.artists.exists() else f"[no {Fields.ARTISTS.value}]"
+        )
         album_str = str(self.album) if self.album else f"[no {Fields.ALBUM.value}]"
 
         genre_str = f"{Fields.GENRE.value}: {self.genre}" if self.genre else f"{Fields.GENRE.value}: --"
@@ -86,19 +95,24 @@ class UploadedTrack(TrackablePlayCount):
         language_str = f"{Fields.LANGUAGE.value}: {self.language}" if self.language else f"{Fields.LANGUAGE.value}: --"
         file_str = f"{Fields.TRACK_FILE_INTERNAL.value}: {self.track_file}" if self.track_file else "no track file"
 
-        return (f"{self.uuid} | {position_str} | '{self.title}' by {artists_str} | {album_str} | "
-                f"{genre_str} | {rating_str} | {language_str} | "
-                + f"{Fields.CREATED_ON.value}: {self.created_on} | {file_str}")
+        return (
+            f"{self.uuid} | {position_str} | '{self.title}' by {artists_str} | {album_str} | "
+            f"{genre_str} | {rating_str} | {language_str} | "
+            + f"{Fields.CREATED_ON.value}: {self.created_on} | {file_str}"
+        )
 
     def simple_str(self) -> str:
         artists: QuerySet[Artist] = self.artists.all()
-        artists_str = ", ".join(
-            artist.name for artist in artists) if self.artists.exists() else f"no {Fields.ARTISTS.value}"
+        artists_str = (
+            ", ".join(artist.name for artist in artists) if self.artists.exists() else f"no {Fields.ARTISTS.value}"
+        )
         return f"{self.uuid} | '{self.title}' by {artists_str}"
 
     def update_file_metadata_from_uploaded_track_instance_values(self):
-        """Write current track/album/artist/genre/rating/language into the file. Uses the same metadata keys as metadata-session download (APP_METADATA_WRITABLE_KEYS)."""
-        normalized_metadata = dict()
+        """Write current track/album/artist/genre/rating/language into the file. Uses the same metadata keys as
+        metadata-session download (APP_METADATA_WRITABLE_KEYS).
+        """
+        normalized_metadata = {}
         normalized_metadata[AppMetadataKey.TITLE] = self.title
 
         if self.artists.exists():
@@ -110,8 +124,9 @@ class UploadedTrack(TrackablePlayCount):
         if self.album:
             album_name_tag = self.album.name
             album_artists_list = self.album.album_artists.all()
-            album_artists_tag = [
-                album_artist.name for album_artist in album_artists_list] if album_artists_list.exists() else None
+            album_artists_tag = (
+                [album_artist.name for album_artist in album_artists_list] if album_artists_list.exists() else None
+            )
         else:
             album_name_tag = None
             album_artists_tag = None
@@ -126,8 +141,14 @@ class UploadedTrack(TrackablePlayCount):
 
     @property
     def playlists_with_positions(self) -> list[tuple[str, int]]:
-        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import Fields as UploadedTrackPlaylistRelFields
+        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import (
+            Fields as UploadedTrackPlaylistRelFields,
+        )
         from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
+
         uploaded_track_playlist_rels = UploadedTrackPlaylistRel.objects.filter(user=self.user, uploaded_track=self)
-        return list(uploaded_track_playlist_rels.values_list(UploadedTrackPlaylistRelFields.PLAYLIST + '__uuid',
-                                                             UploadedTrackPlaylistRelFields.POSITION))
+        return list(
+            uploaded_track_playlist_rels.values_list(
+                UploadedTrackPlaylistRelFields.PLAYLIST + "__uuid", UploadedTrackPlaylistRelFields.POSITION
+            )
+        )

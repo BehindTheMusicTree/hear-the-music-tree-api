@@ -99,11 +99,11 @@ body:
         ### Changes Required
         - Change 1: Description
         - Change 2: Description
-        
+
         ### Files to Modify
         - `path/to/file1.py` - What needs to change
         - `path/to/file2.py` - What needs to change
-        
+
         ### API Changes (if applicable)
         - Endpoint modifications
         - Request/Response format changes
@@ -174,7 +174,7 @@ body:
       placeholder: |
         **Risk 1:** Description
         **Mitigation:** Strategy
-        
+
         **Risk 2:** Description
         **Mitigation:** Strategy
     validations:

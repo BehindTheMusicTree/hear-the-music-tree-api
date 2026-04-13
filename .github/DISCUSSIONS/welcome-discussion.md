@@ -5,6 +5,7 @@ Welcome to the HearTheMusicTree API community discussions! This is the place to 
 ## What are Discussions?
 
 Discussions are a great place for:
+
 - 💬 **Questions & Answers** - Get help with implementation, configuration, or usage
 - 💡 **Ideas & Suggestions** - Share feature ideas and brainstorm improvements
 - 🎨 **Show & Tell** - Showcase your projects, integrations, or experiences
@@ -16,18 +17,23 @@ Discussions are a great place for:
 We have several categories to help organize conversations:
 
 ### 📋 General (Q&A)
+
 Ask questions and get answers about using HearTheMusicTree API. Whether you're troubleshooting, looking for examples, or need clarification on how something works, this is the place to ask!
 
 ### 💡 Ideas
+
 Share your ideas and suggestions for new features or improvements. This is perfect for brainstorming and gathering community feedback before creating a formal feature request.
 
 ### 🎨 Show and Tell
+
 Share your projects, integrations, or experiences with HearTheMusicTree API! We'd love to see what you've built and learn from your experiences.
 
 ### 📢 Announcements
+
 Important announcements and updates from maintainers. This includes release announcements, breaking changes, and other important news.
 
 ### 🎵 Music & Genres
+
 Discuss music-related topics, genre classification, playlist organization, and music discovery. This is a space for music enthusiasts to connect!
 
 ## Before You Post
@@ -41,6 +47,7 @@ Discuss music-related topics, genre classification, playlist organization, and m
 ## Discussion vs Issue?
 
 **Use Discussions for:**
+
 - Questions and help requests
 - Feature brainstorming and ideas
 - General conversations
@@ -48,6 +55,7 @@ Discuss music-related topics, genre classification, playlist organization, and m
 - Non-urgent suggestions
 
 **Use Issues for:**
+
 - Bug reports (use [Bug Report template](.github/ISSUE_TEMPLATE/bug_report.yml))
 - Feature requests (use [Feature Request template](.github/ISSUE_TEMPLATE/feature_request.yml))
 - Actionable items that need tracking
@@ -80,4 +88,3 @@ Discuss music-related topics, genre classification, playlist organization, and m
 **Let's make this API grow together! 🌱**
 
 Feel free to introduce yourself, ask questions, or share your thoughts. We're here to help and learn from each other!
-

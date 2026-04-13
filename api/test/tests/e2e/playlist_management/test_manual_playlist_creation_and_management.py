@@ -30,11 +30,14 @@ class TestCase(AppTestCase):
         manual_playlist_test_case = self._domain_helper(ManualPlaylistTestCase)
 
         track1 = self.model_fixture_factory.create_uploaded_track_with_file(
-            title="Track 1", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3)
+            title="Track 1", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3
+        )
         track2 = self.model_fixture_factory.create_uploaded_track_with_file(
-            title="Track 2", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3)
+            title="Track 2", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3
+        )
         track3 = self.model_fixture_factory.create_uploaded_track_with_file(
-            title="Track 3", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3)
+            title="Track 3", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3
+        )
 
         playlist_name = "My Playlist"
         response = manual_playlist_test_case._post_manual_playlist(**{ManualPlaylistFields.NAME_PUBLIC: playlist_name})
@@ -43,15 +46,12 @@ class TestCase(AppTestCase):
         assert isinstance(playlist, ManualPlaylist)
         assert playlist.name == playlist_name
 
-        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
         from api.model.uploaded_track_playlist_rel.Fields import Fields as RelFields
+        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
 
-        UploadedTrackPlaylistRel.objects.create(
-            user=self.test_user1, playlist=playlist.playlist, uploaded_track=track1)
-        UploadedTrackPlaylistRel.objects.create(
-            user=self.test_user1, playlist=playlist.playlist, uploaded_track=track2)
-        UploadedTrackPlaylistRel.objects.create(
-            user=self.test_user1, playlist=playlist.playlist, uploaded_track=track3)
+        UploadedTrackPlaylistRel.objects.create(user=self.test_user1, playlist=playlist.playlist, uploaded_track=track1)
+        UploadedTrackPlaylistRel.objects.create(user=self.test_user1, playlist=playlist.playlist, uploaded_track=track2)
+        UploadedTrackPlaylistRel.objects.create(user=self.test_user1, playlist=playlist.playlist, uploaded_track=track3)
 
         playlist.refresh_from_db()
         playlist_tracks = playlist.uploaded_tracks.filter(user=self.test_user1)
@@ -67,7 +67,8 @@ class TestCase(AppTestCase):
         assert retrieved_playlist.name == playlist_name
 
         UploadedTrackPlaylistRel.objects.filter(
-            user=self.test_user1, playlist=playlist.playlist, uploaded_track=track2).delete()
+            user=self.test_user1, playlist=playlist.playlist, uploaded_track=track2
+        ).delete()
 
         playlist.refresh_from_db()
         playlist_tracks = playlist.uploaded_tracks.filter(user=self.test_user1)
@@ -78,7 +79,8 @@ class TestCase(AppTestCase):
 
         new_playlist_name = "Updated Playlist Name"
         response = manual_playlist_test_case._put_manual_playlist(
-            playlist.uuid, **{PlaylistFields.NAME_PUBLIC: new_playlist_name})
+            playlist.uuid, **{PlaylistFields.NAME_PUBLIC: new_playlist_name}
+        )
         assert response.status_code == status.HTTP_200_OK
 
         playlist.refresh_from_db()

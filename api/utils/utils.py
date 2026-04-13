@@ -8,7 +8,9 @@ def print_django(message):
 
 
 def is_django_startup_verbose() -> bool:
-    """When true, settings startup logs full OAuth client ids, redirect URIs, etc. Default: off (safer for container logs)."""
+    """When true, settings startup logs full OAuth client ids, redirect URIs, etc. Default: off (safer for container
+    logs).
+    """
     return os.environ.get("DJANGO_VERBOSE_STARTUP", "").strip().lower() in ("1", "true", "yes")
 
 
@@ -21,21 +23,21 @@ def mask_oauth_client_id(value: str, keep: int = 4) -> str:
 
 
 def generate_short_uu(length: int):
-    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length))
+    return "".join(random.choice(string.ascii_uppercase + string.digits) for _ in range(length))
 
 
 def get_substring_after_last_slash(string: str):
-    return string.split("/")[-1]
+    return string.rsplit("/", maxsplit=1)[-1]
 
 
 def get_file_extension_from_url(url: str):
-    return url.split(".")[-1]
+    return url.rsplit(".", maxsplit=1)[-1]
 
 
 def print_file_status(file):
-    file_name = getattr(file, 'name', 'Unknown file')
+    file_name = getattr(file, "name", "Unknown file")
 
-    if hasattr(file, 'closed'):
+    if hasattr(file, "closed"):
         status = "CLOSED" if file.closed else "OPEN"
         print(f"File '{file_name}' is {status}")
         if not file.closed:

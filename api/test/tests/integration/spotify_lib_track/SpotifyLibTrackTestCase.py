@@ -1,4 +1,3 @@
-
 from django.urls import reverse
 
 from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
@@ -14,10 +13,7 @@ class SpotifyLibTrackTestCase(AppTestCase[SpotifyLibTrack]):
         self._login_as_spotify_test_user_1()
 
     def _list_spotify_lib_tracks(self, **kwargs):
-        return self.api_client.get(
-            path=reverse('me-spotify-lib-track-list'),
-            data=kwargs)
+        return self.api_client.get(path=reverse("me-spotify-lib-track-list"), data=kwargs)
 
     def _retrieve_spotify_lib_track(self, spotify_id: str):
-        return self.api_client.get(
-            path=reverse('me-spotify-lib-track-detail', kwargs={'pk': spotify_id}))
+        return self.api_client.get(path=reverse("me-spotify-lib-track-detail", kwargs={"pk": spotify_id}))

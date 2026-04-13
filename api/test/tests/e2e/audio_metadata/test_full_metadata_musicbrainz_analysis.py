@@ -1,6 +1,6 @@
-import pytest
 from unittest.mock import patch
 
+import pytest
 from rest_framework import status
 
 from api.serializer.audio_metadata.AudioMetadataFull import AudioMetadataFullSerializer
@@ -47,7 +47,9 @@ class TestFullMetadataMusicbrainzAnalysisE2E(AudioMetadataTestCase):
             )
 
         if response.status_code != status.HTTP_200_OK:
-            pytest.fail(f"Expected 200, got {response.status_code}: {response.json() if response.content else response.content}")
+            pytest.fail(
+                f"Expected 200, got {response.status_code}: {response.json() if response.content else response.content}"
+            )
 
         data = response.json()
         if MUSICBRAINZ_RAW_DATA_CAMEL not in data:
@@ -62,9 +64,7 @@ class TestFullMetadataMusicbrainzAnalysisE2E(AudioMetadataTestCase):
         if "error" in raw or "code" in raw:
             code = raw.get("code", raw.get("error", "unknown"))
             msg = raw.get("message", "")
-            pytest.skip(
-                f"MusicBrainz analysis returned error (e.g. AFP unreachable): {code} - {msg}"
-            )
+            pytest.skip(f"MusicBrainz analysis returned error (e.g. AFP unreachable): {code} - {msg}")
 
         assert raw.get("id") is not None
         assert len(str(raw.get("id", ""))) > 0

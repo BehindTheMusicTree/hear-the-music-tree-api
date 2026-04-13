@@ -1,5 +1,5 @@
-from typing import Optional, TypedDict
 import logging
+from typing import Optional, TypedDict
 
 import spotipy
 from django.conf import settings
@@ -8,8 +8,8 @@ from spotipy.oauth2 import SpotifyOAuth
 
 from api.exception import spotify as spotify_exception
 from api.exception.spotify import (
-    SpotifyUserNotAllowlistedException,
     SpotifyInvalidGrantException,
+    SpotifyUserNotAllowlistedException,
 )
 
 logger = logging.getLogger(settings.APP_NAME)
@@ -30,10 +30,10 @@ class SpotifyOAuthService:
             client_id=settings.SPOTIFY_CLIENT_ID,
             client_secret=settings.SPOTIFY_CLIENT_SECRET,
             redirect_uri=settings.SPOTIFY_REDIRECT_URI,
-            scope=settings.SPOTIFY_SCOPES
+            scope=settings.SPOTIFY_SCOPES,
         )
 
-    def get_auth_url(self, state: Optional[str] = None) -> str:
+    def get_auth_url(self, state: str | None = None) -> str:
         """
         Get the Spotify authorization URL
 
@@ -57,7 +57,8 @@ class SpotifyOAuthService:
             token_info = self.oauth.get_access_token(code, check_cache=False)
             if token_info is None:
                 raise spotify_exception.SpotifyAuthenticationException(
-                    "Failed to get access token: No token info returned")
+                    "Failed to get access token: No token info returned"
+                )
             return token_info
         except Exception as e:
             err_str = str(e)
@@ -89,13 +90,14 @@ class SpotifyOAuthService:
             token_info = self.oauth.refresh_access_token(refresh_token)
             if token_info is None:
                 raise spotify_exception.SpotifyAuthenticationException(
-                    "Failed to refresh access token: No token info returned")
+                    "Failed to refresh access token: No token info returned"
+                )
             return token_info
         except Exception as e:
-            logger.error(f"Failed to refresh access token: {str(e)}")
+            logger.error(f"Failed to refresh access token: {e!s}")
             detail_code = "spotify_invalid_client" if "invalid_client" in str(e).lower() else None
             raise spotify_exception.SpotifyAuthenticationException(
-                f"Failed to refresh access token: {str(e)}", detail_code=detail_code
+                f"Failed to refresh access token: {e!s}", detail_code=detail_code
             )
 
     _SPOTIFY_DEV_MODE_MESSAGE = (

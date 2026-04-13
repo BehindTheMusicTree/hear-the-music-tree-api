@@ -7,7 +7,7 @@ from api.exception.validation.FieldValidationErrorCode import FieldValidationErr
 
 
 class AppValidationException(DrfValidationError):
-    DEFAULT_FIELD = 'unhandled'  # Default field value when none or empty string provided
+    DEFAULT_FIELD = "unhandled"  # Default field value when none or empty string provided
 
     """
     Custom validation error that maintains a consistent structure through DRF's middleware.
@@ -29,7 +29,7 @@ class AppValidationException(DrfValidationError):
 
     Note on DRF Exception Handling:
     When this exception is raised, DRF's middleware will convert it to a ValidationError instance
-    while preserving our error structure. This is expected behavior and our error handling in 
+    while preserving our error structure. This is expected behavior and our error handling in
     detect_and_convert_from_drf_error will convert it back to AppValidationError if necessary.
 
     The error structure is preserved through DRF's middleware by:
@@ -38,63 +38,61 @@ class AppValidationException(DrfValidationError):
     3. Using a consistent structure for all validation contexts
     """
     status_code = 400
-    error_type = 'app_validation_error'  # Marker to identify our error type after DRF processing
+    error_type = "app_validation_error"  # Marker to identify our error type after DRF processing
     message: str
     field_validation_error_code: FieldValidationErrorCode
 
-    def __init__(self, message: str,
-                 field_validation_error_code: FieldValidationErrorCode,
-                 field_name: str | None = DEFAULT_FIELD):
+    def __init__(
+        self,
+        message: str,
+        field_validation_error_code: FieldValidationErrorCode,
+        field_name: str | None = DEFAULT_FIELD,
+    ):
         self.field = field_name if field_name else self.DEFAULT_FIELD
         self.message = message
         self.field_validation_error_code = field_validation_error_code
         error_detail = {
-            'message': message,
-            'code': field_validation_error_code,
-            'field': self.field,
-            'error_type': self.error_type
+            "message": message,
+            "code": field_validation_error_code,
+            "field": self.field,
+            "error_type": self.error_type,
         }
         self.errors = {self.field: error_detail}
         super().__init__(self.errors)
 
     @classmethod
-    def _detect_and_convert_from_drf_exception(cls, exc: DrfValidationError) -> 'AppValidationException | None':
+    def _detect_and_convert_from_drf_exception(cls, exc: DrfValidationError) -> AppValidationException | None:
         """
         Detect if a DRF ValidationError was originally an AppValidationException and convert it back.
         Returns:
             AppValidationError if the error was originally ours, None otherwise
         """
-        if not isinstance(exc, DrfValidationError) or not hasattr(exc, 'detail'):
+        if not isinstance(exc, DrfValidationError) or not hasattr(exc, "detail"):
             return None
 
         try:
             detail = exc.detail
-        except (AttributeError, TypeError):
+        except AttributeError, TypeError:
             return None
 
         # Convert list to dict if necessary
         if isinstance(detail, list):
-            detail = {'error': detail[0] if detail else 'Unknown error'}
+            detail = {"error": detail[0] if detail else "Unknown error"}
 
         if not isinstance(detail, dict):
             return None
 
         def has_error_type(error_dict: dict[str, Any]) -> bool:
-            """
-            Recursively check if the error_type marker exists in the dictionary or its nested values.
-            """
+            """Recursively check if the error_type marker exists in the dictionary or its nested values."""
             if not isinstance(error_dict, dict):
                 return False
 
             # Check current level
-            if error_dict.get('error_type') == cls.error_type:
+            if error_dict.get("error_type") == cls.error_type:
                 return True
 
             # Check nested dictionaries
-            return any(
-                has_error_type(value) for value in error_dict.values()
-                if isinstance(value, dict)
-            )
+            return any(has_error_type(value) for value in error_dict.values() if isinstance(value, dict))
 
         # Check if our error_type exists anywhere in the error structure
         if has_error_type(detail):
@@ -103,7 +101,7 @@ class AppValidationException(DrfValidationError):
         return None
 
     @classmethod
-    def from_drf_validation_error(cls, detail: dict[str, Any]) -> 'AppValidationException':
+    def from_drf_validation_error(cls, detail: dict[str, Any]) -> AppValidationException:
         """
         Create an AppValidationError from a DRF ValidationError detail.
         This is used to reconstruct our error format after DRF middleware processing.
@@ -117,17 +115,17 @@ class AppValidationException(DrfValidationError):
         3. Deeply nested validation errors (e.g., {'parent': {'parent': {...}}})
         """
         if not isinstance(detail, dict):
-            raise ImproperlyConfigured('Detail must be a dictionary')
+            raise ImproperlyConfigured("Detail must be a dictionary")
 
-        def extract_error_details(error_dict: dict[str, Any], parent_field: str = '') -> tuple | None:
+        def extract_error_details(error_dict: dict[str, Any], parent_field: str = "") -> tuple | None:
             """
             Recursively extract error details from nested dictionaries.
             Returns (field, message, code) tuple if found, None otherwise.
             """
             # Case 1: Direct error details
-            if all(key in error_dict for key in ('message', 'code')):
-                field = error_dict.get('field', parent_field)
-                return (field, str(error_dict['message']), str(error_dict['code']))
+            if all(key in error_dict for key in ("message", "code")):
+                field = error_dict.get("field", parent_field)
+                return (field, str(error_dict["message"]), str(error_dict["code"]))
 
             # Case 2 & 3: Nested error details
             for field, field_detail in error_dict.items():
@@ -146,6 +144,8 @@ class AppValidationException(DrfValidationError):
             return cls(field_name=field, message=message, field_validation_error_code=code)
 
         # Fallback for unknown format
-        return cls(message=str(detail),
-                   field_validation_error_code=FieldValidationErrorCode.FORMAT_INVALID,
-                   field_name=cls.DEFAULT_FIELD)
+        return cls(
+            message=str(detail),
+            field_validation_error_code=FieldValidationErrorCode.FORMAT_INVALID,
+            field_name=cls.DEFAULT_FIELD,
+        )

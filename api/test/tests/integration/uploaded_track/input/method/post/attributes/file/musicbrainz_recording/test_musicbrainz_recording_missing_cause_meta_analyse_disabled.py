@@ -2,10 +2,10 @@ from django.test import override_settings
 from rest_framework import status
 
 from api.model.musicbrainz_resource.children.recording.missing_cause.code.MbRecordingMissingCauseCode import (
-    MbRecordingMissingCauseCode
+    MbRecordingMissingCauseCode,
 )
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
 class TestCase(UploadedTrackTestCase):
@@ -15,5 +15,7 @@ class TestCase(UploadedTrackTestCase):
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.track_file.musicbrainz_recording_missing_cause
-        assert self.saved_object.track_file.musicbrainz_recording_missing_cause.code.code == \
-            MbRecordingMissingCauseCode.Codes.AFP_DISABLED
+        assert (
+            self.saved_object.track_file.musicbrainz_recording_missing_cause.code.code
+            == MbRecordingMissingCauseCode.Codes.AFP_DISABLED
+        )

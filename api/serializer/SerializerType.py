@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class SerializerType(str, Enum):
+class SerializerType(StrEnum):
     SIMPLE = "simple"
     DETAILED = "detailed"
     CREATE = "create"

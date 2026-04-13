@@ -13,5 +13,5 @@ class ReferenceTagTestCase(ReferenceTestCase):
     def test_reference_tag_list_then_200(self):
         self.model_fixture_factory.create_tag("tmta_tag", user=self._system_user)
         self.model_fixture_factory.create_tag("user1_tag", user=self.test_user1)
-        response = self.api_client.get(path=reverse('reference-tag-list'))
+        response = self.api_client.get(path=reverse("reference-tag-list"))
         self._assert_all_results_belong_to_tmta(response, Tag)

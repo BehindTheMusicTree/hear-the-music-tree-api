@@ -6,7 +6,6 @@ from api.test.tests.integration.playlist.children.criteria.genre.GenrePlaylistTe
 
 
 class TestCase(GenrePlaylistTestCase):
-
     def test_retrieve_then_ok(self):
         rock_criteria_name = "Rock"
         genre_rock = self.model_fixture_factory.create_genre(name=rock_criteria_name)

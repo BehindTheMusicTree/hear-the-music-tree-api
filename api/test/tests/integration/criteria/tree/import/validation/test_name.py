@@ -23,8 +23,7 @@ class TestName(GenreTestCase):
         assert self.bad_request_result_field_errors[0]["code"] == FieldValidationErrorCode.FORMAT_INVALID
 
     def test_duplicate_values_then_400_bad_request(self):
-        data = [{Fields.NAME_PUBLIC: "Rock", Fields.CHILDREN: []},
-                {Fields.NAME_PUBLIC: "Rock", Fields.CHILDREN: []}]
+        data = [{Fields.NAME_PUBLIC: "Rock", Fields.CHILDREN: []}, {Fields.NAME_PUBLIC: "Rock", Fields.CHILDREN: []}]
 
         response = self._post_genres_tree_import(data={Fields.TREE: data})
 

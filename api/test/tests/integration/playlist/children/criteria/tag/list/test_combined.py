@@ -1,23 +1,23 @@
-from rest_framework import status
 from datetime import timedelta
-from django.utils import timezone
 
+from django.utils import timezone
+from rest_framework import status
+
+from api.filtering.set.playlist.children.criteria.Fields import Fields as CriteriaPlaylistFields
+from api.filtering.set.private_unique_resource.Fields import Fields as PrivateUniqueResourceFields
+from api.model.playlist.children.criteria.Fields import Fields as ModelFields
 from api.model.playlist.children.criteria.tag.TagPlaylist import TagPlaylist
 from api.serializer.model.playlist.children.criteria.output.detailed import Fields as RietrieveFields
 from api.test.tests.integration.playlist.children.criteria.tag.TagPlaylistTestCase import TagPlaylistTestCase
-from api.model.playlist.children.criteria.Fields import Fields as ModelFields
-from api.filtering.set.private_unique_resource.Fields import Fields as PrivateUniqueResourceFields
-from api.filtering.set.playlist.children.criteria.Fields import Fields as CriteriaPlaylistFields
 
 
 class TestCase(TagPlaylistTestCase):
-
     def test_combined_then_ok(self):
         tag_fiesta = self.model_fixture_factory.create_tag(name="Fiesta")
         tag_punk = self.model_fixture_factory.create_tag(name="Punk", parent=tag_fiesta)
         tag_punky = self.model_fixture_factory.create_tag(name="Punky", parent=tag_fiesta)
 
-        filters = {'name': 'PU', 'parent': tag_fiesta.criteria_playlist.uuid}
+        filters = {"name": "PU", "parent": tag_fiesta.criteria_playlist.uuid}
 
         response = self._list_tag_playlists(**filters)
 
@@ -53,10 +53,10 @@ class TestCase(TagPlaylistTestCase):
         beach_tag = self.model_fixture_factory.create_tag(name="Beach", updated_on=now)
 
         filters = {
-            CriteriaPlaylistFields.NAME_PUBLIC: 's',
+            CriteriaPlaylistFields.NAME_PUBLIC: "s",
             CriteriaPlaylistFields.PARENT: tag_fiesta.criteria_playlist.uuid,
             PrivateUniqueResourceFields.UPDATED_ON_GTE: past.isoformat(),
-            PrivateUniqueResourceFields.UPDATED_ON_LTE: future.isoformat()  # Use buffer here
+            PrivateUniqueResourceFields.UPDATED_ON_LTE: future.isoformat(),  # Use buffer here
         }
         response = self._list_tag_playlists(**filters)
 

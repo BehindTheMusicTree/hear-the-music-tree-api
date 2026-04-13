@@ -21,7 +21,6 @@ def reverse_labels(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("api", "0011_seed_musicbrainz_lookup_disabled_code"),
     ]

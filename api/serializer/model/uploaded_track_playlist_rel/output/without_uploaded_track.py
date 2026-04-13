@@ -11,5 +11,4 @@ class UploadedTrackPlaylistRelWithoutUploadedTrack(serializers.ModelSerializer):
 
     class Meta:
         model = UploadedTrackPlaylistRel
-        fields = [Fields.PLAYLIST,
-                  Fields.POSITION]
+        fields = [Fields.PLAYLIST, Fields.POSITION]

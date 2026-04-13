@@ -13,5 +13,5 @@ class ReferenceUploadedTrackTestCase(ReferenceTestCase):
     def test_reference_uploaded_track_list_then_200(self):
         self.model_fixture_factory._create_uploaded_track(user=self._system_user, title="tmta track")
         self.model_fixture_factory._create_uploaded_track(user=self.test_user1, title="user1 track")
-        response = self.api_client.get(path=reverse('reference-uploaded-track-list'))
+        response = self.api_client.get(path=reverse("reference-uploaded-track-list"))
         self._assert_all_results_belong_to_tmta(response, UploadedTrack)

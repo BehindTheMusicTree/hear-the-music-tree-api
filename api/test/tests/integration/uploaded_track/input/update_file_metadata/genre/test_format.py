@@ -1,15 +1,14 @@
 from rest_framework import status
 
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
+from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.utils.audio_file_metadata.AppMetadataKey import AppMetadataKey
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_mp3_empty_then_ok(self):
-        genre_name = 'metal'
+        genre_name = "metal"
         data = {UploadedTrackInputFieldKey.GENRE.value: genre_name}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
 
@@ -17,7 +16,7 @@ class TestCase(UploadedTrackTestCase):
         assert self.saved_uploaded_track_metadata_with_raw_rating[AppMetadataKey.GENRES_NAMES] == [genre_name]
 
     def test_mp3_filled_then_ok(self):
-        genre_name = 'metal'
+        genre_name = "metal"
         data = {UploadedTrackInputFieldKey.GENRE.value: genre_name}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_LONG_A_ID3V1_SMALL_MP3, **data)
 
@@ -33,7 +32,7 @@ class TestCase(UploadedTrackTestCase):
         assert genres is None
 
     def test_flac_empty_then_ok(self):
-        genre_name = 'metal'
+        genre_name = "metal"
         data = {UploadedTrackInputFieldKey.GENRE.value: genre_name}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_FLAC, **data)
 
@@ -41,7 +40,7 @@ class TestCase(UploadedTrackTestCase):
         assert self.saved_uploaded_track_metadata_with_raw_rating[AppMetadataKey.GENRES_NAMES] == [genre_name]
 
     def test_flac_filled_then_ok(self):
-        genre_name = 'metal'
+        genre_name = "metal"
         data = {UploadedTrackInputFieldKey.GENRE.value: genre_name}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_LONG_A_VORBIS_SMALL_FLAC, **data)
 
@@ -57,7 +56,7 @@ class TestCase(UploadedTrackTestCase):
         assert genres is None
 
     def test_wav_empty_then_ok(self):
-        genre_name = 'Metal'
+        genre_name = "Metal"
         data = {UploadedTrackInputFieldKey.GENRE.value: genre_name}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_WAV, **data)
 
@@ -65,7 +64,7 @@ class TestCase(UploadedTrackTestCase):
         assert self.saved_uploaded_track_metadata_with_raw_rating[AppMetadataKey.GENRES_NAMES] == [genre_name]
 
     def test_wav_filled_then_ok(self):
-        genre_name = 'Metal'
+        genre_name = "Metal"
         data = {UploadedTrackInputFieldKey.GENRE.value: genre_name}
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_LONG_A_RIFF_SMALL_WAV, **data)
 

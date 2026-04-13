@@ -1,12 +1,11 @@
 from rest_framework import status
 
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_genre_name_in_both_then_take_data(self):
         data_genre_name = "Rock"
         data_dict = {UploadedTrackInputFieldKey.GENRE.value: data_genre_name}

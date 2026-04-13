@@ -1,4 +1,3 @@
-
 from dataclasses import dataclass
 
 from api.model.uploaded_track.file.fingerprinting.missing_cause.FingerprintMissingCause import FingerprintMissingCause
@@ -10,9 +9,7 @@ class FingerprintingResult:
     _duration_in_sec: int | None = None
     _error: FingerprintMissingCause | None = None
 
-    def __init__(self, fingerprint: bytes | None,
-                 duration_in_sec: int | None,
-                 error: FingerprintMissingCause | None):
+    def __init__(self, fingerprint: bytes | None, duration_in_sec: int | None, error: FingerprintMissingCause | None):
         self._fingerprint = fingerprint
         self._duration_in_sec = duration_in_sec
         self._error = error

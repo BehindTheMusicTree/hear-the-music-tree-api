@@ -3,13 +3,14 @@
 set -e
 
 WORKTREE_PATH="${1:-$(pwd)}"
+SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/"
 
 echo "Setting up worktree at: $WORKTREE_PATH"
 cd "$WORKTREE_PATH"
 
-if [ ! -d "venv" ]; then
-    echo "Creating Python virtual environment..."
-    
+if [ ! -d ".venv" ]; then
+    echo "Creating Python virtual environment (.venv)..."
+
     PYTHON_CMD=""
     for version in 3.14 3.13 3.12 3.11 3.10; do
         if command -v "python${version}" >/dev/null 2>&1; then
@@ -29,18 +30,25 @@ if [ ! -d "venv" ]; then
     fi
 
     echo "Using $PYTHON_CMD for virtual environment"
-    "$PYTHON_CMD" -m venv venv
-    source venv/bin/activate
-    echo "Installing dependencies..."
-    pip install --upgrade pip
-    
-    if [ -f "requirements.txt" ]; then
-        pip install -r requirements.txt
-    fi
-    
-    echo "✓ Virtual environment created and dependencies installed"
+    "$PYTHON_CMD" -m venv .venv
+    echo "✓ Virtual environment created at .venv"
 else
-    echo "Virtual environment already exists at venv"
+    echo "Virtual environment already exists at .venv"
+fi
+
+if [ -d ".venv" ]; then
+    if [ -f .venv/bin/activate ]; then
+        # shellcheck source=/dev/null
+        source .venv/bin/activate
+    elif [ -f .venv/Scripts/activate ]; then
+        # shellcheck source=/dev/null
+        source .venv/Scripts/activate
+    else
+        echo "⚠ .venv exists but no activate script found; skipping dev dependency install" >&2
+    fi
+    if [ -n "${VIRTUAL_ENV:-}" ]; then
+        bash "${SCRIPTS_DIR}setup-dev-tools.sh" "$WORKTREE_PATH"
+    fi
 fi
 
 if [ -f "package.json" ]; then
@@ -48,9 +56,6 @@ if [ -f "package.json" ]; then
     npm install
     echo "✓ npm dependencies installed"
 fi
-
-# If the repo provides a setup-filesystem script in the scripts directory (same repo), run it
-SCRIPTS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/
 
 if [ -f "${SCRIPTS_DIR}setup-filesystem.sh" ]; then
     echo "Setting up filesystem..."

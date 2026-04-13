@@ -4,7 +4,6 @@ from .Fields import Fields
 
 
 class MbRecordingMissingCauseManager(StandardResourceManager):
-
     def create(self, *args, **kwargs):
         from .code.MbRecordingMissingCauseCode import MbRecordingMissingCauseCode
 

@@ -2,8 +2,7 @@ from django.core.exceptions import FieldDoesNotExist
 from django.db import models
 from rest_framework import serializers
 
-
-_FLOAT_FIELD_EXCLUDED_KWARGS = frozenset({'max_digits', 'decimal_places', 'model_field'})
+_FLOAT_FIELD_EXCLUDED_KWARGS = frozenset({"max_digits", "decimal_places", "model_field"})
 
 
 def _float_field_kwargs(field_kwargs: dict) -> dict:
@@ -32,7 +31,7 @@ class AppModelSerializer(serializers.ModelSerializer):
             model_field = model_class._meta.get_field(field_name)
         except FieldDoesNotExist:
             return (field_cls, field_kwargs)
-        generated_field_cls = getattr(models, 'GeneratedField', None)
+        generated_field_cls = getattr(models, "GeneratedField", None)
         if generated_field_cls is not None and isinstance(model_field, generated_field_cls):
             if isinstance(model_field.output_field, models.DecimalField):
                 return (serializers.FloatField, _float_field_kwargs(field_kwargs))

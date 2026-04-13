@@ -9,9 +9,7 @@ from api.serializer.field.UniquePerUserNameField import UniquePerUserNameField
 
 class ManualPlaylistInputSerializer(AppInputSerializer, serializers.ModelSerializer):
     name = UniquePerUserNameField(
-        model=ManualPlaylist,
-        max_length=settings.MANUAL_PLAYLIST_NAME_LEN_MAX,
-        allow_blank=False
+        model=ManualPlaylist, max_length=settings.MANUAL_PLAYLIST_NAME_LEN_MAX, allow_blank=False
     )
 
     class Meta:

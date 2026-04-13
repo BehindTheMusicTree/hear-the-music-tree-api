@@ -1,11 +1,10 @@
 from rest_framework import status
 
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_0_then_0(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.RATING_VORBIS_0_STAR_FLAC)
 

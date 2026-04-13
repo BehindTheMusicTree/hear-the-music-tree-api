@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class UploadedTrackFilterFieldKey(str, Enum):
+class UploadedTrackFilterFieldKey(StrEnum):
     TITLE = "title"
     ARTISTS_NAME = "artists_name"
     ALBUM_NAME = "album_name"

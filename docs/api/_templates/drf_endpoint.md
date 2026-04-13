@@ -1,20 +1,26 @@
 # {{RESOURCE_NAME}}
 
 ## Overview
+
 {{SHORT_DESCRIPTION_OF_RESOURCE}}
 
 ## Base URL
+
 {{BASE_URL}}
 
 ## Authentication
+
 {{AUTHENTICATION_MECHANISM}}
 
 ## Permissions
+
 {{PERMISSION_CLASSES_AND_RULES}}
 
 ## Endpoints
+
 | Method | Path | Action | Description |
-|------|------|--------|-------------|
+| ------ | ---- | ------ | ----------- |
+
 {{ENDPOINT_TABLE}}
 
 ## Request / Response
@@ -34,6 +40,7 @@ Query params:
 {{QUERY_PARAMS}}
 
 Body:
+
 ```json
 {{REQUEST_EXAMPLE}}
 ```
@@ -43,6 +50,7 @@ Status codes:
 {{STATUS_CODES}}
 
 Body:
+
 ```json
 {{RESPONSE_EXAMPLE}}
 ```
@@ -56,8 +64,10 @@ Body:
 {{NON_TECHNICAL_RULES}}
 
 ### Errors
+
 | Code | Meaning |
-|------|----------|
+| ---- | ------- |
+
 {{COMMON_ERRORS}}
 
 ### Versioning

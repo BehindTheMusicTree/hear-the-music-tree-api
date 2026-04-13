@@ -5,8 +5,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from api.model.spotify_resource.children.artist.SpotifyArtist import SpotifyArtist
 
 logger = logging.getLogger(__name__)
-from api.utils.spotify_api.SpotifyClient import get_spotify_client
 from api.utils.spotify_api.ApiFields import ApiFields
+from api.utils.spotify_api.SpotifyClient import get_spotify_client
 
 
 class SpotifyApiArtistManager:
@@ -30,13 +30,13 @@ class SpotifyApiArtistManager:
 
         batch_size = 50
         for i in range(0, len(artist_ids), batch_size):
-            batch = artist_ids[i:i + batch_size]
+            batch = artist_ids[i : i + batch_size]
             try:
                 results = self.spotify_client.spotify.artists(batch)
-                if results and 'artists' in results:
-                    for artist in results['artists']:
+                if results and "artists" in results:
+                    for artist in results["artists"]:
                         if artist:  # Skip any None results
-                            artist_details[artist['id']] = artist
+                            artist_details[artist["id"]] = artist
             except Exception:
                 logger.exception("Error fetching Spotify artist batch")
                 # Continue with next batch even if one fails
@@ -44,7 +44,8 @@ class SpotifyApiArtistManager:
         return artist_details
 
     def create_spotify_artist_instance_from_dict(
-            self, spotify_artist_id: str, spotify_artist_dict: dict, artist_details: dict | None = None) -> SpotifyArtist:
+        self, spotify_artist_id: str, spotify_artist_dict: dict, artist_details: dict | None = None
+    ) -> SpotifyArtist:
         """
         Create a SpotifyArtist instance from a Spotify API response dictionary.
 
@@ -72,14 +73,10 @@ class SpotifyApiArtistManager:
             if genres or images:
                 spotify_artist.genres = genres
                 spotify_artist.images = images
-                spotify_artist.save(update_fields=['genres', 'images'])
+                spotify_artist.save(update_fields=["genres", "images"])
         except ObjectDoesNotExist:
             spotify_artist = SpotifyArtist.objects.create(
-                spotify_id=spotify_artist_id,
-                name=name,
-                popularity=popularity,
-                genres=genres,
-                images=images
+                spotify_id=spotify_artist_id, name=name, popularity=popularity, genres=genres, images=images
             )
 
         return spotify_artist

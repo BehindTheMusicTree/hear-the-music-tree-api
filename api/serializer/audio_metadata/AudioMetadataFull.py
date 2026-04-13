@@ -9,7 +9,6 @@ class AudioMetadataFullSerializer(serializers.Serializer):
     normalizes URL to a downloaded file). Used by AudioMetadataView.post; the
     RequestFile/RequestUrl serializers are for OpenAPI only.
     """
+
     file = TrackFileField(required=True)
-    include_musicbrainz_analysis = serializers.BooleanField(
-        required=False, default=False
-    )
+    include_musicbrainz_analysis = serializers.BooleanField(required=False, default=False)
