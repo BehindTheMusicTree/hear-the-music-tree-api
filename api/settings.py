@@ -197,7 +197,16 @@ def init_logs_if_needed():
         LOGGING = {
             "version": 1,
             "disable_existing_loggers": False,
-            "formatters": {"standard": {"format": "%(asctime)s [%(levelname)s]- %(message)s"}},
+            "filters": {
+                "otel_trace": {
+                    "()": "api.logging.OtelTraceIdFilter.OtelTraceIdFilter",
+                },
+            },
+            "formatters": {
+                "standard": {
+                    "format": "%(asctime)s [%(levelname)s] trace_id=%(trace_id)s %(message)s",
+                },
+            },
             "handlers": {
                 "general": {
                     "level": "DEBUG",
@@ -206,6 +215,7 @@ def init_logs_if_needed():
                     "maxBytes": 1024 * 1024 * 15,  # 15MB
                     "backupCount": 10,
                     "formatter": "standard",
+                    "filters": ["otel_trace"],
                 },
                 "info": {
                     "level": "DEBUG",
@@ -214,6 +224,7 @@ def init_logs_if_needed():
                     "maxBytes": 1024 * 1024 * 15,  # 15MB
                     "backupCount": 10,
                     "formatter": "standard",
+                    "filters": ["otel_trace"],
                 },
                 "requests": {
                     "level": "INFO",
@@ -222,6 +233,7 @@ def init_logs_if_needed():
                     "maxBytes": 1024 * 1024 * 15,  # 15MB
                     "backupCount": 10,
                     "formatter": "standard",
+                    "filters": ["otel_trace"],
                 },
                 "requests_with_trace": {
                     "level": "DEBUG",
@@ -230,6 +242,7 @@ def init_logs_if_needed():
                     "maxBytes": 1024 * 1024 * 15,  # 15MB
                     "backupCount": 10,
                     "formatter": "standard",
+                    "filters": ["otel_trace"],
                 },
                 "exceptions": {
                     "level": "DEBUG",
@@ -238,6 +251,7 @@ def init_logs_if_needed():
                     "maxBytes": 1024 * 1024 * 15,  # 15MB
                     "backupCount": 10,
                     "formatter": "standard",
+                    "filters": ["otel_trace"],
                 },
                 "django": {
                     "level": "DEBUG",
@@ -246,6 +260,7 @@ def init_logs_if_needed():
                     "maxBytes": 1024 * 1024 * 15,  # 15MB
                     "backupCount": 10,
                     "formatter": "standard",
+                    "filters": ["otel_trace"],
                 },
                 APP_NAME: {
                     "level": "DEBUG",
@@ -254,8 +269,14 @@ def init_logs_if_needed():
                     "maxBytes": 1024 * 1024 * 15,  # 15MB
                     "backupCount": 10,
                     "formatter": "standard",
+                    "filters": ["otel_trace"],
                 },
-                "console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "standard"},
+                "console": {
+                    "level": "DEBUG",
+                    "class": "logging.StreamHandler",
+                    "formatter": "standard",
+                    "filters": ["otel_trace"],
+                },
             },
             "loggers": {
                 "": {"handlers": ["general"], "level": "DEBUG", "propagate": True},
