@@ -1,5 +1,6 @@
 # Standard library imports
 import datetime
+import importlib.util
 import os
 import sys
 from pathlib import Path
@@ -124,6 +125,9 @@ SECRET_KEY: str
 FILE_UPLOAD_TEMP_DIR: str | None
 FILE_UPLOAD_ENABLED: bool
 METADATA_SESSION_DIR: Path | None
+
+DEBUG_TOOLBAR_ENABLED: bool = False
+INTERNAL_IPS: list[str] = []
 
 
 def init_logs_if_needed():
@@ -579,6 +583,27 @@ def setup_middlewares():
     ]
 
 
+def setup_debug_toolbar_if_available():
+    """Load optional dev dependency when DEBUG is on; skipped for pytest and minimal installs."""
+    global DEBUG_TOOLBAR_ENABLED
+    global INTERNAL_IPS
+    DEBUG_TOOLBAR_ENABLED = False
+    INTERNAL_IPS = []
+    if "pytest" in sys.argv[0]:
+        return
+    if not DEBUG:
+        return
+    if importlib.util.find_spec("debug_toolbar") is None:
+        return
+    if "debug_toolbar" not in INSTALLED_APPS:
+        INSTALLED_APPS.append("debug_toolbar")
+    toolbar_middleware = "debug_toolbar.middleware.DebugToolbarMiddleware"
+    if toolbar_middleware not in MIDDLEWARE:
+        MIDDLEWARE.insert(1, toolbar_middleware)
+    INTERNAL_IPS = ["127.0.0.1", "::1"]
+    DEBUG_TOOLBAR_ENABLED = True
+
+
 def setup_db_connection():
     DB_APP_DB_NAME = load_required_str_env_var("DB_APP_DB_NAME")
     DB_APP_USERNAME = load_required_str_env_var("DB_APP_USERNAME")
@@ -854,6 +879,7 @@ if "loaddata" in sys.argv:
     setup_data_dir()
     setup_installed_apps_and_caches()
     setup_middlewares()
+    setup_debug_toolbar_if_available()
     setup_django_constants()
     setup_db_connection()
     setup_templates()  # Needed to use the admin application
@@ -880,6 +906,7 @@ else:
 
     setup_installed_apps_and_caches()
     setup_middlewares()
+    setup_debug_toolbar_if_available()
     setup_templates()
     setup_django_constants()
     init_logs_if_needed()
