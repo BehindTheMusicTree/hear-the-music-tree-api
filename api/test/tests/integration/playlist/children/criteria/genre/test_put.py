@@ -4,9 +4,8 @@ from api.test.tests.integration.playlist.children.criteria.genre.GenrePlaylistTe
 
 
 class TestCase(GenrePlaylistTestCase):
-
     def test_put_then_not_allowed(self):
-        genre = self.model_fixture_factory.create_genre(name='genre')
+        genre = self.model_fixture_factory.create_genre(name="genre")
 
         response = self._put_genre_playlist(genre.criteria_playlist.uuid)
 

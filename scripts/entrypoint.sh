@@ -40,7 +40,7 @@ check_script_vars_are_set () {
 main (){
     SCRIPTS_DIR=${PROJECT_DIR}scripts/
     source ${SCRIPTS_DIR}utils.sh 2>&1
-    
+
     log_with_script_prefixe "Starting the api container..."
 
     check_script_vars_are_set 2>&1

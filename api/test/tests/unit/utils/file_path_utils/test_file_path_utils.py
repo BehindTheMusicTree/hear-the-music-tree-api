@@ -20,7 +20,7 @@ from api.utils.file_path_utils import (
 class TestGetFilePath:
     def setup_method(self):
         """Create temp directory if it doesn't exist."""
-        temp_dir = getattr(settings, 'FILE_UPLOAD_TEMP_DIR', '/tmp/pool')
+        temp_dir = getattr(settings, "FILE_UPLOAD_TEMP_DIR", "/tmp/pool")
         os.makedirs(temp_dir, exist_ok=True)
 
     def test_string_path_then_returns_string(self):
@@ -35,7 +35,7 @@ class TestGetFilePath:
             charset=None,
         )
         tmp_path = uploaded_file.temporary_file_path()
-        with open(tmp_path, 'wb') as f:
+        with open(tmp_path, "wb") as f:
             f.write(b"test content")
 
         result = get_file_path(uploaded_file)
@@ -88,7 +88,7 @@ class TestGetFilePath:
 class TestGetFileNameSystem:
     def setup_method(self):
         """Create temp directory if it doesn't exist."""
-        temp_dir = getattr(settings, 'FILE_UPLOAD_TEMP_DIR', '/tmp/pool')
+        temp_dir = getattr(settings, "FILE_UPLOAD_TEMP_DIR", "/tmp/pool")
         os.makedirs(temp_dir, exist_ok=True)
 
     def test_string_path_then_returns_basename(self):
@@ -103,7 +103,7 @@ class TestGetFileNameSystem:
             charset=None,
         )
         tmp_path = uploaded_file.temporary_file_path()
-        with open(tmp_path, 'wb') as f:
+        with open(tmp_path, "wb") as f:
             f.write(b"test content")
 
         result = get_file_name_system(uploaded_file)

@@ -70,4 +70,3 @@ echo ""
 echo "✅ Labels created successfully!"
 echo ""
 echo "You can verify labels by running: gh label list"
-

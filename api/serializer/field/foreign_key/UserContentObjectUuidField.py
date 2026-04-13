@@ -25,14 +25,14 @@ class PrivateContentUuidField(PrivateUuidField):
     """
 
     default_error_messages = {
-        'invalid': 'Invalid UUID format.',
-        'does_not_exist': 'Object with this UUID does not exist.',
-        'no_request': 'Request context is required.',
+        "invalid": "Invalid UUID format.",
+        "does_not_exist": "Object with this UUID does not exist.",
+        "no_request": "Request context is required.",
     }
 
     def __init__(self, **kwargs):
         # Set read_only=False since we handle writes
-        kwargs['read_only'] = False
+        kwargs["read_only"] = False
         super().__init__(**kwargs)
         # Initialize content type cache as None
         self._playlist_ct = None
@@ -50,10 +50,7 @@ class PrivateContentUuidField(PrivateUuidField):
 
     def get_queryset(self):
         user = self.get_request_user()
-        return (
-            Playlist.objects.filter(user=user) |
-            UploadedTrack.objects.filter(user=user)
-        )
+        return Playlist.objects.filter(user=user) | UploadedTrack.objects.filter(user=user)
 
     def to_internal_value(self, data: Any) -> dict[str, Any]:
         if data is None:
@@ -61,8 +58,8 @@ class PrivateContentUuidField(PrivateUuidField):
 
         try:
             uuid = UUID(str(data))
-        except (ValueError, AttributeError, TypeError):
-            self.fail('invalid')
+        except ValueError, AttributeError, TypeError:
+            self.fail("invalid")
             return {}  # Never reached due to fail()
 
         user = self.get_request_user()
@@ -70,17 +67,14 @@ class PrivateContentUuidField(PrivateUuidField):
         # Check both models for the UUID, ensuring user ownership and get the actual object
         playlist = Playlist.objects.filter(user=user, uuid=uuid).first()
         if playlist:
-            return {
-                ContentObjectFields.CONTENT_TYPE: self._get_playlist_ct(),
-                ContentObjectFields.CONTENT: playlist
-            }
+            return {ContentObjectFields.CONTENT_TYPE: self._get_playlist_ct(), ContentObjectFields.CONTENT: playlist}
 
         uploaded_track = UploadedTrack.objects.filter(user=user, uuid=uuid).first()
         if uploaded_track:
             return {
                 ContentObjectFields.CONTENT_TYPE: self._get_uploaded_track_ct(),
-                ContentObjectFields.CONTENT: uploaded_track
+                ContentObjectFields.CONTENT: uploaded_track,
             }
-        self.fail('does_not_exist')
+        self.fail("does_not_exist")
 
         return {}  # Never reached due to fail()

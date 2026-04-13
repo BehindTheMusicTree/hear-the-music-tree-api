@@ -5,7 +5,6 @@ from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import Uplo
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_archived_uploaded_track_then_album_has_plus_1_archived_uploaded_tracks(self):
         album = self.model_fixture_factory.create_album(name="Jojo")
         self.model_fixture_factory.create_uploaded_track_with_file(title="not archived 1", album=album)

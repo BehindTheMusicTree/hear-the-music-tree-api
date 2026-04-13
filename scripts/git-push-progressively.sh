@@ -18,7 +18,7 @@ large_upload_threshold_mb=10
 estimate_push_size() {
     local current_branch=$(git rev-parse --abbrev-ref HEAD)
     local remote_ref="origin/${current_branch}"
-    
+
     if ! git rev-parse --verify "$remote_ref" >/dev/null 2>&1; then
         git fetch origin "$current_branch" --quiet 2>/dev/null || true
         if ! git rev-parse --verify "$remote_ref" >/dev/null 2>&1; then
@@ -26,19 +26,19 @@ estimate_push_size() {
             return
         fi
     fi
-    
+
     local local_commit=$(git rev-parse HEAD 2>/dev/null || echo "")
     local remote_commit=$(git rev-parse "$remote_ref" 2>/dev/null || echo "")
-    
+
     if [ -z "$local_commit" ] || [ -z "$remote_commit" ] || [ "$local_commit" = "$remote_commit" ]; then
         echo 0
         return
     fi
-    
+
     local size_bytes=$(git rev-list --objects "$remote_commit".."$local_commit" 2>/dev/null | \
         git cat-file --batch-check='%(objectsize)' 2>/dev/null | \
         awk '{sum+=$1} END {printf "%.0f", sum+0}')
-    
+
     if [ -z "$size_bytes" ] || [ "$size_bytes" = "" ]; then
         echo 0
     else
@@ -49,14 +49,14 @@ estimate_push_size() {
 push_with_timeout() {
     local push_size_bytes=$(estimate_push_size)
     local push_size_mb=0
-    
+
     if [ -n "$push_size_bytes" ] && [ "$push_size_bytes" != "0" ] && [ "$push_size_bytes" != "" ]; then
         push_size_mb=$(awk "BEGIN {printf \"%.0f\", $push_size_bytes / 1024 / 1024}")
     fi
-    
+
     local use_http11=false
     local http_version="HTTP/2"
-    
+
     if [ $push_size_mb -gt $large_upload_threshold_mb ]; then
         use_http11=true
         http_version="HTTP/1.1"
@@ -64,11 +64,11 @@ push_with_timeout() {
     else
         log "Small upload detected (~${push_size_mb}MB). Using ${http_version} for faster transfer..."
     fi
-    
+
     log "Starting git push (timeout: ${push_timeout}s = $((push_timeout / 60)) minutes)..."
-    
+
     local output_file=$(mktemp)
-    
+
     if [ "$use_http11" = true ]; then
         GIT_CURL_VERBOSE=1 GIT_TRACE=1 git -c http.version=HTTP/1.1 push --verbose --progress > "$output_file" 2>&1 &
     else
@@ -77,7 +77,7 @@ push_with_timeout() {
     local push_pid=$!
     local elapsed=0
     local last_line_count=0
-    
+
     while kill -0 $push_pid 2>/dev/null; do
         if [ $elapsed -ge $push_timeout ]; then
             log "Push timed out after ${push_timeout} seconds ($((push_timeout / 60)) minutes). Killing process..." >&2
@@ -87,7 +87,7 @@ push_with_timeout() {
             rm -f "$output_file"
             return 124
         fi
-        
+
         local current_line_count=$(wc -l < "$output_file" 2>/dev/null || echo 0)
         if [ $current_line_count -gt $last_line_count ]; then
             tail -n +$((last_line_count + 1)) "$output_file" 2>/dev/null | while IFS= read -r line; do
@@ -95,7 +95,7 @@ push_with_timeout() {
             done
             last_line_count=$current_line_count
         fi
-        
+
         if [ $elapsed -ge 30 ] && [ $((elapsed % 30)) -eq 0 ]; then
             if grep -q "POST git-receive-pack" "$output_file" 2>/dev/null; then
                 log "[Waiting for GitHub to process push... ${elapsed}s/${push_timeout}s elapsed]"
@@ -103,32 +103,32 @@ push_with_timeout() {
                 log "[Still uploading... ${elapsed}s elapsed]"
             fi
         fi
-        
+
         sleep 1
         elapsed=$((elapsed + 1))
     done
-    
+
     wait $push_pid
     local exit_code=$?
-    
+
     local current_line_count=$(wc -l < "$output_file" 2>/dev/null || echo 0)
     if [ $current_line_count -gt $last_line_count ]; then
         tail -n +$((last_line_count + 1)) "$output_file" 2>/dev/null | while IFS= read -r line; do
             log "$line"
         done
     fi
-    
+
     local output_content=""
     if [ -f "$output_file" ]; then
         output_content=$(cat "$output_file")
         rm -f "$output_file"
     fi
-    
+
     if echo "$output_content" | grep -qiE "(RPC failed|curl.*55|Recv failure|unexpected disconnect|hung up|fatal.*remote)" && [ $exit_code -ne 0 ]; then
         log "Network error detected in push output. This will be retried." >&2
         return 130
     fi
-    
+
     if echo "$output_content" | grep -qi "Everything up-to-date"; then
         if [ $exit_code -ne 0 ]; then
             log "Push reported 'Everything up-to-date' but exited with error. Verifying..." >&2
@@ -146,13 +146,13 @@ push_with_timeout() {
             return 0
         fi
     fi
-    
+
     if [ $exit_code -eq 124 ] || [ $exit_code -eq 143 ]; then
         log "Push timed out after ${push_timeout} seconds." >&2
         log "Large pushes can take 5-15 minutes for GitHub to process after upload completes." >&2
         log "If this persists, consider pushing in smaller batches or increasing push_timeout." >&2
     fi
-    
+
     return $exit_code
 }
 
@@ -160,7 +160,7 @@ push_with_retry() {
     local retry_count=0
     local network_error_retries=0
     local max_network_retries=5
-    
+
     while [ $retry_count -lt $max_retries ]; do
         if push_with_timeout; then
             if ! git fetch origin --quiet 2>/dev/null; then
@@ -170,7 +170,7 @@ push_with_retry() {
         else
             local exit_code=$?
             retry_count=$((retry_count + 1))
-            
+
             if [ $exit_code -eq 130 ]; then
                 network_error_retries=$((network_error_retries + 1))
                 if [ $network_error_retries -le $max_network_retries ]; then
@@ -183,11 +183,11 @@ push_with_retry() {
                     log "Too many network errors. Treating as regular failure." >&2
                 fi
             fi
-            
+
             if [ $exit_code -eq 124 ] || [ $exit_code -eq 143 ]; then
                 log "Push timed out after ${push_timeout} seconds." >&2
             fi
-            
+
             if [ $retry_count -lt $max_retries ]; then
                 log "Push failed. Retrying in ${retry_delay} seconds... (attempt $retry_count/$max_retries)"
                 sleep $retry_delay
@@ -238,26 +238,26 @@ while true; do
                     exit 1
                 fi
             fi
-            
+
             log "Committing $file_path..."
             if ! git commit -m "$commit_message"; then
                 log "ERROR: Failed to commit $file_path." >&2
                 exit 1
             fi
-            
+
             log "Pushing $file_path..."
             remote=$(git config --get remote.origin.url 2>/dev/null || echo "origin")
             log "Remote: $remote"
-            
+
             current_branch=$(git rev-parse --abbrev-ref HEAD)
             local_commit_before=$(git rev-parse HEAD)
-            
+
             if ! push_with_retry; then
                 log "ERROR: Failed to push after retries. Stopping script." >&2
                 log "Check your network connection and remote repository access." >&2
                 exit 1
             fi
-            
+
             sleep 2
             if git fetch origin --quiet 2>/dev/null; then
                 remote_commit=$(git rev-parse "origin/${current_branch}" 2>/dev/null || echo "")

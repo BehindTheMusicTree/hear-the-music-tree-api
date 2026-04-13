@@ -22,7 +22,6 @@ FINGERPRINT_FAILED_ERROR = "fingerprint_failed"
 
 
 class AudioMetadataView(APIView):
-
     @extend_schema(
         request={
             "multipart/form-data": AudioMetadataRequestFileSerializer,
@@ -35,16 +34,12 @@ class AudioMetadataView(APIView):
         serializer = AudioMetadataFullSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         file: audiometa_adapter.FILE_TYPE = serializer.validated_data.get(Fields.FILE)  # pyright: ignore[reportAssignmentType]
-        include_musicbrainz_analysis = serializer.validated_data.get(
-            Fields.INCLUDE_MUSICBRAINZ_ANALYSIS, False
-        )
+        include_musicbrainz_analysis = serializer.validated_data.get(Fields.INCLUDE_MUSICBRAINZ_ANALYSIS, False)
         try:
             full_metadata = audiometa_adapter.get_full_metadata(file, include_raw_binary_data=False)
             if include_musicbrainz_analysis:
                 title = getattr(file, "name", "") or ""
-                fp_result = audio_fingerprinter.service.get_fingerprint_and_duration_for_analysis(
-                    file, title=title
-                )
+                fp_result = audio_fingerprinter.service.get_fingerprint_and_duration_for_analysis(file, title=title)
                 fingerprint = fp_result.get(audio_fingerprinter.service.RESULT_FINGERPRINT)
                 if fingerprint is None:
                     full_metadata[MUSICBRAINZ_RAW_DATA] = {

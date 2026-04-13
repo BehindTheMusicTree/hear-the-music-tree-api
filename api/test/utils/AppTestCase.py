@@ -1,15 +1,9 @@
-from pathlib import Path
-from typing import Generic, Type, TypeVar, Union, cast
 import os
+from pathlib import Path
+from typing import cast
 from uuid import UUID
 
 from django.contrib.auth.hashers import make_password
-from django.db import models
-from django.http import HttpResponse, JsonResponse
-from django.test import TestCase
-from django.urls import reverse
-from rest_framework import status
-from rest_framework_simplejwt.tokens import AccessToken
 from django.db import models
 from django.http import HttpResponse, JsonResponse
 from django.test import TestCase
@@ -23,30 +17,27 @@ from api.model.user.User import User
 from api.model.uuid.Fields import Fields as UuidModelFields
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.utils.AppApiClient import AppApiClient
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.utils.ModelFixtureFactory import ModelFixtureFactory
+from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.utils import audio_file_metadata, data_transformer
 from api.view.error.ErrorResponseFields import ErrorResponseFields
 from api.view.pagination.PaginatedResponseFields import PaginatedResponseFields
 
 
-T = TypeVar('T', bound=models.Model)
-
-
-class AppTestCase(TestCase, Generic[T]):
-    model_class: Type[T]  # Must be defined in child classes
+class AppTestCase[T: models.Model](TestCase):
+    model_class: type[T]  # Must be defined in child classes
     saved_object: T  # Must be defined in child classes
     is_from_uploaded_track_test_case: bool = False
 
     api_client: AppApiClient
     saved_uploaded_track_metadata_with_raw_rating: dict
 
-    TEST_FILES_BASE_DIR = Path(__file__).parent.parent / 'utils' / 'uploaded_track' / 'files'
+    TEST_FILES_BASE_DIR = Path(__file__).parent.parent / "utils" / "uploaded_track" / "files"
 
     def _login_as_user(self, user: User):
         self.api_client.force_authenticate(user=user)
         token = AccessToken.for_user(user)
-        self.api_client.credentials(HTTP_AUTHORIZATION=f'Bearer {token}')
+        self.api_client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
 
     def _login_as_test_user1(self):
         self._login_as_user(self.test_user1)
@@ -67,7 +58,7 @@ class AppTestCase(TestCase, Generic[T]):
         self.api_client.force_authenticate(user=None)
 
     def _set_saved_object_from_response(self, response):
-        if not hasattr(self, 'model_class') or self.model_class is None:
+        if not hasattr(self, "model_class") or self.model_class is None:
             raise NotImplementedError("Test case must define model_class")
 
         uuid = response.json()[UuidModelFields.UUID]
@@ -78,7 +69,7 @@ class AppTestCase(TestCase, Generic[T]):
 
     def _set_single_result(self, response):
         self.result = response.json()
-        if hasattr(self, 'model_class'):
+        if hasattr(self, "model_class"):
             self._set_saved_object_from_response(response)
         else:
             raise NotImplementedError("Test case must define model_class")
@@ -108,7 +99,7 @@ class AppTestCase(TestCase, Generic[T]):
             "message": "Bad Request",
             "success": false,
             "details": [{
-                "message": "One or more fields contain invalid data. Please check the error details for specific 
+                "message": "One or more fields contain invalid data. Please check the error details for specific
                     validation requirements",
                 "fieldErrors": {
                     "field1": {"message": "...", "code": "..."},
@@ -122,20 +113,20 @@ class AppTestCase(TestCase, Generic[T]):
 
         self.bad_request_result = response.json()
         bad_request_result_details = self.bad_request_result.get(ErrorResponseFields.DETAILS, {})
-        self.bad_request_result_field_errors_json = bad_request_result_details.get(
-            ErrorResponseFields.FIELD_ERRORS) if isinstance(
-            bad_request_result_details, dict) else None
+        self.bad_request_result_field_errors_json = (
+            bad_request_result_details.get(ErrorResponseFields.FIELD_ERRORS)
+            if isinstance(bad_request_result_details, dict)
+            else None
+        )
         if self.bad_request_result_field_errors_json:
             # Convert field errors to a list format for easier testing
             self.bad_request_result_field_errors = []
             for field_name, error_list in self.bad_request_result_field_errors_json.items():
                 # error_list is a list of error dictionaries
                 for error in error_list:
-                    self.bad_request_result_field_errors.append({
-                        'field': field_name,
-                        'message': error['message'],
-                        'code': error['code']
-                    })
+                    self.bad_request_result_field_errors.append(
+                        {"field": field_name, "message": error["message"], "code": error["code"]}
+                    )
 
     def _set_results_attributes(self, response):
         response_json = response.json()
@@ -145,12 +136,15 @@ class AppTestCase(TestCase, Generic[T]):
     def _set_saved_uploaded_track_metadata(self):
         saved_uploaded_track = cast(UploadedTrack, self.saved_object)
         self.saved_uploaded_track_metadata_with_raw_rating = audio_file_metadata.get_app_metadata(
-            file=saved_uploaded_track.track_file.file)
+            file=saved_uploaded_track.track_file.file
+        )
 
-    # Defined here and not in UploadedTrackTestCase because other views needs sometimes to post a track for testing purposes
+    # Defined here and not in UploadedTrackTestCase because other views needs sometimes to post a track for testing
+    # purposes
     # (testing metadata updates for example)
-    def _post_uploaded_track(self, test_uploaded_track_filename: UploadedTrackTestFilename = UploadedTrackTestFilename.DEFAULT_MP3,
-                             **kwargs) -> Union[JsonResponse, HttpResponse]:
+    def _post_uploaded_track(
+        self, test_uploaded_track_filename: UploadedTrackTestFilename = UploadedTrackTestFilename.DEFAULT_MP3, **kwargs
+    ) -> JsonResponse | HttpResponse:
         file_abs_path = self.TEST_FILES_BASE_DIR / test_uploaded_track_filename.value
 
         self._used_upload_in_test = True
@@ -161,26 +155,34 @@ class AppTestCase(TestCase, Generic[T]):
             else:
                 kwargs = file_field_dict
             return self.api_client.post(
-                path=reverse('me-uploaded-track-list'),
-                data=kwargs, format='multipart', handle_response=self._set_results)
+                path=reverse("me-uploaded-track-list"),
+                data=kwargs,
+                format="multipart",
+                handle_response=self._set_results,
+            )
 
-    # Defined here and not in UploadedTrackTestCase because other views needs sometimes to put a track for testing purposes
+    # Defined here and not in UploadedTrackTestCase because other views needs sometimes to put a track for testing
+    # purposes
     # (testing Genre deletion for example)
     def _put_uploaded_track(self, uuid, **kwargs):
         if self.is_from_uploaded_track_test_case and self.model_class == UploadedTrack:
             return self.api_client.put(
-                path=reverse('me-uploaded-track-detail', kwargs={'pk': uuid}),
-                data=kwargs, format='multipart', handle_response=self._set_results)
+                path=reverse("me-uploaded-track-detail", kwargs={"pk": uuid}),
+                data=kwargs,
+                format="multipart",
+                handle_response=self._set_results,
+            )
         return self.api_client.put(
-            path=reverse('me-uploaded-track-detail', kwargs={'pk': uuid}),
-            data=kwargs, format='multipart')
+            path=reverse("me-uploaded-track-detail", kwargs={"pk": uuid}), data=kwargs, format="multipart"
+        )
 
     def _post_uploaded_track_being_logged_out(self):
         self._logout()
         return self.api_client.post(
-            path=reverse('me-uploaded-track-list'), data={}, format='multipart', handle_response=self._set_results)
+            path=reverse("me-uploaded-track-list"), data={}, format="multipart", handle_response=self._set_results
+        )
 
-    def _domain_helper(self, helper_class: type) -> "AppTestCase":
+    def _domain_helper(self, helper_class: type) -> AppTestCase:
         """Return a domain test case instance bound to this test's api_client and users for composition in E2E tests.
         Does not call setUp() on the helper to avoid duplicate DB fixtures (users).
         """
@@ -217,26 +219,39 @@ class AppTestCase(TestCase, Generic[T]):
     def setUp(self, methods_names_to_implement: list[str] | None = None) -> None:
 
         self.test_admin_user = User.objects.create_superuser(
-            username='test_admin', password='test_admin', email='test_admin@example.com', is_test_user=True)
+            username="test_admin", password="test_admin", email="test_admin@example.com", is_test_user=True
+        )
 
         self.test_user1 = User.objects.create_instance(
-            username='pytest_user1', password='pytest_user1', email='pytest@user1.com', is_test_user=True)
+            username="pytest_user1", password="pytest_user1", email="pytest@user1.com", is_test_user=True
+        )
 
         self.test_user2 = User.objects.create_instance(
-            username='pytest_user2', password='pytest_user2', email='pytest@user2.com', is_test_user=True)
+            username="pytest_user2", password="pytest_user2", email="pytest@user2.com", is_test_user=True
+        )
 
-        self.spotify_test_user_1 = User(username='spotify_test_user_1', email='spotify@test.com',
-                                        spotify_id='spotify_test_user_1', is_test_user=True)
-        self.spotify_test_user_1.set_password('spotify_test_user_1')
+        self.spotify_test_user_1 = User(
+            username="spotify_test_user_1",
+            email="spotify@test.com",
+            spotify_id="spotify_test_user_1",
+            is_test_user=True,
+        )
+        self.spotify_test_user_1.set_password("spotify_test_user_1")
         self.spotify_test_user_1.save()
 
-        self.spotify_test_user_2 = User(username='spotify_test_user_2', email='spotify@test.com',
-                                        spotify_id='spotify_test_user_2', is_test_user=True)
-        self.spotify_test_user_2.set_password('spotify_test_user_2')
+        self.spotify_test_user_2 = User(
+            username="spotify_test_user_2",
+            email="spotify@test.com",
+            spotify_id="spotify_test_user_2",
+            is_test_user=True,
+        )
+        self.spotify_test_user_2.set_password("spotify_test_user_2")
         self.spotify_test_user_2.save()
 
         self.model_fixture_factory = ModelFixtureFactory(
-            default_test_user=self.test_user1, test_uploaded_track_dir=self.TEST_FILES_BASE_DIR,)
+            default_test_user=self.test_user1,
+            test_uploaded_track_dir=self.TEST_FILES_BASE_DIR,
+        )
 
         super().setUp()
 
@@ -250,33 +265,33 @@ class AppTestCase(TestCase, Generic[T]):
         self._login_as_test_user1()
 
     def tearDown(self):
-        if getattr(settings, 'FILE_UPLOAD_TEMP_DIR', None):
+        if getattr(settings, "FILE_UPLOAD_TEMP_DIR", None):
             temp_dir = settings.FILE_UPLOAD_TEMP_DIR
-            if os.path.isdir(temp_dir):
-                if getattr(self, '_used_upload_in_test', False):
-                    contents = os.listdir(temp_dir)
+            temp_path = Path(temp_dir)
+            if temp_path.is_dir():
+                if getattr(self, "_used_upload_in_test", False):
+                    contents = [p.name for p in temp_path.iterdir()]
                     assert contents == [], (
                         "Temp dir not empty after test; endpoint likely did not close TemporaryUploadedFile. Left: %s"
                         % contents
                     )
-                for name in os.listdir(temp_dir):
-                    path = os.path.join(temp_dir, name)
+                for child in temp_path.iterdir():
                     try:
-                        if os.path.isfile(path):
-                            os.unlink(path)
+                        if child.is_file():
+                            child.unlink()
                     except OSError:
                         pass
         if getattr(settings, "METADATA_SESSION_DIR", None):
             session_dir = settings.METADATA_SESSION_DIR
-            if session_dir and os.path.isdir(session_dir):
-                for name in os.listdir(session_dir):
-                    path = os.path.join(session_dir, name)
+            session_path = Path(session_dir)
+            if session_path.is_dir():
+                for child in session_path.iterdir():
                     try:
-                        if os.path.isfile(path):
-                            os.unlink(path)
+                        if child.is_file():
+                            child.unlink()
                     except OSError:
                         pass
-        if hasattr(self, '_original_tmta_username'):
+        if hasattr(self, "_original_tmta_username"):
             if self._original_tmta_username is not None:
                 os.environ["TMTA_USERNAME"] = self._original_tmta_username
             elif "TMTA_USERNAME" in os.environ:

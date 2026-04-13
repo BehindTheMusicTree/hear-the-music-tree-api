@@ -12,12 +12,11 @@ from api.utils.file_path_utils import get_file_path
 
 @deconstructible
 class TrackFileValidator:
-
     AUDIO_MAGIC_BYTES = {
-        b'ID3': 'audio/mpeg',
-        b'\x4F\x67\x67\x53': 'audio/ogg',
-        b'RIFF': 'audio/wav',
-        b'fLaC': 'audio/flac',
+        b"ID3": "audio/mpeg",
+        b"\x4f\x67\x67\x53": "audio/ogg",
+        b"RIFF": "audio/wav",
+        b"fLaC": "audio/flac",
     }
 
     def __init__(self, field_name=None):
@@ -34,51 +33,54 @@ class TrackFileValidator:
 
         if extension not in allowed_extensions:
             message = _(
-                "File extension '%(extension)s' is not allowed. "
-                "Allowed extensions are: %(allowed_extensions)s."
+                "File extension '%(extension)s' is not allowed. Allowed extensions are: %(allowed_extensions)s."
             ) % {
-                'extension': extension,
-                'allowed_extensions': ', '.join(allowed_extensions),
+                "extension": extension,
+                "allowed_extensions": ", ".join(allowed_extensions),
             }
 
-            if field and hasattr(field, 'fail'):
+            if field and hasattr(field, "fail"):
                 field.fail(FieldValidationErrorCode.TRACK_FILE_EXTENSION_INVALID, message)
             else:
                 from api.exception.validation.app.AppValidationException import AppValidationException
+
                 raise AppValidationException(
                     message=message,
                     field_validation_error_code=FieldValidationErrorCode.TRACK_FILE_EXTENSION_INVALID,
-                    field_name=self.field_name)
+                    field_name=self.field_name,
+                )
 
     def _validate_file_size(self, file, field=None):
         track_size_max_in_ko = settings.UPLOADED_TRACK_FILE_SIZE_MAX_IN_MO * 1000000
         if file.size > track_size_max_in_ko:
-            message = _('File too large. Size should not exceed %(size).3f Mo.') % {
-                'size': settings.UPLOADED_TRACK_FILE_SIZE_MAX_IN_MO
+            message = _("File too large. Size should not exceed %(size).3f Mo.") % {
+                "size": settings.UPLOADED_TRACK_FILE_SIZE_MAX_IN_MO
             }
-            if field and hasattr(field, 'fail'):
+            if field and hasattr(field, "fail"):
                 field.fail(FieldValidationErrorCode.FILE_TOO_LARGE, message)
             else:
                 from api.exception.validation.app.AppValidationException import AppValidationException
+
                 raise AppValidationException(
                     field_name=self.field_name,
                     message=message,
-                    field_validation_error_code=FieldValidationErrorCode.FILE_TOO_LARGE
+                    field_validation_error_code=FieldValidationErrorCode.FILE_TOO_LARGE,
                 )
 
         track_size_min = settings.UPLOADED_TRACK_FILE_SIZE_MIN_IN_MO * 1000000
         if file.size < track_size_min:
-            message = _('File too small. Size should be at least %(size).3f Mo.') % {
-                'size': settings.UPLOADED_TRACK_FILE_SIZE_MIN_IN_MO
+            message = _("File too small. Size should be at least %(size).3f Mo.") % {
+                "size": settings.UPLOADED_TRACK_FILE_SIZE_MIN_IN_MO
             }
-            if field and hasattr(field, 'fail'):
+            if field and hasattr(field, "fail"):
                 field.fail(FieldValidationErrorCode.FILE_TOO_SMALL, message)
             else:
                 from api.exception.validation.app.AppValidationException import AppValidationException
+
                 raise AppValidationException(
                     field_name=UploadedTrackInputFieldKey.TRACK_FILE_PUBLIC.value,
                     message=message,
-                    field_validation_error_code=FieldValidationErrorCode.FILE_TOO_SMALL
+                    field_validation_error_code=FieldValidationErrorCode.FILE_TOO_SMALL,
                 )
 
     def _validate_content_type_is_audio_from_magic_bytes_and_content(self, file, field=None):
@@ -99,11 +101,14 @@ class TrackFileValidator:
             pass
 
         if not is_valid_audio:
-            message = 'Invalid file format. Only audio files are allowed.'
-            if field and hasattr(field, 'fail'):
+            message = "Invalid file format. Only audio files are allowed."
+            if field and hasattr(field, "fail"):
                 field.fail(FieldValidationErrorCode.TRACK_FILE_TYPE_INVALID, message)
             else:
                 from api.exception.validation.app.AppValidationException import AppValidationException
+
                 raise AppValidationException(
-                    field_name=self.field_name, message=message,
-                    field_validation_error_code=FieldValidationErrorCode.TRACK_FILE_TYPE_INVALID)
+                    field_name=self.field_name,
+                    message=message,
+                    field_validation_error_code=FieldValidationErrorCode.TRACK_FILE_TYPE_INVALID,
+                )

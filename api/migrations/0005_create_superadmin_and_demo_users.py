@@ -1,8 +1,9 @@
 # api/migrations/0005_create_superadmin_and_demo_users
 import os
-from django.db import migrations
-from django.core.management.base import CommandError
+
 from django.contrib.auth.hashers import make_password
+from django.core.management.base import CommandError
+from django.db import migrations
 
 
 def create_superadmin_user(apps, schema_editor):
@@ -10,15 +11,11 @@ def create_superadmin_user(apps, schema_editor):
     username = os.getenv("SUPERADMIN_USERNAME")
     password = os.getenv("SUPERADMIN_PASSWORD")
     if not username:
-        raise CommandError(
-            "SUPERADMIN_USERNAME must be set in environment variables before running migrations."
-        )
+        raise CommandError("SUPERADMIN_USERNAME must be set in environment variables before running migrations.")
     if not password:
-        raise CommandError(
-            "SUPERADMIN_PASSWORD must be set in environment variables before running migrations."
-        )
+        raise CommandError("SUPERADMIN_PASSWORD must be set in environment variables before running migrations.")
     email = os.getenv("SUPERADMIN_EMAIL", "").strip() or f"{username}@example.com"
-    user, created = User.objects.get_or_create(
+    user, _created = User.objects.get_or_create(
         username=username,
         defaults={
             "email": email,
@@ -41,15 +38,11 @@ def create_demo_user(apps, schema_editor):
     username = os.getenv("DEMO_USERNAME")
     password = os.getenv("DEMO_PASSWORD")
     if not username:
-        raise CommandError(
-            "DEMO_USERNAME must be set in environment variables before running migrations."
-        )
+        raise CommandError("DEMO_USERNAME must be set in environment variables before running migrations.")
     if not password:
-        raise CommandError(
-            "DEMO_PASSWORD must be set in environment variables before running migrations."
-        )
+        raise CommandError("DEMO_PASSWORD must be set in environment variables before running migrations.")
     email = os.getenv("DEMO_EMAIL", "").strip() or f"{username}@example.com"
-    user, created = User.objects.get_or_create(
+    user, _created = User.objects.get_or_create(
         username=username,
         defaults={
             "email": email,

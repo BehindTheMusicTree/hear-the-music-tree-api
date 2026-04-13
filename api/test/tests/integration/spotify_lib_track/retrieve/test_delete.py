@@ -1,5 +1,5 @@
-from rest_framework import status
 from django.urls import reverse
+from rest_framework import status
 
 from api.test.tests.integration.spotify_lib_track.SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
 
@@ -13,11 +13,11 @@ class TestDelete(SpotifyLibTrackTestCase):
             popularity=80,
             album={"name": "Test Album"},
             preview_url="https://example.com/preview",
-            explicit=True
+            explicit=True,
         )
 
     def test_delete_spotify_lib_track_then_405_method_not_allowed(self):
         response = self.api_client.delete(
-            path=reverse('me-spotify-lib-track-detail', kwargs={'pk': self.track.spotify_id})
+            path=reverse("me-spotify-lib-track-detail", kwargs={"pk": self.track.spotify_id})
         )
         assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED

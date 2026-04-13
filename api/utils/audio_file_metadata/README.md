@@ -25,6 +25,7 @@ This module provides audio metadata handling capabilities for the HearTheMusicTr
 ## Overview
 
 The `audiometa_adapter` module is a thin adapter layer that:
+
 - Converts Django file types (e.g., `TemporaryUploadedFile`, `FieldFile`) to file paths
 - Provides a simplified interface to `audiometa-python` for reading and writing audio metadata
 - Handles format-agnostic metadata operations (the library handles format detection automatically)
@@ -46,6 +47,7 @@ The adapter is **format-agnostic** - it delegates all metadata format decisions 
 The adapter supports the following metadata fields (via `UnifiedMetadataKey`):
 
 ### Basic Metadata
+
 - `TITLE`: Track title (string)
 - `ARTISTS`: List of artist names (list[str])
 - `ALBUM`: Album name (string)
@@ -57,6 +59,7 @@ The adapter supports the following metadata fields (via `UnifiedMetadataKey`):
 For list-type fields (e.g. `ARTISTS`, `GENRES_NAMES`, `ALBUM_ARTISTS`): **`None`** means the tag is not present in the file (nothing set); **empty list `[]`** means the tag is present but has no values.
 
 ### Additional Metadata Fields
+
 - `RELEASE_DATE`: Release date (string) - format: YYYY or YYYY-MM-DD
 - `TRACK_NUMBER`: Track number (string) - can be int or str format
 - `BPM`: Beats per minute (int)
@@ -73,6 +76,7 @@ For list-type fields (e.g. `ARTISTS`, `GENRES_NAMES`, `ALBUM_ARTISTS`): **`None`
 ## Supported File Types
 
 The adapter accepts the following file types:
+
 - `TemporaryUploadedFile`: Django temporary uploaded file
 - `FieldFile`: Django model field file
 - `str`: File path string
@@ -83,6 +87,7 @@ The adapter accepts the following file types:
 ### Reading Metadata
 
 The adapter uses a **merge strategy** for reading metadata (as per the library's default behavior):
+
 - Reads metadata from **all available formats** in the file (ID3v1, ID3v2, Vorbis, RIFF)
 - Merges values from multiple formats, with higher-priority formats taking precedence
 - Returns a unified metadata dictionary containing the best available values for each field
@@ -91,6 +96,7 @@ The adapter uses a **merge strategy** for reading metadata (as per the library's
 This ensures maximum compatibility and data preservation, as metadata may exist in multiple formats within a single file.
 
 **Format Priority Order:**
+
 - MP3 files: ID3v2 → ID3v1
 - FLAC files: Vorbis
 - WAV files: RIFF
@@ -106,6 +112,7 @@ The application follows `audiometa`'s metadata parsing principles. For detailed 
 1. **List Fields Are Not Further Split**: When `audiometa` returns list-type fields (e.g., `ARTISTS`, `ALBUM_ARTISTS`, `GENRES_NAMES`), the application accepts them as-is without additional splitting. This preserves the original metadata structure as interpreted by the library.
 
 2. **Format-Specific Behavior**: Different metadata formats handle separators differently:
+
    - **ID3v2 (MP3)**: When a single tag contains separators (e.g., `"One/Two/Three"`), `audiometa` splits it into a list `['One', 'Two', 'Three']`
    - **Vorbis (FLAC)**: When multiple tags exist (e.g., tag 1: `"One"`, tag 2: `"Two/Three"`), `audiometa` returns them as separate list items `['One', 'Two/Three']` without splitting the slash within individual tag values
    - The application respects this format-specific behavior and does not apply additional splitting
@@ -158,6 +165,7 @@ rating = audiometa_adapter.get_specific_metadata(
 ### Writing Metadata
 
 The adapter uses an **automatic format selection** strategy for writing metadata (SYNC strategy by default):
+
 - The library automatically selects the most appropriate format based on the file type and existing metadata formats
 - For MP3 files: typically writes to ID3v2 tags (defaults to ID3v2.3 for maximum compatibility), but may also write to ID3v1 if present
 - For FLAC files: writes to Vorbis comments (the native format for FLAC)
@@ -168,6 +176,7 @@ The adapter uses an **automatic format selection** strategy for writing metadata
 **Writing Behavior:**
 
 #### Updating Metadata
+
 - **Multiple values (list-type fields)**: For fields that can have multiple values (e.g., `ARTISTS`, `GENRES_NAMES`, `ALBUM_ARTISTS`, `COMPOSERS`), empty strings and `None` values within the list are automatically filtered out before writing. If all values in a list are filtered out, the field is removed entirely (set to `None`)
 - **Rating normalization**: Ratings are normalized through star ratings. When `normalized_rating_max_value` is provided, ratings are normalized from a 0-5 star scale (supporting half-stars like 1.5, 2.5, 3.5) to format-specific values. The actual normalized value depends on the target metadata format:
   - **ID3v2 (MP3) and RIFF (WAV)**: Uses a 0-255 non-proportional scale (e.g., 1.5 stars → 54, 3 stars → 128, 5 stars → 255)
@@ -175,6 +184,7 @@ The adapter uses an **automatic format selection** strategy for writing metadata
 - **Half-star ratings**: Supports half-star ratings (e.g., 1.5, 2.5, 3.5) for more granular rating systems
 
 #### Deleting Metadata
+
 - **Field removal**: Setting any field to `None` removes that tag from the file (tag not present). This works for both single-value fields (e.g., `TITLE`, `ALBUM`) and list-type fields (e.g., `ARTISTS`, `GENRES_NAMES`). Read-back then returns `None` (key absent). Setting a list-type field to `[]` writes an empty tag (tag present but empty); read-back returns `[]`.
 
 **Note:** The library supports additional writing strategies (PRESERVE, CLEANUP) and format-specific writing, but the adapter uses the default SYNC strategy which ensures metadata is written in the most compatible and feature-rich format for each file type.
@@ -230,7 +240,7 @@ is_valid = audiometa_adapter.is_flac_md5_valid(file=flac_file)
 # Fix MD5 checksum and return corrected file
 if not is_valid:
     corrected_file = audiometa_adapter.fix_md5_checking(file=flac_file)
-    
+
 # Remove ID3 metadata header from FLAC files (if present)
     audiometa_adapter.delete_potential_id3_metadata_with_header(file=flac_file)
 ```
@@ -301,4 +311,3 @@ except FileCorruptedError as e:
 - Format detection and selection is handled by the `audiometa` library
 - The application doesn't need to specify metadata formats (ID3v1, ID3v2, Vorbis, RIFF)
 - For FLAC files, ID3v2 metadata headers are automatically removed to ensure MD5 checksum validity
-

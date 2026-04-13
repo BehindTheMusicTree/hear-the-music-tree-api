@@ -5,9 +5,8 @@ from api.test.tests.integration.criteria.TagTestCase import TagTestCase
 
 
 class TestCase(TagTestCase):
-
     def test_delete_then_405(self):
-        tag = self.model_fixture_factory.create_tag(name='Sport')
+        tag = self.model_fixture_factory.create_tag(name="Sport")
 
         response = self._delete_tag(uuid=tag.uuid)
 

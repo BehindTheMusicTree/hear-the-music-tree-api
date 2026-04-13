@@ -22,6 +22,7 @@ This project is currently maintained by a solo developer, but contributions, sug
     - [6.2. Opening a Pull Request](#62-opening-a-pull-request)
   - [7. Releasing _(For Maintainers)_](#7-releasing-for-maintainers)
 - [⚙️ GitHub Actions Workflows](docs/workflows.md)
+- [CI: python-project-standards alignment](docs/ci/python-project-standards.md)
 - [🪪 License & Attribution](#-license--attribution)
 - [📜 Code of Conduct](#-code-of-conduct)
 - [📋 TODO List](#-todo-list)
@@ -162,16 +163,20 @@ cd the-music-tree-api
 4. Create and activate a virtual environment:
 
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # (Linux/macOS)
-   venv\Scripts\activate     # (Windows)
+   python -m venv .venv
+   source .venv/bin/activate  # (Linux/macOS)
+   .venv\Scripts\activate      # (Windows)
    ```
 
-5. Install Python dependencies:
+5. Install Python dev dependencies and Git hooks (editable install from [`pyproject.toml`](pyproject.toml) plus `pre-commit install` when [`.pre-commit-config.yaml`](.pre-commit-config.yaml) is present). From the repo root:
 
    ```bash
-   pip install -r requirements.txt
+   bash scripts/setup-dev-tools.sh
    ```
+
+   The script activates `./.venv` if it exists, otherwise `./venv`, when you are not already inside a virtual environment (local pre-commit wrappers use `./.venv` when the shell is not activated; prefer `.venv` for new clones). Tools must match versions in [`pyproject.toml`](pyproject.toml) (see `.pre-commit-hooks/check-tool-versions.sh`). Run all hooks on the tree: `pre-commit run --all-files`. Requires **shellcheck** and (for PowerShell hooks) **pwsh** locally where those hooks apply.
+
+   Manual alternative: `pip install -e ".[dev]"` then `pre-commit install`.
 
 6. Set up filesystem:
 
@@ -180,6 +185,7 @@ cd the-music-tree-api
    ```
 
    This creates necessary directories for:
+
    - Static files
    - Django logs
    - Gunicorn logs (if app is exposed)
@@ -193,6 +199,7 @@ cd the-music-tree-api
    ```
 
    This starts the required Docker containers:
+
    - PostgreSQL database container
    - Audio Fingerprinter (AFP) container
 
@@ -205,6 +212,7 @@ You need to set up several environment variables for development, build, and run
 **Environment Variable Handling:**
 
 The application uses strict environment variable validation:
+
 - **Required variables**: Must be set or the application will fail to start with a clear error message
 - **No fallbacks**: Required environment variables do not have default values - they must be explicitly set
 - **Path validation**: Path variables (like `MEDIA_DIR`) are validated to ensure the directories exist
@@ -216,6 +224,7 @@ Create a copy of the file `env/dev/.env.dev.template` as `env/.env` and set the 
 
 **Build:**
 The docker build requires the following environment variables:
+
 - `APP_NAME`
 - `APP_VERSION`
 - `FILE_UPLOAD_ENABLED`
@@ -237,6 +246,7 @@ Log and static filenames (e.g. `GUNICORN_LOG_ERROR_FILENAME`, `DJANGO_LOG_GENERA
 
 **Running the container:**
 Running the container requires the following environment variables:
+
 - `DJANGO_SECRET_KEY`
 - `ACOUSTID_API_KEY`
 - `CSRF_TRUSTED_ORIGINS`
@@ -312,7 +322,6 @@ We follow **strict Git Flow** with the following branch structure:
 If you had not pushed yet, only steps 1–2 and a new PR are needed. Maintainers cannot “approve past” a failing required check without changing branch protection rules or using an admin merge override — the usual fix is a correctly prefixed branch.
 
 - Enforcement lives in the `branch-protection.yml` workflow at `.github/workflows/branch-protection.yml`.
-
 
 #### Feature Branches (`feature/<name>`)
 
@@ -410,7 +419,6 @@ If you had not pushed yet, only steps 1–2 and a new PR are needed. Maintainers
 - Dependabot opens Pull Requests that should target `develop` for dependency bumps and security updates
 - Merge into `develop` via Pull Request when complete; treat them like `chore/*` changes or dependency maintenance
 
-
 ### 3. Developing
 
 See [DEVELOPMENT.md](DEVELOPMENT.md) for comprehensive coding standards and best practices.
@@ -441,7 +449,19 @@ pytest -v
 
 # Run a specific test file
 pytest api/test/tests/integration/view/uploaded_track/test_specific.py
+
+# Quieter / faster-feeling run (disables live log streaming entirely)
+pytest -o log_cli=false
+
+# Maximum verbosity for debugging a failure
+pytest -o log_cli_level=DEBUG
 ```
+
+**If pytest seems stuck or extremely slow:**
+
+- **Live logging:** `pytest.ini` sets `log_cli = true`. At **DEBUG** every log line is printed and the suite can look frozen. The default level is **INFO**; use `-o log_cli=false` for minimal console noise or `-o log_cli_level=DEBUG` only when chasing a failure.
+- **Database:** Integration and most Django tests need **PostgreSQL** (and env) as in [Environment Setup](#1-environment-setup). A missing or unreachable DB often blocks on connect instead of failing immediately—start `run-db-and-afp-containers.sh` (or your CI-like stack) first.
+- **pyenv:** If `pytest` is not found, activate the venv or run `python -m pytest` with the interpreter that has `pip install -e ".[dev]"` applied (see [Prerequisites](#prerequisites) under Environment Setup).
 
 **Test Structure:**
 
@@ -504,6 +524,7 @@ git push origin v0.3.6-dev-improve-cicd
 ```
 
 This automatically triggers the `publish.yml` workflow which will:
+
 - Build Docker image: `username/repo:0.3.6-dev-improve-cicd`
 - Deploy to the test server
 - Allow you to validate your changes before creating a PR
@@ -513,6 +534,7 @@ This automatically triggers the `publish.yml` workflow which will:
 Git tags are immutable once pushed. If you make changes and need to republish:
 
 1. **Delete the old tag** (recommended for dev tags):
+
    ```bash
    git tag -d v0.3.6-dev-improve-cicd
    git push origin --delete v0.3.6-dev-improve-cicd
@@ -531,6 +553,7 @@ Git tags are immutable once pushed. If you make changes and need to republish:
    ```
 
 **Note:** Development tags are for testing purposes only and should not be used for releases. Delete them after testing if desired:
+
 ```bash
 git tag -d v0.3.6-dev-improve-cicd
 git push origin --delete v0.3.6-dev-improve-cicd
@@ -540,12 +563,12 @@ git push origin --delete v0.3.6-dev-improve-cicd
 
 We follow a structured commit format inspired by [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
-**IMPORTANT:** Always activate the project's virtual environment (`venv`) before committing if you're using pre-commit hooks.
+**IMPORTANT:** Always activate the project's virtual environment (`.venv`) before committing if you're using pre-commit hooks.
 
 **Quick reference:**
 
 - Format: `<type>(<scope>): <summary>`
-- Activate virtual environment: `source venv/bin/activate` (Linux/macOS) or `venv\Scripts\activate` (Windows)
+- Activate virtual environment: `source .venv/bin/activate` (Linux/macOS) or `.venv\Scripts\activate` (Windows)
 
 **Commit Types:**
 
@@ -585,6 +608,7 @@ Before submitting a Pull Request, ensure the following checks are completed:
 - ✅ Code follows Django best practices
 - ✅ Type hints are used where appropriate
 - ✅ No debug statements or commented-out code
+- ✅ With hooks installed: `pre-commit run --all-files` passes (or run `python3 scripts/check_prefer_strenum.py` before pushing)
 
 **2. Tests**
 
@@ -766,16 +790,19 @@ These automations help streamline the review process and ensure consistency acro
 The project uses focused, reusable GitHub Actions workflows for CI/CD. For a full description of each workflow (triggers, steps, environments), see [GitHub Actions Workflows](docs/workflows.md).
 
 **Test Workflow** (`.github/workflows/test.yml`):
+
 - Runs automatically on pushes to `main` and `develop` branches
 - Runs automatically on pull requests targeting `main` or `develop`
 - Executes the full test suite with pytest
 - Publishes test results to GitHub Actions UI
 
 **Publish Workflow** (`.github/workflows/publish.yml`):
+
 - Runs on **push to `main`** (staging, TEST env) or **push of version tags** (e.g. `v0.2.1`; prerelease tags → staging/TEST, release tags → production/PROD)
 - Orchestrates the release process: collects/commits static files, builds and pushes Docker image, deploys to staging or production
 
 **Other Workflows**:
+
 - `build-and-push.yml` - Builds and pushes Docker images (reusable)
 - `deploy.yml` - Handles server deployment (reusable)
 - `static-files.yml` - Collects and commits static files (reusable)
@@ -783,6 +810,7 @@ The project uses focused, reusable GitHub Actions workflows for CI/CD. For a ful
 - `labeler.yml` - Automatically labels PRs based on changed files
 
 **Workflow Philosophy**:
+
 - **Separation of concerns**: Tests run on every change, publishing only on releases
 - **Reusability**: Individual workflows can be called independently or as part of a pipeline
 - **Maintainability**: Each workflow has a single, focused responsibility
@@ -810,15 +838,18 @@ Quick release process:
 
 3. **On the release branch, prepare the release:**
 
-   - **Automated (recommended):** from the repo root, with `bump2version` on your PATH (`pip install -r requirements.txt` in your venv):
+   - **Automated (recommended):** from the repo root, with `bump2version` on your PATH (`pip install -e ".[dev]"` in your venv):
+
      ```bash
      python3 scripts/prepare_release_bump.py patch   # or: minor | major
      ```
+
      This sets the live `## [Unreleased]  <!-- release -->` marker (only the heading **after** the maintainer Note—not the fenced example), runs [bump2version](https://github.com/c4urself/bump2version), runs `python scripts/fix_changelog_after_bump.py`, and adds an empty `## [Unreleased]` above the new version section. By default it passes `--allow-dirty` to bump2version so you can commit once at the end; use `--no-allow-dirty` if you need a clean tree.
 
    - **Manual sequence** (same end state): set the live heading after the Note to `## [Unreleased]  <!-- release -->`, then `bump2version patch` (or minor/major; add `--allow-dirty` if needed), then `python scripts/fix_changelog_after_bump.py`, then ensure an empty `## [Unreleased]` sits above `## [vX.Y.Z] - …`. `.bumpversion.cfg` only replaces that one changelog line; everything below it until the next `## [` belongs to that release.
 
    - Review and finalize `CHANGELOG.md`:
+
      - Review the new version entry and the content that was under `[Unreleased]`
      - Review and consolidate entries if needed
 
@@ -874,10 +905,11 @@ Quick release process:
 9. **CI/CD will automatically:**
 
    When you push the version tag (step 5), the `publish.yml` workflow will automatically:
+
    - Collect and commit static files
    - Build and push Docker image to Docker Hub
    - Deploy to the test server
-   
+
    See the [GitHub Actions Workflows](#github-actions-workflows) section above for details on the workflow structure.
 
 **Hotfix Release Process:**
@@ -935,6 +967,7 @@ This project maintains a [TODO list](TODO.md) that tracks future work, improveme
 - **Documentation** - Documentation improvements and guides
 
 **Important Notes**:
+
 - **Maintainers are responsible** - Project maintainers are responsible for maintaining and updating the TODO list
 - **Contributors should NOT modify it** - Contributors should not edit the TODO list directly
 - **Suggest tasks via issues** - If you'd like to suggest a new task or work on an existing one, please open a GitHub issue first for discussion
@@ -950,4 +983,3 @@ You can open:
 - **Discussions** → suggestions, architecture, or music-related topics
 
 Let's make this API grow together 🌱
-

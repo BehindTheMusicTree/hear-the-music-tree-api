@@ -28,6 +28,7 @@ Unit tests test individual functions, classes, or modules in isolation with mock
 **Location:** `api/test/tests/unit/`
 
 **Organization:** Unit tests are organized by component type to mirror the codebase structure:
+
 - `tests/unit/filtering/` - FilterSet and filtering component tests
 - `tests/unit/middleware/` - Middleware component tests
 - `tests/unit/serializer/` - Serializer tests (validation, field behavior)
@@ -35,6 +36,7 @@ Unit tests test individual functions, classes, or modules in isolation with mock
 - `tests/unit/validator/` - Validator tests
 
 **Examples:**
+
 - `tests/unit/utils/audiometa_adapter/` - Tests for audiometa adapter functions
 - `tests/unit/utils/file_path_utils/` - Tests for file path utility functions
 - `tests/unit/validator/` - Tests for validators
@@ -43,6 +45,7 @@ Unit tests test individual functions, classes, or modules in isolation with mock
 - `tests/unit/filtering/filterset/` - Tests for FilterSet classes
 
 **Characteristics:**
+
 - Fast execution
 - No database access (or minimal, isolated database usage)
 - Mocked external dependencies
@@ -55,6 +58,7 @@ Integration tests test how multiple components work together through API endpoin
 **Location:** `api/test/tests/integration/`
 
 **Organization:** Integration tests are organized by API endpoint/resource:
+
 - `tests/integration/album/` - Album endpoints
 - `tests/integration/artist/` - Artist endpoints
 - `tests/integration/auth/` - Authentication endpoints
@@ -68,6 +72,7 @@ Integration tests test how multiple components work together through API endpoin
 - etc.
 
 **Examples:**
+
 - `tests/integration/uploaded_track/` - Tests for uploaded track API endpoints
 - `tests/integration/playlist/` - Tests for playlist API endpoints
 - `tests/integration/criteria/` - Tests for criteria/genre API endpoints
@@ -75,6 +80,7 @@ Integration tests test how multiple components work together through API endpoin
 - Tests that verify the full API stack (middleware → serializer → view → database)
 
 **Characteristics:**
+
 - Use database (real or test database)
 - Test complete API endpoints (HTTP methods: GET, POST, PUT, DELETE)
 - Test component interactions (middleware, serializers, views working together)
@@ -89,6 +95,7 @@ End-to-end tests test complete user workflows and critical paths.
 **Location:** `api/test/tests/e2e/`
 
 **Examples:**
+
 - `tests/e2e/track_upload/` - Complete track upload workflows
 - `tests/e2e/genre_hierarchy/` - Genre hierarchy and playlist generation
 - `tests/e2e/spotify/` - Spotify OAuth and library sync
@@ -96,6 +103,7 @@ End-to-end tests test complete user workflows and critical paths.
 - Critical system integrations (audio fingerprinting, Spotify integration)
 
 **Characteristics:**
+
 - Full system tests
 - Test complete workflows
 - May include external service integrations
@@ -116,11 +124,13 @@ Tests that need real external services (URLs, APIs) have a **mocked** version un
 ## Running Tests
 
 Run all tests:
+
 ```bash
 pytest
 ```
 
 Run specific category:
+
 ```bash
 pytest api/test/tests/unit/
 pytest api/test/tests/integration/
@@ -128,12 +138,14 @@ pytest api/test/tests/e2e/
 ```
 
 Run specific test file:
+
 ```bash
 pytest api/test/tests/unit/utils/audiometa_adapter/test_audiometa_adapter.py
 pytest api/test/tests/integration/uploaded_track/test_post.py
 ```
 
 Run tests for a specific component:
+
 ```bash
 pytest api/test/tests/unit/serializer/
 pytest api/test/tests/unit/utils/
@@ -145,6 +157,7 @@ pytest api/test/tests/integration/uploaded_track/
 All test functions must follow the pattern: `test_{scenario}_then_{expected_result}`
 
 Examples:
+
 - `test_valid_mp3_extension_then_passes`
 - `test_invalid_extension_then_raises_app_validation_exception`
 - `test_id3v2_mp3_5_stars_then_10`
@@ -204,5 +217,3 @@ The pytest configuration (`pytest.ini`) includes filters to suppress non-actiona
   - Filter: `ignore:unclosed file:ResourceWarning`
 
 This configuration improves test output clarity while still showing actionable warnings from application code.
-
-

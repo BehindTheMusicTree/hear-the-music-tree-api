@@ -11,6 +11,4 @@ class IsAuthenticatedReturn401(BasePermission):
     def has_permission(self, request, view):
         if request.user and request.user.is_authenticated:
             return True
-        raise NotAuthenticated(
-            detail={'detail': 'Authentication required', 'code': 'authentication_required'}
-        )
+        raise NotAuthenticated(detail={"detail": "Authentication required", "code": "authentication_required"})

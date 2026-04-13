@@ -8,13 +8,12 @@ from api.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.serializer.model.album.minimum import Fields as AlbumFields
 from api.serializer.model.artist.minimum import Fields as ArtistFields
-from api.serializer.model.uploaded_track.output.UploadedTrackOutputFieldKey import UploadedTrackOutputFieldKey
 from api.serializer.model.playlist.children.criteria.output.simple import Fields as CriteriaPlayListFields
+from api.serializer.model.uploaded_track.output.UploadedTrackOutputFieldKey import UploadedTrackOutputFieldKey
 from api.test.tests.integration.search.SearchTestCase import SearchTestCase
 
 
 class TestCase(SearchTestCase):
-
     def test_query_in_track_artist_and_album_then_results(self):
         sum41_artist = self.model_fixture_factory.create_artist(name="Sum 41")
         jailesum_album = self.model_fixture_factory.create_album(name="J'ai le Sum")
@@ -39,14 +38,15 @@ class TestCase(SearchTestCase):
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 2
-        criteria_playlists_names = \
-            [result[CriteriaPlayListFields.NAME] for result in self.results[CriteriaPlaylist.__name__]]
+        criteria_playlists_names = [
+            result[CriteriaPlayListFields.NAME] for result in self.results[CriteriaPlaylist.__name__]
+        ]
         assert rap_criteria_name in criteria_playlists_names
         assert us_rap_criteria_name in criteria_playlists_names
 
     def test_manual_playlist_then_results(self):
-        manual_playlist_foot = self.model_fixture_factory.create_manual_playlist(name='foot')
-        self.model_fixture_factory.create_manual_playlist(name='cuisine')
+        manual_playlist_foot = self.model_fixture_factory.create_manual_playlist(name="foot")
+        self.model_fixture_factory.create_manual_playlist(name="cuisine")
 
         response = self._search(**{SearchFields.QUERY: "Foo"})
 
@@ -55,8 +55,8 @@ class TestCase(SearchTestCase):
         assert self.results[ManualPlaylist.__name__][0][CriteriaPlayListFields.NAME] == manual_playlist_foot.name
 
     def test_criteria_playlist_then_results(self):
-        criteria_playlist_rock = self.model_fixture_factory.create_genre(name='rock')
-        self.model_fixture_factory.create_genre(name='punk')
+        criteria_playlist_rock = self.model_fixture_factory.create_genre(name="rock")
+        self.model_fixture_factory.create_genre(name="punk")
 
         response = self._search(**{SearchFields.QUERY: "roC"})
 
@@ -65,8 +65,8 @@ class TestCase(SearchTestCase):
         assert self.results[CriteriaPlaylist.__name__][0][CriteriaPlayListFields.NAME] == criteria_playlist_rock.name
 
     def test_album_then_results(self):
-        album = self.model_fixture_factory.create_album(name='album')
-        self.model_fixture_factory.create_album(name='another one')
+        album = self.model_fixture_factory.create_album(name="album")
+        self.model_fixture_factory.create_album(name="another one")
 
         response = self._search(**{SearchFields.QUERY: "aLb"})
 
@@ -75,8 +75,8 @@ class TestCase(SearchTestCase):
         assert self.results[Album.__name__][0][AlbumFields.NAME] == album.name
 
     def test_uploaded_track_then_results(self):
-        uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title='track')
-        self.model_fixture_factory.create_uploaded_track_with_file(title='another one')
+        uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="track")
+        self.model_fixture_factory.create_uploaded_track_with_file(title="another one")
 
         response = self._search(**{SearchFields.QUERY: "trA"})
 
@@ -85,8 +85,8 @@ class TestCase(SearchTestCase):
         assert self.results[UploadedTrack.__name__][0][UploadedTrackOutputFieldKey.TITLE.value] == uploaded_track.title
 
     def test_artist_then_results(self):
-        artist = self.model_fixture_factory.create_artist(name='artist')
-        self.model_fixture_factory.create_artist(name='another one')
+        artist = self.model_fixture_factory.create_artist(name="artist")
+        self.model_fixture_factory.create_artist(name="another one")
 
         response = self._search(**{SearchFields.QUERY: "Art"})
 

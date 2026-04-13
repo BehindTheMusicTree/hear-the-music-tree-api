@@ -9,6 +9,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 from _pytest.main import Session
 from django.test import override_settings
+
 from api import settings
 
 E2E_REACHABILITY_TIMEOUT_SEC = 5
@@ -49,9 +50,7 @@ def mock_oauth_outside_e2e(request):
     if not _should_mock_external_services(request):
         yield
         return
-    with patch("api.view.spotify_auth.SpotifyOAuthService"), patch(
-        "api.view.google_auth.GoogleOAuthService"
-    ):
+    with patch("api.view.spotify_auth.SpotifyOAuthService"), patch("api.view.google_auth.GoogleOAuthService"):
         yield
 
 
@@ -125,6 +124,7 @@ def _is_e2e(request) -> bool:
 
 def _make_success_fingerprinting_result():
     from api.model.uploaded_track.file.fingerprinting.FingerprintingResult import FingerprintingResult
+
     return FingerprintingResult(fingerprint=b"\x00" * 20, duration_in_sec=120, error=None)
 
 
@@ -155,7 +155,7 @@ critical_test_failed = False
 
 
 IGNORED_TEST_DIRS = [
-    'utils/',
+    "utils/",
 ]
 
 
@@ -210,6 +210,7 @@ def pytest_sessionstart(session: Session) -> None:
         [ffprobe, "-version"],
         capture_output=True,
         timeout=5,
+        check=False,
     )
     if result.returncode != 0:
         err = (result.stderr or result.stdout or b"").decode("utf-8", errors="replace").strip()
@@ -225,6 +226,7 @@ def pytest_sessionstart(session: Session) -> None:
             [ffprobe, "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", str(wav_fixture)],
             capture_output=True,
             timeout=30,
+            check=False,
         )
         if probe_result.returncode != 0:
             err = (probe_result.stderr or probe_result.stdout or b"").decode("utf-8", errors="replace").strip()
@@ -353,8 +355,7 @@ def pytest_collection_finish(session: Session) -> None:
     failures = _e2e_reachability_failures()
     if failures:
         pytest.exit(
-            "E2E run requires all enabled services to be reachable. Unreachable: "
-            + "; ".join(failures),
+            "E2E run requires all enabled services to be reachable. Unreachable: " + "; ".join(failures),
             returncode=2,
         )
 
@@ -387,16 +388,15 @@ def _get_test_directory_order(item) -> int:
         - 4: other directories
     """
     test_path = str(item.fspath)
-    if '/tests/critical/' in test_path:
+    if "/tests/critical/" in test_path:
         return 0
-    elif '/tests/unit/' in test_path:
+    if "/tests/unit/" in test_path:
         return 1
-    elif '/tests/integration/' in test_path:
+    if "/tests/integration/" in test_path:
         return 2
-    elif '/tests/e2e/' in test_path:
+    if "/tests/e2e/" in test_path:
         return 3
-    else:
-        return 4
+    return 4
 
 
 def pytest_collection_modifyitems(config, items):
@@ -405,7 +405,9 @@ def pytest_collection_modifyitems(config, items):
     normal_tests = []
     slow_tests = []
 
-    print("Ordering tests: critical marker first, then by directory (tests/critical → tests/unit → tests/integration → tests/e2e), slow marker last")
+    print(
+        "Ordering tests: critical marker first, then by directory (tests/critical → tests/unit → tests/integration → tests/e2e), slow marker last"
+    )
     for item in items:
         critical_marker = item.get_closest_marker("critical")
         slow_marker = item.get_closest_marker("slow")
@@ -428,11 +430,7 @@ def pytest_collection_modifyitems(config, items):
         failures = _e2e_reachability_failures()
         if failures:
             ordered = [it for it in ordered if not _is_e2e_item(it)]
-            print(
-                "\nE2E tests deselected (services unreachable): "
-                + "; ".join(failures)
-                + "\n"
-            )
+            print("\nE2E tests deselected (services unreachable): " + "; ".join(failures) + "\n")
     items[:] = ordered
 
 
@@ -472,7 +470,7 @@ def _cleanup_test_user_directories() -> None:
                     removed_dirs.append(str(entry))
                 except (OSError, shutil.Error) as e:
                     failed_dirs.append(str(entry))
-                    print(f"Error: Failed to remove directory {entry}: {str(e)}")
+                    print(f"Error: Failed to remove directory {entry}: {e!s}")
 
         if removed_dirs:
             print(f"\nSuccessfully removed {len(removed_dirs)} test directories:")
@@ -485,7 +483,7 @@ def _cleanup_test_user_directories() -> None:
                 print(f"- {dir_path}")
 
     except Exception as e:
-        print(f"Error: Unexpected error during cleanup: {str(e)}")
+        print(f"Error: Unexpected error during cleanup: {e!s}")
 
 
 @pytest.hookimpl(trylast=True)

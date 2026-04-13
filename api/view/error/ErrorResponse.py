@@ -3,23 +3,28 @@ from typing import Any, Union
 from django.core.exceptions import DisallowedHost
 from django.core.exceptions import ValidationError as DjangoValidationError
 from django.db import IntegrityError
-from django.http import JsonResponse, Http404
+from django.http import Http404, JsonResponse
 from rest_framework import status
+from rest_framework.exceptions import (
+    AuthenticationFailed,
+    MethodNotAllowed,
+    NotAuthenticated,
+    ParseError,
+    PermissionDenied,
+    UnsupportedMediaType,
+)
 from rest_framework.exceptions import ErrorDetail as DRFErrorDetail
 from rest_framework.exceptions import ValidationError as DrfValidationError
 from rest_framework_simplejwt.exceptions import InvalidToken
-from rest_framework.exceptions import (
-    NotAuthenticated, ParseError, UnsupportedMediaType, MethodNotAllowed, PermissionDenied, AuthenticationFailed
-)
 
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
-from api.exception.validation.app.AppValidationException import AppValidationException
 from api.exception.google import GoogleAuthenticationException
 from api.exception.spotify import (
     SpotifyAuthenticationException,
-    SpotifyUserNotAllowlistedException,
     SpotifyInvalidGrantException,
+    SpotifyUserNotAllowlistedException,
 )
+from api.exception.validation.app.AppValidationException import AppValidationException
+from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.utils.data_transformer import to_camel_case
 from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
 
@@ -28,22 +33,23 @@ _APP_METADATA_KEY_PREFIX = "app_metadata_key."
 
 def _field_name_for_error_response(field: Any) -> str:
     """Return camelCase wire field name for error response (strip app_metadata_key. prefix if present)."""
-    s = getattr(field, 'value', field) if not isinstance(field, str) else str(field)
+    s = getattr(field, "value", field) if not isinstance(field, str) else str(field)
     if s.startswith(_APP_METADATA_KEY_PREFIX):
-        s = s[len(_APP_METADATA_KEY_PREFIX):]
+        s = s[len(_APP_METADATA_KEY_PREFIX) :]
     return to_camel_case(s)
+
+
 from api.view.error.DrfValidationErrorResponseDetail import DrfValidationErrorResponseDetail
 from api.view.error.ErrorResponseFields import ErrorResponseFields
 
 
 class ErrorResponse:
-
     @staticmethod
-    def _get_error_code(error: Any, default_code: str = 'error') -> str:
-        if isinstance(error, dict) and 'unknown_fields' in error:
-            return str(error['unknown_fields']['code'])
+    def _get_error_code(error: Any, default_code: str = "error") -> str:
+        if isinstance(error, dict) and "unknown_fields" in error:
+            return str(error["unknown_fields"]["code"])
         if isinstance(error, DRFErrorDetail):
-            return str(error.code) if hasattr(error, 'code') else default_code
+            return str(error.code) if hasattr(error, "code") else default_code
         return default_code
 
     @staticmethod
@@ -58,10 +64,10 @@ class ErrorResponse:
         status_message = ErrorResponseFields.STATUS_MESSAGES.get(http_status, "An error occurred")
 
         response_data = {
-            'code': api_error_code,
-            'message': status_message,
+            "code": api_error_code,
+            "message": status_message,
             ErrorResponseFields.SUCCESS: False,
-            ErrorResponseFields.DETAILS: error_detail
+            ErrorResponseFields.DETAILS: error_detail,
         }
 
         return JsonResponse(data=response_data, status=http_status, safe=False)
@@ -70,22 +76,24 @@ class ErrorResponse:
     def _parse_error_message_from_various_error_formats(error: Any) -> tuple[str, str]:
         if isinstance(error, str):
             # Try to parse if it looks like a serialized list/dict
-            if error.startswith('[') or error.startswith('{'):
+            if error.startswith("[") or error.startswith("{"):
                 try:
                     import json
+
                     parsed = json.loads(error.replace("'", '"'))
                     if isinstance(parsed, list) and parsed and isinstance(parsed[0], dict):
-                        return parsed[0]['message'], parsed[0]['code']
-                    elif isinstance(parsed, dict):
-                        return parsed['message'], parsed['code']
+                        return parsed[0]["message"], parsed[0]["code"]
+                    if isinstance(parsed, dict):
+                        return parsed["message"], parsed["code"]
                 except:
                     pass
             return error, FieldValidationErrorCode.DEFAULT
         if isinstance(error, dict):
-            if 'message' in error and 'code' in error:
-                return error['message'], error['code']
-            return str(error.get('message', error)), \
-                error.get('code', ErrorResponseFields.DefaultFieldValidationValues.NonDbIntegrityError.CODE)
+            if "message" in error and "code" in error:
+                return error["message"], error["code"]
+            return str(error.get("message", error)), error.get(
+                "code", ErrorResponseFields.DefaultFieldValidationValues.NonDbIntegrityError.CODE
+            )
         return str(error), ErrorResponseFields.DefaultFieldValidationValues.NonDbIntegrityError.CODE
 
     @staticmethod
@@ -99,71 +107,70 @@ class ErrorResponse:
             field_errors = []
             for error in errors:
                 message, code = ErrorResponse._parse_error_message_from_various_error_formats(error)
-                field_errors.append({'message': message, 'code': code})
+                field_errors.append({"message": message, "code": code})
 
             formatted_errors[camel_case_field] = field_errors
 
         return {
-            'message': ErrorResponseFields.MESSAGES[ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT],
-            ErrorResponseFields.FIELD_ERRORS: formatted_errors
+            "message": ErrorResponseFields.MESSAGES[ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT],
+            ErrorResponseFields.FIELD_ERRORS: formatted_errors,
         }
 
     @staticmethod
     def _from_invalid_jwt_token(exception: InvalidToken | NotAuthenticated | AuthenticationFailed) -> JsonResponse:
         try:
             detail = exception.detail
-            message = detail['detail'] if isinstance(detail, dict) and 'detail' in detail else exception.default_detail
-            code = detail['code'] if isinstance(detail, dict) and 'code' in detail else exception.default_code
-        except (AttributeError, TypeError):
-            message = getattr(exception, 'default_detail', str(exception))
-            code = getattr(exception, 'default_code', 'authentication_failed')
+            message = detail["detail"] if isinstance(detail, dict) and "detail" in detail else exception.default_detail
+            code = detail["code"] if isinstance(detail, dict) and "code" in detail else exception.default_code
+        except AttributeError, TypeError:
+            message = getattr(exception, "default_detail", str(exception))
+            code = getattr(exception, "default_code", "authentication_failed")
         api_error_code = (
             ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED
-            if code == 'authentication_required'
+            if code == "authentication_required"
             else ApiErrorCodeNumeric.AUTH_INVALID_CREDENTIALS
         )
         return ErrorResponse.create_error_response(
-            error_detail={'message': message, 'code': code},
-            api_error_code=api_error_code)
+            error_detail={"message": message, "code": code}, api_error_code=api_error_code
+        )
 
     @staticmethod
     def _from_unhandled_integrity_error(exception: IntegrityError) -> JsonResponse:
         error_detail: dict[str, Any] = {
-            'message': ErrorResponseFields.DefaultFieldValidationValues.DbIntegrityError.MESSAGE,
-            'code': ApiErrorCodeNumeric.SYSTEM_INTERNAL_ERROR
+            "message": ErrorResponseFields.DefaultFieldValidationValues.DbIntegrityError.MESSAGE,
+            "code": ApiErrorCodeNumeric.SYSTEM_INTERNAL_ERROR,
         }
         return ErrorResponse.create_error_response(
-            error_detail=error_detail, api_error_code=ApiErrorCodeNumeric.SYSTEM_INTERNAL_ERROR)
+            error_detail=error_detail, api_error_code=ApiErrorCodeNumeric.SYSTEM_INTERNAL_ERROR
+        )
 
     @staticmethod
     def _from_unsupported_media_type_exception(exception: UnsupportedMediaType) -> JsonResponse:
         try:
             detail = exception.detail
-            message = detail['detail'] if isinstance(detail, dict) and 'detail' in detail else exception.default_detail
-        except (AttributeError, TypeError):
-            message = getattr(exception, 'default_detail', str(exception))
+            message = detail["detail"] if isinstance(detail, dict) and "detail" in detail else exception.default_detail
+        except AttributeError, TypeError:
+            message = getattr(exception, "default_detail", str(exception))
         return ErrorResponse.create_error_response(
-            error_detail={
-                'message': message,
-                'code': 'unsupported_media_type'
-            },
-            api_error_code=ApiErrorCodeNumeric.VALIDATION_UNSUPPORTED_MEDIA_TYPE)
+            error_detail={"message": message, "code": "unsupported_media_type"},
+            api_error_code=ApiErrorCodeNumeric.VALIDATION_UNSUPPORTED_MEDIA_TYPE,
+        )
 
     @staticmethod
     def _from_content_type_exception(exception: ParseError) -> JsonResponse:
         # Try to access detail first (where the actual message is stored for ParseError created with string)
         # But handle Python 3.14 compatibility issues
         message = None
-        code = getattr(exception, 'default_code', 'parse_error')
+        code = getattr(exception, "default_code", "parse_error")
 
         try:
             detail = exception.detail
             if isinstance(detail, str):
                 message = detail
             elif isinstance(detail, dict):
-                message = detail.get('detail', None)
-                code = detail.get('code', code)
-        except (AttributeError, TypeError):
+                message = detail.get("detail", None)
+                code = detail.get("code", code)
+        except AttributeError, TypeError:
             # Python 3.14 compatibility: detail access failed, try alternatives
             pass
 
@@ -174,11 +181,10 @@ class ErrorResponse:
                 default_detail = exception.default_detail
                 if default_detail and default_detail != "Malformed request.":
                     message = default_detail
-                else:
-                    # Try to get from exception args (ParseError("message") stores it there)
-                    if hasattr(exception, 'args') and exception.args:
-                        message = str(exception.args[0]) if exception.args[0] else None
-            except (AttributeError, TypeError):
+                # Try to get from exception args (ParseError("message") stores it there)
+                elif hasattr(exception, "args") and exception.args:
+                    message = str(exception.args[0]) if exception.args[0] else None
+            except AttributeError, TypeError:
                 pass
 
         # Last resort: try stringification
@@ -192,24 +198,23 @@ class ErrorResponse:
 
         # Final fallback
         if not message:
-            message = 'Invalid input'
+            message = "Invalid input"
 
         return ErrorResponse.create_error_response(
-            error_detail={'message': message, 'code': code},
-            api_error_code=ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT)
+            error_detail={"message": message, "code": code}, api_error_code=ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT
+        )
 
     @staticmethod
     def _from_unhandled_exception(exception: Exception) -> JsonResponse:
-        error_detail: dict[str, Any] = {
-            'message': "An internal error occurred",
-            'code': 'internal_error'
-        }
+        error_detail: dict[str, Any] = {"message": "An internal error occurred", "code": "internal_error"}
         return ErrorResponse.create_error_response(
-            error_detail=error_detail, api_error_code=ApiErrorCodeNumeric.SYSTEM_INTERNAL_ERROR)
+            error_detail=error_detail, api_error_code=ApiErrorCodeNumeric.SYSTEM_INTERNAL_ERROR
+        )
 
     @staticmethod
     def _from_validation_error(
-            exception: Union[AppValidationException, DrfValidationError, DjangoValidationError]) -> JsonResponse:
+        exception: AppValidationException | DrfValidationError | DjangoValidationError,
+    ) -> JsonResponse:
         """
         Custom validation error that maintains a consistent structure through DRF's middleware.
 
@@ -287,138 +292,147 @@ class ErrorResponse:
         """
         if isinstance(exception, AppValidationException):
             formatted_error = {
-                'message': ErrorResponseFields.MESSAGES[ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT],
-                'code': 'invalid_input',
+                "message": ErrorResponseFields.MESSAGES[ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT],
+                "code": "invalid_input",
                 ErrorResponseFields.FIELD_ERRORS: {
-                    _field_name_for_error_response(field): [{
-                        'message': error_detail['message'],
-                        'code': error_detail['code']
-                    }]
+                    _field_name_for_error_response(field): [
+                        {"message": error_detail["message"], "code": error_detail["code"]}
+                    ]
                     for field, error_detail in exception.errors.items()
-                }
+                },
             }
             return ErrorResponse.create_error_response(
-                error_detail=formatted_error,
-                api_error_code=ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT
+                error_detail=formatted_error, api_error_code=ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT
             )
-        elif isinstance(exception, DrfValidationError):
+        if isinstance(exception, DrfValidationError):
             try:
                 error_detail = DrfValidationErrorResponseDetail.convert_error_detail_to_dict(exception.detail)
-            except (AttributeError, TypeError):
+            except AttributeError, TypeError:
                 error_detail = {
-                    'message': getattr(exception, 'default_detail', str(exception)),
-                    'code': 'validation_error'}
+                    "message": getattr(exception, "default_detail", str(exception)),
+                    "code": "validation_error",
+                }
 
             # If it's already a dict with a message, use it directly
-            if isinstance(error_detail, dict) and 'message' in error_detail:
+            if isinstance(error_detail, dict) and "message" in error_detail:
                 return ErrorResponse.create_error_response(
-                    error_detail=error_detail, api_error_code=ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT)
+                    error_detail=error_detail, api_error_code=ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT
+                )
 
             # If it's a dict with field errors
             if isinstance(error_detail, dict):
                 formatted_error = ErrorResponse._format_from_drf_validation_error_detail(error_detail)
                 return ErrorResponse.create_error_response(
-                    error_detail=formatted_error, api_error_code=ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT)
+                    error_detail=formatted_error, api_error_code=ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT
+                )
 
             # For any other case, wrap it in a standard format
             return ErrorResponse.create_error_response(
                 {
-                    'message': ErrorResponseFields.MESSAGES[ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT],
-                    'code': 'invalid_input',
+                    "message": ErrorResponseFields.MESSAGES[ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT],
+                    "code": "invalid_input",
                     ErrorResponseFields.FIELD_ERRORS: error_detail
-                    if isinstance(error_detail, dict) else {ErrorResponseFields.DETAILS: error_detail}
+                    if isinstance(error_detail, dict)
+                    else {ErrorResponseFields.DETAILS: error_detail},
                 },
-                ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT)
+                ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT,
+            )
 
-        elif isinstance(exception, DjangoValidationError):
-            if hasattr(exception, 'message_dict'):
+        if isinstance(exception, DjangoValidationError):
+            if hasattr(exception, "message_dict"):
                 # Multiple field errors
                 formatted_error = {
-                    'message': ErrorResponseFields.MESSAGES[ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT],
-                    'code': 'invalid_input',
+                    "message": ErrorResponseFields.MESSAGES[ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT],
+                    "code": "invalid_input",
                     ErrorResponseFields.FIELD_ERRORS: {
-                        to_camel_case(field): [{
-                            'message': msgs[0],
-                            'code': ErrorResponseFields.DefaultFieldValidationValues.NonDbIntegrityError.CODE
-                        }] for field, msgs in exception.message_dict.items()
-                    }
+                        to_camel_case(field): [
+                            {
+                                "message": msgs[0],
+                                "code": ErrorResponseFields.DefaultFieldValidationValues.NonDbIntegrityError.CODE,
+                            }
+                        ]
+                        for field, msgs in exception.message_dict.items()
+                    },
                 }
                 return ErrorResponse.create_error_response(
-                    error_detail=formatted_error,
-                    api_error_code=ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT
+                    error_detail=formatted_error, api_error_code=ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT
                 )
-            else:
-                # Single error message
-                formatted_error = {
-                    'message': ErrorResponseFields.MESSAGES[ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT],
-                    'code': 'invalid_input',
-                    ErrorResponseFields.FIELD_ERRORS: {
-                        ErrorResponseFields.DETAILS: [{
-                            'message': str(exception.messages[0] if exception.messages else exception),
-                            'code': ErrorResponseFields.DefaultFieldValidationValues.NonDbIntegrityError.CODE
-                        }]
-                    }
-                }
-                return ErrorResponse.create_error_response(
-                    error_detail=formatted_error, api_error_code=ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT)
+            # Single error message
+            formatted_error = {
+                "message": ErrorResponseFields.MESSAGES[ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT],
+                "code": "invalid_input",
+                ErrorResponseFields.FIELD_ERRORS: {
+                    ErrorResponseFields.DETAILS: [
+                        {
+                            "message": str(exception.messages[0] if exception.messages else exception),
+                            "code": ErrorResponseFields.DefaultFieldValidationValues.NonDbIntegrityError.CODE,
+                        }
+                    ]
+                },
+            }
+            return ErrorResponse.create_error_response(
+                error_detail=formatted_error, api_error_code=ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT
+            )
 
         # Generic validation error
-        error_detail = {'message': str(exception), 'code': ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT.name.lower()}
+        error_detail = {"message": str(exception), "code": ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT.name.lower()}
         return ErrorResponse.create_error_response(
-            error_detail=error_detail,
-            api_error_code=ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT
+            error_detail=error_detail, api_error_code=ApiErrorCodeNumeric.VALIDATION_INVALID_INPUT
         )
 
     @staticmethod
     def _from_method_not_allowed_exception(exception: MethodNotAllowed) -> JsonResponse:
         try:
             detail = exception.detail
-            message = str(detail) if isinstance(
-                detail, DRFErrorDetail) else detail['detail'] if isinstance(
-                detail, dict) and 'detail' in detail else exception.default_detail
-        except (AttributeError, TypeError):
-            message = getattr(exception, 'default_detail', str(exception))
-        return ErrorResponse.create_error_response(error_detail={'message': message, 'code': 'method_not_allowed'},
-                                                   api_error_code=ApiErrorCodeNumeric.VALIDATION_METHOD_NOT_ALLOWED)
+            message = (
+                str(detail)
+                if isinstance(detail, DRFErrorDetail)
+                else detail["detail"]
+                if isinstance(detail, dict) and "detail" in detail
+                else exception.default_detail
+            )
+        except AttributeError, TypeError:
+            message = getattr(exception, "default_detail", str(exception))
+        return ErrorResponse.create_error_response(
+            error_detail={"message": message, "code": "method_not_allowed"},
+            api_error_code=ApiErrorCodeNumeric.VALIDATION_METHOD_NOT_ALLOWED,
+        )
 
     @staticmethod
     def _from_http_404_exception(exception: Http404) -> JsonResponse:
         try:
-            message = str(exception) or 'Resource not found'
+            message = str(exception) or "Resource not found"
         except Exception:
-            message = 'Resource not found'
+            message = "Resource not found"
         return ErrorResponse.create_error_response(
-            error_detail={'message': message, 'code': 'not_found'},
-            api_error_code=ApiErrorCodeNumeric.RESOURCE_NOT_FOUND
+            error_detail={"message": message, "code": "not_found"},
+            api_error_code=ApiErrorCodeNumeric.RESOURCE_NOT_FOUND,
         )
 
     @staticmethod
     def _from_permission_denied_exception(exception: PermissionDenied) -> JsonResponse:
         try:
             detail = exception.detail
-            message = detail['detail'] if isinstance(detail, dict) and 'detail' in detail else exception.default_detail
-        except (AttributeError, TypeError):
+            message = detail["detail"] if isinstance(detail, dict) and "detail" in detail else exception.default_detail
+        except AttributeError, TypeError:
             try:
-                message = getattr(exception, 'default_detail', None)
+                message = getattr(exception, "default_detail", None)
                 if message is None:
                     try:
                         message = str(exception)
                     except Exception:
-                        message = 'Permission denied'
+                        message = "Permission denied"
             except Exception:
-                message = 'Permission denied'
+                message = "Permission denied"
         return ErrorResponse.create_error_response(
-            error_detail={'message': message, 'code': 'permission_denied'},
-            api_error_code=ApiErrorCodeNumeric.AUTH_INSUFFICIENT_PERMISSIONS
+            error_detail={"message": message, "code": "permission_denied"},
+            api_error_code=ApiErrorCodeNumeric.AUTH_INSUFFICIENT_PERMISSIONS,
         )
 
     @staticmethod
     def _from_disallowed_host_exception(exception: DisallowedHost) -> JsonResponse:
         return ErrorResponse.create_error_response(
-            error_detail={
-                'message': 'Invalid host header',
-                'code': 'disallowed_host'
-            },
+            error_detail={"message": "Invalid host header", "code": "disallowed_host"},
             api_error_code=ApiErrorCodeNumeric.SECURITY_ERROR,
         )
 
@@ -431,7 +445,7 @@ class ErrorResponse:
         except Exception:
             message = ErrorResponseFields.MESSAGES[ApiErrorCodeNumeric.AUTH_SPOTIFY_USER_NOT_ALLOWLISTED]
         return ErrorResponse.create_error_response(
-            error_detail={'message': message, 'code': 'spotify_user_not_allowlisted'},
+            error_detail={"message": message, "code": "spotify_user_not_allowlisted"},
             api_error_code=ApiErrorCodeNumeric.AUTH_SPOTIFY_USER_NOT_ALLOWLISTED,
         )
 
@@ -444,18 +458,18 @@ class ErrorResponse:
         except Exception:
             message = ErrorResponseFields.MESSAGES[ApiErrorCodeNumeric.AUTH_SPOTIFY_CODE_EXPIRED_OR_USED]
         return ErrorResponse.create_error_response(
-            error_detail={'message': message, 'code': 'spotify_code_expired_or_used'},
+            error_detail={"message": message, "code": "spotify_code_expired_or_used"},
             api_error_code=ApiErrorCodeNumeric.AUTH_SPOTIFY_CODE_EXPIRED_OR_USED,
         )
 
     @staticmethod
     def _from_spotify_authentication_exception(exception: SpotifyAuthenticationException) -> JsonResponse:
-        detail_code = getattr(exception, 'detail_code', 'spotify_authentication_error')
-        if detail_code == 'spotify_invalid_client':
+        detail_code = getattr(exception, "detail_code", "spotify_authentication_error")
+        if detail_code == "spotify_invalid_client":
             return ErrorResponse.create_error_response(
                 error_detail={
-                    'message': 'Sign-in is temporarily misconfigured. Please try again later or contact support.',
-                    'code': detail_code,
+                    "message": "Sign-in is temporarily misconfigured. Please try again later or contact support.",
+                    "code": detail_code,
                 },
                 api_error_code=ApiErrorCodeNumeric.SYSTEM_INTERNAL_ERROR,
             )
@@ -464,7 +478,7 @@ class ErrorResponse:
         except Exception:
             message = f"{type(exception).__name__}: <unable to stringify exception>"
         return ErrorResponse.create_error_response(
-            error_detail={'message': message, 'code': detail_code},
+            error_detail={"message": message, "code": detail_code},
             api_error_code=ApiErrorCodeNumeric.AUTH_INVALID_CREDENTIALS,
         )
 
@@ -474,57 +488,54 @@ class ErrorResponse:
             message = str(exception)
         except Exception:
             message = f"{type(exception).__name__}: <unable to stringify exception>"
-        detail_code = getattr(exception, 'detail_code', 'google_authentication_error')
+        detail_code = getattr(exception, "detail_code", "google_authentication_error")
         if detail_code in (
-            'google_oauth_redirect_uri_mismatch',
-            'google_oauth_invalid_client',
-            'google_oauth_unauthorized_client',
+            "google_oauth_redirect_uri_mismatch",
+            "google_oauth_invalid_client",
+            "google_oauth_unauthorized_client",
         ):
             return ErrorResponse.create_error_response(
                 error_detail={
-                    'message': 'Sign-in is temporarily misconfigured. Please try again later or contact support.',
-                    'code': detail_code,
+                    "message": "Sign-in is temporarily misconfigured. Please try again later or contact support.",
+                    "code": detail_code,
                 },
                 api_error_code=ApiErrorCodeNumeric.SYSTEM_INTERNAL_ERROR,
             )
         return ErrorResponse.create_error_response(
-            error_detail={'message': message, 'code': detail_code},
+            error_detail={"message": message, "code": detail_code},
             api_error_code=ApiErrorCodeNumeric.AUTH_INVALID_CREDENTIALS,
         )
 
     @staticmethod
     def handle_exception(exc: Exception) -> JsonResponse:
-        """
-        Routes different types of exceptions to their appropriate handlers.
-        """
+        """Routes different types of exceptions to their appropriate handlers."""
         if isinstance(exc, DrfValidationError):
             converted = AppValidationException._detect_and_convert_from_drf_exception(exc)
             if converted:
                 exc = converted
             return ErrorResponse._from_validation_error(exc)
-        elif isinstance(exc, IntegrityError):
+        if isinstance(exc, IntegrityError):
             return ErrorResponse._from_unhandled_integrity_error(exc)
-        elif isinstance(exc, (InvalidToken, NotAuthenticated, AuthenticationFailed)):
+        if isinstance(exc, (InvalidToken, NotAuthenticated, AuthenticationFailed)):
             return ErrorResponse._from_invalid_jwt_token(exc)
-        elif isinstance(exc, ParseError):
+        if isinstance(exc, ParseError):
             return ErrorResponse._from_content_type_exception(exc)
-        elif isinstance(exc, UnsupportedMediaType):
+        if isinstance(exc, UnsupportedMediaType):
             return ErrorResponse._from_unsupported_media_type_exception(exc)
-        elif isinstance(exc, MethodNotAllowed):
+        if isinstance(exc, MethodNotAllowed):
             return ErrorResponse._from_method_not_allowed_exception(exc)
-        elif isinstance(exc, Http404):
+        if isinstance(exc, Http404):
             return ErrorResponse._from_http_404_exception(exc)
-        elif isinstance(exc, PermissionDenied):
+        if isinstance(exc, PermissionDenied):
             return ErrorResponse._from_permission_denied_exception(exc)
-        elif isinstance(exc, DisallowedHost):
+        if isinstance(exc, DisallowedHost):
             return ErrorResponse._from_disallowed_host_exception(exc)
-        elif isinstance(exc, SpotifyUserNotAllowlistedException):
+        if isinstance(exc, SpotifyUserNotAllowlistedException):
             return ErrorResponse._from_spotify_user_not_allowlisted_exception(exc)
-        elif isinstance(exc, SpotifyInvalidGrantException):
+        if isinstance(exc, SpotifyInvalidGrantException):
             return ErrorResponse._from_spotify_invalid_grant_exception(exc)
-        elif isinstance(exc, SpotifyAuthenticationException):
+        if isinstance(exc, SpotifyAuthenticationException):
             return ErrorResponse._from_spotify_authentication_exception(exc)
-        elif isinstance(exc, GoogleAuthenticationException):
+        if isinstance(exc, GoogleAuthenticationException):
             return ErrorResponse._from_google_authentication_exception(exc)
-        else:
-            return ErrorResponse._from_unhandled_exception(exc)
+        return ErrorResponse._from_unhandled_exception(exc)

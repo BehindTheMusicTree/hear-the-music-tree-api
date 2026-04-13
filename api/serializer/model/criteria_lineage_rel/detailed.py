@@ -11,6 +11,4 @@ class CriteriaLineageRelDetailedSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CriteriaLineageRel
-        fields = [Fields.DESCENDANT,
-                  Fields.ASCENDANT,
-                  Fields.DEGREE]
+        fields = [Fields.DESCENDANT, Fields.ASCENDANT, Fields.DEGREE]

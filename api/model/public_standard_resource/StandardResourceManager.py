@@ -5,11 +5,10 @@ from api.model.public_standard_resource.PublicStandardResource import PublicStan
 
 from .Fields import Fields
 
+T = TypeVar("T", bound=PublicStandardResource)
 
-T = TypeVar('T', bound=PublicStandardResource)
 
-
-class StandardResourceManager(BaseManager, Generic[T]):
+class StandardResourceManager[T: PublicStandardResource](BaseManager):
     model: type[T]
 
     def get_default_ordering(self):

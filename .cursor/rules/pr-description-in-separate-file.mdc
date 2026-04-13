@@ -1,6 +1,6 @@
 ---
 description: PR descriptions must be written to .github/pr-descriptions/ as the primary deliverable
-globs: 
+globs:
 alwaysApply: true
 ---
 # PR Description in Separate File

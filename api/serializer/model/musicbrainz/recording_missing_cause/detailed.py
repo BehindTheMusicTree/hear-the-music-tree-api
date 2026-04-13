@@ -1,11 +1,10 @@
-
 from rest_framework import serializers
 
 from api.model.musicbrainz_resource.children.recording.missing_cause.MbRecordingMissingCause import (
-    Fields as ModelFields
+    Fields as ModelFields,
 )
 from api.model.musicbrainz_resource.children.recording.missing_cause.MbRecordingMissingCause import (
-    MbRecordingMissingCause
+    MbRecordingMissingCause,
 )
 
 

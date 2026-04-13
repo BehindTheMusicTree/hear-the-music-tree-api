@@ -1,15 +1,15 @@
-import pytest
 import warnings
+
+import pytest
 from django.db.models import QuerySet
 from rest_framework import status
 
 from api.model.artist.Artist import Artist
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_one_then_ok(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.RECORDING_QUEEN_WEARETHECHAMPIONS_MP3)
 
@@ -22,7 +22,8 @@ class TestCase(UploadedTrackTestCase):
 
     def test_multiple_then_ok(self):
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M21_MP3)
+            UploadedTrackTestFilename.RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M21_MP3
+        )
 
         assert response.status_code == status.HTTP_201_CREATED
         if not self.saved_object.track_file.musicbrainz_recording:

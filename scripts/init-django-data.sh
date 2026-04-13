@@ -25,7 +25,7 @@ check_script_vars_are_set() {
 create_initial_migration_if_needed() {
   MIGRATIONS_DIR="${PROJECT_DIR}${API_DIR_NAME}/migrations/"
   MIGRATION_FILES_COUNT=$(find "${MIGRATIONS_DIR}" -name "*.py" -not -name "__init__.py" 2>/dev/null | wc -l | tr -d ' ')
-  
+
   if [ "$MIGRATION_FILES_COUNT" -eq 0 ]; then
     log_with_script_prefixe "No migration files found. Creating initial migrations..."
     output=$(python3 $MANAGE_SCRIPT makemigrations 2>&1)

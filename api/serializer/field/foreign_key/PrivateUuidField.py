@@ -8,11 +8,10 @@ from api.model.uuid.UuidModel import UuidModel
 from api.serializer.field.AppUuidField import AppUuidField
 from api.serializer.field.foreign_key.ForeignKeyField import ForeignKeyField
 
+T = TypeVar("T", bound=models.Model)
 
-T = TypeVar('T', bound=models.Model)
 
-
-class PrivateUuidField(ForeignKeyField, AppUuidField, Generic[T]):
+class PrivateUuidField[T: models.Model](ForeignKeyField, AppUuidField):
     """
     Field for UUID-based foreign keys that require user ownership verification.
     Extends RelatedField for proper type handling while incorporating functionality
@@ -31,18 +30,18 @@ class PrivateUuidField(ForeignKeyField, AppUuidField, Generic[T]):
     """
 
     def get_request_user(self) -> Any:
-        request = self.context.get('request')
+        request = self.context.get("request")
         if not isinstance(request, Request):
             raise ImproperlyConfigured("request must be a Request instance.")
         return request.user
 
     def get_queryset(self) -> Any:
         user = self.get_request_user()
-        self.additional_filters = {'user': user}
+        self.additional_filters = {"user": user}
         return super().get_queryset()
 
     def to_internal_value(self, data: Any) -> UuidModel | None:
-        if data in [None, ''] and self.allow_null:
+        if data in [None, ""] and self.allow_null:
             return None
 
         uuid = AppUuidField.to_internal_value(self, data)

@@ -18,18 +18,17 @@ Used as ``DEFAULT_SCHEMA_CLASS`` in REST_FRAMEWORK settings so /schema/ and
 """
 
 from django.db import models
-from rest_framework import serializers
-from rest_framework.utils.model_meta import get_field_info
-
 from drf_spectacular.drainage import error, warn
 from drf_spectacular.openapi import AutoSchema
 from drf_spectacular.plumbing import build_basic_type, get_manager
 from drf_spectacular.types import OpenApiTypes
+from rest_framework import serializers
+from rest_framework.utils.model_meta import get_field_info
 
 
 class AppAutoSchema(AutoSchema):
     """
-    drf-spectacular AutoSchema that supports GeneratedField and DecimalField.
+    Drf-spectacular AutoSchema that supports GeneratedField and DecimalField.
 
     Overrides _map_model_field to avoid TypeError when generating the OpenAPI
     schema for serializers whose models use Django GeneratedField (e.g. computed
@@ -39,7 +38,8 @@ class AppAutoSchema(AutoSchema):
 
     def _map_model_field(self, model_field, direction):
         """Map a Django model field to an OpenAPI schema, with GeneratedField and DecimalField fixes."""
-        assert isinstance(model_field, models.Field)
+        if not isinstance(model_field, models.Field):
+            raise TypeError(f"model_field must be a django.db.models.Field, got {type(model_field).__name__!r}")
 
         generated_field_cls = getattr(models, "GeneratedField", None)
         if generated_field_cls is not None and isinstance(model_field, generated_field_cls):
@@ -95,7 +95,7 @@ class AppAutoSchema(AutoSchema):
             return self._map_serializer_field(serializer_field, direction)
         error(
             f'could not resolve model field "{model_field}". Failed to resolve through '
-            f'serializer_field_mapping, get_internal_type(), or any override mechanism. '
+            f"serializer_field_mapping, get_internal_type(), or any override mechanism. "
             f'Defaulting to "string"'
         )
         return build_basic_type(OpenApiTypes.STR)

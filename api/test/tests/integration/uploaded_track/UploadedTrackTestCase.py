@@ -3,10 +3,10 @@ from uuid import UUID
 from django.urls import reverse
 
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
+from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.utils.AppTestCase import AppTestCase
 from api.test.utils.uploaded_track.UploadedTrackDownloadTestUrl import UploadedTrackDownloadTestUrl
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.utils import data_transformer
 
 
@@ -16,14 +16,18 @@ class UploadedTrackTestCase(AppTestCase[UploadedTrack]):
     is_from_uploaded_track_test_case: bool = True
 
     def _post_uploaded_track_from_url(
-            self, test_uploaded_track_url: UploadedTrackDownloadTestUrl = UploadedTrackDownloadTestUrl.MP3, **kwargs):
+        self, test_uploaded_track_url: UploadedTrackDownloadTestUrl = UploadedTrackDownloadTestUrl.MP3, **kwargs
+    ):
         kwargs[UploadedTrackInputFieldKey.TRACK_FILE_PUBLIC.value] = str(test_uploaded_track_url)
         return self.api_client.post(
-            path=reverse('me-uploaded-track-list'), data=kwargs, handle_response=self._set_results)
+            path=reverse("me-uploaded-track-list"), data=kwargs, handle_response=self._set_results
+        )
 
     def _post_uploaded_track(
-            self, test_uploaded_track_filename: UploadedTrackTestFilename = UploadedTrackTestFilename.METADATA_NONE_MP3,
-            **kwargs):
+        self,
+        test_uploaded_track_filename: UploadedTrackTestFilename = UploadedTrackTestFilename.METADATA_NONE_MP3,
+        **kwargs,
+    ):
         file_abs_path = self.TEST_FILES_BASE_DIR / test_uploaded_track_filename.value
 
         with open(file_abs_path, "rb") as sample_file:
@@ -33,24 +37,29 @@ class UploadedTrackTestCase(AppTestCase[UploadedTrack]):
             else:
                 kwargs = file_field_dict
             return self.api_client.post(
-                path=reverse('me-uploaded-track-list'),
-                data=kwargs, format='multipart', handle_response=self._set_results)
+                path=reverse("me-uploaded-track-list"),
+                data=kwargs,
+                format="multipart",
+                handle_response=self._set_results,
+            )
 
     def _post_uploaded_track_without_file(self, **kwargs):
         return self.api_client.post(
-            path=reverse('me-uploaded-track-list'), data=kwargs, handle_response=self._set_results)
+            path=reverse("me-uploaded-track-list"), data=kwargs, handle_response=self._set_results
+        )
 
     def _download_uploaded_track(self, uuid):
-        return self.api_client.get(path=reverse('me-uploaded-track-download', kwargs={'pk': uuid}))
+        return self.api_client.get(path=reverse("me-uploaded-track-download", kwargs={"pk": uuid}))
 
     def _delete_uploaded_track(self, uuid):
-        return self.api_client.delete(path=reverse('me-uploaded-track-detail', kwargs={'pk': uuid}))
+        return self.api_client.delete(path=reverse("me-uploaded-track-detail", kwargs={"pk": uuid}))
 
     def _retrieve_uploaded_track(self, uuid: UUID):
-        return self.api_client.get(path=reverse('me-uploaded-track-detail', kwargs={'pk': uuid}),
-                                   handle_response=self._set_results)
+        return self.api_client.get(
+            path=reverse("me-uploaded-track-detail", kwargs={"pk": uuid}), handle_response=self._set_results
+        )
 
     def _list_uploaded_tracks(self, **kwargs):
         return self.api_client.get(
-            path=reverse('me-uploaded-track-list'),
-            data=kwargs, handle_response=self._set_results)
+            path=reverse("me-uploaded-track-list"), data=kwargs, handle_response=self._set_results
+        )

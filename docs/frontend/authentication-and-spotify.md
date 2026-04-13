@@ -24,18 +24,19 @@ All error responses use this structure:
 
 ## HTTP status and API codes
 
-| HTTP status | API `code` | `details.code` | Meaning | Frontend action |
-|-------------|------------|----------------|---------|-----------------|
-| **401** | **1006** | `authentication_required` | User is **not logged in** to the app. | Redirect to **app login** (e.g. login page or token obtain). Do **not** redirect to Spotify. |
-| **403** | **1005** | `spotify_authorization_required` | User **is logged in** to the app but has **not linked Spotify**. | Show “Connect Spotify” / “Link Spotify” and redirect to **Spotify OAuth** (e.g. open auth URL from your backend or start your Spotify connect flow). |
-| **401** | **1007** | `spotify_user_not_allowlisted` | Spotify app is in development mode; this user is not in the app's User Management. | Show `details.message`; user cannot sign in until the app owner adds them in the Spotify Developer Dashboard. |
-| **401** | **1008** | `spotify_code_expired_or_used` | Authorization code expired or already used (e.g. code sent twice, or too slow). | Show `details.message`; suggest starting the Spotify connect flow again (and send the code only once). |
-| **401** | **1001** | `spotify_authentication_error` | Other Spotify login/callback failure (e.g. user denied, invalid code). | Show `details.message`; optionally retry or open Spotify app/settings. |
-| **401** | **1001** | `authentication_failed` | Invalid or expired JWT. | Clear stored tokens and redirect to **app login**. |
+| HTTP status | API `code` | `details.code`                   | Meaning                                                                            | Frontend action                                                                                                                                      |
+| ----------- | ---------- | -------------------------------- | ---------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **401**     | **1006**   | `authentication_required`        | User is **not logged in** to the app.                                              | Redirect to **app login** (e.g. login page or token obtain). Do **not** redirect to Spotify.                                                         |
+| **403**     | **1005**   | `spotify_authorization_required` | User **is logged in** to the app but has **not linked Spotify**.                   | Show “Connect Spotify” / “Link Spotify” and redirect to **Spotify OAuth** (e.g. open auth URL from your backend or start your Spotify connect flow). |
+| **401**     | **1007**   | `spotify_user_not_allowlisted`   | Spotify app is in development mode; this user is not in the app's User Management. | Show `details.message`; user cannot sign in until the app owner adds them in the Spotify Developer Dashboard.                                        |
+| **401**     | **1008**   | `spotify_code_expired_or_used`   | Authorization code expired or already used (e.g. code sent twice, or too slow).    | Show `details.message`; suggest starting the Spotify connect flow again (and send the code only once).                                               |
+| **401**     | **1001**   | `spotify_authentication_error`   | Other Spotify login/callback failure (e.g. user denied, invalid code).             | Show `details.message`; optionally retry or open Spotify app/settings.                                                                               |
+| **401**     | **1001**   | `authentication_failed`          | Invalid or expired JWT.                                                            | Clear stored tokens and redirect to **app login**.                                                                                                   |
 
 ## Recommended flow
 
 1. **On request to a Spotify-required endpoint** (e.g. `GET /me/spotify/` or list):
+
    - Send the request with the app’s JWT (e.g. `Authorization: Bearer <access_token>`).
 
 2. **On response:**
@@ -52,8 +53,8 @@ All error responses use this structure:
 ## Example (pseudo-code)
 
 ```javascript
-const response = await fetch('/v1/me/spotify/', {
-  headers: { Authorization: `Bearer ${appAccessToken}` }
+const response = await fetch("/v1/me/spotify/", {
+  headers: { Authorization: `Bearer ${appAccessToken}` },
 });
 
 if (response.ok) {
@@ -66,19 +67,28 @@ const err = await response.json();
 const apiCode = err.code;
 const detailsCode = err.details?.code;
 
-if (response.status === 401 && (apiCode === 1006 || detailsCode === 'authentication_required')) {
+if (
+  response.status === 401 &&
+  (apiCode === 1006 || detailsCode === "authentication_required")
+) {
   // Not logged in to the app → app login
   redirectToAppLogin();
   return;
 }
 
-if (response.status === 403 && (apiCode === 1005 || detailsCode === 'spotify_authorization_required')) {
+if (
+  response.status === 403 &&
+  (apiCode === 1005 || detailsCode === "spotify_authorization_required")
+) {
   // Logged in but Spotify not linked → Spotify OAuth
   redirectToSpotifyConnect();
   return;
 }
 
-if (response.status === 401 && (apiCode === 1007 || detailsCode === 'spotify_user_not_allowlisted')) {
+if (
+  response.status === 401 &&
+  (apiCode === 1007 || detailsCode === "spotify_user_not_allowlisted")
+) {
   // User not in Spotify app allowlist (dev mode)
   showError(err.details?.message ?? err.message);
   return;
@@ -116,7 +126,7 @@ When the Spotify app is in **development mode**, only Spotify accounts that the 
 4. The API **does not** return 500 or the raw Spotify error. It:
    - Returns **401 Unauthorized**.
    - Sets **`code`** to **1007** and **`details.code`** to **`spotify_user_not_allowlisted`**.
-   - Sets **`details.message`** to a user-facing message, e.g. *“Spotify app is in development mode. Your account must be added in the Spotify Developer Dashboard (Users and Access) to sign in.”*
+   - Sets **`details.message`** to a user-facing message, e.g. _“Spotify app is in development mode. Your account must be added in the Spotify Developer Dashboard (Users and Access) to sign in.”_
 
 So the frontend can rely on **401 + code 1007** (or `details.code === 'spotify_user_not_allowlisted'`) to detect this case and show a specific UI without parsing the message text.
 
@@ -132,7 +142,7 @@ The app owner can add up to 5 users in Dashboard → App → Settings → User M
 
 ## "Invalid authorization code" (401, spotify_authentication_error)
 
-When exchanging the OAuth code with `POST /auth/spotify/`, Spotify may return **invalid_grant** ("Invalid authorization code"). The API turns this into **401** with `details.code === 'spotify_authentication_error'` and a message like *"Authorization code expired or already used. Please try connecting with Spotify again."*
+When exchanging the OAuth code with `POST /auth/spotify/`, Spotify may return **invalid_grant** ("Invalid authorization code"). The API turns this into **401** with `details.code === 'spotify_authentication_error'` and a message like _"Authorization code expired or already used. Please try connecting with Spotify again."_
 
 Common causes:
 

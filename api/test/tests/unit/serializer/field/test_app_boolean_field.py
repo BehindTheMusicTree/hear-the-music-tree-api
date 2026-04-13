@@ -1,12 +1,11 @@
 import pytest
 
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.exception.validation.app.AppValidationException import AppValidationException
+from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.serializer.field.AppBooleanField import AppBooleanField
 
 
 class TestAppBooleanField:
-
     def test_string_true_then_returns_true(self):
         field = AppBooleanField()
         assert field.to_internal_value("true") is True

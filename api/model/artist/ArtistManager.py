@@ -3,8 +3,9 @@ from typing import TYPE_CHECKING
 from django.db import transaction
 
 from api.model.uploaded_track_mixin.Fields import Fields as UploadedTrackMixinFields
-from api.model.uploaded_track_mixin.UploadedTrackMixinWithInternalNameManager import UploadedTrackMixinWithInternalNameManager
-
+from api.model.uploaded_track_mixin.UploadedTrackMixinWithInternalNameManager import (
+    UploadedTrackMixinWithInternalNameManager,
+)
 
 if TYPE_CHECKING:
     from api.model.user.User import User
@@ -12,22 +13,26 @@ if TYPE_CHECKING:
     from .Artist import Artist
 
 
-class ArtistManager(UploadedTrackMixinWithInternalNameManager['Artist']):
-    model: type['Artist']
+class ArtistManager(UploadedTrackMixinWithInternalNameManager["Artist"]):
+    model: type[Artist]
 
     def get_default_ordering(self) -> list[str]:
         return [UploadedTrackMixinFields.NAME_INTERNAL]
 
     def get_artists_list_from_names_after_potential_creation(
-            self, user: 'User', artists_names: list[str] | None) -> list['Artist']:
-        return [self.get_or_create(user=user, name=artist_name)[0] for artist_name in artists_names] \
-            if artists_names and len(artists_names) > 0 else []
+        self, user: User, artists_names: list[str] | None
+    ) -> list[Artist]:
+        return (
+            [self.get_or_create(user=user, name=artist_name)[0] for artist_name in artists_names]
+            if artists_names and len(artists_names) > 0
+            else []
+        )
 
-    def delete_instance(self, instance: 'Artist'):
+    def delete_instance(self, instance: Artist):
         with transaction.atomic():
             self.delete_instance_with_albums_and_tracks(instance)
 
-    def delete_instance_with_albums_and_tracks(self, instance: 'Artist') -> tuple[int, dict[str, int]]:
+    def delete_instance_with_albums_and_tracks(self, instance: Artist) -> tuple[int, dict[str, int]]:
         from api.model.album.Album import Album
         from api.model.uploaded_track.UploadedTrack import UploadedTrack
 
@@ -41,7 +46,7 @@ class ArtistManager(UploadedTrackMixinWithInternalNameManager['Artist']):
 
         return instance.delete()
 
-    def delete_instance_if_nothing_linked(self, instance: 'Artist') -> tuple[int, dict[str, int]]:
+    def delete_instance_if_nothing_linked(self, instance: Artist) -> tuple[int, dict[str, int]]:
         if instance.albums.count() == 0:
             if instance.uploaded_tracks.count() == 0:
                 return instance.delete()

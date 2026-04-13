@@ -17,23 +17,11 @@ class TestCase(SpotifyLibTrackTestCase):
     def test_name_and_artist_name_then_results(self):
         artist1 = self.model_fixture_factory.create_spotify_artist(name="Artist 1")
         artist2 = self.model_fixture_factory.create_spotify_artist(name="Artist 2")
-        track1 = self.model_fixture_factory.create_spotify_lib_track(
-            name="Track 1",
-            spotify_artists=[artist1]
-        )
-        track2 = self.model_fixture_factory.create_spotify_lib_track(
-            name="Track 2",
-            spotify_artists=[artist2]
-        )
-        track3 = self.model_fixture_factory.create_spotify_lib_track(
-            name="Track 3",
-            spotify_artists=[artist1]
-        )
+        track1 = self.model_fixture_factory.create_spotify_lib_track(name="Track 1", spotify_artists=[artist1])
+        track2 = self.model_fixture_factory.create_spotify_lib_track(name="Track 2", spotify_artists=[artist2])
+        track3 = self.model_fixture_factory.create_spotify_lib_track(name="Track 3", spotify_artists=[artist1])
 
-        response = self._list_spotify_lib_tracks(
-            name="Track",
-            album_artist_name="Artist 1"
-        )
+        response = self._list_spotify_lib_tracks(name="Track", album_artist_name="Artist 1")
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 2
@@ -44,24 +32,21 @@ class TestCase(SpotifyLibTrackTestCase):
         track1 = self.model_fixture_factory.create_spotify_lib_track(
             name="Track 1",
             duration_ms=300000,  # 5 minutes
-            popularity=80
+            popularity=80,
         )
         track2 = self.model_fixture_factory.create_spotify_lib_track(
             name="Track 2",
             duration_ms=180000,  # 3 minutes
-            popularity=60
+            popularity=60,
         )
         track3 = self.model_fixture_factory.create_spotify_lib_track(
             name="Track 3",
             duration_ms=240000,  # 4 minutes
-            popularity=40
+            popularity=40,
         )
 
         response = self._list_spotify_lib_tracks(
-            duration_sec_min=2.5 * 60,
-            duration_sec_max=3.5 * 60,
-            popularity_min=50,
-            popularity_max=70
+            duration_sec_min=2.5 * 60, duration_sec_max=3.5 * 60, popularity_min=50, popularity_max=70
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -70,25 +55,17 @@ class TestCase(SpotifyLibTrackTestCase):
 
     def test_explicit_and_last_synced_then_results(self):
         track1 = self.model_fixture_factory.create_spotify_lib_track(
-            name="Track 1",
-            explicit=True,
-            last_synced_at=self.past
+            name="Track 1", explicit=True, last_synced_at=self.past
         )
         track2 = self.model_fixture_factory.create_spotify_lib_track(
-            name="Track 2",
-            explicit=False,
-            last_synced_at=self.now
+            name="Track 2", explicit=False, last_synced_at=self.now
         )
         track3 = self.model_fixture_factory.create_spotify_lib_track(
-            name="Track 3",
-            explicit=True,
-            last_synced_at=self.future
+            name="Track 3", explicit=True, last_synced_at=self.future
         )
 
         response = self._list_spotify_lib_tracks(
-            explicit=True,
-            last_synced_at_gte=self.past.isoformat(),
-            last_synced_at_lte=self.now.isoformat()
+            explicit=True, last_synced_at_gte=self.past.isoformat(), last_synced_at_lte=self.now.isoformat()
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -105,7 +82,7 @@ class TestCase(SpotifyLibTrackTestCase):
             popularity=80,
             explicit=True,
             last_synced_at=self.past,
-            is_removed=False
+            is_removed=False,
         )
         track2 = self.model_fixture_factory.create_spotify_lib_track(
             name="Track 2",
@@ -114,7 +91,7 @@ class TestCase(SpotifyLibTrackTestCase):
             popularity=60,
             explicit=False,
             last_synced_at=self.now,
-            is_removed=False
+            is_removed=False,
         )
         track3 = self.model_fixture_factory.create_spotify_lib_track(
             name="Track 3",
@@ -123,7 +100,7 @@ class TestCase(SpotifyLibTrackTestCase):
             popularity=40,
             explicit=True,
             last_synced_at=self.future,
-            is_removed=True
+            is_removed=True,
         )
 
         response = self._list_spotify_lib_tracks(
@@ -136,7 +113,7 @@ class TestCase(SpotifyLibTrackTestCase):
             explicit=True,
             last_synced_at_gte=self.past.isoformat(),
             last_synced_at_lte=self.future.isoformat(),
-            is_removed=True
+            is_removed=True,
         )
 
         assert response.status_code == status.HTTP_200_OK

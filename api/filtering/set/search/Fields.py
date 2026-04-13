@@ -1,3 +1,3 @@
 class Fields:
     QUERY = "query"
-    TYPE = 'type'
+    TYPE = "type"

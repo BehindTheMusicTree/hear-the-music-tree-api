@@ -13,19 +13,18 @@ from api.model.user.User import User
 
 from .UploadedTrackFieldKey import UploadedTrackFieldKey as Fields
 
-
 if TYPE_CHECKING:
     from api.model.criteria.children.genre.Genre import Genre
 
     from .UploadedTrack import UploadedTrack
 
 
-class UploadedTrackManager(StandardResourceManager['UploadedTrack']):
-    model: type['UploadedTrack']
+class UploadedTrackManager(StandardResourceManager["UploadedTrack"]):
+    model: type[UploadedTrack]
 
-    def _remove_from_genre_playlists(self, instance: 'UploadedTrack', old_genre: 'Genre | None', genre_limit=None):
-        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
+    def _remove_from_genre_playlists(self, instance: UploadedTrack, old_genre: Genre | None, genre_limit=None):
         from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
+        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
 
         update_date = timezone.now()
         if old_genre:
@@ -33,59 +32,70 @@ class UploadedTrackManager(StandardResourceManager['UploadedTrack']):
             while old_genre_tree_item != genre_limit:
                 old_genre_tree_item = cast(Criteria, old_genre_tree_item)  # Cannot be None at that point
                 UploadedTrackPlaylistRel.objects.delete_instance(
-                    user=instance.user, playlist=old_genre_tree_item.criteria_playlist, uploaded_track=instance)
+                    user=instance.user, playlist=old_genre_tree_item.criteria_playlist, uploaded_track=instance
+                )
 
                 # The loop will stop before genre_tree_item is None
                 old_genre_tree_item = old_genre_tree_item.parent
 
         else:
             genreless_criteria_playlist: CriteriaPlaylist = CriteriaPlaylist.objects.get(
-                user=instance.user, type=CriteriaTypePks.GENRE, criteria=None)
+                user=instance.user, type=CriteriaTypePks.GENRE, criteria=None
+            )
             UploadedTrackPlaylistRel.objects.filter(
-                playlist=genreless_criteria_playlist, uploaded_track=instance).delete()
+                playlist=genreless_criteria_playlist, uploaded_track=instance
+            ).delete()
 
-    def _add_to_genre_playlists(self, instance: 'UploadedTrack', genre_limit=None):
-        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
+    def _add_to_genre_playlists(self, instance: UploadedTrack, genre_limit=None):
         from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
+        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
 
         update_date = timezone.now()
         if instance.genre:
             genre_tree_item: Genre = instance.genre
             while genre_tree_item != genre_limit:
                 UploadedTrackPlaylistRel.objects.create(
-                    user=instance.user, playlist=genre_tree_item.criteria_playlist, uploaded_track=instance)
+                    user=instance.user, playlist=genre_tree_item.criteria_playlist, uploaded_track=instance
+                )
 
                 # The loop will stop before genre_tree_item is None
                 genre_tree_item = genre_tree_item.parent  # type: ignore
         else:
-            genreless_criteria_playlist: CriteriaPlaylist = CriteriaPlaylist.objects.get(user=instance.user,
-                                                                                         type=CriteriaTypePks.GENRE,
-                                                                                         criteria=None)
+            genreless_criteria_playlist: CriteriaPlaylist = CriteriaPlaylist.objects.get(
+                user=instance.user, type=CriteriaTypePks.GENRE, criteria=None
+            )
             UploadedTrackPlaylistRel.objects.create(
-                user=instance.user, playlist=genreless_criteria_playlist, uploaded_track=instance)
+                user=instance.user, playlist=genreless_criteria_playlist, uploaded_track=instance
+            )
 
     def _decrease_position_of_next_tracks_in_old_track_playlists(self, user: User, playlists_with_old_position: list):
-        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import Fields as UploadedTrackPlaylistRelFields
+        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import (
+            Fields as UploadedTrackPlaylistRelFields,
+        )
         from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
+
         for playlist_uuid, old_position in playlists_with_old_position:
             uploaded_track_playlist_rels_to_update = UploadedTrackPlaylistRel.objects.filter(
-                user=user, playlist=playlist_uuid, position__gt=old_position)
+                user=user, playlist=playlist_uuid, position__gt=old_position
+            )
             uploaded_track_playlist_rels_to_update.update(position=F(UploadedTrackPlaylistRelFields.POSITION) - 1)
 
-    def _update_genre_playlists(self, instance: 'UploadedTrack', old_genre: 'Genre | None'):
+    def _update_genre_playlists(self, instance: UploadedTrack, old_genre: Genre | None):
         from api.model.criteria.children.genre.Genre import Genre
-        common_genre = Genre.objects.get_common_ascendant(
-            instance.genre, old_genre) if old_genre and instance.genre else None
+
+        common_genre = (
+            Genre.objects.get_common_ascendant(instance.genre, old_genre) if old_genre and instance.genre else None
+        )
 
         self._add_to_genre_playlists(instance=instance, genre_limit=common_genre)
         self._remove_from_genre_playlists(instance=instance, old_genre=old_genre, genre_limit=common_genre)
 
-    def create(self, **kwargs) -> 'UploadedTrack':
+    def create(self, **kwargs) -> UploadedTrack:
         from .file.TrackFile import TrackFile
 
         with transaction.atomic():
             artists = kwargs.pop(Fields.ARTISTS.value, None)
-            track_file_model_data = dict()
+            track_file_model_data = {}
             track_file_model_data[TrackFileFields.FILE] = kwargs.pop(Fields.TRACK_FILE_INTERNAL.value)
 
             instance: UploadedTrack = super().create(**kwargs)
@@ -103,7 +113,8 @@ class UploadedTrackManager(StandardResourceManager['UploadedTrack']):
         return instance
 
     def create_instance_with_track_file(
-            self, track_file_data: dict[str, Any], uploaded_track_data: dict[str, Any]) -> 'UploadedTrack':
+        self, track_file_data: dict[str, Any], uploaded_track_data: dict[str, Any]
+    ) -> UploadedTrack:
         from ..file.TrackFile import TrackFile
 
         with transaction.atomic():
@@ -120,7 +131,7 @@ class UploadedTrackManager(StandardResourceManager['UploadedTrack']):
 
         return uploaded_track
 
-    def update_instance(self, old_instance: 'UploadedTrack', **kwargs) -> 'UploadedTrack':
+    def update_instance(self, old_instance: UploadedTrack, **kwargs) -> UploadedTrack:
         from api.model.album.Album import Album
         from api.model.artist.Artist import Artist
         from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
@@ -128,7 +139,6 @@ class UploadedTrackManager(StandardResourceManager['UploadedTrack']):
         with transaction.atomic():
             old_album_artists_list = []
             if old_instance.album:
-
                 # list() makes a copy of the QuerySet before the deletion
                 old_album_artists_list = list(old_instance.album.album_artists.all())
                 old_album = old_instance.album
@@ -162,24 +172,28 @@ class UploadedTrackManager(StandardResourceManager['UploadedTrack']):
             if old_archived_state != updated_instance.archived:
                 if updated_instance.archived:
                     UploadedTrackPlaylistRel.objects.archive_instances_of_uploaded_track(
-                        uploaded_track=updated_instance)
+                        uploaded_track=updated_instance
+                    )
                 else:
                     UploadedTrackPlaylistRel.objects.unarchive_instances_of_uploaded_track(
-                        uploaded_track=updated_instance)
+                        uploaded_track=updated_instance
+                    )
 
             return updated_instance
 
-    def delete_instance(self, instance: 'UploadedTrack'):
+    def delete_instance(self, instance: UploadedTrack):
         with transaction.atomic():
             old_playlists_with_positions = instance.playlists_with_positions
             user = instance.user
             self.delete_instance_with_checking_album_and_artists_potential_deletion(instance)
             self._decrease_position_of_next_tracks_in_old_track_playlists(
-                user=user, playlists_with_old_position=old_playlists_with_positions)
+                user=user, playlists_with_old_position=old_playlists_with_positions
+            )
 
-    def delete_instance_with_checking_album_and_artists_potential_deletion(self, instance: 'UploadedTrack'):
+    def delete_instance_with_checking_album_and_artists_potential_deletion(self, instance: UploadedTrack):
         from api.model.album.Album import Album
         from api.model.artist.Artist import Artist
+
         artists: list[Artist] = list(instance.artists.all())  # list() makes a copy of the QuerySet before the deletion
         album = instance.album
 
@@ -191,7 +205,7 @@ class UploadedTrackManager(StandardResourceManager['UploadedTrack']):
         for artist in artists:
             Artist.objects.delete_instance_if_nothing_linked(artist)
 
-    def delete_with_checking_artists_potential_deletion(self, instance: 'UploadedTrack'):
+    def delete_with_checking_artists_potential_deletion(self, instance: UploadedTrack):
         track_artists: QuerySet[Artist] = instance.artists.all()
         instance.delete()
         for artist in track_artists:

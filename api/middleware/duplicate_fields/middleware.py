@@ -10,6 +10,7 @@ from rest_framework.request import Request
 from api.exception.validation.app.AppValidationException import AppValidationException
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.view.error.ErrorResponse import ErrorResponse
+
 from .JsonDuplicateKeyDetectingDecoder import JsonDuplicateKeyDetectingDecoder
 
 logger = logging.getLogger(__name__)
@@ -57,18 +58,18 @@ class DuplicateFieldsMiddleware:
         """Handle duplicate field by creating an AppValidationException and converting it to response."""
         exception = AppValidationException(
             field_name=field_name,
-            message='Duplicate field detected.',
-            field_validation_error_code=FieldValidationErrorCode.DUPLICATE
+            message="Duplicate field detected.",
+            field_validation_error_code=FieldValidationErrorCode.DUPLICATE,
         )
         return ErrorResponse._from_validation_error(exception)
 
-    def __call__(self, request: Union[HttpRequest, Request]) -> Union[HttpResponse, JsonResponse]:
-        if request.method in ['POST', 'PUT', 'PATCH']:
-            content_type = request.content_type or ''
+    def __call__(self, request: HttpRequest | Request) -> HttpResponse | JsonResponse:
+        if request.method in ["POST", "PUT", "PATCH"]:
+            content_type = request.content_type or ""
 
-            if content_type == 'application/json':
+            if content_type == "application/json":
                 try:
-                    raw_body = request.body.decode('utf-8')
+                    raw_body = request.body.decode("utf-8")
                     duplicate_fields = self.find_duplicate_fields_in_json(raw_body)
                     if duplicate_fields:
                         # Handle the duplicate field directly instead of raising
@@ -76,42 +77,43 @@ class DuplicateFieldsMiddleware:
                 except UnicodeDecodeError:
                     # Let system errors propagate up to be handled by global error handler
                     raise
-            elif content_type.startswith('multipart/form-data'):
+            elif content_type.startswith("multipart/form-data"):
                 # For multipart requests, check raw POST data (QueryDict) before DRF parsing
                 # This allows us to detect duplicate fields before normalization
                 data_to_check = None
 
                 # For POST requests, Django populates request.POST, so we can use it directly
                 # For PUT/PATCH requests, Django doesn't populate request.POST, so we must use request.data
-                if request.method == 'POST':
-                    if isinstance(request, Request) and hasattr(request, '_request'):
+                if request.method == "POST":
+                    if isinstance(request, Request) and hasattr(request, "_request"):
                         post_data = request._request.POST
                         # QueryDict has getlist() method (lowercase)
-                        if hasattr(post_data, 'getlist') and len(post_data) > 0:
+                        if hasattr(post_data, "getlist") and len(post_data) > 0:
                             data_to_check = post_data
-                    elif hasattr(request, 'POST') and len(request.POST) > 0:
+                    elif hasattr(request, "POST") and len(request.POST) > 0:
                         data_to_check = request.POST
 
                 # For PUT/PATCH requests, we must parse multipart data manually since request.POST is empty
                 # and request.data is not available in middleware (only available in DRF views)
-                if data_to_check is None and request.method in ['PUT', 'PATCH']:
+                if data_to_check is None and request.method in ["PUT", "PATCH"]:
                     try:
                         # Store the original body before parsing to make it re-readable for DRF
                         # RequestLoggingMiddleware may have already stored it, but we ensure it's stored
-                        if not hasattr(request, '_body') or request._body is None:
+                        if not hasattr(request, "_body") or request._body is None:
                             request._body = request.body
 
                         # Manually parse multipart data from raw body to detect duplicates
                         # This is necessary because Django doesn't populate request.POST for PUT/PATCH
                         parser = DjangoMultiPartParser(request.META, request, [TemporaryFileUploadHandler()])
-                        parsed_data, files = parser.parse()
+                        parsed_data, _files = parser.parse()
                         if isinstance(parsed_data, QueryDict) and len(parsed_data) > 0:
                             data_to_check = parsed_data
 
                             # Restore the body stream so DRF can parse it later
                             # Reset the request stream to the stored body
                             from io import BytesIO
-                            if hasattr(request, '_body') and request._body:
+
+                            if hasattr(request, "_body") and request._body:
                                 request._stream = BytesIO(request._body)
                                 # Mark that the stream has been reset
                                 request._read_started = False
@@ -128,9 +130,7 @@ class DuplicateFieldsMiddleware:
                         # DRF's MultiPartParser returns QueryDict for multipart requests
                         data_to_check = request.data  # type: Any
                     # Fallback to request.POST only if request.data is not available
-                    elif hasattr(request, 'POST') and len(request.POST) > 0:
-                        data_to_check = request.POST
-                    elif hasattr(request, 'POST'):
+                    elif (hasattr(request, "POST") and len(request.POST) > 0) or hasattr(request, "POST"):
                         data_to_check = request.POST
 
                 # Only check if we have data to check
@@ -139,14 +139,14 @@ class DuplicateFieldsMiddleware:
                     duplicates = []
 
                     # Check for duplicates while allowing list fields
-                    for field_name in data_to_check.keys():
+                    for field_name in data_to_check:
                         # Skip list fields (fields with [] suffix are allowed to have multiple values)
-                        if field_name.endswith('[]'):
+                        if field_name.endswith("[]"):
                             continue
 
                         # Check if field has multiple values (from multipart form data)
                         # QueryDict (from both POST and PUT) has getlist() method (lowercase)
-                        if hasattr(data_to_check, 'getlist'):  # Handle QueryDict (POST and PUT)
+                        if hasattr(data_to_check, "getlist"):  # Handle QueryDict (POST and PUT)
                             values = data_to_check.getlist(field_name)
                             has_multiple_values = len(values) > 1
                         else:  # Handle regular dict (fallback, though MultiPartParser should return QueryDict)

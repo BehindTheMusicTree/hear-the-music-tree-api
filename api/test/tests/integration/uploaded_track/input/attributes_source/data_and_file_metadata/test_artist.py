@@ -1,12 +1,11 @@
 from rest_framework import status
 
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_artist_in_both_then_take_data(self):
         data_artist_name = "Queen"
         data_dict = {UploadedTrackInputFieldKey.ARTISTS_NAMES_MULTIPART.value: [data_artist_name]}

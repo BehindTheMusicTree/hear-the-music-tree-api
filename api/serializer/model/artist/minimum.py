@@ -11,7 +11,6 @@ class Fields:
 
 
 class ArtistMinimumSerializer(AppInputSerializer, serializers.ModelSerializer):
-
     class Meta:
         model = Artist
         fields = [Fields.UUID, Fields.NAME]

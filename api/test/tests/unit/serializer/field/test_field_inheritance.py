@@ -20,38 +20,39 @@ class TestFieldInheritance(AppTestCase):
     Note: AppField fields can be used in both input and output serializers.
     The validation error handling is only triggered during input validation.
     """
+
     BASE_FIELD_CLASSES = {AppField}
 
     # DRF base field classes that have AppField equivalents and should not be used directly
     DRF_BASE_FIELDS_WITH_APP_EQUIVALENTS = {
-        'serializers.CharField': 'AppCharField',
-        'serializers.BooleanField': 'AppBooleanField',
-        'serializers.UUIDField': 'AppUuidField',
-        'serializers.EmailField': 'AppEmailField',
-        'serializers.URLField': 'AppUrlField',
-        'serializers.FileField': 'AppFileField',
-        'serializers.ListField': 'AppListField',
-        'serializers.DictField': 'AppDictField',
+        "serializers.CharField": "AppCharField",
+        "serializers.BooleanField": "AppBooleanField",
+        "serializers.UUIDField": "AppUuidField",
+        "serializers.EmailField": "AppEmailField",
+        "serializers.URLField": "AppUrlField",
+        "serializers.FileField": "AppFileField",
+        "serializers.ListField": "AppListField",
+        "serializers.DictField": "AppDictField",
     }
 
     # Fields that are acceptable for output serializers (read-only, no validation needed)
     # These are typically used in output serializers for computed/read-only fields
     ACCEPTABLE_DRF_FIELDS = {
-        'serializers.IntegerField',  # Used for counts, IDs in output serializers
-        'serializers.FloatField',
-        'serializers.DecimalField',
-        'serializers.DateTimeField',
-        'serializers.DateField',
-        'serializers.TimeField',
-        'serializers.DurationField',
-        'serializers.ChoiceField',
-        'serializers.MultipleChoiceField',
-        'serializers.SlugField',
-        'serializers.IPAddressField',
-        'serializers.JSONField',
-        'serializers.SerializerMethodField',  # Read-only computed fields
-        'rest_framework.fields.IntegerField',
-        'rest_framework.fields.SerializerMethodField',
+        "serializers.IntegerField",  # Used for counts, IDs in output serializers
+        "serializers.FloatField",
+        "serializers.DecimalField",
+        "serializers.DateTimeField",
+        "serializers.DateField",
+        "serializers.TimeField",
+        "serializers.DurationField",
+        "serializers.ChoiceField",
+        "serializers.MultipleChoiceField",
+        "serializers.SlugField",
+        "serializers.IPAddressField",
+        "serializers.JSONField",
+        "serializers.SerializerMethodField",  # Read-only computed fields
+        "rest_framework.fields.IntegerField",
+        "rest_framework.fields.SerializerMethodField",
     }
 
     def _discover_serializer_classes(self):
@@ -59,9 +60,8 @@ class TestFieldInheritance(AppTestCase):
         serializer_classes = []
         serializer_package_path = Path(__file__).parent.parent.parent.parent / "serializer"
 
-        for importer, modname, ispkg in pkgutil.walk_packages(
-            path=[str(serializer_package_path)],
-            prefix="api.serializer."
+        for _importer, modname, ispkg in pkgutil.walk_packages(
+            path=[str(serializer_package_path)], prefix="api.serializer."
         ):
             if ispkg or modname.endswith(".Fields") or "test" in modname:
                 continue
@@ -75,7 +75,7 @@ class TestFieldInheritance(AppTestCase):
                         and obj.__module__ == modname
                     ):
                         serializer_classes.append((modname, name, obj))
-            except (ImportError, AttributeError, TypeError):
+            except ImportError, AttributeError, TypeError:
                 continue
 
         return serializer_classes
@@ -122,7 +122,7 @@ class TestFieldInheritance(AppTestCase):
                 field_class_name = f"{field_class.__module__}.{field_class.__name__}"
 
                 # For output serializers, allow IntegerField for computed fields (counts, etc.)
-                if is_output and field_class_name in {'serializers.IntegerField', 'rest_framework.fields.IntegerField'}:
+                if is_output and field_class_name in {"serializers.IntegerField", "rest_framework.fields.IntegerField"}:
                     continue
 
                 # Skip other acceptable fields (typically used in output serializers)
@@ -133,16 +133,16 @@ class TestFieldInheritance(AppTestCase):
                 if field_class_name in self.DRF_BASE_FIELDS_WITH_APP_EQUIVALENTS:
                     app_equivalent = self.DRF_BASE_FIELDS_WITH_APP_EQUIVALENTS[field_class_name]
                     violations.append(
-                        f"{serializer_name}.{field_name} uses {field_class_name} "
-                        f"(should use {app_equivalent} instead)"
+                        f"{serializer_name}.{field_name} uses {field_class_name} (should use {app_equivalent} instead)"
                     )
                 # Check if it's a custom field that doesn't inherit from AppField
-                elif (field_class.__module__.startswith('api.serializer.field')
-                      and AppField not in field_class.__mro__
-                      and field_class not in self.BASE_FIELD_CLASSES):
+                elif (
+                    field_class.__module__.startswith("api.serializer.field")
+                    and AppField not in field_class.__mro__
+                    and field_class not in self.BASE_FIELD_CLASSES
+                ):
                     violations.append(
-                        f"{serializer_name}.{field_name} uses {field_class_name} "
-                        f"which does not inherit from AppField"
+                        f"{serializer_name}.{field_name} uses {field_class_name} which does not inherit from AppField"
                     )
 
         assert not violations, (

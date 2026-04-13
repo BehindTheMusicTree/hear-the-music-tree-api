@@ -12,24 +12,27 @@ from api.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 
 class ManualPlaylistViewSet(AppModelViewSet[ManualPlaylist]):
-
     def __init__(self, **kwargs):
-        super().__init__(model_class=ManualPlaylist,
-                         filterset_class=ManualPlaylistFilterSet,
-                         simple_serializer_class=ManualPlaylistSimpleSerializer,
-                         detailed_serializer_class=ManualPlaylistDetailedSerializer,
-                         create_serializer_class=ManualPlaylistPostSerializer,
-                         update_serializer_class=ManualPlaylistPutSerializer,
-                         **kwargs)
+        super().__init__(
+            model_class=ManualPlaylist,
+            filterset_class=ManualPlaylistFilterSet,
+            simple_serializer_class=ManualPlaylistSimpleSerializer,
+            detailed_serializer_class=ManualPlaylistDetailedSerializer,
+            create_serializer_class=ManualPlaylistPostSerializer,
+            update_serializer_class=ManualPlaylistPutSerializer,
+            **kwargs,
+        )
 
     # @transaction.atomic not needed
     @extend_schema(request=ManualPlaylistInputSerializer, responses=ManualPlaylistDetailedSerializer)
     def create(self, request, *args, **kwargs):
         return self._handle_post(request)
 
-    @extend_schema(parameters=[
-        OpenApiParameter(name=Fields.NAME_PUBLIC, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
-    ])
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(name=Fields.NAME_PUBLIC, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
+        ]
+    )
     def list(self, *args, **kwargs):
         return self._handle_list()
 
@@ -40,4 +43,3 @@ class ManualPlaylistViewSet(AppModelViewSet[ManualPlaylist]):
     @extend_schema(request=ManualPlaylistInputSerializer, responses=ManualPlaylistDetailedSerializer)
     def update(self, request, *args, **kwargs):
         return self._handle_update(request)
-

@@ -1,14 +1,13 @@
-import pytest
 import warnings
 from unittest.mock import patch
 
+import pytest
 from django.db.models import QuerySet
 from rest_framework import status
 
 from api.model.musicbrainz_resource.children.artist.MbArtist import MbArtist
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
-
+from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 QUEEN_MOCK_LOOKUP_RESPONSE = {
     "status": "ok",
@@ -19,9 +18,7 @@ QUEEN_MOCK_LOOKUP_RESPONSE = {
                 {
                     "id": "some_recording_id",
                     "title": "We Are the Champions",
-                    "artists": [
-                        {"id": "0383dadf-2a4e-4d10-a46a-e9e041da8eb3", "name": "Queen"}
-                    ],
+                    "artists": [{"id": "0383dadf-2a4e-4d10-a46a-e9e041da8eb3", "name": "Queen"}],
                     "duration": 180,
                 }
             ],
@@ -32,15 +29,12 @@ QUEEN_MOCK_LOOKUP_RESPONSE = {
 
 @pytest.mark.patches_musicbrainz_lookup
 class TestCase(UploadedTrackTestCase):
-
     def test_one_then_ok(self):
         with patch(
             "api.utils.musicbrainz.service.acoustid.lookup",
             return_value=QUEEN_MOCK_LOOKUP_RESPONSE,
         ):
-            response = self._post_uploaded_track(
-                UploadedTrackTestFilename.RECORDING_QUEEN_WEARETHECHAMPIONS_MP3
-            )
+            response = self._post_uploaded_track(UploadedTrackTestFilename.RECORDING_QUEEN_WEARETHECHAMPIONS_MP3)
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.track_file.musicbrainz_recording
         musicbrainz_artists: QuerySet[MbArtist] = (
@@ -51,11 +45,13 @@ class TestCase(UploadedTrackTestCase):
 
     def test_multiple_then_ok(self):
         response = self._post_uploaded_track(
-            UploadedTrackTestFilename.RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M21_MP3)
+            UploadedTrackTestFilename.RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M21_MP3
+        )
         assert response.status_code == status.HTTP_201_CREATED
         if self.saved_object.track_file.musicbrainz_recording:
-            musicbrainz_artists: QuerySet[MbArtist] = \
+            musicbrainz_artists: QuerySet[MbArtist] = (
                 self.saved_object.track_file.musicbrainz_recording.musicbrainz_artists.all()
+            )
             artists_musicbrainz_ids = [artist.musicbrainz_id for artist in musicbrainz_artists]
             assert "d2fe3873-d123-4bea-a5ee-4340d865777c" in artists_musicbrainz_ids
             assert "c4d2d3d2-8c93-499e-9c9e-571bf0d5cf29" in artists_musicbrainz_ids
@@ -71,9 +67,7 @@ class TestCase(UploadedTrackTestCase):
             "api.utils.musicbrainz.service.acoustid.lookup",
             return_value=QUEEN_MOCK_LOOKUP_RESPONSE,
         ):
-            response = self._post_uploaded_track(
-                UploadedTrackTestFilename.RECORDING_QUEEN_WEARETHECHAMPIONS_MP3
-            )
+            response = self._post_uploaded_track(UploadedTrackTestFilename.RECORDING_QUEEN_WEARETHECHAMPIONS_MP3)
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.track_file.musicbrainz_recording
         musicbrainz_artists: QuerySet[MbArtist] = (
@@ -85,9 +79,7 @@ class TestCase(UploadedTrackTestCase):
             "api.utils.musicbrainz.service.acoustid.lookup",
             return_value=QUEEN_MOCK_LOOKUP_RESPONSE,
         ):
-            response = self._post_uploaded_track(
-                UploadedTrackTestFilename.RECORDING_QUEEN_WEARETHECHAMPIONS_MP3
-            )
+            response = self._post_uploaded_track(UploadedTrackTestFilename.RECORDING_QUEEN_WEARETHECHAMPIONS_MP3)
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object.track_file.musicbrainz_recording
         musicbrainz_artists = self.saved_object.track_file.musicbrainz_recording.musicbrainz_artists.all()

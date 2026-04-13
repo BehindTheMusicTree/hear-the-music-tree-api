@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class UploadedTrackTestFilename(str, Enum):
+class UploadedTrackTestFilename(StrEnum):
     """
     Enum for test audio filenames used in uploaded track tests.
 
@@ -28,7 +28,9 @@ class UploadedTrackTestFilename(str, Enum):
     ALBUM_ARTISTS_ONE_TWO_THREE_COMMA_ID3V2 = "album artists=One Two Three_comma_id3v2.mp3"
     ALBUM_ARTISTS_ONE_TWO_THREE_DOUBLE_ANTISLASH_ID3V2 = "album artists=One Two Three_double antislash_id3v2.mp3"
     ALBUM_ARTISTS_ONE_TWO_THREE_DOUBLE_SLASH_ID3V2 = "album artists=One Two Three_double slash_id3v2.mp3"
-    ALBUM_ARTISTS_ONE_TWO_THREE_MULTI_TAGS_AND_SLASH_VORBIS = "album artists=One Two Three_muti tags and slash_vorbis.flac"
+    ALBUM_ARTISTS_ONE_TWO_THREE_MULTI_TAGS_AND_SLASH_VORBIS = (
+        "album artists=One Two Three_muti tags and slash_vorbis.flac"
+    )
     ALBUM_ARTISTS_ONE_TWO_THREE_MULTI_TAGS_VORBIS = "album artists=One Two Three_muti tags_vorbis.flac"
     ALBUM_ARTISTS_ONE_TWO_THREE_SEMICOLON_ID3V2 = "album artists=One Two Three_semicolon_id3v2.mp3"
     ALBUM_ARTISTS_ONE_TWO_THREE_SLASH_ID3V2 = "album artists=One Two Three_slash_id3v2.mp3"
@@ -240,15 +242,27 @@ class UploadedTrackTestFilename(str, Enum):
     # ============================================================================
     # RECORDING - MusicBrainz recording matching tests
     # ============================================================================
-    RECORDING_ALLUMERLEFEU_2_MATCHES_ONE_WITH_MORE_RELEASE_GROUPS_MP3 = "recording=Allumerlefeu_2 matches one with more release groups.mp3"
+    RECORDING_ALLUMERLEFEU_2_MATCHES_ONE_WITH_MORE_RELEASE_GROUPS_MP3 = (
+        "recording=Allumerlefeu_2 matches one with more release groups.mp3"
+    )
     RECORDING_CALIFORNIA_GURLS_ID3V2_TAGS_FLAC = "recording=california gurls_id3v2 tags.flac"
-    RECORDING_CELINEKIN_PARK_NO_MUSICBRAINZ_RECORDING_DURATION_MP3 = "recording=Celinekin Park - no musicbrainz recording duration.mp3"
+    RECORDING_CELINEKIN_PARK_NO_MUSICBRAINZ_RECORDING_DURATION_MP3 = (
+        "recording=Celinekin Park - no musicbrainz recording duration.mp3"
+    )
     RECORDING_DANS_LA_LEGENDE_FLAC = "recording=Dans la legende.flac"
-    RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M21_MP3 = "recording=juan hansen oostil - drown (massano remix) - 7m21.mp3"
-    RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M20_FLAC = "recording=juan hansen oostil - drown (massano remix) - 7m20.flac"
+    RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M21_MP3 = (
+        "recording=juan hansen oostil - drown (massano remix) - 7m21.mp3"
+    )
+    RECORDING_JUAN_HANSEN_OOSTIL_DROWN_MASSANO_REMIX_7M20_FLAC = (
+        "recording=juan hansen oostil - drown (massano remix) - 7m20.flac"
+    )
     RECORDING_KEMAR_FRANCE_MP3 = "recording=Kemar - France.mp3"
-    RECORDING_LORIE_2_MATCHES_BUT_ONE_WITH_CLOSEST_DURATION_MP3 = "recording=lorie_2_matches_but_one_with_closest_duration.mp3"
-    RECORDING_QUEEN_25_MATCHES_BUT_ONE_WITH_BEST_DURATION_AND_MOST_FIELDS_AND_MOST_RELEASE_GROUPS_MP3 = "recording=queen_25_matches_but_one_with_best_duration_and_most_fields_and_most_release_groups.mp3"
+    RECORDING_LORIE_2_MATCHES_BUT_ONE_WITH_CLOSEST_DURATION_MP3 = (
+        "recording=lorie_2_matches_but_one_with_closest_duration.mp3"
+    )
+    RECORDING_QUEEN_25_MATCHES_BUT_ONE_WITH_BEST_DURATION_AND_MOST_FIELDS_AND_MOST_RELEASE_GROUPS_MP3 = (
+        "recording=queen_25_matches_but_one_with_best_duration_and_most_fields_and_most_release_groups.mp3"
+    )
     RECORDING_QUEEN_DURATION_181_MP3 = "recording=queen_duration_181.mp3"
     RECORDING_QUEEN_MULTIPLE_RELEASE_DATES_MP3 = "recording=queen_multiple_release_dates.mp3"
     RECORDING_QUEEN_WEARETHECHAMPIONS_MP3 = "recording=queen_wearethechampions.mp3"
@@ -256,7 +270,9 @@ class UploadedTrackTestFilename(str, Enum):
     RECORDING_TOKYO_DRIFT_NO_MB_RECORDING_MP3 = "recording=Tokyo Drift_no mb recording.mp3"
     RECORDING_TOTAL_ECLIPSE_3_SCORES_FLAC = "recording=total eclipse_3 scores.flac"
     RECORDING_TOTAL_ECLIPSE_5M35_FLAC = "recording=total eclipse_5m35.flac"
-    RECORDING_TOTAL_ECLIPSE_9_MATCHES_BUT_ONE_WITH_DURATION_FLAC = "recording=total eclipse_9 matches one with duration.flac"
+    RECORDING_TOTAL_ECLIPSE_9_MATCHES_BUT_ONE_WITH_DURATION_FLAC = (
+        "recording=total eclipse_9 matches one with duration.flac"
+    )
     RECORDING_Y_DO_I_CARMINA_BURANA_REMIX_7M52_MP3 = "recording=Y do i - Carmina Burana Remix - 7m52.mp3"
     RECORDING_CARMINA_BURANA_REMIX_7M52_MP3 = "recording=Y do i - Carmina Burana Remix - 7m52.mp3"
     RECORDING_Y_DO_I_CARMINA_BURANA_REMIX_7M52_WAV = "recording=Y do i - Carmina Burana Remix - 7m52.wav"

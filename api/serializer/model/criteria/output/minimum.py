@@ -7,7 +7,6 @@ from .CriteriaOutputFieldKey import CriteriaOutputFieldKey
 
 
 class CriteriaMinimumSerializer(AppInputSerializer, serializers.ModelSerializer):
-
     class Meta:
         model = Criteria
         fields = [

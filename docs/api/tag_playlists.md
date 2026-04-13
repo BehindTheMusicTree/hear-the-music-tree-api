@@ -1,30 +1,36 @@
 # Tag Playlists
 
 ## Overview
+
 Manage playlists based on tags.
 
 ## Contexts
-| Context | Base Path | Authentication | Description |
-|--------|----------|----------------|-------------|
-| `me` | `/v1/me/tag-playlists/` | Required | Tag playlists owned by the authenticated user |
+
+| Context     | Base Path                      | Authentication    | Description                                                                                         |
+| ----------- | ------------------------------ | ----------------- | --------------------------------------------------------------------------------------------------- |
+| `me`        | `/v1/me/tag-playlists/`        | Required          | Tag playlists owned by the authenticated user                                                       |
 | `reference` | `/v1/reference/tag-playlists/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
 
 ## Endpoints
 
 #### List
+
 `GET {base}`
 
 #### Retrieve
+
 `GET {base}{id}/`
 
 ### Context Differences
 
 #### Reference
+
 - Read-only
 - Public access
 - Owned by system account (defined by TMTA_USERNAME environment variable)
 
 #### Me
+
 - Editable by owner
 - Scoped to authenticated user
 
@@ -47,9 +53,10 @@ None
 
 **Response**
 Status codes:
- | 00 OK
+| 00 OK
 
 Body:
+
 ```json
 {
   "count": 10,
@@ -75,16 +82,19 @@ Body:
 ```
 
 ### Validation Rules
+
 None
 
 ### Business Rules
+
 None
 
 ### Errors
-Code	Meaning
- | 00	Bad Request - Invalid parameters
- | 01	Unauthorized - Invalid token
- | 04	Not Found - Playlist not found	
+
+Code Meaning
+| 00 Bad Request - Invalid parameters
+| 01 Unauthorized - Invalid token
+| 04 Not Found - Playlist not found
 
 ### GET /{id}/
 
@@ -103,9 +113,10 @@ None
 
 **Response**
 Status codes:
- | 00 OK
+| 00 OK
 
 Body:
+
 ```json
 {
   "uuid": "uuid",
@@ -124,20 +135,24 @@ Body:
 ```
 
 ### Validation Rules
+
 None
 
 ### Business Rules
+
 None
 
 ### Errors
-Code	Meaning
- | 00	Bad Request - Invalid parameters
- | 01	Unauthorized - Invalid token
- | 04	Not Found - Playlist not found	
+
+Code Meaning
+| 00 Bad Request - Invalid parameters
+| 01 Unauthorized - Invalid token
+| 04 Not Found - Playlist not found
 
 ### Versioning
 
 API path prefix uses the major version only (e.g. `v1`), derived from `APP_VERSION`.
 
 ### Notes
+
 None

@@ -6,7 +6,6 @@ from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase):
-
     def test_playlist_creation(self):
         genre_name = "Rock"
         response = self._post_genre(**{PostFields.NAME_PUBLIC: genre_name})
@@ -24,5 +23,6 @@ class TestCase(GenreTestCase):
 
         assert response.status_code == status.HTTP_201_CREATED
         punkhardcore_playlist: CriteriaPlaylist = CriteriaPlaylist.objects.get(
-            user=self.test_user1, criteria__name=punkhardcore_genre_name)
+            user=self.test_user1, criteria__name=punkhardcore_genre_name
+        )
         assert punkhardcore_playlist.root == genre_rock.criteria_playlist

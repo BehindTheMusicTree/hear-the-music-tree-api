@@ -8,16 +8,17 @@ import os
 import audiometa
 from audiometa import UnifiedMetadata, UnifiedMetadataKey
 from audiometa.exceptions import FileCorruptedError as AudiometaFileCorruptedError
-from audiometa.utils.metadata_format import MetadataFormat as AudiometaMetadataFormat
 from audiometa.utils.flac_md5_state import FlacMd5State
+from audiometa.utils.metadata_format import MetadataFormat as AudiometaMetadataFormat
 from django.core.files import File as DjangoFile
 from django.core.files.uploadedfile import TemporaryUploadedFile
 from django.db.models.fields.files import FieldFile
 
 from api.utils.file_path_utils import get_file_path as _get_file_path_util
-from .types import AppMetadata, AppMetadataValue
+
 from .AppMetadataKey import AppMetadataKey
 from .exceptions import FileCorruptedError
+from .types import AppMetadata, AppMetadataValue
 
 MetadataFormat = AudiometaMetadataFormat
 
@@ -60,7 +61,11 @@ def _convert_app_to_unified_metadata(app_metadata: AppMetadata) -> dict:
     for app_key, value in app_metadata.items():
         if app_key in _APP_TO_UNIFIED_KEY_MAP:
             unified_key = _APP_TO_UNIFIED_KEY_MAP[app_key]
-            if app_key in (AppMetadataKey.GENRES_NAMES, AppMetadataKey.ARTISTS_NAMES, AppMetadataKey.ALBUM_ARTISTS_NAMES):
+            if app_key in (
+                AppMetadataKey.GENRES_NAMES,
+                AppMetadataKey.ARTISTS_NAMES,
+                AppMetadataKey.ALBUM_ARTISTS_NAMES,
+            ):
                 if value is None:
                     # Explicitly set to None to delete the metadata field
                     unified_metadata[unified_key] = None
@@ -177,7 +182,7 @@ def fix_md5_checking(file: FILE_TYPE) -> TemporaryUploadedFile:
     )
     temp_file_path = temp_uploaded.temporary_file_path()
     os.rename(fixed_path, temp_file_path)
-    with open(temp_file_path, 'rb') as f:
+    with open(temp_file_path, "rb") as f:
         f.read(1)
         f.seek(0)
     return temp_uploaded

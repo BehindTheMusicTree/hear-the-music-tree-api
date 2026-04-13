@@ -1,15 +1,17 @@
 import logging
+
 from django.core.exceptions import ObjectDoesNotExist
 
 from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
 from api.utils.spotify_api.managers.SpotifyApiArtistManager import SpotifyApiArtistManager
+
 from .ApiFields import ApiFields
 
 logger = logging.getLogger(__name__)
 
 
 def create_spotify_lib_track_instance_from_dict(
-        spotify_lib_track_id: str, spotify_lib_track_dict: dict, artist_details: dict | None = None
+    spotify_lib_track_id: str, spotify_lib_track_dict: dict, artist_details: dict | None = None
 ) -> SpotifyLibTrack:
     """
     Create a SpotifyLibTrack instance from a Spotify API response dictionary.
@@ -28,7 +30,7 @@ def create_spotify_lib_track_instance_from_dict(
     album = spotify_lib_track_dict.get(ApiFields.Names.ALBUM, {})
     preview_url = spotify_lib_track_dict.get(ApiFields.Names.PREVIEW_URL)
     explicit = spotify_lib_track_dict.get(ApiFields.Names.EXPLICIT, False)
-    followers = spotify_lib_track_dict.get(ApiFields.Names.FOLLOWERS, {}).get('total', 0)
+    followers = spotify_lib_track_dict.get(ApiFields.Names.FOLLOWERS, {}).get("total", 0)
     href = spotify_lib_track_dict.get(ApiFields.Names.HREF)
     type = spotify_lib_track_dict.get(ApiFields.Names.TYPE)
     uri = spotify_lib_track_dict.get(ApiFields.Names.URI)
@@ -48,7 +50,7 @@ def create_spotify_lib_track_instance_from_dict(
             followers=followers,
             href=href,
             type=type,
-            uri=uri
+            uri=uri,
         )
 
     # Process artists
@@ -58,7 +60,8 @@ def create_spotify_lib_track_instance_from_dict(
             artist_id = artist_data.get(ApiFields.Names.ID)
             if artist_id:
                 artist = SpotifyApiArtistManager().create_spotify_artist_instance_from_dict(
-                    artist_id, artist_data, artist_details)
+                    artist_id, artist_data, artist_details
+                )
                 spotify_lib_track.spotify_artists.add(artist)
 
     return spotify_lib_track

@@ -9,9 +9,11 @@ from .Fields import Fields
 
 class CriteriaPutSerializer(PutSerializer):
     name = AppCharField(max_length=settings.CRITERIA_NAME_LEN_MAX, required=False)
-    parent: DescendantAwareField = DescendantAwareField(queryset=Criteria.objects.all(),  # type: ignore
-                                                        required=False,
-                                                        allow_null=True)
+    parent: DescendantAwareField = DescendantAwareField(
+        queryset=Criteria.objects.all(),  # type: ignore
+        required=False,
+        allow_null=True,
+    )
 
     class Meta:
         model = Criteria

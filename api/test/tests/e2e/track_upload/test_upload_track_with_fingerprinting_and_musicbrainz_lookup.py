@@ -34,13 +34,14 @@ class TestCase(UploadedTrackTestCase):
         if fingerprint_bytes is None:
             if fingerprint_missing_cause:
                 code_label = fingerprint_missing_cause.code.label if fingerprint_missing_cause else "Unknown"
-                message = fingerprint_missing_cause.message if fingerprint_missing_cause and fingerprint_missing_cause.message else "No message"
-                pytest.skip(
-                    f"Fingerprint not generated. "
-                    f"Missing cause: {code_label} - {message}"
+                message = (
+                    fingerprint_missing_cause.message
+                    if fingerprint_missing_cause and fingerprint_missing_cause.message
+                    else "No message"
                 )
+                pytest.skip(f"Fingerprint not generated. Missing cause: {code_label} - {message}")
             else:
-                assert False, "Fingerprint is None but no fingerprint_missing_cause is set"
+                raise AssertionError("Fingerprint is None but no fingerprint_missing_cause is set")
         assert fingerprint_bytes is not None
         assert len(fingerprint_bytes) > 0
 

@@ -1,5 +1,6 @@
-import pytest
 from unittest.mock import Mock
+
+import pytest
 from django.http import HttpRequest
 from rest_framework.exceptions import ParseError
 from rest_framework.request import Request
@@ -8,14 +9,13 @@ from api.middleware.ContentTypeValidationMiddleware import ContentTypeValidation
 
 
 class TestContentTypeValidationMiddleware:
-
     def test_json_array_as_root_then_400_parse_error(self):
         """Test that JSON arrays as root are rejected."""
         middleware = ContentTypeValidationMiddleware(get_response=Mock())
 
         request = HttpRequest()
-        request.method = 'POST'
-        request.content_type = 'application/json'
+        request.method = "POST"
+        request.content_type = "application/json"
         request._body = b'["Muse", ""]'  # Use _body to set the body
         request.META = {}
 
@@ -23,11 +23,14 @@ class TestContentTypeValidationMiddleware:
 
         assert response.status_code == 400
         import json
+
         response_data = json.loads(response.content)
-        assert 'details' in response_data
-        assert 'message' in response_data['details']
-        assert 'array' in response_data['details']['message'].lower(
-        ) or 'object' in response_data['details']['message'].lower()
+        assert "details" in response_data
+        assert "message" in response_data["details"]
+        assert (
+            "array" in response_data["details"]["message"].lower()
+            or "object" in response_data["details"]["message"].lower()
+        )
 
     def test_json_object_as_root_then_passes(self):
         """Test that JSON objects as root are accepted."""
@@ -42,8 +45,8 @@ class TestContentTypeValidationMiddleware:
         middleware.get_response = mock_get_response
 
         request = HttpRequest()
-        request.method = 'POST'
-        request.content_type = 'application/json'
+        request.method = "POST"
+        request.content_type = "application/json"
         request._body = b'{"artistsNames": ["Muse"]}'
         request.META = {}
 
@@ -65,9 +68,9 @@ class TestContentTypeValidationMiddleware:
         middleware.get_response = mock_get_response
 
         request = HttpRequest()
-        request.method = 'POST'
-        request.content_type = 'application/json'
-        request._body = b''
+        request.method = "POST"
+        request.content_type = "application/json"
+        request._body = b""
         request.META = {}
 
         response = middleware.__call__(request)
@@ -80,8 +83,8 @@ class TestContentTypeValidationMiddleware:
         middleware = ContentTypeValidationMiddleware(get_response=Mock())
 
         request = HttpRequest()
-        request.method = 'POST'
-        request.content_type = 'application/json'
+        request.method = "POST"
+        request.content_type = "application/json"
         request._body = b'"{"key": "value"}"'  # Double-encoded
         request.META = {}
 
@@ -89,6 +92,7 @@ class TestContentTypeValidationMiddleware:
 
         assert response.status_code == 400
         import json
+
         response_data = json.loads(response.content)
-        assert 'details' in response_data
-        assert 'double-encoded' in response_data['details']['message'].lower()
+        assert "details" in response_data
+        assert "double-encoded" in response_data["details"]["message"].lower()
