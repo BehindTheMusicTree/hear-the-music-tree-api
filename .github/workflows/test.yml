@@ -40,6 +40,18 @@ jobs:
   pre-commit:
     name: Pre-commit
     runs-on: ubuntu-latest
+    # Dummy identity + flags only. Inherits workflow paths for FILE_UPLOAD (models need MEDIA_ROOT / LIBRARIES_DIR_NAME at import).
+    # No GitHub Environment or secrets: DB and external integrations off for mypy-only Django load.
+    env:
+      APP_NAME: htmt_api_mypy_ci
+      APP_TITLE: HTMT API (mypy CI)
+      DEBUG: "true"
+      APP_IS_EXPOSED: "false"
+      DB_IS_NEEDED: "false"
+      AFP_ENABLED: "false"
+      MUSICBRAINZ_LOOKUP_ENABLED: "false"
+      SPOTIFY_ENABLED: "false"
+      GOOGLE_OAUTH_ENABLED: "false"
     steps:
       - name: Checkout code
         uses: actions/checkout@v5.0.1
@@ -63,6 +75,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
+
+      # Same as pytest: env/calculated_paths/ is kept in git via .gitkeep; setup-filesystem.sh generates .env there.
+      - name: Set up filesystem for Django (mypy)
+        run: bash scripts/setup-filesystem.sh
 
       - name: Run pre-commit
         run: pre-commit run --all-files --verbose --show-diff-on-failure
