@@ -126,8 +126,7 @@ FILE_UPLOAD_TEMP_DIR: str | None
 FILE_UPLOAD_ENABLED: bool
 METADATA_SESSION_DIR: Path | None
 
-DEBUG_TOOLBAR_ENABLED: bool = False
-INTERNAL_IPS: list[str] = []
+SILK_ENABLED: bool = False
 
 
 def init_logs_if_needed():
@@ -583,25 +582,24 @@ def setup_middlewares():
     ]
 
 
-def setup_debug_toolbar_if_available():
-    """Load optional dev dependency when DEBUG is on; skipped for pytest and minimal installs."""
-    global DEBUG_TOOLBAR_ENABLED
-    global INTERNAL_IPS
-    DEBUG_TOOLBAR_ENABLED = False
-    INTERNAL_IPS = []
+def setup_silk_if_available():
+    """Load optional dev profiling UI when DEBUG is on; skipped for pytest and minimal installs."""
+    global SILK_ENABLED
+    SILK_ENABLED = False
     if "pytest" in sys.argv[0]:
         return
     if not DEBUG:
         return
-    if importlib.util.find_spec("debug_toolbar") is None:
+    if importlib.util.find_spec("silk") is None:
         return
-    if "debug_toolbar" not in INSTALLED_APPS:
-        INSTALLED_APPS.append("debug_toolbar")
-    toolbar_middleware = "debug_toolbar.middleware.DebugToolbarMiddleware"
-    if toolbar_middleware not in MIDDLEWARE:
-        MIDDLEWARE.insert(1, toolbar_middleware)
-    INTERNAL_IPS = ["127.0.0.1", "::1"]
-    DEBUG_TOOLBAR_ENABLED = True
+    if "silk" not in INSTALLED_APPS:
+        INSTALLED_APPS.append("silk")
+    silky_middleware = "silk.middleware.SilkyMiddleware"
+    if silky_middleware not in MIDDLEWARE:
+        MIDDLEWARE.insert(1, silky_middleware)
+    g = globals()
+    g["SILKY_MAX_RECORDED_REQUESTS"] = 10**4
+    SILK_ENABLED = True
 
 
 def setup_db_connection():
@@ -879,7 +877,7 @@ if "loaddata" in sys.argv:
     setup_data_dir()
     setup_installed_apps_and_caches()
     setup_middlewares()
-    setup_debug_toolbar_if_available()
+    setup_silk_if_available()
     setup_django_constants()
     setup_db_connection()
     setup_templates()  # Needed to use the admin application
@@ -906,7 +904,7 @@ else:
 
     setup_installed_apps_and_caches()
     setup_middlewares()
-    setup_debug_toolbar_if_available()
+    setup_silk_if_available()
     setup_templates()
     setup_django_constants()
     init_logs_if_needed()
