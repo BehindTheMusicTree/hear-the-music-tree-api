@@ -102,5 +102,8 @@ urlpatterns = [
     path("schema/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
 ]
 
+if settings.DEBUG_TOOLBAR_ENABLED:
+    urlpatterns.insert(0, path("__debug__/", include("debug_toolbar.urls")))
+
 if settings.STATIC_FILES_STATE in [StaticFileStates.COLLECTING, StaticFileStates.SERVING]:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
