@@ -42,13 +42,22 @@ setup_static_files_for_serving() {
             log_with_script_prefixe "ERROR: $STATIC_FILES_DEFAULT does not exist. Abort." >&2
             exit 1
         fi
-        if [ -z "$(ls -A $STATIC_FILES_DEFAULT)" ]; then
-            log_with_script_prefixe "ERROR: No files found in $STATIC_FILES_DEFAULT. Abort." >&2
-            exit 1
-        else
-            if [ "$STATIC_FILES_DEFAULT" = "$STATIC_FILES" ]; then
+        default_empty=""
+        if [ -z "$(ls -A "$STATIC_FILES_DEFAULT")" ]; then
+            default_empty=1
+        fi
+        if [ "$STATIC_FILES_DEFAULT" = "$STATIC_FILES" ]; then
+            if [ -n "$default_empty" ]; then
+                log_with_script_prefixe "STATIC_ROOT is empty; entrypoint collectstatic will populate it."
+            else
                 log_with_script_prefixe "STATIC_FILES_DEFAULT is not empty and STATIC_FILES is set to STATIC_FILES_DEFAULT. "\
                     "The static files are already set up."
+            fi
+        else
+            if [ -n "$default_empty" ]; then
+                log_with_script_prefixe "STATIC_FILES_DEFAULT is empty; collectstatic will populate $STATIC_FILES."
+                create_directory_if_not_exists_or_exit "$STATIC_FILES"
+                set_read_write_permissions_and_owner_or_exit "$STATIC_FILES"
             else
                 log_with_script_prefixe "STATIC_FILES_DEFAULT is not empty and STATIC_FILES is not set to STATIC_FILES_DEFAULT. "\
                     "Setting up the filesystem..."
