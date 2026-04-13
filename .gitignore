@@ -4,6 +4,7 @@
 *.pyc
 .venv/
 venv/
+*.egg-info/
 .mypy_cache/
 .ruff_cache/
 
