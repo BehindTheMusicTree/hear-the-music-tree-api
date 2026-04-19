@@ -161,13 +161,6 @@ setup_media_dirs () {
     chmod a+rwx "$TMP_UPLOADED_FILES"
     log_with_script_prefixe "Temp uploaded files directory is set up (world-writable so AFP container and runner can both write)."
 
-    if [ -n "${METADATA_SESSION_DIR}" ]; then
-        create_directory_if_not_exists_or_exit "$METADATA_SESSION_DIR"
-        set_read_write_permissions_and_owner_or_exit "$METADATA_SESSION_DIR"
-        chmod a+rwx "$METADATA_SESSION_DIR"
-        log_with_script_prefixe "Metadata session directory is set up."
-    fi
-
     log_with_script_prefixe "Setting up media directory..."
     create_directory_if_not_exists_or_exit "$MEDIA_DIR"
     create_directory_if_not_exists_or_exit "$LIBRARIES_DIR"

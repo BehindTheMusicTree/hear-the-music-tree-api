@@ -24,4 +24,3 @@ The path prefix is the **major version** only (e.g. `v1`), derived from `APP_VER
 | All Tracks                | `/v1/all-tracks/`                  | TODO           | TODO        | [all_tracks.md](all_tracks.md)           |
 | Search                    | `/v1/search/`                      | TODO           | TODO        | [search.md](search.md)                   |
 | Audio metadata (read raw) | `/v1/audio/metadata/full/`        | None           | Public      | [audio_metadata.md](audio_metadata.md)  |
-| Metadata session (session + download) | `/v1/audio/metadata/session/`, `/v1/audio/metadata/session-download/` | None | Public | [audio_metadata_session.md](audio_metadata_session.md) |

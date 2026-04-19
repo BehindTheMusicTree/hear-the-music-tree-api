@@ -374,9 +374,11 @@ All endpoints are prefixed with the API base URL (`{version}/`). Most endpoints 
 
 | Method | Endpoint | Description | Auth Required |
 |--------|----------|-------------|---------------|
-| `POST` | `audio/metadata/` | Extract raw metadata from an audio file (file not stored) | 🔓 |
+| `POST` | `audio/metadata/full/` | Extract raw metadata from an audio file (file not stored) | 🔓 |
 
 **Request**: `multipart/form-data` with `file` (audio file). Supported formats: `.mp3`, `.flac`, `.wav`. See [audio_metadata.md](docs/api/audio_metadata.md) for full request/response details.
+
+The **metadata session** flow (temporary upload, token, download with tags written) lives in the separate **AudioMeta API** repository (`audiometa-api`); it is no longer served by this API.
 
 ### Genres (me)
 

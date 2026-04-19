@@ -266,16 +266,6 @@ class AppTestCase(TestCase, Generic[T]):
                             os.unlink(path)
                     except OSError:
                         pass
-        if getattr(settings, "METADATA_SESSION_DIR", None):
-            session_dir = settings.METADATA_SESSION_DIR
-            if session_dir and os.path.isdir(session_dir):
-                for name in os.listdir(session_dir):
-                    path = os.path.join(session_dir, name)
-                    try:
-                        if os.path.isfile(path):
-                            os.unlink(path)
-                    except OSError:
-                        pass
         if hasattr(self, '_original_tmta_username'):
             if self._original_tmta_username is not None:
                 os.environ["TMTA_USERNAME"] = self._original_tmta_username

@@ -13,7 +13,6 @@ env:
   APP_VERSION: 'test'
   FILE_UPLOAD_ENABLED: true
   TMP_UPLOADED_FILES_EXTERNAL: /tmp/ci-uploaded/
-  METADATA_SESSION_DIR_EXTERNAL: /tmp/ci-metadata-sessions/
   MEDIA_DIR_INTERNAL: media/
   LIBRARIES_DIR_NAME: libraries
 

@@ -97,7 +97,7 @@ class UploadedTrack(TrackablePlayCount):
         return f"{self.uuid} | '{self.title}' by {artists_str}"
 
     def update_file_metadata_from_uploaded_track_instance_values(self):
-        """Write current track/album/artist/genre/rating/language into the file. Uses the same metadata keys as metadata-session download (APP_METADATA_WRITABLE_KEYS)."""
+        """Write current track/album/artist/genre/rating/language into the file using ``APP_METADATA_WRITABLE_KEYS``."""
         normalized_metadata = dict()
         normalized_metadata[AppMetadataKey.TITLE] = self.title
 
