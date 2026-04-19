@@ -7,8 +7,6 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from api.utils.AppStaticFileStates import StaticFileStates
 from api.view.AudioMetadataView import AudioMetadataView
-from api.view.AudioMetadataSessionView import AudioMetadataSessionView
-from api.view.AudioMetadataSessionDownloadView import AudioMetadataSessionDownloadView
 from api.view.viewset.model.AllUploadedTracksMixinViewSet import AllUploadedTracksViewSet
 from api.view.google_auth import google_auth
 from api.view.spotify_auth import spotify_auth
@@ -80,8 +78,6 @@ router.register(r'search', SearchViewSet, basename='search')
 urlpatterns = [
     path(settings.API_ROOT_BASE, include(router.urls)),
     path(settings.API_ROOT_BASE + 'audio/metadata/full/', AudioMetadataView.as_view(), name='audio-metadata-full'),
-    path(settings.API_ROOT_BASE + 'audio/metadata/session/', AudioMetadataSessionView.as_view(), name='audio-metadata-session'),
-    path(settings.API_ROOT_BASE + 'audio/metadata/session-download/', AudioMetadataSessionDownloadView.as_view(), name='audio-metadata-session-download'),
 
     path('admin/', admin.site.urls),
     path('health/', HealthCheckView.as_view(), name='health-check'),

@@ -231,7 +231,7 @@ The docker build requires the following environment variables:
 - `GUNICORN_LOG_ERROR_FILENAME`
 - `GUNICORN_LOG_ACCESS_FILENAME`
 
-For production deploy, path variables (`METADATA_SESSION_DIR_EXTERNAL`, `TMP_UPLOADED_FILES_EXTERNAL`, `MEDIA_DIR_EXTERNAL`, `STATIC_FILES_EXTERNAL`, `DJANGO_LOG_DIR_EXTERNAL`, `GUNICORN_LOG_DIR`) are set at runtime on the server (e.g. in a `.env` next to docker-compose), not by the workflow. Do not add them to GitHub repo or environment vars; the server supplies them when starting the stack.
+For production deploy, path variables (`TMP_UPLOADED_FILES_EXTERNAL`, `MEDIA_DIR_EXTERNAL`, `STATIC_FILES_EXTERNAL`, `DJANGO_LOG_DIR_EXTERNAL`, `GUNICORN_LOG_DIR`) are set at runtime on the server (e.g. in a `.env` next to docker-compose), not by the workflow. Do not add them to GitHub repo or environment vars; the server supplies them when starting the stack.
 
 Log and static filenames (e.g. `GUNICORN_LOG_ERROR_FILENAME`, `DJANGO_LOG_GENERAL_FILENAME`) stay in the workflow. Industry practice: paths vary by host/deployment so they are runtime config (12-factor); filenames are usually fixed or set at deploy time because they rarely differ per environment. Strict 12-factor also prefers logging to stdout and letting the execution environment handle files; when using file-based logging, path = runtime, filename = workflow or code default is a common compromise.
 
