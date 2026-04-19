@@ -65,11 +65,9 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Audio file metadata**: Renamed `update_file_metadata()` to `update_file_metadata_app()` for `AppMetadata` updates; added `update_file_metadata_unified()` for patches keyed by unified metadata field ids.
 
-- **Audio metadata serializer `Fields`**: `AudioMetadataRequestFieldKey` covers non-tag request keys for the full-metadata endpoint (`file`, `include_musicbrainz_analysis`); `Fields` references `AudioMetadataRequestFieldKey`, `AppMetadataKey`, and `UnifiedMetadataKey`.
-
 ### Removed
 
-- **Metadata session API**: `POST /v1/audio/metadata/session/` and `POST /v1/audio/metadata/session-download/` moved to the standalone **AudioMeta API** service repository (`audiometa-api`). Deploy no longer requires `METADATA_SESSION_DIR` for this app.
+- **Audio metadata API**: `POST /v1/audio/metadata/full/`, `POST /v1/audio/metadata/session/`, and `POST /v1/audio/metadata/session-download/` moved to the standalone **AudioMeta API** service repository (`audiometa-api`). Deploy no longer requires `METADATA_SESSION_DIR` for this app.
 
 ### Documentation
 
