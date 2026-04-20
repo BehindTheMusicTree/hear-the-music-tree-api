@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: Validate vars and build env fragment
         env:
-          VPS_IP: ${{ vars.VPS_IP }}
+          SERVER_HOST: ${{ vars.SERVER_HOST }}
           REDEPLOYMENT_ROOT: ${{ vars.REDEPLOYMENT_ROOT }}
           HTMT_API_APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
           DEMO_EMAIL: ${{ vars.DEMO_EMAIL }}
@@ -69,7 +69,7 @@ jobs:
             'MUSICBRAINZ_LOOKUP_ENABLED=true' \
             'HTMT_API_AFP_ENABLED=true' >> fragment.env
           required=(
-            VPS_IP REDEPLOYMENT_ROOT HTMT_API_APP_NAME
+            SERVER_HOST REDEPLOYMENT_ROOT HTMT_API_APP_NAME
             DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID
             SERVER_DEPLOY_USERNAME SERVER_DEPLOY_SSH_PRIVATE_KEY
             DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD DB_SUPERUSER_PASSWORD
