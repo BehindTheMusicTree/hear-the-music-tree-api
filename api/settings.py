@@ -15,10 +15,9 @@ from api.utils.env_var_loader import (
     load_required_bool_env_var,
     load_required_path_env_var,
     load_required_secret_env_var,
-    load_required_str_env_var
+    load_required_str_env_var,
 )
 from api.utils.utils import is_django_startup_verbose, mask_oauth_client_id, print_django
-
 
 TEST_USER_LIBRARIES_DIR_NAME_PREFIXE: str
 USER_MAX_NUMBER: str
@@ -129,7 +128,7 @@ FILE_UPLOAD_ENABLED: bool
 def init_logs_if_needed():
     from api.logging.LoggersName import LoggersName
 
-    LOG_DIR_STR = os.getenv('DJANGO_LOG_DIR')
+    LOG_DIR_STR = os.getenv("DJANGO_LOG_DIR")
     if not LOG_DIR_STR:
         print_django("The DJANGO_LOG_DIR variable is not set. Logs will not be set up.")
     else:
@@ -137,167 +136,143 @@ def init_logs_if_needed():
 
         LOG_DIR = Path(LOG_DIR_STR)
         if not LOG_DIR.exists():
-            raise EnvironmentError(f"The log directory {LOG_DIR} does not exist.")
+            raise OSError(f"The log directory {LOG_DIR} does not exist.")
         print_django(f"The log dir {LOG_DIR} exists.")
 
-        LOG_GENERAL_FILENAME = load_required_str_env_var('DJANGO_LOG_GENERAL_FILENAME')
+        LOG_GENERAL_FILENAME = load_required_str_env_var("DJANGO_LOG_GENERAL_FILENAME")
         LOG_GENERAL_FILE = LOG_DIR / LOG_GENERAL_FILENAME
         if not LOG_GENERAL_FILE.exists():
-            raise EnvironmentError(f"The log general file {LOG_GENERAL_FILE} does not exist.")
+            raise OSError(f"The log general file {LOG_GENERAL_FILE} does not exist.")
         print_django("The log general file {LOG_GENERAL_FILE} exists.")
 
-        LOG_INFO_FILENAME = load_required_str_env_var('DJANGO_LOG_INFO_FILENAME')
+        LOG_INFO_FILENAME = load_required_str_env_var("DJANGO_LOG_INFO_FILENAME")
         LOG_INFO_FILE = LOG_DIR / LOG_INFO_FILENAME
         if not LOG_INFO_FILE.exists():
-            raise EnvironmentError(f"The log info file {LOG_INFO_FILE} does not exist.")
+            raise OSError(f"The log info file {LOG_INFO_FILE} does not exist.")
         print_django(f"The log info file {LOG_INFO_FILE} exists.")
 
-        LOG_REQUESTS_FILENAME = load_required_str_env_var('DJANGO_LOG_REQUESTS_FILENAME')
+        LOG_REQUESTS_FILENAME = load_required_str_env_var("DJANGO_LOG_REQUESTS_FILENAME")
         LOG_REQUESTS_FILE = LOG_DIR / LOG_REQUESTS_FILENAME
         if not LOG_REQUESTS_FILE.exists():
-            raise EnvironmentError(f"The log requests file {LOG_REQUESTS_FILE} does not exist.")
+            raise OSError(f"The log requests file {LOG_REQUESTS_FILE} does not exist.")
         print_django(f"The log info file {LOG_REQUESTS_FILE} exists.")
 
-        LOG_REQUESTS_DEBUG_FILENAME = load_required_str_env_var('DJANGO_LOG_REQUESTS_DEBUG_FILENAME')
+        LOG_REQUESTS_DEBUG_FILENAME = load_required_str_env_var("DJANGO_LOG_REQUESTS_DEBUG_FILENAME")
         LOG_REQUESTS_DEBUG_FILE = LOG_DIR / LOG_REQUESTS_DEBUG_FILENAME
         if not LOG_REQUESTS_DEBUG_FILE.exists():
-            raise EnvironmentError(f"The log requests debug file {LOG_REQUESTS_DEBUG_FILE} does not exist.")
+            raise OSError(f"The log requests debug file {LOG_REQUESTS_DEBUG_FILE} does not exist.")
         print_django(f"The log info file {LOG_REQUESTS_DEBUG_FILE} exists.")
 
-        LOG_EXCEPTIONS_FILENAME = load_required_str_env_var('DJANGO_LOG_EXCEPTIONS_FILENAME')
+        LOG_EXCEPTIONS_FILENAME = load_required_str_env_var("DJANGO_LOG_EXCEPTIONS_FILENAME")
         LOG_EXCEPTIONS_FILE = LOG_DIR / LOG_EXCEPTIONS_FILENAME
         if not LOG_EXCEPTIONS_FILE.exists():
-            raise EnvironmentError(f"The log exceptions file {LOG_EXCEPTIONS_FILE} does not exist.")
+            raise OSError(f"The log exceptions file {LOG_EXCEPTIONS_FILE} does not exist.")
         print_django(f"The log info file {LOG_EXCEPTIONS_FILE} exists.")
 
-        LOG_DJANGO_FILENAME = load_required_str_env_var('DJANGO_LOG_DJANGO_FILENAME')
+        LOG_DJANGO_FILENAME = load_required_str_env_var("DJANGO_LOG_DJANGO_FILENAME")
         LOG_DJANGO_FILE = LOG_DIR / LOG_DJANGO_FILENAME
         if not LOG_DJANGO_FILE.exists():
-            raise EnvironmentError(f"The log django file {LOG_DJANGO_FILE} does not exist.")
+            raise OSError(f"The log django file {LOG_DJANGO_FILE} does not exist.")
         print_django(f"The log info file {LOG_DJANGO_FILE} exists.")
 
-        LOG_APP_FILENAME = load_required_str_env_var('DJANGO_LOG_APP_FILENAME')
+        LOG_APP_FILENAME = load_required_str_env_var("DJANGO_LOG_APP_FILENAME")
         LOG_APP_FILE = LOG_DIR / LOG_APP_FILENAME
         if not LOG_APP_FILE.exists():
-            raise EnvironmentError(f"The log app file {LOG_APP_FILE} does not exist.")
+            raise OSError(f"The log app file {LOG_APP_FILE} does not exist.")
         print_django(f"The log info file {LOG_APP_FILE} exists.")
 
         class LOGGERS_NAME:
-            INFO = 'info'
-            REQUEST = 'request'
-            REQUEST_DJANGO = 'django.request'
-            EXCEPTIONS = 'exceptions'
-            DJANGO = 'django'
+            INFO = "info"
+            REQUEST = "request"
+            REQUEST_DJANGO = "django.request"
+            EXCEPTIONS = "exceptions"
+            DJANGO = "django"
             APP = APP_NAME
 
         global LOGGING
         LOGGING = {
-            'version': 1,
-            'disable_existing_loggers': False,
-            'formatters': {
-                'standard': {
-                    'format': '%(asctime)s [%(levelname)s]- %(message)s'
-                }
-            },
-            'handlers': {
-                'general': {
-                    'level': 'DEBUG',
-                    'class': 'logging.handlers.RotatingFileHandler',
-                    'filename': LOG_GENERAL_FILE,
-                    'maxBytes': 1024*1024*15,  # 15MB
-                    'backupCount': 10,
-                    'formatter': 'standard'
+            "version": 1,
+            "disable_existing_loggers": False,
+            "formatters": {"standard": {"format": "%(asctime)s [%(levelname)s]- %(message)s"}},
+            "handlers": {
+                "general": {
+                    "level": "DEBUG",
+                    "class": "logging.handlers.RotatingFileHandler",
+                    "filename": LOG_GENERAL_FILE,
+                    "maxBytes": 1024 * 1024 * 15,  # 15MB
+                    "backupCount": 10,
+                    "formatter": "standard",
                 },
-                'info': {
-                    'level': 'DEBUG',
-                    'class': 'logging.handlers.RotatingFileHandler',
-                    'filename': LOG_INFO_FILE,
-                    'maxBytes': 1024*1024*15,  # 15MB
-                    'backupCount': 10,
-                    'formatter': 'standard'
+                "info": {
+                    "level": "DEBUG",
+                    "class": "logging.handlers.RotatingFileHandler",
+                    "filename": LOG_INFO_FILE,
+                    "maxBytes": 1024 * 1024 * 15,  # 15MB
+                    "backupCount": 10,
+                    "formatter": "standard",
                 },
-                'requests': {
-                    'level': 'INFO',
-                    'class': 'logging.handlers.RotatingFileHandler',
-                    'filename': LOG_REQUESTS_FILE,
-                    'maxBytes': 1024*1024*15,  # 15MB
-                    'backupCount': 10,
-                    'formatter': 'standard'
+                "requests": {
+                    "level": "INFO",
+                    "class": "logging.handlers.RotatingFileHandler",
+                    "filename": LOG_REQUESTS_FILE,
+                    "maxBytes": 1024 * 1024 * 15,  # 15MB
+                    "backupCount": 10,
+                    "formatter": "standard",
                 },
-                'requests_with_trace': {
-                    'level': 'DEBUG',
-                    'class': 'logging.handlers.RotatingFileHandler',
-                    'filename': LOG_REQUESTS_DEBUG_FILE,
-                    'maxBytes': 1024*1024*15,  # 15MB
-                    'backupCount': 10,
-                    'formatter': 'standard'
+                "requests_with_trace": {
+                    "level": "DEBUG",
+                    "class": "logging.handlers.RotatingFileHandler",
+                    "filename": LOG_REQUESTS_DEBUG_FILE,
+                    "maxBytes": 1024 * 1024 * 15,  # 15MB
+                    "backupCount": 10,
+                    "formatter": "standard",
                 },
-                'exceptions': {
-                    'level': 'DEBUG',
-                    'class': 'logging.handlers.RotatingFileHandler',
-                    'filename': LOG_EXCEPTIONS_FILE,
-                    'maxBytes': 1024*1024*15,  # 15MB
-                    'backupCount': 10,
-                    'formatter': 'standard'
+                "exceptions": {
+                    "level": "DEBUG",
+                    "class": "logging.handlers.RotatingFileHandler",
+                    "filename": LOG_EXCEPTIONS_FILE,
+                    "maxBytes": 1024 * 1024 * 15,  # 15MB
+                    "backupCount": 10,
+                    "formatter": "standard",
                 },
-                'django': {
-                    'level': 'DEBUG',
-                    'class': 'logging.handlers.RotatingFileHandler',
-                    'filename': LOG_DJANGO_FILE,
-                    'maxBytes': 1024*1024*15,  # 15MB
-                    'backupCount': 10,
-                    'formatter': 'standard'
+                "django": {
+                    "level": "DEBUG",
+                    "class": "logging.handlers.RotatingFileHandler",
+                    "filename": LOG_DJANGO_FILE,
+                    "maxBytes": 1024 * 1024 * 15,  # 15MB
+                    "backupCount": 10,
+                    "formatter": "standard",
                 },
                 APP_NAME: {
-                    'level': 'DEBUG',
-                    'class': 'logging.handlers.RotatingFileHandler',
-                    'filename': LOG_APP_FILE,
-                    'maxBytes': 1024*1024*15,  # 15MB
-                    'backupCount': 10,
-                    'formatter': 'standard'
+                    "level": "DEBUG",
+                    "class": "logging.handlers.RotatingFileHandler",
+                    "filename": LOG_APP_FILE,
+                    "maxBytes": 1024 * 1024 * 15,  # 15MB
+                    "backupCount": 10,
+                    "formatter": "standard",
                 },
-                'console': {
-                    'level': 'DEBUG',
-                    'class': 'logging.StreamHandler',
-                    'formatter': 'standard'
-                }
+                "console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "standard"},
             },
-            'loggers': {
-                '': {
-                    'handlers': ['general'],
-                    'level': 'DEBUG',
-                    'propagate': True
-                },
-                LoggersName.INFO: {
-                    'handlers': ['info'],
-                    'level': 'DEBUG',
-                    'propagate': True
-                },
+            "loggers": {
+                "": {"handlers": ["general"], "level": "DEBUG", "propagate": True},
+                LoggersName.INFO: {"handlers": ["info"], "level": "DEBUG", "propagate": True},
                 LoggersName.REQUEST: {
-                    'handlers': ['requests', 'console'],
-                    'level': 'INFO',
-                    'propagate': True,
+                    "handlers": ["requests", "console"],
+                    "level": "INFO",
+                    "propagate": True,
                 },
                 LoggersName.REQUEST_DJANGO: {
-                    'handlers': ['requests_with_trace'],
-                    'level': 'DEBUG',
-                    'propagate': False,
+                    "handlers": ["requests_with_trace"],
+                    "level": "DEBUG",
+                    "propagate": False,
                 },
                 LoggersName.EXCEPTIONS: {
-                    'handlers': ['exceptions', 'console'],
-                    'level': 'DEBUG',
-                    'propagate': False,
+                    "handlers": ["exceptions", "console"],
+                    "level": "DEBUG",
+                    "propagate": False,
                 },
-                LoggersName.DJANGO: {
-                    'handlers': ['django'],
-                    'level': 'INFO',
-                    'propagate': True
-                },
-                APP_NAME: {
-                    'handlers': [APP_NAME, 'console'],
-                    'level': 'DEBUG',
-                    'propagate': True
-                },
+                LoggersName.DJANGO: {"handlers": ["django"], "level": "INFO", "propagate": True},
+                APP_NAME: {"handlers": [APP_NAME, "console"], "level": "DEBUG", "propagate": True},
             },
         }
         print_django("Logs are set up.")
@@ -306,13 +281,13 @@ def init_logs_if_needed():
 def setup_app_exposure_if_needed():
     global ALLOWED_HOSTS
     global APP_VERSION
-    APP_VERSION = load_required_str_env_var('APP_VERSION')
+    APP_VERSION = load_required_str_env_var("APP_VERSION")
     global API_ROOT_BASE
     API_ROOT_BASE = f"v{APP_VERSION.split('.')[0]}/"
     print_django("API_ROOT_BASE: " + API_ROOT_BASE)
 
     global ROOT_URLCONF
-    ROOT_URLCONF = 'api.urls'
+    ROOT_URLCONF = "api.urls"
 
     if APP_IS_EXPOSED:
         print_django("APP_IS_EXPOSED is true. Setting up security.")
@@ -326,43 +301,43 @@ def setup_app_exposure_if_needed():
         CSRF_COOKIE_SECURE = True
         print_django(f"CSRF_COOKIE_SECURE: {CSRF_COOKIE_SECURE}")
 
-        CSRF_TRUSTED_ORIGINS_STR = load_required_str_env_var('CSRF_TRUSTED_ORIGINS')
+        CSRF_TRUSTED_ORIGINS_STR = load_required_str_env_var("CSRF_TRUSTED_ORIGINS")
         print_django(f"CSRF_TRUSTED_ORIGINS env variable: {CSRF_TRUSTED_ORIGINS_STR}")
         global CSRF_TRUSTED_ORIGINS
-        CSRF_TRUSTED_ORIGINS = CSRF_TRUSTED_ORIGINS_STR.split(',')
+        CSRF_TRUSTED_ORIGINS = CSRF_TRUSTED_ORIGINS_STR.split(",")
         for csrf_trusted_origin in CSRF_TRUSTED_ORIGINS:
             csrf_trusted_origin = csrf_trusted_origin.strip()
-            if csrf_trusted_origin == '':
+            if csrf_trusted_origin == "":
                 raise ValueError("An CSRF trusted origin is empty.")
         if len(CSRF_TRUSTED_ORIGINS) > 0:
             print_django("The app is exposed to the following origin(s):")
             for csrf_trusted_origin in CSRF_TRUSTED_ORIGINS:
                 print_django(str(csrf_trusted_origin))
         else:
-            raise EnvironmentError("The app is exposed but no trusted origins are set.")
+            raise OSError("The app is exposed but no trusted origins are set.")
 
-        ALLOWED_HOSTS_STR = load_required_str_env_var('ALLOWED_HOSTS')
-        ALLOWED_HOSTS = ALLOWED_HOSTS_STR.split(',')
+        ALLOWED_HOSTS_STR = load_required_str_env_var("ALLOWED_HOSTS")
+        ALLOWED_HOSTS = ALLOWED_HOSTS_STR.split(",")
         for csrf_trusted_origin in ALLOWED_HOSTS:
             csrf_trusted_origin = csrf_trusted_origin.strip()
-            if csrf_trusted_origin == '':
+            if csrf_trusted_origin == "":
                 raise ValueError("An allowed host is empty.")
         if len(ALLOWED_HOSTS) > 0:
             print_django("Allowed host(s): ")
             for csrf_trusted_origin in ALLOWED_HOSTS:
                 print_django(str(csrf_trusted_origin))
         else:
-            raise EnvironmentError("The app is exposed but no allowed hosts are set.")
+            raise OSError("The app is exposed but no allowed hosts are set.")
 
-        print_django(f"CORS_ALLOW_ALL_ORIGINS is not set as a web server interface is used to handle CORS.")
+        print_django("CORS_ALLOW_ALL_ORIGINS is not set as a web server interface is used to handle CORS.")
     else:
         ALLOWED_HOSTS = [
-            '127.0.0.1',
-            '127.0.0.1:8000',
-            '127.0.0.1:8888',
-            'localhost',
-            'localhost:8000',
-            'localhost:8888',
+            "127.0.0.1",
+            "127.0.0.1:8000",
+            "127.0.0.1:8888",
+            "localhost",
+            "localhost:8000",
+            "localhost:8888",
         ]
         global CORS_ALLOW_ALL_ORIGINS
         CORS_ALLOW_ALL_ORIGINS = True
@@ -380,8 +355,8 @@ def setup_app_constants():
 
     # SECURITY WARNING: don't run with debug turned on in production!
     global DEBUG
-    if 'pytest' not in sys.argv[0]:  # Skip loading DEBUG from env in test mode
-        DEBUG = load_required_bool_env_var('DEBUG')
+    if "pytest" not in sys.argv[0]:  # Skip loading DEBUG from env in test mode
+        DEBUG = load_required_bool_env_var("DEBUG")
         if APP_IS_EXPOSED and DEBUG:
             print_django(
                 "SECURITY WARNING: DEBUG is True while APP_IS_EXPOSED — disable DEBUG in production/staging servers."
@@ -415,9 +390,9 @@ def setup_app_constants():
     DATA_UPLOAD_MAX_MEMORY_SIZE = UPLOADED_TRACK_FILE_SIZE_MAX_IN_MO * 1024 * 1024  # Convert MB to bytes
 
     global UPLOADED_TRACK_FILE_EXTENSIONS
-    UPLOADED_TRACK_FILE_EXTENSIONS = ['.mp3', '.flac', '.wav']
+    UPLOADED_TRACK_FILE_EXTENSIONS = [".mp3", ".flac", ".wav"]
     global UPLOADED_TRACK_FILE_CONTENT_TYPES
-    UPLOADED_TRACK_FILE_CONTENT_TYPES = ['audio/mpeg', 'audio/flac', 'audio/wav']
+    UPLOADED_TRACK_FILE_CONTENT_TYPES = ["audio/mpeg", "audio/flac", "audio/wav"]
     global UPLOADED_TRACK_FILENAME_LEN_MAX
     UPLOADED_TRACK_FILENAME_LEN_MAX = 150
     global UPLOADED_TRACK_FILENAME_GENERATED_WITHOUT_EXTENSION_LENGTH
@@ -430,7 +405,9 @@ def setup_app_constants():
     UPLOADED_TRACK_TRACK_NUMBER_MAX = 1000
     global UPLOADED_TRACK_FILENAME_EXPRESSIONS_TO_EXCLUDE_GENERATING_TITLE
     UPLOADED_TRACK_FILENAME_EXPRESSIONS_TO_EXCLUDE_GENERATING_TITLE = [
-        'myfreemp3.vip', 'myfreemp3']  # The order matters
+        "myfreemp3.vip",
+        "myfreemp3",
+    ]  # The order matters
     global UPLOADED_TRACK_GENERATED_TITLE_LENGTH
     UPLOADED_TRACK_GENERATED_TITLE_LENGTH = 20
     global UPLOADED_TRACK_GENERATED_TITLE_PREFIXE
@@ -512,19 +489,19 @@ def setup_afp_connection():
         AFP_BASE_URL = AFP_CONTAINER_NAME
     else:
         print_django("The app is not exposed. The AFP host is the AFP url.")
-        AFP_BASE_URL = load_required_str_env_var('AFP_URL')
+        AFP_BASE_URL = load_required_str_env_var("AFP_URL")
 
-    AFP_PORT = load_required_str_env_var('AFP_PORT')
-    AFP_POST_ENDPOINT = load_required_str_env_var('AFP_POST_ENDPOINT')
+    AFP_PORT = load_required_str_env_var("AFP_PORT")
+    AFP_POST_ENDPOINT = load_required_str_env_var("AFP_POST_ENDPOINT")
 
     print_django(f"AFP: http://{AFP_BASE_URL}:{AFP_PORT}/{AFP_POST_ENDPOINT}")
 
 
 def setup_data_dir():
     global DATA_DIR
-    DATA_DIR = BASE_DIR / 'data'
+    DATA_DIR = BASE_DIR / "data"
     if not DATA_DIR.exists():
-        raise EnvironmentError(f"The data directory {DATA_DIR} does not exist.")
+        raise OSError(f"The data directory {DATA_DIR} does not exist.")
     print_django(f"DATA_DIR: {DATA_DIR}")
 
 
@@ -536,43 +513,44 @@ def setup_static_files():
     STATIC_ROOT = Path(STATIC_FILES)  # type: ignore
     print_django("STATIC_ROOT: " + str(STATIC_ROOT))
     if not STATIC_ROOT.exists():
-        raise EnvironmentError(f"The static root {STATIC_ROOT} does not exist.")
+        raise OSError(f"The static root {STATIC_ROOT} does not exist.")
     print_django(f"The dir {STATIC_ROOT} exists.")
 
     global STATIC_URL
-    STATIC_URL = load_required_str_env_var('STATIC_FILES_URL')
+    STATIC_URL = load_required_str_env_var("STATIC_FILES_URL")
     # STATICFILES_DIRS = [] # No additional static files directories are needed.
 
 
 def setup_installed_apps_and_caches():
     global INSTALLED_APPS
-    INSTALLED_APPS = ['django.contrib.admin',
-                      'django.contrib.auth',
-                      'django.contrib.contenttypes',
-                      'django.contrib.sessions',
-                      'django.contrib.messages',
-                      'django_extensions',
-                      'polymorphic',
-                      'corsheaders',
-                      'drf_spectacular',
-                      'rest_framework',
-                      'rest_framework.authtoken',
-                      'coverage',
-                      'drf_multiple_model',
-                      'api']
+    INSTALLED_APPS = [
+        "django.contrib.admin",
+        "django.contrib.auth",
+        "django.contrib.contenttypes",
+        "django.contrib.sessions",
+        "django.contrib.messages",
+        "django_extensions",
+        "polymorphic",
+        "corsheaders",
+        "drf_spectacular",
+        "rest_framework",
+        "rest_framework.authtoken",
+        "coverage",
+        "drf_multiple_model",
+        "api",
+    ]
 
-<<<<<<< HEAD
     if APP_IS_EXPOSED:
-        INSTALLED_APPS.append('rest_framework_simplejwt')
+        INSTALLED_APPS.append("rest_framework_simplejwt")
 
     if STATIC_FILES_STATE in [StaticFileStates.COLLECTING, StaticFileStates.SERVING]:
-        INSTALLED_APPS.append('django.contrib.staticfiles')
+        INSTALLED_APPS.append("django.contrib.staticfiles")
 
     global CACHES
     CACHES = {
-        'default': {
-            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-            'LOCATION': 'unique-snowflake',
+        "default": {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "unique-snowflake",
         }
     }
 
@@ -581,52 +559,52 @@ def setup_middlewares():
     """Setup Django middleware classes. Top middleware classes are executed first."""
     global MIDDLEWARE
     MIDDLEWARE = [
-        'django.middleware.security.SecurityMiddleware',
-        'corsheaders.middleware.CorsMiddleware',
-        'django.contrib.sessions.middleware.SessionMiddleware',
-        'api.middleware.HostValidationMiddleware.HostValidationMiddleware',
-        'django.middleware.common.CommonMiddleware',
-        'api.middleware.ContentTypeValidationMiddleware.ContentTypeValidationMiddleware',
-        'api.middleware.CamelToSnakeMiddleware.CamelToSnakeMiddleware',
-        'api.middleware.content_validity.middleware.ContentValidityMiddleware',
-        'api.middleware.test_client.middleware.TestClientEmptyListMiddleware',
-        'api.middleware.list_value_validation.middleware.ListValueValidationMiddleware',
-        'api.middleware.duplicate_fields.middleware.DuplicateFieldsMiddleware',
-        'api.middleware.RequestLoggingMiddleware.RequestLoggingMiddleware',
-        'django.middleware.csrf.CsrfViewMiddleware',
-        'django.contrib.auth.middleware.AuthenticationMiddleware',
-        'django.contrib.messages.middleware.MessageMiddleware',
-        'django.middleware.clickjacking.XFrameOptionsMiddleware'
+        "django.middleware.security.SecurityMiddleware",
+        "corsheaders.middleware.CorsMiddleware",
+        "django.contrib.sessions.middleware.SessionMiddleware",
+        "api.middleware.HostValidationMiddleware.HostValidationMiddleware",
+        "django.middleware.common.CommonMiddleware",
+        "api.middleware.ContentTypeValidationMiddleware.ContentTypeValidationMiddleware",
+        "api.middleware.CamelToSnakeMiddleware.CamelToSnakeMiddleware",
+        "api.middleware.content_validity.middleware.ContentValidityMiddleware",
+        "api.middleware.test_client.middleware.TestClientEmptyListMiddleware",
+        "api.middleware.list_value_validation.middleware.ListValueValidationMiddleware",
+        "api.middleware.duplicate_fields.middleware.DuplicateFieldsMiddleware",
+        "api.middleware.RequestLoggingMiddleware.RequestLoggingMiddleware",
+        "django.middleware.csrf.CsrfViewMiddleware",
+        "django.contrib.auth.middleware.AuthenticationMiddleware",
+        "django.contrib.messages.middleware.MessageMiddleware",
+        "django.middleware.clickjacking.XFrameOptionsMiddleware",
     ]
 
 
 def setup_db_connection():
-    DB_APP_DB_NAME = load_required_str_env_var('DB_APP_DB_NAME')
-    DB_APP_USERNAME = load_required_str_env_var('DB_APP_USERNAME')
-    DB_APP_USER_PASSWORD = load_required_secret_env_var('DB_APP_USER_PASSWORD')
+    DB_APP_DB_NAME = load_required_str_env_var("DB_APP_DB_NAME")
+    DB_APP_USERNAME = load_required_str_env_var("DB_APP_USERNAME")
+    DB_APP_USER_PASSWORD = load_required_secret_env_var("DB_APP_USER_PASSWORD")
 
     if APP_IS_EXPOSED:
         print_django("The app is exposed. The db host is the db container name.")
-        DB_CONTAINER_NAME = load_required_str_env_var('DB_CONTAINER_NAME')
+        DB_CONTAINER_NAME = load_required_str_env_var("DB_CONTAINER_NAME")
         DB_HOST = DB_CONTAINER_NAME
     else:
         print_django("The app is not exposed. The db host is the db url.")
-        DB_URL = load_required_str_env_var('DB_URL')
+        DB_URL = load_required_str_env_var("DB_URL")
         DB_HOST = DB_URL
-    print_django(f"DB_HOST: " + DB_HOST)
+    print_django("DB_HOST: " + DB_HOST)
 
-    DB_PORT = load_required_str_env_var('DB_PORT')
+    DB_PORT = load_required_str_env_var("DB_PORT")
 
     global DATABASES
     DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': DB_APP_DB_NAME,
-            'USER': DB_APP_USERNAME,
-            'PASSWORD': DB_APP_USER_PASSWORD,
-            'HOST': DB_HOST,
-            'PORT': DB_PORT,
-            'DISABLE_SERVER_SIDE_CURSORS': True
+        "default": {
+            "ENGINE": "django.db.backends.postgresql_psycopg2",
+            "NAME": DB_APP_DB_NAME,
+            "USER": DB_APP_USERNAME,
+            "PASSWORD": DB_APP_USER_PASSWORD,
+            "HOST": DB_HOST,
+            "PORT": DB_PORT,
+            "DISABLE_SERVER_SIDE_CURSORS": True,
         }
     }
 
@@ -635,14 +613,16 @@ def setup_templates():
     global TEMPLATES
     TEMPLATES = [
         {
-            'BACKEND': 'django.template.backends.django.DjangoTemplates',
-            'DIRS': [],
-            'APP_DIRS': True,
-            'OPTIONS': {
-                'context_processors': ['django.template.context_processors.debug',
-                                       'django.template.context_processors.request',
-                                       'django.contrib.auth.context_processors.auth',
-                                       'django.contrib.messages.context_processors.messages'],
+            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "DIRS": [],
+            "APP_DIRS": True,
+            "OPTIONS": {
+                "context_processors": [
+                    "django.template.context_processors.debug",
+                    "django.template.context_processors.request",
+                    "django.contrib.auth.context_processors.auth",
+                    "django.contrib.messages.context_processors.messages",
+                ],
             },
         },
     ]
@@ -650,89 +630,97 @@ def setup_templates():
 
 def setup_django_constants():
     global APP_TITLE
-    APP_TITLE = load_required_str_env_var('APP_TITLE')
+    APP_TITLE = load_required_str_env_var("APP_TITLE")
 
     global WSGI_APPLICATION
-    WSGI_APPLICATION = 'api.wsgi.application'
+    WSGI_APPLICATION = "api.wsgi.application"
 
     global AUTH_USER_MODEL
-    AUTH_USER_MODEL = 'api.User'
+    AUTH_USER_MODEL = "api.User"
 
     global AUTH_PASSWORD_VALIDATORS
-    AUTH_PASSWORD_VALIDATORS = [{'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator', },
-                                {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', },
-                                {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator', },
-                                {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator', }]
+    AUTH_PASSWORD_VALIDATORS = [
+        {
+            "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        },
+        {
+            "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        },
+        {
+            "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+        },
+        {
+            "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+        },
+    ]
     global LANGUAGE_CODE
-    LANGUAGE_CODE = 'en-us'
+    LANGUAGE_CODE = "en-us"
     global TIME_ZONE
-    TIME_ZONE = 'UTC'
+    TIME_ZONE = "UTC"
     global USE_I18N
     USE_I18N = True
     global USE_TZ
     USE_TZ = True
     global DEFAULT_AUTO_FIELD
-    DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+    DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
     global REST_FRAMEWORK
     REST_FRAMEWORK = {
-        'DEFAULT_RENDERER_CLASSES': (
-            'djangorestframework_camel_case.render.CamelCaseJSONRenderer',
+        "DEFAULT_RENDERER_CLASSES": ("djangorestframework_camel_case.render.CamelCaseJSONRenderer",),
+        "DEFAULT_PARSER_CLASSES": (
+            "djangorestframework_camel_case.parser.CamelCaseJSONParser",
+            "djangorestframework_camel_case.parser.CamelCaseMultiPartParser",
+            "djangorestframework_camel_case.parser.CamelCaseFormParser",
         ),
-        'DEFAULT_PARSER_CLASSES': (
-            'djangorestframework_camel_case.parser.CamelCaseJSONParser',
-            'djangorestframework_camel_case.parser.CamelCaseMultiPartParser',
-            'djangorestframework_camel_case.parser.CamelCaseFormParser',
-        ),
-        'DEFAULT_PAGINATION_CLASS': 'api.view.pagination.AppPagination',
-        'PAGE_SIZE': 30,
-        'DEFAULT_AUTHENTICATION_CLASSES': (
-            'rest_framework_simplejwt.authentication.JWTAuthentication',
-        ),
-        'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.AllowAny', ],
-        'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata',
-        'DEFAULT_SCHEMA_CLASS': 'api.view.schema.AppAutoSchema.AppAutoSchema',
-        'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.URLPathVersioning',
-        'DEFAULT_VERSION': 'v1',
-        'ALLOWED_VERSIONS': 'v1',
-        'EXCEPTION_HANDLER': 'api.view.error.exception_handler.custom_exception_handler',
+        "DEFAULT_PAGINATION_CLASS": "api.view.pagination.AppPagination",
+        "PAGE_SIZE": 30,
+        "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
+        "DEFAULT_PERMISSION_CLASSES": [
+            "rest_framework.permissions.AllowAny",
+        ],
+        "DEFAULT_METADATA_CLASS": "rest_framework.metadata.SimpleMetadata",
+        "DEFAULT_SCHEMA_CLASS": "api.view.schema.AppAutoSchema.AppAutoSchema",
+        "DEFAULT_VERSIONING_CLASS": "rest_framework.versioning.URLPathVersioning",
+        "DEFAULT_VERSION": "v1",
+        "ALLOWED_VERSIONS": "v1",
+        "EXCEPTION_HANDLER": "api.view.error.exception_handler.custom_exception_handler",
     }
 
     global SPECTACULAR_SETTINGS
     SPECTACULAR_SETTINGS = {
-        'TITLE': APP_TITLE,
-        'DESCRIPTION': "API to handle genre oriented music libraries",
-        'VERSION': os.environ.get('APP_VERSION'),
-        'SERVE_INCLUDE_SCHEMA': False,
-        'SCHEMA_PATH_PREFIX': r'/v[\d.]+',
-        'COMPONENT_SPLIT_REQUEST': True,
-        'COMPONENT_NO_READ_ONLY_REQUIRED': True,
-        'APPEND_COMPONENTS': {
-            'securitySchemes': {
-                'Bearer': {
-                    'type': 'http',
-                    'scheme': 'bearer',
-                    'bearerFormat': 'JWT',
+        "TITLE": APP_TITLE,
+        "DESCRIPTION": "API to handle genre oriented music libraries",
+        "VERSION": os.environ.get("APP_VERSION"),
+        "SERVE_INCLUDE_SCHEMA": False,
+        "SCHEMA_PATH_PREFIX": r"/v[\d.]+",
+        "COMPONENT_SPLIT_REQUEST": True,
+        "COMPONENT_NO_READ_ONLY_REQUIRED": True,
+        "APPEND_COMPONENTS": {
+            "securitySchemes": {
+                "Bearer": {
+                    "type": "http",
+                    "scheme": "bearer",
+                    "bearerFormat": "JWT",
                 }
             }
         },
-        'SECURITY': [{'Bearer': []}],
+        "SECURITY": [{"Bearer": []}],
     }
 
     global SIMPLE_JWT
     SIMPLE_JWT = {
-        'ACCESS_TOKEN_LIFETIME': datetime.timedelta(minutes=100),
-        'REFRESH_TOKEN_LIFETIME': datetime.timedelta(days=1),
-        'AUTH_HEADER_TYPES': ('Bearer',),
+        "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=100),
+        "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=1),
+        "AUTH_HEADER_TYPES": ("Bearer",),
     }
 
 
 def _load_service_feature_flags():
     global AFP_ENABLED
     global MUSICBRAINZ_LOOKUP_ENABLED
-    AFP_ENABLED = load_required_bool_env_var('AFP_ENABLED')
-    MUSICBRAINZ_LOOKUP_ENABLED = load_required_bool_env_var('MUSICBRAINZ_LOOKUP_ENABLED')
+    AFP_ENABLED = load_required_bool_env_var("AFP_ENABLED")
+    MUSICBRAINZ_LOOKUP_ENABLED = load_required_bool_env_var("MUSICBRAINZ_LOOKUP_ENABLED")
     if MUSICBRAINZ_LOOKUP_ENABLED and not AFP_ENABLED:
-        raise EnvironmentError(
+        raise OSError(
             "MUSICBRAINZ_LOOKUP_ENABLED cannot be true when AFP_ENABLED is false (MusicBrainz lookup requires fingerprinting)."
         )
     print_django("AFP is enabled." if AFP_ENABLED else "AFP is disabled.")
@@ -753,18 +741,18 @@ def _load_optional_service_credentials():
     global GOOGLE_REDIRECT_URI
 
     if MUSICBRAINZ_LOOKUP_ENABLED:
-        ACOUSTID_API_KEY = load_required_secret_env_var('ACOUSTID_API_KEY')
+        ACOUSTID_API_KEY = load_required_secret_env_var("ACOUSTID_API_KEY")
         print_django("MusicBrainz lookup enabled; ACOUSTID_API_KEY loaded.")
     else:
-        ACOUSTID_API_KEY = load_optional_secret_env_var('ACOUSTID_API_KEY')
+        ACOUSTID_API_KEY = load_optional_secret_env_var("ACOUSTID_API_KEY")
         print_django("MusicBrainz lookup disabled; ACOUSTID_API_KEY not required.")
 
-    SPOTIFY_ENABLED = load_required_bool_env_var('SPOTIFY_ENABLED')
+    SPOTIFY_ENABLED = load_required_bool_env_var("SPOTIFY_ENABLED")
     if SPOTIFY_ENABLED:
-        SPOTIFY_CLIENT_ID = load_required_str_env_var('SPOTIFY_CLIENT_ID', silent=True)
-        SPOTIFY_CLIENT_SECRET = load_required_secret_env_var('SPOTIFY_CLIENT_SECRET', silent=True)
-        SPOTIFY_REDIRECT_URI = load_required_str_env_var('SPOTIFY_REDIRECT_URI', silent=True)
-        SPOTIFY_SCOPES = load_required_str_env_var('SPOTIFY_SCOPES', silent=True)
+        SPOTIFY_CLIENT_ID = load_required_str_env_var("SPOTIFY_CLIENT_ID", silent=True)
+        SPOTIFY_CLIENT_SECRET = load_required_secret_env_var("SPOTIFY_CLIENT_SECRET", silent=True)
+        SPOTIFY_REDIRECT_URI = load_required_str_env_var("SPOTIFY_REDIRECT_URI", silent=True)
+        SPOTIFY_SCOPES = load_required_str_env_var("SPOTIFY_SCOPES", silent=True)
         if is_django_startup_verbose():
             print_django(f"SPOTIFY_CLIENT_ID = {SPOTIFY_CLIENT_ID}")
             print_django("SPOTIFY_CLIENT_SECRET is set.")
@@ -776,17 +764,17 @@ def _load_optional_service_credentials():
             print_django("SPOTIFY_REDIRECT_URI and SPOTIFY_SCOPES are set.")
         print_django("Spotify API credentials loaded.")
     else:
-        SPOTIFY_CLIENT_ID = load_optional_str_env_var('SPOTIFY_CLIENT_ID')
-        SPOTIFY_CLIENT_SECRET = load_optional_secret_env_var('SPOTIFY_CLIENT_SECRET')
-        SPOTIFY_REDIRECT_URI = load_optional_str_env_var('SPOTIFY_REDIRECT_URI')
-        SPOTIFY_SCOPES = load_optional_str_env_var('SPOTIFY_SCOPES')
+        SPOTIFY_CLIENT_ID = load_optional_str_env_var("SPOTIFY_CLIENT_ID")
+        SPOTIFY_CLIENT_SECRET = load_optional_secret_env_var("SPOTIFY_CLIENT_SECRET")
+        SPOTIFY_REDIRECT_URI = load_optional_str_env_var("SPOTIFY_REDIRECT_URI")
+        SPOTIFY_SCOPES = load_optional_str_env_var("SPOTIFY_SCOPES")
         print_django("Spotify disabled; credentials not loaded.")
 
-    GOOGLE_OAUTH_ENABLED = load_required_bool_env_var('GOOGLE_OAUTH_ENABLED')
+    GOOGLE_OAUTH_ENABLED = load_required_bool_env_var("GOOGLE_OAUTH_ENABLED")
     if GOOGLE_OAUTH_ENABLED:
-        GOOGLE_CLIENT_ID = load_required_str_env_var('GOOGLE_CLIENT_ID', silent=True)
-        GOOGLE_CLIENT_SECRET = load_required_secret_env_var('GOOGLE_CLIENT_SECRET', silent=True)
-        GOOGLE_REDIRECT_URI = load_required_str_env_var('GOOGLE_REDIRECT_URI', silent=True)
+        GOOGLE_CLIENT_ID = load_required_str_env_var("GOOGLE_CLIENT_ID", silent=True)
+        GOOGLE_CLIENT_SECRET = load_required_secret_env_var("GOOGLE_CLIENT_SECRET", silent=True)
+        GOOGLE_REDIRECT_URI = load_required_str_env_var("GOOGLE_REDIRECT_URI", silent=True)
         if is_django_startup_verbose():
             print_django(f"GOOGLE_CLIENT_ID = {GOOGLE_CLIENT_ID}")
             print_django("GOOGLE_CLIENT_SECRET is set.")
@@ -797,9 +785,9 @@ def _load_optional_service_credentials():
             print_django("GOOGLE_REDIRECT_URI is set.")
         print_django("Google OAuth credentials loaded.")
     else:
-        GOOGLE_CLIENT_ID = load_optional_str_env_var('GOOGLE_CLIENT_ID')
-        GOOGLE_CLIENT_SECRET = load_optional_secret_env_var('GOOGLE_CLIENT_SECRET')
-        GOOGLE_REDIRECT_URI = load_optional_str_env_var('GOOGLE_REDIRECT_URI')
+        GOOGLE_CLIENT_ID = load_optional_str_env_var("GOOGLE_CLIENT_ID")
+        GOOGLE_CLIENT_SECRET = load_optional_secret_env_var("GOOGLE_CLIENT_SECRET")
+        GOOGLE_REDIRECT_URI = load_optional_str_env_var("GOOGLE_REDIRECT_URI")
         print_django("Google OAuth disabled; credentials not loaded.")
 
 
@@ -807,20 +795,20 @@ def setup_media_dirs():
     print_django("FILE_UPLOAD_TEMP_DIR is set. Setting up the media variables...")
 
     global MEDIA_ROOT  # Django constant, do not rename.
-    MEDIA_ROOT = load_required_path_env_var('MEDIA_DIR')
+    MEDIA_ROOT = load_required_path_env_var("MEDIA_DIR")
 
     if APP_IS_EXPOSED:
         global MEDIA_URL
-        MEDIA_URL = load_required_str_env_var('MEDIA_URL')
+        MEDIA_URL = load_required_str_env_var("MEDIA_URL")
 
     global LIBRARIES_DIR_NAME
-    LIBRARIES_DIR_NAME = load_required_str_env_var('LIBRARIES_DIR_NAME')
+    LIBRARIES_DIR_NAME = load_required_str_env_var("LIBRARIES_DIR_NAME")
 
     global LIBRARIES_DIR
     LIBRARIES_DIR = MEDIA_ROOT / LIBRARIES_DIR_NAME
     print_django("LIBRARIES_DIR: " + str(LIBRARIES_DIR))
     if not LIBRARIES_DIR.is_dir():
-        raise EnvironmentError(
+        raise OSError(
             f"The libraries directory {LIBRARIES_DIR} does not exist. "
             "Run filesystem setup (e.g. scripts/setup-filesystem.sh in the container entrypoint) before starting Django."
         )
@@ -833,30 +821,32 @@ def set_secret_key():
     if APP_IS_EXPOSED:
         # SECURITY WARNING: keep the secret key used in production secret!
         # SECRET_KET is a Django constant, do not rename.
-        SECRET_KEY = load_required_secret_env_var('DJANGO_SECRET_KEY')
+        SECRET_KEY = load_required_secret_env_var("DJANGO_SECRET_KEY")
     else:
         SECRET_KEY = "django_default_secret_when_not_exposed"
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-APP_ENV_FILE_RELATIVE_PATH = os.getenv('ENV_FILE', 'env/.env')
+APP_ENV_FILE_RELATIVE_PATH = os.getenv("ENV_FILE", "env/.env")
 APP_ENV_FILE = BASE_DIR / APP_ENV_FILE_RELATIVE_PATH
 load_env_vars_from_file_if_exists(APP_ENV_FILE)
 
-ENV = load_required_str_env_var('ENV')
-APP_NAME = load_required_str_env_var('APP_NAME')
-APP_IS_EXPOSED = load_required_bool_env_var('APP_IS_EXPOSED')
+ENV = load_required_str_env_var("ENV")
+APP_NAME = load_required_str_env_var("APP_NAME")
+APP_IS_EXPOSED = load_required_bool_env_var("APP_IS_EXPOSED")
 
 set_secret_key()
 
+# Calculated paths env file generation belongs in startup scripts/CI.
+# Runtime settings should only consume already-prepared env files.
 load_calculated_env_paths(BASE_DIR)
 
-if 'pytest' in sys.argv[0]:
+if "pytest" in sys.argv[0]:
     print_django("settings.py is being executed because of a pytest command.")
-    PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']  # Less secured to speed up tests
+    PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]  # Less secured to speed up tests
 
-if 'loaddata' in sys.argv:
+if "loaddata" in sys.argv:
     print_django("settings.py is being executed because of a loaddata command.")
     STATIC_FILES_STATE = StaticFileStates.NOT_NEEDED
     _load_service_feature_flags()
@@ -876,19 +866,18 @@ else:
     setup_app_constants()
     setup_data_dir()
 
-    STATIC_FILES = os.getenv('STATIC_FILES')
-    if ENV == 'collect_static':
+    STATIC_FILES = os.getenv("STATIC_FILES")
+    if ENV == "collect_static":
         STATIC_FILES_STATE = StaticFileStates.COLLECTING
-        LIBRARIES_DIR_NAME = ''  # Needed to setup the database (User model)
+        LIBRARIES_DIR_NAME = ""  # Needed to setup the database (User model)
         setup_static_files()
+    elif not STATIC_FILES:
+        print_django("Static files are not needed.")
+        STATIC_FILES_STATE = StaticFileStates.NOT_NEEDED
     else:
-        if not STATIC_FILES:
-            print_django("Static files are not needed.")
-            STATIC_FILES_STATE = StaticFileStates.NOT_NEEDED
-        else:
-            print_django("Static files are being served.")
-            STATIC_FILES_STATE = StaticFileStates.SERVING
-            setup_static_files()
+        print_django("Static files are being served.")
+        STATIC_FILES_STATE = StaticFileStates.SERVING
+        setup_static_files()
 
     setup_installed_apps_and_caches()
     setup_middlewares()
@@ -896,40 +885,36 @@ else:
     setup_django_constants()
     init_logs_if_needed()
 
-    if load_required_bool_env_var('DB_IS_NEEDED'):
+    if load_required_bool_env_var("DB_IS_NEEDED"):
         setup_db_connection()
 
     # FILE_UPLOAD_TEMP_DIR is a Django constant, do not rename.
-    FILE_UPLOAD_TEMP_DIR = os.getenv('TMP_UPLOADED_FILES')
+    FILE_UPLOAD_TEMP_DIR = os.getenv("TMP_UPLOADED_FILES")
     print_django(f"FILE_UPLOAD_TEMP_DIR: {FILE_UPLOAD_TEMP_DIR}")
 
-    FILE_UPLOAD_ENABLED = load_required_bool_env_var('FILE_UPLOAD_ENABLED')
+    FILE_UPLOAD_ENABLED = load_required_bool_env_var("FILE_UPLOAD_ENABLED")
 
     if not FILE_UPLOAD_ENABLED:
         print_django("FILE_UPLOAD_ENABLED is false. The app will not handle media files.")
-        if os.getenv('AFP_ENABLED', '').lower() == 'true':
-            raise EnvironmentError(
-                "The AFP_ENABLED env variable cannot be true when FILE_UPLOAD_ENABLED is false."
-            )
-        for var_name in ['AFP_PORT',
-                         'AFP_CONTAINER_NAME',
-                         'AFP_POST_ENDPOINT',
-                         'ACOUSTID_API_KEY',
-                         'MEDIA_DIR',
-                         'LIBRARIES_DIR_NAME',
-                         'TMP_UPLOADED_FILES']:
+        if os.getenv("AFP_ENABLED", "").lower() == "true":
+            raise OSError("The AFP_ENABLED env variable cannot be true when FILE_UPLOAD_ENABLED is false.")
+        for var_name in [
+            "AFP_PORT",
+            "AFP_CONTAINER_NAME",
+            "AFP_POST_ENDPOINT",
+            "ACOUSTID_API_KEY",
+            "MEDIA_DIR",
+            "LIBRARIES_DIR_NAME",
+            "TMP_UPLOADED_FILES",
+        ]:
             if os.getenv(var_name):
-                raise EnvironmentError(
-                    f"The {var_name} env variable cannot be set as FILE_UPLOAD_ENABLED is false."
-                )
+                raise OSError(f"The {var_name} env variable cannot be set as FILE_UPLOAD_ENABLED is false.")
     else:
         if not FILE_UPLOAD_TEMP_DIR:
-            raise EnvironmentError(
-                "TMP_UPLOADED_FILES/FILE_UPLOAD_TEMP_DIR must be set when FILE_UPLOAD_ENABLED is true."
-            )
+            raise OSError("TMP_UPLOADED_FILES/FILE_UPLOAD_TEMP_DIR must be set when FILE_UPLOAD_ENABLED is true.")
         setup_media_dirs()
         if AFP_ENABLED:  # pyright: ignore[reportUnboundVariable]
-            AFP_CONTAINER_NAME = load_required_str_env_var('AFP_CONTAINER_NAME')
+            AFP_CONTAINER_NAME = load_required_str_env_var("AFP_CONTAINER_NAME")
             setup_afp_connection()
 
 print_django("Finished loading settings.")
