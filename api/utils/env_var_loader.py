@@ -1,5 +1,4 @@
 import os
-import subprocess
 from pathlib import Path
 
 import dotenv
@@ -61,21 +60,8 @@ def load_required_path_env_var(var_name: str, must_print_value: bool = True) -> 
 
 
 def load_calculated_env_paths(base_dir: Path):
-    CALCULATED_PATHS_ENV_FILE = base_dir / "env/calculated_paths/.env"
-    generate_calculated_paths_env_file_script_path = base_dir / "scripts/generate-calculated-paths-env-file.sh"
-    try:
-        subprocess.run(
-            ["bash", str(generate_calculated_paths_env_file_script_path)],
-            check=True,
-            stderr=subprocess.PIPE,
-            text=True,
-            env=os.environ.copy(),
-        )
-    except subprocess.CalledProcessError as e:
-        print_django(f"Error while generating the paths env file: {e.stderr}")  # type: ignore
-        raise OSError("Error while generating the paths env file: {e}") from e
-
-    dotenv.load_dotenv(CALCULATED_PATHS_ENV_FILE)
+    calculated_paths_env_file = base_dir / "env/calculated_paths/.env"
+    load_env_vars_from_file_if_exists(calculated_paths_env_file)
 
 
 def load_env_vars_from_file_if_exists(env_file_path: Path):

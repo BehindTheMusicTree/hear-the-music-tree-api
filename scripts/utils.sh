@@ -112,35 +112,6 @@ load_app_env_file_if_exists() {
     fi
 }
 
-load_project_calculated_paths_env_vars() {
-    log_with_utils_prefixe "Loading calculated paths..."
-    check_bool_vars_are_set APP_IS_EXPOSED
-
-    local SCRIPTS_DIR=$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)/
-    local PROJECT_DIR=$(realpath "${SCRIPTS_DIR}..")/
-    local CALTULATED_PATHS_DIR="${PROJECT_DIR}env/calculated_paths/"
-
-    if [ ! -d "$CALTULATED_PATHS_DIR" ]; then
-        log_with_utils_prefixe "ERROR: $CALTULATED_PATHS_DIR directory does not exist" >&2
-        exit 1
-    fi
-
-    local CALCULATED_PATHS_ENV_FILE="${CALTULATED_PATHS_DIR}.env"
-    bash "${SCRIPTS_DIR}generate-calculated-paths-env-file.sh"
-    if [ $? -ne 0 ]; then
-        log_with_utils_prefixe "ERROR: failed to generate calculated paths env file: $output" >&2
-        exit 1
-    fi
-
-    log_with_utils_prefixe "Loading calculated paths from ${CALCULATED_PATHS_ENV_FILE}"
-    while IFS='=' read -r key value; do
-        # Skip comments and empty lines
-        if [ -z "$key" ]; then continue; fi
-        export "$key=$value"
-    done < "$CALCULATED_PATHS_ENV_FILE"
-    log_with_utils_prefixe "Calculated paths loaded successfully."
-}
-
 determine_db_host_if_not_set () {
     if [ -z "$DB_HOST" ]; then
         log_with_utils_prefixe "DB_HOST is not set. Determining the host..."
