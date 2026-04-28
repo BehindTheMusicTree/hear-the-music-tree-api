@@ -228,7 +228,7 @@ The docker build requires the following environment variables:
 - `APP_NAME`
 - `APP_VERSION`
 - `FILE_UPLOAD_ENABLED`
-- `LIBRARIES_DIR_NAME`
+- `LIBRARIES_DIR_INTERNAL` (local/internal path mode) or `LIBRARIES_DIR_EXTERNAL` (server/external path mode)
 - `STATIC_FILES_INTERNAL`
 - `DJANGO_LOG_GENERAL_FILENAME`
 - `DJANGO_LOG_INFO_FILENAME`

@@ -84,7 +84,9 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Changed
 
-- **Sync env contract (runtime paths)**: `.github/workflows/sync-env-to-server.yml` now writes explicit runtime path keys in the server fragment (`MEDIA_DIR`, `LIBRARIES_DIR`, `TMP_UPLOADED_FILES`), and `scripts/setup-filesystem.sh` now requires these keys directly (no `load_project_calculated_paths_env_vars` call). Container filesystem setup now relies on a strict env contract instead of implicit path calculation.
+- **Sync env contract (runtime paths)**: `.github/workflows/sync-env-to-server.yml` now writes explicit runtime path keys in the server fragment (`MEDIA_DIR`, `LIBRARIES_DIR`, `TMP_UPLOADED_FILES`), and `scripts/setup-filesystem.sh` now requires runtime path keys directly (no `load_project_calculated_paths_env_vars` call). Container filesystem setup now relies on a strict env contract instead of implicit path calculation.
+
+- **Libraries dir contract simplified**: `api/settings.py` now loads `LIBRARIES_DIR` directly from env and derives `LIBRARIES_DIR_RELATIVE_TO_MEDIA` from `MEDIA_DIR`, removing runtime dependency on `LIBRARIES_DIR_NAME`. Related scripts/workflows now use explicit `LIBRARIES_DIR_INTERNAL` / `LIBRARIES_DIR_EXTERNAL` inputs.
 
 - **Local Python environment**: Standardized on `./.venv` for new setups ([`scripts/setup-worktree.sh`](scripts/setup-worktree.sh), [README](README.md), [CONTRIBUTING](CONTRIBUTING.md), [`.vscode/settings.json`](.vscode/settings.json), [`pyrightconfig.json`](pyrightconfig.json)) so it matches pre-commit hook wrappers; a legacy `./venv` directory is still supported by [`scripts/setup-dev-tools.sh`](scripts/setup-dev-tools.sh) and is listed in [`.gitignore`](.gitignore).
 
