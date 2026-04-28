@@ -7,9 +7,8 @@ log_with_script_prefixe () {
 check_script_vars_are_set () {
     log_with_script_prefixe "Loading environment variables for the filesystem setup..."
     load_app_env_file_if_exists
-    check_required_vars_are_set ENV
+    check_required_vars_are_set ENV MEDIA_DIR LIBRARIES_DIR TMP_UPLOADED_FILES
     check_bool_vars_are_set APP_IS_EXPOSED
-    load_project_calculated_paths_env_vars
     log_with_script_prefixe "Environment variables loaded for the filesystem setup."
 }
 
