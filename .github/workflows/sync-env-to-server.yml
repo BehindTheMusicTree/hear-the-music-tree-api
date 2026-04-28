@@ -3,7 +3,7 @@
 # Writes /tmp/sync-env-<app>-<env>.env (required by infra redeploy) and merges into scripts/.env.
 # All compose-required API booleans and runtime paths are hardcoded in the fragment (no GitHub Variables):
 # FILE_UPLOAD_ENABLED, SPOTIFY_ENABLED, GOOGLE_OAUTH_ENABLED, MUSICBRAINZ_LOOKUP_ENABLED, HTMT_API_AFP_ENABLED,
-# MEDIA_DIR, LIBRARIES_DIR_NAME, LIBRARIES_DIR, TMP_UPLOADED_FILES.
+# MEDIA_DIR, LIBRARIES_DIR, TMP_UPLOADED_FILES.
 name: Sync env to server
 
 on:
@@ -70,7 +70,6 @@ jobs:
             'MUSICBRAINZ_LOOKUP_ENABLED=true' \
             'HTMT_API_AFP_ENABLED=true' \
             'MEDIA_DIR=/app/media' \
-            'LIBRARIES_DIR_NAME=libraries' \
             'LIBRARIES_DIR=/app/media/libraries/' \
             'TMP_UPLOADED_FILES=/tmp/uploads' >> fragment.env
           required=(
