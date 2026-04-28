@@ -70,6 +70,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **python-project-standards v4.3.1** ([org **`v4.3.1`**](https://github.com/BehindTheMusicTree/python-project-standards/releases/tag/v4.3.1)): Root [**`STANDARDS_VERSION`**](STANDARDS_VERSION) **`4.3.1`**. [**`scripts/check_lint_baseline.py`**](scripts/check_lint_baseline.py) matches org **`templates/scripts/`** on that tag. Org **[`docs/versioning.md`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/versioning.md)** adds macOS **`bump-my-version`** troubleshooting and optional **`BUMP_MY_VERSION_PYTHON`** for **`scripts/standards_release_bump.sh`**. [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md) and [DEVELOPMENT.md](DEVELOPMENT.md) updated for **v4.3.1**.
 
+- **Workflow DB app naming variables**: Updated `.github/workflows/publish.yml`, `.github/workflows/test.yml`, and `.github/actionlint.yaml` to use `DB_APP_NAME_SUFFIX` instead of `DB_APP_NAME`. DB app/container names are now derived by appending `DB_APP_NAME_SUFFIX` to `HTMT_API_APP_NAME`, keeping DB naming aligned with the main app name across publish and test workflows.
+
 ### Added
 
 - **Dev setup**: [`scripts/setup-dev-tools.sh`](scripts/setup-dev-tools.sh) installs editable dev dependencies and `pre-commit` Git hooks (prefers `./.venv` then `./venv` for legacy trees); [`scripts/setup-worktree.sh`](scripts/setup-worktree.sh) creates `./.venv` and runs it. VS Code / [`pyrightconfig.json`](pyrightconfig.json) use `.venv` to match [`.pre-commit-hooks/tool-wrapper.sh`](.pre-commit-hooks/tool-wrapper.sh).

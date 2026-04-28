@@ -93,7 +93,7 @@ jobs:
       AFP_VERSION: ${{ vars.AFP_VERSION }}
       REDEPLOYMENT_ROOT: ${{ vars.REDEPLOYMENT_ROOT }}
       HTMT_API_APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
-      DB_APP_NAME: ${{ vars.DB_APP_NAME }}
+      DB_APP_NAME_SUFFIX: ${{ vars.DB_APP_NAME_SUFFIX }}
       AFP_APP_NAME: ${{ vars.AFP_APP_NAME }}
     outputs:
       db_version: ${{ steps.pinned.outputs.db_version }}
@@ -104,11 +104,11 @@ jobs:
           missing=""
           [ -z "${REDEPLOYMENT_ROOT}" ] && missing="${missing} REDEPLOYMENT_ROOT"
           [ -z "${HTMT_API_APP_NAME}" ] && missing="${missing} HTMT_API_APP_NAME"
-          [ -z "${DB_APP_NAME}" ] && missing="${missing} DB_APP_NAME"
+          [ -z "${DB_APP_NAME_SUFFIX}" ] && missing="${missing} DB_APP_NAME_SUFFIX"
           [ -z "${AFP_APP_NAME}" ] && missing="${missing} AFP_APP_NAME"
           if [ -n "$missing" ]; then
             echo "ERROR: Set org-level (or this repo) Variables:$missing"
-            echo "Example: REDEPLOYMENT_ROOT=/var/webhook/redeployment, HTMT_API_APP_NAME=htmt-api, DB_APP_NAME=htmt-db, AFP_APP_NAME=afp (must match infrastructure)"
+            echo "Example: REDEPLOYMENT_ROOT=/var/webhook/redeployment, HTMT_API_APP_NAME=htmt-api, DB_APP_NAME_SUFFIX=-db, AFP_APP_NAME=afp (must match infrastructure)"
             exit 1
           fi
       - name: Require pinned DB and AFP image tags
@@ -143,7 +143,7 @@ jobs:
     with:
       env: ${{ needs.determine-version.outputs.env }}
       tag: ${{ needs.check-pinned-tags.outputs.db_version }}
-      app_name: ${{ vars.DB_APP_NAME }}
+      app_name: ${{ format('{0}{1}', vars.HTMT_API_APP_NAME, vars.DB_APP_NAME_SUFFIX) }}
     secrets: inherit
 
   set-version-afp:
