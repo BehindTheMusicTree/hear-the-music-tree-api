@@ -98,8 +98,8 @@ AFP_ENABLED: bool
 MUSICBRAINZ_LOOKUP_ENABLED: bool
 MEDIA_ROOT: Path
 MEDIA_URL: str
+LIBRARIES_DIR_NAME: str
 LIBRARIES_DIR: Path
-LIBRARIES_DIR_RELATIVE_TO_MEDIA: str
 
 # Data
 DATA_DIR: Path
@@ -123,6 +123,7 @@ SECRET_KEY: str
 # File Upload
 FILE_UPLOAD_TEMP_DIR: str | None
 FILE_UPLOAD_ENABLED: bool
+METADATA_SESSION_DIR: Path | None
 
 
 def init_logs_if_needed():
@@ -803,17 +804,11 @@ def setup_media_dirs():
         global MEDIA_URL
         MEDIA_URL = load_required_str_env_var("MEDIA_URL")
 
+    global LIBRARIES_DIR_NAME
+    LIBRARIES_DIR_NAME = load_required_str_env_var("LIBRARIES_DIR_NAME")
+
     global LIBRARIES_DIR
-    LIBRARIES_DIR = load_required_path_env_var("LIBRARIES_DIR")
-    try:
-        libraries_relative_path = LIBRARIES_DIR.relative_to(MEDIA_ROOT).as_posix().rstrip("/")
-    except ValueError as e:
-        raise OSError(f"LIBRARIES_DIR ({LIBRARIES_DIR}) must be inside MEDIA_DIR ({MEDIA_ROOT}).") from e
-    if not libraries_relative_path:
-        raise OSError("LIBRARIES_DIR must not be equal to MEDIA_DIR.")
-    global LIBRARIES_DIR_RELATIVE_TO_MEDIA
-    LIBRARIES_DIR_RELATIVE_TO_MEDIA = libraries_relative_path
-    print_django("LIBRARIES_DIR_RELATIVE_TO_MEDIA: " + LIBRARIES_DIR_RELATIVE_TO_MEDIA)
+    LIBRARIES_DIR = MEDIA_ROOT / LIBRARIES_DIR_NAME
     print_django("LIBRARIES_DIR: " + str(LIBRARIES_DIR))
     if not LIBRARIES_DIR.is_dir():
         raise OSError(
@@ -873,7 +868,7 @@ else:
     STATIC_FILES = os.getenv("STATIC_FILES")
     if ENV == "collect_static":
         STATIC_FILES_STATE = StaticFileStates.COLLECTING
-        LIBRARIES_DIR_RELATIVE_TO_MEDIA = ""  # Needed to setup the database (User model)
+        LIBRARIES_DIR_NAME = ""  # Needed to setup the database (User model)
         setup_static_files()
     elif not STATIC_FILES:
         print_django("Static files are not needed.")
@@ -900,6 +895,7 @@ else:
 
     if not FILE_UPLOAD_ENABLED:
         print_django("FILE_UPLOAD_ENABLED is false. The app will not handle media files.")
+        METADATA_SESSION_DIR = None
         if os.getenv("AFP_ENABLED", "").lower() == "true":
             raise OSError("The AFP_ENABLED env variable cannot be true when FILE_UPLOAD_ENABLED is false.")
         for var_name in [
@@ -908,7 +904,8 @@ else:
             "AFP_POST_ENDPOINT",
             "ACOUSTID_API_KEY",
             "MEDIA_DIR",
-            "LIBRARIES_DIR",
+            "METADATA_SESSION_DIR",
+            "LIBRARIES_DIR_NAME",
             "TMP_UPLOADED_FILES",
         ]:
             if os.getenv(var_name):
@@ -916,6 +913,7 @@ else:
     else:
         if not FILE_UPLOAD_TEMP_DIR:
             raise OSError("TMP_UPLOADED_FILES/FILE_UPLOAD_TEMP_DIR must be set when FILE_UPLOAD_ENABLED is true.")
+        METADATA_SESSION_DIR = Path(load_required_str_env_var("METADATA_SESSION_DIR")).resolve()
         setup_media_dirs()
         if AFP_ENABLED:  # pyright: ignore[reportUnboundVariable]
             AFP_CONTAINER_NAME = load_required_str_env_var("AFP_CONTAINER_NAME")
