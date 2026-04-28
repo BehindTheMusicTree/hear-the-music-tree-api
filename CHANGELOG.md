@@ -114,6 +114,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Django startup in deploy images**: `coverage` is no longer unconditionally added to `INSTALLED_APPS`; it is only added during pytest runs when the module is installed, preventing staging/prod startup failures (`ModuleNotFoundError: No module named 'coverage'`).
 
+- **API startup dependency for Gunicorn**: Added runtime `setuptools` dependency so `pkg_resources` is available in deploy images, preventing Gunicorn boot failures (`ModuleNotFoundError: No module named 'pkg_resources'`) and downstream API `/health/` 502 from gateway.
+
 ### Documentation
 
 - **Development**: [DEVELOPMENT.md](DEVELOPMENT.md) links org-wide policy to [python-project-standards `docs/development.md`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md) (with [`string-enums.md`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/string-enums.md) for `StrEnum`); notes **Ruff UP042** as primary enforcement and **`prefer-strenum`** as an extra guardrail. [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md) references the same hub and notes org **v3+** dropped **reusable-test-matrix** (only **reusable-pre-commit** remains for shared lint).
