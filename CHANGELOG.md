@@ -72,6 +72,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Workflow DB app naming variables**: Updated `.github/workflows/publish.yml`, `.github/workflows/test.yml`, and `.github/actionlint.yaml` to use `DB_APP_NAME_SUFFIX` instead of `DB_APP_NAME`. DB app/container names are now derived by appending `DB_APP_NAME_SUFFIX` to `HTMT_API_APP_NAME`, keeping DB naming aligned with the main app name across publish and test workflows.
 
+- **Release on tag gating**: Updated `.github/workflows/release-on-tag.yml` to avoid creating GitHub Releases for prerelease/dev tags (for example `v2.2.3-dev...`). The workflow now runs release publication only for stable `vX.Y.Z` tags, preventing changelog section lookup failures for prerelease tag names.
+
 ### Added
 
 - **Dev setup**: [`scripts/setup-dev-tools.sh`](scripts/setup-dev-tools.sh) installs editable dev dependencies and `pre-commit` Git hooks (prefers `./.venv` then `./venv` for legacy trees); [`scripts/setup-worktree.sh`](scripts/setup-worktree.sh) creates `./.venv` and runs it. VS Code / [`pyrightconfig.json`](pyrightconfig.json) use `.venv` to match [`.pre-commit-hooks/tool-wrapper.sh`](.pre-commit-hooks/tool-wrapper.sh).
