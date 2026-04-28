@@ -7,8 +7,13 @@ log_with_script_prefixe () {
 check_script_vars_are_set () {
     log_with_script_prefixe "Loading environment variables for the filesystem setup..."
     load_app_env_file_if_exists
-    check_required_vars_are_set ENV MEDIA_DIR LIBRARIES_DIR TMP_UPLOADED_FILES
+    check_required_vars_are_set ENV
     check_bool_vars_are_set APP_IS_EXPOSED
+    if [ "$ENV" = "collect_static" ]; then
+        check_required_vars_are_set STATIC_FILES_DEFAULT
+    else
+        check_required_vars_are_set MEDIA_DIR LIBRARIES_DIR TMP_UPLOADED_FILES
+    fi
     log_with_script_prefixe "Environment variables loaded for the filesystem setup."
 }
 
