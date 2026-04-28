@@ -12,9 +12,10 @@ env:
 
   APP_VERSION: 'test'
   FILE_UPLOAD_ENABLED: true
-  TMP_UPLOADED_FILES_EXTERNAL: /tmp/ci-uploaded/
-  MEDIA_DIR_EXTERNAL: /tmp/ci-media/
-  LIBRARIES_DIR_EXTERNAL: /tmp/ci-media/libraries/
+  TMP_UPLOADED_FILES: /tmp/ci-uploaded/
+  MEDIA_DIR: /tmp/ci-media/
+  LIBRARIES_DIR: /tmp/ci-media/libraries/
+  STATIC_FILES: /tmp/ci-static/
 
   DB_IS_NEEDED: true
   DB_URL: localhost
@@ -75,7 +76,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
 
-      # Same as pytest: env/calculated_paths/ is kept in git via .gitkeep; setup-filesystem.sh generates .env there.
       - name: Set up filesystem for Django (mypy)
         run: bash scripts/setup-filesystem.sh
 
@@ -220,11 +220,6 @@ jobs:
 
       - name: Run pytest
         run: |
-          set -a
-          # shellcheck source=env/calculated_paths/.env
-          . env/calculated_paths/.env
-          set +a
-          export TMP_UPLOADED_FILES
           if [ -n "${{ inputs.test_path || '' }}" ]; then
             pytest -v --tb=short -x --junitxml=test-results.xml "${{ inputs.test_path }}"
           else

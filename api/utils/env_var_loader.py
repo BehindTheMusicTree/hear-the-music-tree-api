@@ -59,11 +59,6 @@ def load_required_path_env_var(var_name: str, must_print_value: bool = True) -> 
     return path
 
 
-def load_calculated_env_paths(base_dir: Path):
-    calculated_paths_env_file = base_dir / "env/calculated_paths/.env"
-    load_env_vars_from_file_if_exists(calculated_paths_env_file)
-
-
 def load_env_vars_from_file_if_exists(env_file_path: Path):
     if not env_file_path.exists():
         print_django(f"No env file at {env_file_path}")

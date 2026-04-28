@@ -9,7 +9,6 @@ from typing import Any
 # Third-party imports
 from api.utils.AppStaticFileStates import StaticFileStates
 from api.utils.env_var_loader import (
-    load_calculated_env_paths,
     load_env_vars_from_file_if_exists,
     load_optional_secret_env_var,
     load_optional_str_env_var,
@@ -846,10 +845,6 @@ APP_NAME = load_required_str_env_var("APP_NAME")
 APP_IS_EXPOSED = load_required_bool_env_var("APP_IS_EXPOSED")
 
 set_secret_key()
-
-# Calculated paths env file generation belongs in startup scripts/CI.
-# Runtime settings should only consume already-prepared env files.
-load_calculated_env_paths(BASE_DIR)
 
 if "pytest" in sys.argv[0]:
     print_django("settings.py is being executed because of a pytest command.")
