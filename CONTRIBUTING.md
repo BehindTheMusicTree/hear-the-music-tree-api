@@ -229,7 +229,7 @@ The docker build requires the following environment variables:
 - `APP_VERSION`
 - `FILE_UPLOAD_ENABLED`
 - `LIBRARIES_DIR_INTERNAL` (local/internal path mode) or `LIBRARIES_DIR_EXTERNAL` (server/external path mode)
-- `STATIC_FILES_INTERNAL`
+- `STATIC_FILES`
 - `DJANGO_LOG_GENERAL_FILENAME`
 - `DJANGO_LOG_INFO_FILENAME`
 - `DJANGO_LOG_REQUESTS_FILENAME`
@@ -240,7 +240,8 @@ The docker build requires the following environment variables:
 - `GUNICORN_LOG_ERROR_FILENAME`
 - `GUNICORN_LOG_ACCESS_FILENAME`
 
-For production deploy, path variables (`TMP_UPLOADED_FILES_EXTERNAL`, `MEDIA_DIR_EXTERNAL`, `STATIC_FILES_EXTERNAL`, `DJANGO_LOG_DIR_EXTERNAL`, `GUNICORN_LOG_DIR`) are set at runtime on the server (e.g. in a `.env` next to docker-compose), not by the workflow. Do not add them to GitHub repo or environment vars; the server supplies them when starting the stack.
+For production deploy, path variables (`TMP_UPLOADED_FILES_EXTERNAL`, `MEDIA_DIR_EXTERNAL`, `STATIC_FILES_EXTERNAL`, `DJANGO_LOG_DIR_EXTERNAL`, `GUNICORN_LOG_DIR`) are set at runtime on the server (e.g. in a `.env` next to docker-compose), not by the workflow. The runtime static path consumed by the app is `STATIC_FILES`. Do not add host-specific path values to GitHub repo or environment vars; the server supplies them when starting the stack.
+`STATIC_FILES_INTERNAL` / `STATIC_FILES_EXTERNAL` are deprecated for this app runtime; use `STATIC_FILES` directly.
 
 Log and static filenames (e.g. `GUNICORN_LOG_ERROR_FILENAME`, `DJANGO_LOG_GENERAL_FILENAME`) stay in the workflow. Industry practice: paths vary by host/deployment so they are runtime config (12-factor); filenames are usually fixed or set at deploy time because they rarely differ per environment. Strict 12-factor also prefers logging to stdout and letting the execution environment handle files; when using file-based logging, path = runtime, filename = workflow or code default is a common compromise.
 
@@ -281,7 +282,7 @@ One-off DB or data fix scripts (e.g. table renames, one-time backfills) live in 
 
 For audio fingerprinting, the HearTheMusicTree API requires an app called Audio Fingerprinter. You can find the Audio Fingerprinter app on GitHub at the following link: [Audio Fingerprinter](https://github.com/BehindTheMusicTree/audio-fingerprinter)
 
-The AFP image creates the Flask app log from `FLASK_LOG_APP_FILENAME` (e.g. `app.log`), which must match what `settings.py` expects (`LOG_APP_FILE`). Path variables (`GUNICORN_LOG_DIR`, `FLASK_LOG_DIR_EXTERNAL`, `POOL_DIR_EXTERNAL`) are runtime-only and required when running the container; the AFP entrypoint fails fast if any is missing. For CI and local runs with `--user`, the AFP image must support non-root (writable `/app/log` and `/app/env/calculated_paths`). See the AFP README.
+The AFP image creates the Flask app log from `FLASK_LOG_APP_FILENAME` (e.g. `app.log`), which must match what `settings.py` expects (`LOG_APP_FILE`). Path variables (`GUNICORN_LOG_DIR`, `FLASK_LOG_DIR_EXTERNAL`, `POOL_DIR_EXTERNAL`) are runtime-only and required when running the container; the AFP entrypoint fails fast if any is missing. For CI and local runs with `--user`, the AFP image must support non-root (writable `/app/log`). See the AFP README.
 
 ### 2. Branching
 

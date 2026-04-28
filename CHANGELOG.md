@@ -88,6 +88,14 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Libraries dir contract simplified**: `api/settings.py` now loads `LIBRARIES_DIR` directly from env and derives `LIBRARIES_DIR_RELATIVE_TO_MEDIA` from `MEDIA_DIR`, removing runtime dependency on `LIBRARIES_DIR_NAME`. Related scripts/workflows now use explicit `LIBRARIES_DIR_INTERNAL` / `LIBRARIES_DIR_EXTERNAL` inputs.
 
+- **Static files contract simplified**: startup scripts now use `STATIC_FILES` as the single runtime static path for both collect and serving flows. `STATIC_FILES_DEFAULT` is removed from calculated env paths and filesystem setup to avoid split-path drift at runtime.
+
+- **Workflows and build args aligned on final static path**: CI/workflows now require `STATIC_FILES` (instead of `STATIC_FILES_INTERNAL`) as the canonical static path input, and Docker build args no longer pass the removed `STATIC_FILES_INTERNAL`.
+
+- **Removed static path legacy fallbacks**: `setup-filesystem.sh` and `generate-calculated-paths-env-file.sh` no longer accept `STATIC_FILES_INTERNAL`/`STATIC_FILES_EXTERNAL`; static path resolution now requires `STATIC_FILES` only.
+
+- **Removed calculated paths loader layer**: deleted `scripts/generate-calculated-paths-env-file.sh`, removed `load_calculated_env_paths()` wiring from Django settings, and updated scripts/tests to consume final runtime env vars directly (no `env/calculated_paths/.env` sourcing).
+
 - **Local Python environment**: Standardized on `./.venv` for new setups ([`scripts/setup-worktree.sh`](scripts/setup-worktree.sh), [README](README.md), [CONTRIBUTING](CONTRIBUTING.md), [`.vscode/settings.json`](.vscode/settings.json), [`pyrightconfig.json`](pyrightconfig.json)) so it matches pre-commit hook wrappers; a legacy `./venv` directory is still supported by [`scripts/setup-dev-tools.sh`](scripts/setup-dev-tools.sh) and is listed in [`.gitignore`](.gitignore).
 
 - **Ruff**: Aligned `pyproject.toml` ignores with **0.15.x** (removed no-op `PT004` / `UP038`; `TRY302` → `TRY203`). Version remains **0.15.9**.
