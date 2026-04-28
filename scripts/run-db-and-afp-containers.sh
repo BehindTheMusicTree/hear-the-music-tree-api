@@ -24,7 +24,6 @@ check_script_vars_are_set () {
     local REQUIRED_NON_BOOL_VARS=(
         ENV
         DOCKERHUB_USERNAME
-        LIBRARIES_DIR_NAME
         TMP_UPLOADED_FILES
         DB_CONTAINER_NAME
         DB_IMAGE_REPO

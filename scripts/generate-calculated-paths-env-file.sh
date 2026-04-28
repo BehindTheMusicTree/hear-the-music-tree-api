@@ -111,9 +111,32 @@ calculate_media_dirs(){
         echo "MEDIA_DIR=$MEDIA_DIR" >> "$CALCULATED_PATHS_ENV_FILE"
 
         log_with_script_prefixe "Setting up libraries directory..."
-        check_required_vars_are_set "LIBRARIES_DIR_NAME"
-        # Join with a slash; naive ${MEDIA_DIR}${LIBRARIES_DIR_NAME} breaks when MEDIA_DIR has no trailing slash (e.g. /app/media + libraries → /app/medialibraries).
-        LIBRARIES_DIR="${MEDIA_DIR%/}/${LIBRARIES_DIR_NAME#/}/"
+        if [ -n "$LIBRARIES_DIR_EXTERNAL" ] && [ -n "$LIBRARIES_DIR_INTERNAL" ]; then
+            log_with_script_prefixe "ERROR: LIBRARIES_DIR_INTERNAL and LIBRARIES_DIR_EXTERNAL must not be set at the same time." >&2
+            exit 1
+        fi
+        if [ -n "$LIBRARIES_DIR_EXTERNAL" ]; then
+            LIBRARIES_DIR="$LIBRARIES_DIR_EXTERNAL"
+        elif [ -n "$LIBRARIES_DIR_INTERNAL" ]; then
+            LIBRARIES_DIR="${PROJECT_DIR}${LIBRARIES_DIR_INTERNAL}"
+        else
+            log_with_script_prefixe "ERROR: Either LIBRARIES_DIR_INTERNAL or LIBRARIES_DIR_EXTERNAL must be set when media is enabled." >&2
+            exit 1
+        fi
+        libraries_dir_normalized="${LIBRARIES_DIR%/}"
+        media_dir_normalized="${MEDIA_DIR%/}"
+        case "$libraries_dir_normalized" in
+            "$media_dir_normalized"/*) ;;
+            *)
+                log_with_script_prefixe "ERROR: LIBRARIES_DIR must be inside MEDIA_DIR (got LIBRARIES_DIR=${LIBRARIES_DIR}, MEDIA_DIR=${MEDIA_DIR})." >&2
+                exit 1
+                ;;
+        esac
+        if [ "$libraries_dir_normalized" = "$media_dir_normalized" ]; then
+            log_with_script_prefixe "ERROR: LIBRARIES_DIR must not be equal to MEDIA_DIR." >&2
+            exit 1
+        fi
+        LIBRARIES_DIR="${libraries_dir_normalized}/"
         log_with_script_prefixe "LIBRARIES_DIR is set to $LIBRARIES_DIR"
         echo "LIBRARIES_DIR=$LIBRARIES_DIR" >> "$CALCULATED_PATHS_ENV_FILE"
         log_with_script_prefixe "Libraries directory is set up."
@@ -122,8 +145,8 @@ calculate_media_dirs(){
             log_with_script_prefixe "ERROR: MEDIA_DIR_EXTERNAL must not be set if TMP_UPLOADED_FILES_INTERNAL is not set." >&2
             exit 1
         fi
-        if [ -n "$LIBRARIES_DIR_NAME" ]; then
-            log_with_script_prefixe "ERROR: LIBRARIES_DIR_NAME must not be set if TMP_UPLOADED_FILES_INTERNAL is not set." >&2
+        if [ -n "$LIBRARIES_DIR_INTERNAL" ] || [ -n "$LIBRARIES_DIR_EXTERNAL" ]; then
+            log_with_script_prefixe "ERROR: LIBRARIES_DIR_INTERNAL/EXTERNAL must not be set if media upload paths are not set." >&2
             exit 1
         fi
     fi

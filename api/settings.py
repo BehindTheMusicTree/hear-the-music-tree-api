@@ -98,8 +98,8 @@ AFP_ENABLED: bool
 MUSICBRAINZ_LOOKUP_ENABLED: bool
 MEDIA_ROOT: Path
 MEDIA_URL: str
-LIBRARIES_DIR_NAME: str
 LIBRARIES_DIR: Path
+LIBRARIES_DIR_RELATIVE_TO_MEDIA: str
 
 # Data
 DATA_DIR: Path
@@ -801,11 +801,17 @@ def setup_media_dirs():
         global MEDIA_URL
         MEDIA_URL = load_required_str_env_var("MEDIA_URL")
 
-    global LIBRARIES_DIR_NAME
-    LIBRARIES_DIR_NAME = load_required_str_env_var("LIBRARIES_DIR_NAME")
-
     global LIBRARIES_DIR
-    LIBRARIES_DIR = MEDIA_ROOT / LIBRARIES_DIR_NAME
+    LIBRARIES_DIR = load_required_path_env_var("LIBRARIES_DIR")
+    try:
+        libraries_relative_path = LIBRARIES_DIR.relative_to(MEDIA_ROOT).as_posix().rstrip("/")
+    except ValueError as e:
+        raise OSError(f"LIBRARIES_DIR ({LIBRARIES_DIR}) must be inside MEDIA_DIR ({MEDIA_ROOT}).") from e
+    if not libraries_relative_path:
+        raise OSError("LIBRARIES_DIR must not be equal to MEDIA_DIR.")
+    global LIBRARIES_DIR_RELATIVE_TO_MEDIA
+    LIBRARIES_DIR_RELATIVE_TO_MEDIA = libraries_relative_path
+    print_django("LIBRARIES_DIR_RELATIVE_TO_MEDIA: " + LIBRARIES_DIR_RELATIVE_TO_MEDIA)
     print_django("LIBRARIES_DIR: " + str(LIBRARIES_DIR))
     if not LIBRARIES_DIR.is_dir():
         raise OSError(
@@ -869,7 +875,7 @@ else:
     STATIC_FILES = os.getenv("STATIC_FILES")
     if ENV == "collect_static":
         STATIC_FILES_STATE = StaticFileStates.COLLECTING
-        LIBRARIES_DIR_NAME = ""  # Needed to setup the database (User model)
+        LIBRARIES_DIR_RELATIVE_TO_MEDIA = ""  # Needed to setup the database (User model)
         setup_static_files()
     elif not STATIC_FILES:
         print_django("Static files are not needed.")
@@ -904,7 +910,7 @@ else:
             "AFP_POST_ENDPOINT",
             "ACOUSTID_API_KEY",
             "MEDIA_DIR",
-            "LIBRARIES_DIR_NAME",
+            "LIBRARIES_DIR",
             "TMP_UPLOADED_FILES",
         ]:
             if os.getenv(var_name):
