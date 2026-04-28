@@ -1,5 +1,6 @@
 # Standard library imports
 import datetime
+import importlib.util
 import os
 import sys
 from pathlib import Path
@@ -535,10 +536,12 @@ def setup_installed_apps_and_caches():
         "drf_spectacular",
         "rest_framework",
         "rest_framework.authtoken",
-        "coverage",
         "drf_multiple_model",
         "api",
     ]
+
+    if "pytest" in sys.argv[0] and importlib.util.find_spec("coverage") is not None:
+        INSTALLED_APPS.append("coverage")
 
     if APP_IS_EXPOSED:
         INSTALLED_APPS.append("rest_framework_simplejwt")
