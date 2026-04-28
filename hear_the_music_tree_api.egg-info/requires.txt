@@ -1,6 +1,5 @@
 asgiref==3.8.1
-audiometa-python==1.4.0
-autoflake==2.3.1
+audiometa-python==1.1.0
 bcrypt==3.1.7
 blinker==1.4
 certifi==2019.11.28
@@ -37,6 +36,7 @@ python-dateutil==2.7.3
 python-dotenv==1.0.1
 python-magic==0.4.27
 requests==2.32.3
+setuptools==75.2.0
 shortuuid==1.0.9
 simplejson==3.16.0
 spotipy==2.23.0

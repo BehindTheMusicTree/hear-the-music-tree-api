@@ -70,31 +70,27 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **python-project-standards v4.3.1** ([org **`v4.3.1`**](https://github.com/BehindTheMusicTree/python-project-standards/releases/tag/v4.3.1)): Root [**`STANDARDS_VERSION`**](STANDARDS_VERSION) **`4.3.1`**. [**`scripts/check_lint_baseline.py`**](scripts/check_lint_baseline.py) matches org **`templates/scripts/`** on that tag. Org **[`docs/versioning.md`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/versioning.md)** adds macOS **`bump-my-version`** troubleshooting and optional **`BUMP_MY_VERSION_PYTHON`** for **`scripts/standards_release_bump.sh`**. [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md) and [DEVELOPMENT.md](DEVELOPMENT.md) updated for **v4.3.1**.
 
-- **Workflow DB app naming variables**: Updated `.github/workflows/publish.yml`, `.github/workflows/test.yml`, and `.github/actionlint.yaml` to use `DB_APP_NAME_SUFFIX` instead of `DB_APP_NAME`. DB app/container names are now derived by appending `DB_APP_NAME_SUFFIX` to `HTMT_API_APP_NAME`, keeping DB naming aligned with the main app name across publish and test workflows.
-
 ### Added
 
 - **Dev setup**: [`scripts/setup-dev-tools.sh`](scripts/setup-dev-tools.sh) installs editable dev dependencies and `pre-commit` Git hooks (prefers `./.venv` then `./venv` for legacy trees); [`scripts/setup-worktree.sh`](scripts/setup-worktree.sh) creates `./.venv` and runs it. VS Code / [`pyrightconfig.json`](pyrightconfig.json) use `.venv` to match [`.pre-commit-hooks/tool-wrapper.sh`](.pre-commit-hooks/tool-wrapper.sh).
 
 - **Linting (audiometa-python baseline)**: [`.pre-commit-config.yaml`](.pre-commit-config.yaml) matches the audiometa-python hook stack (tool version check, YAML/JSON/TOML, shellcheck, `no-assert`, ruff-format, ruff, mypy + django-stubs, pydocstringformatter, long-comment fixer, Prettier, optional PSScriptAnalyzer) plus **`prefer-strenum`** (pre-commit no longer runs **isort**; org **v4.3+** verifier forbids it alongside **ruff format**). Configuration lives in [`pyproject.toml`](pyproject.toml); linter and test dependencies are pinned under `[project.optional-dependencies] dev`. Ruff **select** matches audiometa; extra **ignores** document Django/DRF cleanup debt. Mypy is plugin-aligned but **gradual** (`ignore_missing_imports`, non-strict) until typing can match audiometa strictness.
 
-- **Packaging (PEP 621, audiometa-style)**: Runtime and dev dependencies are declared in `pyproject.toml` (`[project]` / `[project.optional-dependencies] dev`) with setuptools as the build backend. Local and CI use `pip install -e "[dev]"`; production Docker builds use `pip install .`. There is no `requirements.txt`; `pyproject.toml` is the only dependency manifest. Release bumps now update `pyproject.toml` `[project] version` via bump2version. `fake-samples-loader` is pinned to `1.0.13`; `django-dynamic-fixture` is a dev extra (tests only).
+- **Packaging (PEP 621, audiometa-style)**: Runtime and dev dependencies are declared in `pyproject.toml` (`[project]` / `[project.optional-dependencies] dev`) with setuptools as the build backend. Local and CI use `pip install -e ".[dev]"`; production Docker builds use `pip install .`. There is no `requirements.txt`; `pyproject.toml` is the only dependency manifest. Release bumps now update `pyproject.toml` `[project] version` via bump2version. `fake-samples-loader` is pinned to `1.0.13`; `django-dynamic-fixture` is a dev extra (tests only).
 
 - **[`.pre-commit-hooks/`](.pre-commit-hooks/)**: Shell wrappers copied from audiometa-python (`tool-wrapper`, `check-tool-versions`, shellcheck, `no-assert`, etc.).
 
 ### Changed
 
-- **Sync env contract (runtime paths)**: `.github/workflows/sync-env-to-server.yml` now writes explicit runtime path keys in the server fragment (`MEDIA_DIR`, `LIBRARIES_DIR`, `TMP_UPLOADED_FILES`), and `scripts/setup-filesystem.sh` now requires runtime path keys directly (no `load_project_calculated_paths_env_vars` call). Container filesystem setup now relies on a strict env contract instead of implicit path calculation.
+- **Workflow DB app naming variables**: Updated `.github/workflows/publish.yml`, `.github/workflows/test.yml`, and `.github/actionlint.yaml` to use `DB_APP_NAME_SUFFIX` instead of `DB_APP_NAME`. DB app/container names are derived by appending `DB_APP_NAME_SUFFIX` to `HTMT_API_APP_NAME`.
 
-- **Libraries dir contract simplified**: `api/settings.py` now loads `LIBRARIES_DIR` directly from env and derives `LIBRARIES_DIR_RELATIVE_TO_MEDIA` from `MEDIA_DIR`, removing runtime dependency on `LIBRARIES_DIR_NAME`. Related scripts/workflows now use explicit `LIBRARIES_DIR_INTERNAL` / `LIBRARIES_DIR_EXTERNAL` inputs.
+- **Sync env contract (runtime paths)**: `.github/workflows/sync-env-to-server.yml` writes explicit runtime path keys in the server fragment; `scripts/setup-filesystem.sh` no longer calls `load_project_calculated_paths_env_vars`.
 
-- **Static files contract simplified**: startup scripts now use `STATIC_FILES` as the single runtime static path for both collect and serving flows. `STATIC_FILES_DEFAULT` is removed from calculated env paths and filesystem setup to avoid split-path drift at runtime.
+- **Static files contract simplified**: Startup scripts use `STATIC_FILES` as the single runtime static path for collect and serving flows; split default/static path drift from `STATIC_FILES_DEFAULT` is removed where paths are generated.
 
-- **Workflows and build args aligned on final static path**: CI/workflows now require `STATIC_FILES` (instead of `STATIC_FILES_INTERNAL`) as the canonical static path input, and Docker build args no longer pass the removed `STATIC_FILES_INTERNAL`.
+- **Workflows and Docker build**: CI and Docker workflows use `STATIC_FILES` (instead of `STATIC_FILES_INTERNAL`) as the canonical static path input where relevant.
 
-- **Removed static path legacy fallbacks**: `setup-filesystem.sh` and `generate-calculated-paths-env-file.sh` no longer accept `STATIC_FILES_INTERNAL`/`STATIC_FILES_EXTERNAL`; static path resolution now requires `STATIC_FILES` only.
-
-- **Removed calculated paths loader layer**: deleted `scripts/generate-calculated-paths-env-file.sh`, removed `load_calculated_env_paths()` wiring from Django settings, and updated scripts/tests to consume final runtime env vars directly (no `env/calculated_paths/.env` sourcing).
+- **Removed calculated paths loader layer**: Deleted `scripts/generate-calculated-paths-env-file.sh` and removed `load_calculated_env_paths()` from Django settings; scripts and tests consume final runtime env vars directly (no `env/calculated_paths/.env` sourcing).
 
 - **Local Python environment**: Standardized on `./.venv` for new setups ([`scripts/setup-worktree.sh`](scripts/setup-worktree.sh), [README](README.md), [CONTRIBUTING](CONTRIBUTING.md), [`.vscode/settings.json`](.vscode/settings.json), [`pyrightconfig.json`](pyrightconfig.json)) so it matches pre-commit hook wrappers; a legacy `./venv` directory is still supported by [`scripts/setup-dev-tools.sh`](scripts/setup-dev-tools.sh) and is listed in [`.gitignore`](.gitignore).
 
@@ -104,14 +100,6 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **pytest**: `pytest.ini` live logging default is **INFO** instead of **DEBUG** so suites do not look hung; use `-o log_cli_level=DEBUG` when diagnosing failures.
 
-- **Dependencies**: `audiometa-python` `1.1.0` → `1.4.0`.
-
-- **Audio file metadata**: Renamed `update_file_metadata()` to `update_file_metadata_app()` for `AppMetadata` updates; added `update_file_metadata_unified()` for patches keyed by unified metadata field ids.
-
-### Removed
-
-- **Audio metadata API**: `POST /v1/audio/metadata/full/`, `POST /v1/audio/metadata/session/`, and `POST /v1/audio/metadata/session-download/` moved to the standalone **AudioMeta API** service repository (`audiometa-api`). Deploy no longer requires `METADATA_SESSION_DIR` for this app.
-
 ### CI
 
 - **Pre-commit**: PR workflow runs `pre-commit run --all-files` (StrEnum checker, Ruff fatal rules, YAML / merge-conflict checks) in an **inline** job (checkout, Python 3.14, `pip install -e ".[dev]"`), not via org `reusable-pre-commit`. Integration **pytest** stays in-repo. Added **`verify-python-project-standards`** ([`scripts/verify-standards.sh`](scripts/verify-standards.sh)); removed the `STANDARDS_VERSION` file and workflow pin checks. See [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md).
@@ -120,9 +108,9 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **`verify-standards.sh`**: Synced from **python-project-standards v3.0.1**: stricter local **ruff check** detection (not **`ruff-format`** alone); optional **`STANDARDS_VERSION`** vs **`@v…`** pin scan uses a workflow file loop instead of fragile **`grep -r --include`** ordering (still accepts **astral-sh/ruff-pre-commit** remote repo).
 
-- **Django startup in deploy images**: `coverage` is no longer unconditionally added to `INSTALLED_APPS`; it is only added during pytest runs when the module is installed, preventing staging/prod startup failures (`ModuleNotFoundError: No module named 'coverage'`).
+- **Django startup in deploy images**: `coverage` is only appended to `INSTALLED_APPS` during pytest when the module is installed, avoiding `ModuleNotFoundError: No module named 'coverage'` in staging/production.
 
-- **API startup dependency for Gunicorn**: Added runtime `setuptools` dependency so `pkg_resources` is available in deploy images, preventing Gunicorn boot failures (`ModuleNotFoundError: No module named 'pkg_resources'`) and downstream API `/health/` 502 from gateway.
+- **API startup (Gunicorn)**: Runtime `setuptools` is pinned so `pkg_resources` remains available in slim deploy images.
 
 ### Documentation
 
@@ -131,8 +119,6 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md) documents `scripts/setup-dev-tools.sh` for dev installs and hooks (with a manual `pip` / `pre-commit install` alternative); the Testing section explains when pytest feels stuck (verbose logging, DB, pyenv).
 
 - **Cursor**: `.cursor/rules/strenum-string-enums.mdc` matches [python-project-standards `templates/cursor-rules/strenum-string-enums.mdc`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/templates/cursor-rules/strenum-string-enums.mdc) and encodes the `StrEnum` convention for contributors using Cursor.
-
-- **Audio file metadata (utils README)**: Examples use `update_file_metadata_app()` to match the adapter rename.
 
 - **README**: Added ecosystem context with portfolio links (`themusictree.org`, HearTheMusicTree project page) and clarified that portfolio/marketing source-of-truth lives in `the-music-tree-frontend`.
 
