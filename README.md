@@ -13,7 +13,7 @@
 - [Features](#features)
 - [Vision](VISION.md)
 - [Getting Started](#getting-started)
-  - [Developer environment (recommended)](#developer-environment-recommended)
+  - [Developer environment (recommended): Docker Compose](#developer-environment-recommended-docker-compose)
 - [API](#api)
   - [Base URL & Interactive Documentation](#base-url--interactive-documentation)
   - [Authentication](#authentication)
@@ -126,41 +126,42 @@ For detailed setup and installation instructions, please see the [Contributing G
   </tbody>
 </table>
 
-### Developer environment (recommended)
+### Developer environment (recommended): Docker Compose
 
-To keep a consistent, reproducible development environment across contributors, we recommend a workspace-local virtual environment named `.venv` in the project root (same layout as pre-commit hooks and VS Code defaults).
+This repository provides a local-first Docker Compose setup:
 
-1. Create `.venv` in the project root:
+- `docker-compose.yml`: base stack (`api`, `db`, `afp`) with pinned defaults
+- `docker-compose.override.yml`: development override (bind mount + Django `runserver`)
 
-```bash
-python3 -m venv .venv
-```
+Quick start:
 
-2. Activate the virtualenv:
-
-- macOS / Linux:
-  ```bash
-  source .venv/bin/activate
-  ```
-- Windows (PowerShell):
-  ```powershell
-  .\.venv\Scripts\Activate.ps1
-  ```
-
-3. Install dependencies and pre-commit hooks:
+1. Create a local env file for Compose:
 
 ```bash
-bash scripts/setup-dev-tools.sh
+cp env/dev/.env.compose.dev.example .env
 ```
 
-This upgrades pip, installs the editable package with dev extras, and runs `pre-commit install` when `.pre-commit-config.yaml` exists. It activates `./.venv` if present, otherwise `./venv`, when you have not already activated a virtualenv. Alternatively: `pip install -e ".[dev]"` then `pre-commit install`.
+2. Build (installs dev extras including pytest inside the API image) and start the stack:
 
-4. VS Code setup
+```bash
+docker compose build api && docker compose up
+```
 
-- Workspace settings use `${workspaceFolder}/.venv/bin/python` so VS Code picks the interpreter when `.venv` exists.
-- Alternatively, run the VS Code command `Python: Select Interpreter` and choose `.venv/bin/python`.
+3. Open the API:
 
-If you prefer a different venv name or layout, adjust your local VS Code interpreter selection; local pre-commit wrappers expect `./.venv` when the shell is not activated.
+- App: `http://localhost:8000`
+- Swagger: `http://localhost:8000/docs/`
+
+Conventions used in this repository:
+
+- No legacy calculated path layer in Compose.
+- Runtime path variables are direct (`MEDIA_DIR`, `TMP_UPLOADED_FILES`, `METADATA_SESSION_DIR`, `DJANGO_LOG_DIR`, `GUNICORN_LOG_DIR`).
+- Local development Compose lives in this app repository.
+
+Deployment note:
+
+- Keep deployment Compose/manifests in your infra repository.
+- Share conventions across repos (image names/tags, env var names, healthchecks), but keep separate files for dev and deployment responsibilities.
 
 ## API
 

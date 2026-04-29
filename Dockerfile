@@ -9,6 +9,7 @@ ARG APP_TITLE
 ARG API_DIR_NAME
 ARG STATIC_FILES_URL=/static/
 ARG APP_NAME=htmt-api
+ARG INSTALL_DEV=false
 
 RUN for var in APP_VERSION APP_TITLE API_DIR_NAME; do \
     eval "value=\$$var"; \
@@ -41,7 +42,11 @@ RUN apt update && \
     rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade pip && \
-    pip install .
+    if [ "${INSTALL_DEV:-false}" = "true" ]; then \
+      pip install -e ".[dev]"; \
+    else \
+      pip install .; \
+    fi
 
 RUN chmod +x scripts/entrypoint.sh
 
