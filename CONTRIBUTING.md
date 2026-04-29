@@ -453,7 +453,7 @@ pytest -o log_cli_level=DEBUG
 
 - **Live logging:** `pytest.ini` sets `log_cli = true`. At **DEBUG** every log line is printed and the suite can look frozen. The default level is **INFO**; use `-o log_cli=false` for minimal console noise or `-o log_cli_level=DEBUG` only when chasing a failure.
 - **Database:** Integration and most Django tests need **PostgreSQL** (and env) as in [Environment Setup](#1-environment-setup). A missing or unreachable DB often blocks on connect instead of failing immediately—start `run-db-and-afp-containers.sh` (or your CI-like stack) first.
-- **Container context:** If `pytest` is not found on your host, run tests from the API container (`docker compose exec api pytest ...`) instead of relying on a host virtualenv.
+- **Container context:** If `pytest` is not found on your host, run tests from the API container (`docker compose exec api pytest ...`) or install dev dependencies with `python -m pip install -e ".[dev]"` in your active Python environment so `pytest` is on your `PATH`.
 
 **Test Structure:**
 
@@ -562,7 +562,7 @@ We follow a structured commit format inspired by [Conventional Commits](https://
 - Format: `<type>(<scope>): <summary>`
 - Run checks in container: `docker compose exec api pytest`
 
-**Pre-commit hooks on the host:** Hooks still run via Git on your machine. [`scripts/setup-dev-tools.sh`](scripts/setup-dev-tools.sh) installs pinned tools into `./.venv`; if that directory exists, [`check-tool-versions`](.pre-commit-hooks/check-tool-versions.sh) prepends `.venv/bin` (or `venv/bin`) to `PATH` even when the venv is not activated. If you have **no** local venv but pinned tools are on your `PATH`, set **`PRE_COMMIT_SKIP_VENV_GUARD=true`** for the commit command only so the guard does not block (version checks still run). Prefer keeping a small `./.venv` for hooks when possible.
+**Pre-commit hooks on the host:** Hooks resolve `ruff`, `mypy`, etc. from your **`PATH`** at the versions pinned in [`pyproject.toml`](pyproject.toml). Install dev deps into the interpreter you use for commits: `python -m pip install -e ".[dev]"`, then `pre-commit install` (or run [`scripts/setup-dev-tools.sh`](scripts/setup-dev-tools.sh)).
 
 **Commit Types:**
 
@@ -606,7 +606,7 @@ Before submitting a Pull Request, ensure the following checks are completed:
 
 **2. Tests**
 
-- ✅ All tests pass: `docker compose exec api pytest` (or `pytest` when using a local venv with dev deps)
+- ✅ All tests pass: `docker compose exec api pytest` (or `pytest` after `python -m pip install -e ".[dev]"` locally)
 - ✅ New features have corresponding tests
 - ✅ Bug fixes include regression tests
 - ✅ Tests follow the naming convention: `test_{scenario}_then_{expected_result}`
