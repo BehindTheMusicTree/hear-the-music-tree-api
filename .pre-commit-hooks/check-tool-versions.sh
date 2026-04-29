@@ -4,11 +4,16 @@
 
 set -e
 
-# If .venv exists and VIRTUAL_ENV is not set, add .venv/bin to PATH first
-# This handles VS Code Source Control commits where the shell isn't activated
-if [ -z "$VIRTUAL_ENV" ] && [ -d ".venv/bin" ] && [ -x ".venv/bin/python" ]; then
-    export PATH=".venv/bin:$PATH"
-    USING_LOCAL_VENV=true
+# If .venv or venv exists and VIRTUAL_ENV is not set, add .../bin to PATH first.
+# Handles VS Code / IDE commits where the shell isn't activated (Docker-first dev may still keep one venv for hooks).
+if [ -z "$VIRTUAL_ENV" ]; then
+    if [ -d ".venv/bin" ] && [ -x ".venv/bin/python" ]; then
+        export PATH=".venv/bin:$PATH"
+        USING_LOCAL_VENV=true
+    elif [ -d "venv/bin" ] && [ -x "venv/bin/python" ]; then
+        export PATH="venv/bin:$PATH"
+        USING_LOCAL_VENV=true
+    fi
 fi
 
 # Colors for output
@@ -50,20 +55,27 @@ check_venv() {
         return 0
     fi
 
-    # Check if we're using local .venv (set at top of script)
+    # Opt-out for hosts without an activated venv (e.g. Docker-only workflow); linters must still be on PATH.
+    if [ "${PRE_COMMIT_SKIP_VENV_GUARD:-}" = "true" ] || [ "${PRE_COMMIT_SKIP_VENV_GUARD:-}" = "1" ]; then
+        echo -e "${YELLOW}Note: PRE_COMMIT_SKIP_VENV_GUARD set — skipping virtualenv detection (tools must match pyproject pins).${NC}"
+        return 0
+    fi
+
+    # Check if we're using local .venv or venv (PATH adjusted at top of script)
     if [ "$USING_LOCAL_VENV" = "true" ]; then
-        echo -e "${YELLOW}Note: Using tools from .venv (virtual environment not activated in shell)${NC}"
+        echo -e "${YELLOW}Note: Using tools from repo virtualenv without activating the shell (PATH includes .venv/bin or venv/bin).${NC}"
         return 0
     fi
 
     # Check if VIRTUAL_ENV is set
     if [ -z "$VIRTUAL_ENV" ]; then
         echo -e "${RED}ERROR: No virtual environment detected!${NC}"
-        echo -e "${YELLOW}Pre-commit hooks require tools from .venv${NC}"
+        echo -e "${YELLOW}Pre-commit hooks need pinned tools (same as CI). Typical fixes:${NC}"
         echo ""
-        echo "Please activate your virtual environment:"
-        echo "  source .venv/bin/activate  # Linux/macOS"
-        echo "  .venv\\Scripts\\activate   # Windows"
+        echo "  • Activate a venv that has dev deps: source .venv/bin/activate"
+        echo "  • Or create one: python3 -m venv .venv && bash scripts/setup-dev-tools.sh"
+        echo "  • Docker-only host with tools unavailable here: PRE_COMMIT_SKIP_VENV_GUARD=true git commit ..."
+        echo "    (still requires ruff/isort/mypy/pydocstringformatter on PATH at pinned versions)"
         return 1
     fi
     return 0
