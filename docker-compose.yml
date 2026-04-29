@@ -26,13 +26,13 @@ services:
       ENV: ${ENV:-dev}
       DEBUG: ${DEBUG:-true}
       APP_PORT: ${AFP_PORT:-7015}
-      POOL_DIR_EXTERNAL: ${AFP_POOL_DIR_EXTERNAL:-/tmp/uploaded-files/}
+      POOL_DIR_EXTERNAL: ${TMP_UPLOADED_FILES:-/tmp/uploaded-files/}
       FLASK_LOG_DIR_EXTERNAL: ${AFP_FLASK_LOG_DIR_EXTERNAL:-/app/log/flask/}
       GUNICORN_LOG_DIR: ${AFP_GUNICORN_LOG_DIR_EXTERNAL:-/app/log/gunicorn/}
     ports:
       - "${AFP_PORT:-7015}:${AFP_PORT:-7015}"
     volumes:
-      - afp-upload-pool:${AFP_POOL_DIR_EXTERNAL:-/tmp/uploaded-files/}
+      - api-uploads:${TMP_UPLOADED_FILES:-/tmp/uploaded-files/}
       - afp-flask-log:${AFP_FLASK_LOG_DIR_EXTERNAL:-/app/log/flask/}
       - afp-gunicorn-log:${AFP_GUNICORN_LOG_DIR_EXTERNAL:-/app/log/gunicorn/}
     healthcheck:
@@ -96,14 +96,14 @@ services:
       AFP_URL: ${AFP_URL:-afp}
       AFP_PORT: ${AFP_PORT:-7015}
       AFP_POST_ENDPOINT: ${AFP_POST_ENDPOINT:-fingerprint-audio}
-      MUSICBRAINZ_LOOKUP_ENABLED: ${MUSICBRAINZ_LOOKUP_ENABLED:-false}
+      MUSICBRAINZ_LOOKUP_ENABLED: ${MUSICBRAINZ_LOOKUP_ENABLED:-true}
       ACOUSTID_API_KEY: ${ACOUSTID_API_KEY:-dev-acoustid-key}
-      SPOTIFY_ENABLED: ${SPOTIFY_ENABLED:-false}
+      SPOTIFY_ENABLED: ${SPOTIFY_ENABLED:-true}
       SPOTIFY_CLIENT_ID: ${SPOTIFY_CLIENT_ID:-dev-spotify-client-id}
       SPOTIFY_CLIENT_SECRET: ${SPOTIFY_CLIENT_SECRET:-dev-spotify-client-secret}
       SPOTIFY_REDIRECT_URI: ${SPOTIFY_REDIRECT_URI:-http://127.0.0.1:9002/auth/spotify/callback}
       SPOTIFY_SCOPES: ${SPOTIFY_SCOPES:-user-read-email}
-      GOOGLE_OAUTH_ENABLED: ${GOOGLE_OAUTH_ENABLED:-false}
+      GOOGLE_OAUTH_ENABLED: ${GOOGLE_OAUTH_ENABLED:-true}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-dev-google-client-id}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-dev-google-client-secret}
       GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-http://127.0.0.1:9002/auth/google/callback}
@@ -130,7 +130,6 @@ services:
 
 volumes:
   db-data:
-  afp-upload-pool:
   afp-flask-log:
   afp-gunicorn-log:
   api-media:

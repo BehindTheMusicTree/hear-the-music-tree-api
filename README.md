@@ -156,6 +156,8 @@ Conventions used in this repository:
 
 - No legacy calculated path layer in Compose.
 - Runtime path variables are direct (`MEDIA_DIR`, `TMP_UPLOADED_FILES`, `METADATA_SESSION_DIR`, `DJANGO_LOG_DIR`, `GUNICORN_LOG_DIR`).
+- The Audio Fingerprinter pool uses the same path and Docker volume as `TMP_UPLOADED_FILES` (see Compose).
+- Optional integration flags (`SPOTIFY_ENABLED`, `GOOGLE_OAUTH_ENABLED`, `MUSICBRAINZ_LOOKUP_ENABLED`) default to **enabled** in Compose with placeholder credentials so the test suite can run without extra env wiring; override in `.env` if you need them off locally.
 - Local development Compose lives in this app repository.
 
 Deployment note:

@@ -102,6 +102,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Docker Compose local workflow (no legacy path layer)**: Added repository-level `docker-compose.yml` and `docker-compose.override.yml` for app-local development (`api`/`db`/`afp`) with direct runtime path variables (`MEDIA_DIR`, `TMP_UPLOADED_FILES`, `METADATA_SESSION_DIR`, `DJANGO_LOG_DIR`, `GUNICORN_LOG_DIR`) and shared conventions for image/env/healthcheck alignment with infra deployment.
 
+- **Docker Compose AFP pool volume**: The `afp` service mounts the same named volume as `api` at `TMP_UPLOADED_FILES`, and `POOL_DIR_EXTERNAL` follows that path, so uploaded files are visible to the fingerprinter (fixes integration tests that fingerprint pool files).
+
+- **Docker Compose + pytest optional flags**: [`docker-compose.yml`](docker-compose.yml) defaults `SPOTIFY_ENABLED`, `GOOGLE_OAUTH_ENABLED`, and `MUSICBRAINZ_LOOKUP_ENABLED` to **true** (with existing placeholder client secrets) so `docker compose exec api pytest` matches the suite’s “optional services enabled” guard; [`env/dev/.env.compose.dev.example`](env/dev/.env.compose.dev.example) documents the same.
+
 - **Dockerfile dev install toggle**: Added **`INSTALL_DEV`** build-arg (`false` by default for CI/production `pip install .`; Compose defaults **`INSTALL_DEV=true`** so the API image includes **`pip install -e ".[dev]"`** and `pytest` is available for `docker compose exec api pytest`).
 
 ### CI
