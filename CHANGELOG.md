@@ -138,6 +138,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Docker-only local workflow**: Documented Docker Compose as the default developer path and aligned [CONTRIBUTING.md](CONTRIBUTING.md) and [`.cursor/rules/pre-pr-checklist.mdc`](.cursor/rules/pre-pr-checklist.mdc) setup/testing notes with `docker compose exec api …` (optional local `pip install -e ".[dev]"` for `pytest`; no dedicated `.venv` workflow).
 
+- **Env file contract (host scripts)**: One-time and helper scripts now use `.env` as the single default host env file (or explicit `ENV_FILE`) to avoid legacy `env/.env` drift from Docker Compose defaults.
+
 ## [v2.2.3] - 2026-04-01
 
 ### Changed
@@ -170,7 +172,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Changed
 
-- **`FILE_UPLOAD_ENABLED` required at runtime**: No inference from `TMP_UPLOADED_FILES`. Django and `scripts/setup-filesystem.sh` fail fast if it is unset or not `true`/`false`. Set it in local `env/.env` (see `env/dev/.env.dev.example`). **Sync env to server** hardcodes **`FILE_UPLOAD_ENABLED=true`** (and the other compose-required API booleans) in the server fragment.
+- **`FILE_UPLOAD_ENABLED` required at runtime**: No inference from `TMP_UPLOADED_FILES`. Django and `scripts/setup-filesystem.sh` fail fast if it is unset or not `true`/`false`. Set it in local `.env` (see `env/dev/.env.dev.example`). **Sync env to server** hardcodes **`FILE_UPLOAD_ENABLED=true`** (and the other compose-required API booleans) in the server fragment.
 
 - **Sync env: compose API booleans hardcoded**: **Sync env to server** always writes **`FILE_UPLOAD_ENABLED=true`**, **`SPOTIFY_ENABLED=true`**, **`GOOGLE_OAUTH_ENABLED=true`**, **`MUSICBRAINZ_LOOKUP_ENABLED=true`**, **`HTMT_API_AFP_ENABLED=true`** (no GitHub Variables for those keys).
 

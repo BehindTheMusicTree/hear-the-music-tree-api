@@ -142,7 +142,7 @@ cd the-music-tree-api
 
 2. Set up environment variables:
 
-   Create a copy of the file `env/dev/.env.dev.template` as `env/.env` and set the required values. See the [Environment Variables](#environment-variables) section below for details on all required variables.
+   Create a copy of the file `env/dev/.env.dev.template` as `.env` and set the required values. See the [Environment Variables](#environment-variables) section below for details on all required variables.
 
    **Note:** Environment variables are required for filesystem setup and running containers in the following steps.
 
@@ -211,7 +211,7 @@ The application uses strict environment variable validation:
 - **Application data**: Application data files (like reference data, fixtures) are stored relative to the codebase (`BASE_DIR`) and do not require environment variables
 
 **Development:**
-Create a copy of the file `env/dev/.env.dev.template` as `env/.env` and set the values.
+Create a copy of the file `env/dev/.env.dev.template` as `.env` and set the values.
 
 **Build:**
 The docker build requires the following environment variables:

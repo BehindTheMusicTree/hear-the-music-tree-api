@@ -98,18 +98,21 @@ export_value_removing_potential_surrounding_quotes() {
 load_app_env_file_if_exists() {
     local SCRIPTS_DIR=$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)/
     local PROJECT_DIR=$(realpath "${SCRIPTS_DIR}..")/
-    local ENV_FILE=${PROJECT_DIR}env/.env
-    if [ ! -f "$ENV_FILE" ]; then
-        log_with_utils_prefixe "$ENV_FILE env file does not exist."
-    else
-        log_with_utils_prefixe "Loading environment variables from ${ENV_FILE} ..."
-        while IFS='=' read -r key value; do
-            key="${key#"${key%%[![:space:]]*}"}"
-            key="${key%"${key##*[![:space:]]}"}"
-            if [ -z "$key" ] || [ "${key#\#}" != "$key" ]; then continue; fi
-            export "$key=$value"
-        done < "$ENV_FILE"
+    local ENV_FILE="${ENV_FILE:-}"
+    if [ -z "$ENV_FILE" ]; then
+        ENV_FILE="${PROJECT_DIR}.env"
     fi
+    if [ ! -f "$ENV_FILE" ]; then
+        log_with_utils_prefixe "No env file found at ${ENV_FILE}."
+        return
+    fi
+    log_with_utils_prefixe "Loading environment variables from ${ENV_FILE} ..."
+    while IFS='=' read -r key value; do
+        key="${key#"${key%%[![:space:]]*}"}"
+        key="${key%"${key##*[![:space:]]}"}"
+        if [ -z "$key" ] || [ "${key#\#}" != "$key" ]; then continue; fi
+        export "$key=$value"
+    done < "$ENV_FILE"
 }
 
 determine_db_host_if_not_set () {
