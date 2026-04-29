@@ -104,6 +104,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Dockerfile dev install toggle**: Added **`INSTALL_DEV`** build-arg (`false` by default for CI/production `pip install .`; Compose defaults **`INSTALL_DEV=true`** so the API image includes **`pip install -e ".[dev]"`** and `pytest` is available for `docker compose exec api pytest`).
 
+- **Pre-commit `check-tool-versions`**: Prepends `venv/bin` like `.venv/bin` when unactivated; optional **`PRE_COMMIT_SKIP_VENV_GUARD=true`** skips only the “activated venv” requirement when pinned tools are already on `PATH` (Docker-first hosts without a local venv).
+
 ### CI
 
 - **Test workflow**: Workflow-level `STATIC_FILES` and `STATIC_FILES_URL` are omitted so Django uses `STATIC_FILES_STATE` `NOT_NEEDED` in CI (migrate/pytest/pre-commit); API tests do not rely on static file serving (`urls.py` only adds static routes when collecting/serving).

@@ -562,6 +562,8 @@ We follow a structured commit format inspired by [Conventional Commits](https://
 - Format: `<type>(<scope>): <summary>`
 - Run checks in container: `docker compose exec api pytest`
 
+**Pre-commit hooks on the host:** Hooks still run via Git on your machine. [`scripts/setup-dev-tools.sh`](scripts/setup-dev-tools.sh) installs pinned tools into `./.venv`; if that directory exists, [`check-tool-versions`](.pre-commit-hooks/check-tool-versions.sh) prepends `.venv/bin` (or `venv/bin`) to `PATH` even when the venv is not activated. If you have **no** local venv but pinned tools are on your `PATH`, set **`PRE_COMMIT_SKIP_VENV_GUARD=true`** for the commit command only so the guard does not block (version checks still run). Prefer keeping a small `./.venv` for hooks when possible.
+
 **Commit Types:**
 
 - `feat` - New feature
@@ -604,7 +606,7 @@ Before submitting a Pull Request, ensure the following checks are completed:
 
 **2. Tests**
 
-- ✅ All tests pass: `pytest`
+- ✅ All tests pass: `docker compose exec api pytest` (or `pytest` when using a local venv with dev deps)
 - ✅ New features have corresponding tests
 - ✅ Bug fixes include regression tests
 - ✅ Tests follow the naming convention: `test_{scenario}_then_{expected_result}`
