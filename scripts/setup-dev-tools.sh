@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-# Install editable dev dependencies and pre-commit Git hooks.
-# Expects repo root (or pass REPO_ROOT as first argument). When no venv is active, activates
-# ./.venv first (same layout as .pre-commit-hooks/tool-wrapper.sh), then ./venv.
+# Install editable dev dependencies and pre-commit Git hooks (pinned in pyproject.toml).
 set -e
 
 REPO_ROOT="${1:-}"
@@ -15,30 +13,24 @@ if [ ! -f pyproject.toml ]; then
     exit 1
 fi
 
-if [ -z "${VIRTUAL_ENV:-}" ]; then
-    if [ -f .venv/bin/activate ]; then
-        # shellcheck source=/dev/null
-        . .venv/bin/activate
-    elif [ -f venv/bin/activate ]; then
-        # shellcheck source=/dev/null
-        . venv/bin/activate
-    elif [ -f .venv/Scripts/activate ]; then
-        # shellcheck source=/dev/null
-        . .venv/Scripts/activate
-    elif [ -f venv/Scripts/activate ]; then
-        # shellcheck source=/dev/null
-        . venv/Scripts/activate
-    else
-        echo "error: no active virtualenv and no ./.venv or ./venv" >&2
-        echo "  Create one (pre-commit hooks use .venv): python3 -m venv .venv" >&2
-        echo "  Or: python3 -m venv venv" >&2
-        exit 1
-    fi
+PYTHON_CMD="${PYTHON_CMD:-}"
+if [ -z "$PYTHON_CMD" ]; then
+    for candidate in python3 python; do
+        if command -v "$candidate" >/dev/null 2>&1; then
+            PYTHON_CMD="$candidate"
+            break
+        fi
+    done
 fi
 
-echo "Installing Python dev dependencies..."
-python -m pip install --upgrade pip
-pip install -e ".[dev]"
+if [ -z "$PYTHON_CMD" ]; then
+    echo "error: no Python interpreter found on PATH (set PYTHON_CMD to override)" >&2
+    exit 1
+fi
+
+echo "Installing Python dev dependencies with ${PYTHON_CMD}..."
+"$PYTHON_CMD" -m pip install --upgrade pip
+"$PYTHON_CMD" -m pip install -e ".[dev]"
 
 if [ -f .pre-commit-config.yaml ] && command -v pre-commit >/dev/null 2>&1; then
     echo "Installing pre-commit Git hooks..."
@@ -49,4 +41,4 @@ else
     fi
 fi
 
-echo "✓ Dev tools setup complete (pip dev extras + pre-commit hooks when configured)"
+echo "✓ Dev tools setup complete"
