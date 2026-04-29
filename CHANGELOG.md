@@ -100,6 +100,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **pytest**: `pytest.ini` live logging default is **INFO** instead of **DEBUG** so suites do not look hung; use `-o log_cli_level=DEBUG` when diagnosing failures.
 
+- **Docker Compose local workflow (no legacy path layer)**: Added repository-level `docker-compose.yml` and `docker-compose.override.yml` for app-local development (`api`/`db`/`afp`) with direct runtime path variables (`MEDIA_DIR`, `TMP_UPLOADED_FILES`, `METADATA_SESSION_DIR`, `DJANGO_LOG_DIR`, `GUNICORN_LOG_DIR`) and shared conventions for image/env/healthcheck alignment with infra deployment.
+
+- **Dockerfile dev install toggle**: Added **`INSTALL_DEV`** build-arg (`false` by default for CI/production `pip install .`; Compose defaults **`INSTALL_DEV=true`** so the API image includes **`pip install -e ".[dev]"`** and `pytest` is available for `docker compose exec api pytest`).
+
 ### CI
 
 - **Test workflow**: Workflow-level `STATIC_FILES` and `STATIC_FILES_URL` are omitted so Django uses `STATIC_FILES_STATE` `NOT_NEEDED` in CI (migrate/pytest/pre-commit); API tests do not rely on static file serving (`urls.py` only adds static routes when collecting/serving).
@@ -129,6 +133,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **README**: Corrected the GrowTheMusicTree ecosystem link to the `grow-the-music-tree-frontend` repository.
 
 - **Git Flow / branch protection**: CONTRIBUTING and `.cursor/rules/git-flow-workflow.mdc` state how PRs to `develop` relate to classic Git Flow (`feature/*` plus `chore/*`, `dependabot/*`, `release/*`), list disallowed prefixes (e.g. `docs/*`), and describe the usual fix when the branch-name check fails. The branch protection workflow failure message and `docs/workflows.md` point to the same guidance. **Pre-PR checklist** and **pull-request-convention** Cursor rules are aligned (`dependabot/*`, target branches, invalid prefixes).
+
+- **Docker local dev**: Added Compose quick start and responsibility split guidance in [README.md](README.md), plus [env/dev/.env.compose.dev.example](env/dev/.env.compose.dev.example) as the dedicated app-repo Compose environment template.
+
+- **Docker-only local workflow**: Documented Docker Compose as the default developer path and aligned [CONTRIBUTING.md](CONTRIBUTING.md) setup/testing notes with `docker compose exec api …` (no host virtualenv workflow).
 
 ## [v2.2.3] - 2026-04-01
 

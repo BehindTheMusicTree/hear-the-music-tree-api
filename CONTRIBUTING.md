@@ -160,25 +160,16 @@ cd the-music-tree-api
 
    **Note:** Tests that use WAV files require `ffprobe` (from ffmpeg) to be installed and working. If pytest exits with "ffprobe failed to run" or you see "File corrupted" when running audio tests, ffmpeg may be broken (e.g. missing libvpx on macOS). Fix by reinstalling: `brew reinstall ffmpeg` (macOS) or re-run `scripts/install-dependencies.sh` (Linux).
 
-4. Create and activate a virtual environment:
+4. Start the Docker Compose development stack:
 
    ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # (Linux/macOS)
-   .venv\Scripts\activate      # (Windows)
+   cp env/dev/.env.compose.dev.example .env
+   docker compose up --build
    ```
 
-5. Install Python dev dependencies and Git hooks (editable install from [`pyproject.toml`](pyproject.toml) plus `pre-commit install` when [`.pre-commit-config.yaml`](.pre-commit-config.yaml) is present). From the repo root:
+   This is the default local workflow for this repository. It runs API + DB + AFP with the same runtime env contract used by deployment.
 
-   ```bash
-   bash scripts/setup-dev-tools.sh
-   ```
-
-   The script activates `./.venv` if it exists, otherwise `./venv`, when you are not already inside a virtual environment (local pre-commit wrappers use `./.venv` when the shell is not activated; prefer `.venv` for new clones). Tools must match versions in [`pyproject.toml`](pyproject.toml) (see `.pre-commit-hooks/check-tool-versions.sh`). Run all hooks on the tree: `pre-commit run --all-files`. Requires **shellcheck** and (for PowerShell hooks) **pwsh** locally where those hooks apply.
-
-   Manual alternative: `pip install -e ".[dev]"` then `pre-commit install`.
-
-6. Set up filesystem:
+5. Set up filesystem:
 
    ```bash
    bash scripts/setup-filesystem.sh
@@ -192,7 +183,7 @@ cd the-music-tree-api
    - Media files and libraries
    - Temporary uploaded files
 
-7. Run database and Audio Fingerprinter containers:
+6. Run database and Audio Fingerprinter containers:
 
    ```bash
    bash scripts/run-db-and-afp-containers.sh
@@ -462,7 +453,7 @@ pytest -o log_cli_level=DEBUG
 
 - **Live logging:** `pytest.ini` sets `log_cli = true`. At **DEBUG** every log line is printed and the suite can look frozen. The default level is **INFO**; use `-o log_cli=false` for minimal console noise or `-o log_cli_level=DEBUG` only when chasing a failure.
 - **Database:** Integration and most Django tests need **PostgreSQL** (and env) as in [Environment Setup](#1-environment-setup). A missing or unreachable DB often blocks on connect instead of failing immediately—start `run-db-and-afp-containers.sh` (or your CI-like stack) first.
-- **pyenv:** If `pytest` is not found, activate the venv or run `python -m pytest` with the interpreter that has `pip install -e ".[dev]"` applied (see [Prerequisites](#prerequisites) under Environment Setup).
+- **Container context:** If `pytest` is not found on your host, run tests from the API container (`docker compose exec api pytest ...`) instead of relying on a host virtualenv.
 
 **Test Structure:**
 
@@ -564,12 +555,12 @@ git push origin --delete v0.3.6-dev-improve-cicd
 
 We follow a structured commit format inspired by [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
-**IMPORTANT:** Always activate the project's virtual environment (`.venv`) before committing if you're using pre-commit hooks.
+**IMPORTANT:** Run checks from the Docker workflow so local validation matches the repository runtime.
 
 **Quick reference:**
 
 - Format: `<type>(<scope>): <summary>`
-- Activate virtual environment: `source .venv/bin/activate` (Linux/macOS) or `.venv\Scripts\activate` (Windows)
+- Run checks in container: `docker compose exec api pytest`
 
 **Commit Types:**
 
@@ -839,7 +830,7 @@ Quick release process:
 
 3. **On the release branch, prepare the release:**
 
-   - **Automated (recommended):** from the repo root, with `bump2version` on your PATH (`pip install -e ".[dev]"` in your venv):
+   - **Automated (recommended):** from the repo root, with `bump2version` available in your execution context:
 
      ```bash
      python3 scripts/prepare_release_bump.py patch   # or: minor | major
