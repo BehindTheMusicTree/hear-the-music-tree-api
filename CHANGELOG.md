@@ -72,7 +72,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Added
 
-- **Dev setup**: [`scripts/setup-dev-tools.sh`](scripts/setup-dev-tools.sh) installs editable dev dependencies and `pre-commit` Git hooks (prefers `./.venv` then `./venv` for legacy trees); [`scripts/setup-worktree.sh`](scripts/setup-worktree.sh) creates `./.venv` and runs it. VS Code / [`pyrightconfig.json`](pyrightconfig.json) use `.venv` to match [`.pre-commit-hooks/tool-wrapper.sh`](.pre-commit-hooks/tool-wrapper.sh).
+- **Dev setup**: [`scripts/setup-dev-tools.sh`](scripts/setup-dev-tools.sh) installs editable dev dependencies via the active interpreter (`python -m pip install -e ".[dev]"`) and `pre-commit` hooks when configured; [`scripts/setup-worktree.sh`](scripts/setup-worktree.sh) runs dev installs, npm, and filesystem setup without creating a virtualenv.
 
 - **Linting (audiometa-python baseline)**: [`.pre-commit-config.yaml`](.pre-commit-config.yaml) matches the audiometa-python hook stack (tool version check, YAML/JSON/TOML, shellcheck, `no-assert`, ruff-format, ruff, mypy + django-stubs, pydocstringformatter, long-comment fixer, Prettier, optional PSScriptAnalyzer) plus **`prefer-strenum`** (pre-commit no longer runs **isort**; org **v4.3+** verifier forbids it alongside **ruff format**). Configuration lives in [`pyproject.toml`](pyproject.toml); linter and test dependencies are pinned under `[project.optional-dependencies] dev`. Ruff **select** matches audiometa; extra **ignores** document Django/DRF cleanup debt. Mypy is plugin-aligned but **gradual** (`ignore_missing_imports`, non-strict) until typing can match audiometa strictness.
 
@@ -92,7 +92,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Removed calculated paths loader layer**: Deleted `scripts/generate-calculated-paths-env-file.sh` and removed `load_calculated_env_paths()` from Django settings; scripts and tests consume final runtime env vars directly (no `env/calculated_paths/.env` sourcing).
 
-- **Local Python environment**: Standardized on `./.venv` for new setups ([`scripts/setup-worktree.sh`](scripts/setup-worktree.sh), [README](README.md), [CONTRIBUTING](CONTRIBUTING.md), [`.vscode/settings.json`](.vscode/settings.json), [`pyrightconfig.json`](pyrightconfig.json)) so it matches pre-commit hook wrappers; a legacy `./venv` directory is still supported by [`scripts/setup-dev-tools.sh`](scripts/setup-dev-tools.sh) and is listed in [`.gitignore`](.gitignore).
+- **Local Python tooling**: Pre-commit hooks resolve pinned tools from `PATH` ([`.pre-commit-hooks/tool-wrapper.sh`](.pre-commit-hooks/tool-wrapper.sh), [`check-tool-versions.sh`](.pre-commit-hooks/check-tool-versions.sh)); no `.venv`/`venv` activation or path injection. [`.vscode/settings.json`](.vscode/settings.json) no longer pins `./.venv`; [`pyrightconfig.json`](pyrightconfig.json) no longer references `.venv` extraPaths.
 
 - **Ruff**: Aligned `pyproject.toml` ignores with **0.15.x** (removed no-op `PT004` / `UP038`; `TRY302` → `TRY203`). Version remains **0.15.9**.
 
@@ -103,8 +103,6 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **Docker Compose local workflow (no legacy path layer)**: Added repository-level `docker-compose.yml` and `docker-compose.override.yml` for app-local development (`api`/`db`/`afp`) with direct runtime path variables (`MEDIA_DIR`, `TMP_UPLOADED_FILES`, `METADATA_SESSION_DIR`, `DJANGO_LOG_DIR`, `GUNICORN_LOG_DIR`) and shared conventions for image/env/healthcheck alignment with infra deployment.
 
 - **Dockerfile dev install toggle**: Added **`INSTALL_DEV`** build-arg (`false` by default for CI/production `pip install .`; Compose defaults **`INSTALL_DEV=true`** so the API image includes **`pip install -e ".[dev]"`** and `pytest` is available for `docker compose exec api pytest`).
-
-- **Pre-commit `check-tool-versions`**: Prepends `venv/bin` like `.venv/bin` when unactivated; optional **`PRE_COMMIT_SKIP_VENV_GUARD=true`** skips only the “activated venv” requirement when pinned tools are already on `PATH` (Docker-first hosts without a local venv).
 
 ### CI
 
@@ -126,7 +124,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Development**: [DEVELOPMENT.md](DEVELOPMENT.md) links org-wide policy to [python-project-standards `docs/development.md`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md) (with [`string-enums.md`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/string-enums.md) for `StrEnum`); notes **Ruff UP042** as primary enforcement and **`prefer-strenum`** as an extra guardrail. [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md) references the same hub and notes org **v3+** dropped **reusable-test-matrix** (only **reusable-pre-commit** remains for shared lint).
 
-- **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md) documents `scripts/setup-dev-tools.sh` for dev installs and hooks (with a manual `pip` / `pre-commit install` alternative); the Testing section explains when pytest feels stuck (verbose logging, DB, pyenv).
+- **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md) documents dev installs via `python -m pip install -e ".[dev]"` / [`scripts/setup-dev-tools.sh`](scripts/setup-dev-tools.sh) and Docker-based workflows; the Testing section explains when pytest feels stuck (verbose logging, DB).
 
 - **Cursor**: `.cursor/rules/strenum-string-enums.mdc` matches [python-project-standards `templates/cursor-rules/strenum-string-enums.mdc`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/templates/cursor-rules/strenum-string-enums.mdc) and encodes the `StrEnum` convention for contributors using Cursor.
 
@@ -138,7 +136,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Docker local dev**: Added Compose quick start and responsibility split guidance in [README.md](README.md), plus [env/dev/.env.compose.dev.example](env/dev/.env.compose.dev.example) as the dedicated app-repo Compose environment template.
 
-- **Docker-only local workflow**: Documented Docker Compose as the default developer path and aligned [CONTRIBUTING.md](CONTRIBUTING.md) setup/testing notes with `docker compose exec api …` (no host virtualenv workflow).
+- **Docker-only local workflow**: Documented Docker Compose as the default developer path and aligned [CONTRIBUTING.md](CONTRIBUTING.md) and [`.cursor/rules/pre-pr-checklist.mdc`](.cursor/rules/pre-pr-checklist.mdc) setup/testing notes with `docker compose exec api …` (optional local `pip install -e ".[dev]"` for `pytest`; no dedicated `.venv` workflow).
 
 ## [v2.2.3] - 2026-04-01
 
