@@ -108,6 +108,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Fixed
 
+- **Audio metadata serializers**: Restored missing [`api/serializer/audio_metadata/Fields.py`](api/serializer/audio_metadata/Fields.py) and [`api/serializer/audio_metadata/AudioMetadataSessionDownload.py`](api/serializer/audio_metadata/AudioMetadataSessionDownload.py) so `api.urls` and metadata-session views import cleanly (fixes `ModuleNotFoundError` on Docker startup).
+
 - **`verify-standards.sh`**: Synced from **python-project-standards v3.0.1**: stricter local **ruff check** detection (not **`ruff-format`** alone); optional **`STANDARDS_VERSION`** vs **`@v…`** pin scan uses a workflow file loop instead of fragile **`grep -r --include`** ordering (still accepts **astral-sh/ruff-pre-commit** remote repo).
 
 - **Django startup in deploy images**: `coverage` is only appended to `INSTALLED_APPS` during pytest when the module is installed, avoiding `ModuleNotFoundError: No module named 'coverage'` in staging/production.
