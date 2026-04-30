@@ -64,6 +64,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v2.2.4] - 2026-04-30
+
 ### CI
 
 - **python-project-standards v4.3.0** ([org **`v4.3.0`**](https://github.com/BehindTheMusicTree/python-project-standards/releases/tag/v4.3.0)): Root [**`STANDARDS_VERSION`**](STANDARDS_VERSION) **`4.3.0`**. [**`scripts/verify-standards.sh`**](scripts/verify-standards.sh) matches org **`templates/scripts/`** on that tag (verification rejects an **isort** pre-commit hook; import order uses Ruff **`I`** from [**`baselines/ruff.toml`**](baselines/ruff.toml) with **`ruff format`**). Removed the **isort** hook from [**.pre-commit-config.yaml**](.pre-commit-config.yaml); **isort** remains in **[`pyproject.toml`](pyproject.toml)** dev extras for optional local or IDE use. [**.cursor/rules/changelog-alignment.mdc**](.cursor/rules/changelog-alignment.mdc) unchanged from **v4.2.0** alignment. [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md) and [DEVELOPMENT.md](DEVELOPMENT.md) updated for **v4.3.0**.

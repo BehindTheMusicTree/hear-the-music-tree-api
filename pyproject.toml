@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hear-the-music-tree-api"
-version = "2.2.3"
+version = "2.2.4"
 description = "Django REST API for Hear The Music Tree"
 requires-python = ">=3.14"
 dependencies = [
@@ -143,7 +143,7 @@ ignore_missing_imports = true
 # Release bumps (maintainers): `bump-my-version bump patch|minor|major` or `scripts/prepare_release_bump.py`.
 # https://github.com/callowayproject/bump-my-version
 [tool.bumpversion]
-current_version = "2.2.3"
+current_version = "2.2.4"
 commit = false
 tag = false
 parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"
