@@ -76,13 +76,13 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Linting (audiometa-python baseline)**: [`.pre-commit-config.yaml`](.pre-commit-config.yaml) matches the audiometa-python hook stack (tool version check, YAML/JSON/TOML, shellcheck, `no-assert`, ruff-format, ruff, mypy + django-stubs, pydocstringformatter, long-comment fixer, Prettier, optional PSScriptAnalyzer) plus **`prefer-strenum`** (pre-commit no longer runs **isort**; org **v4.3+** verifier forbids it alongside **ruff format**). Configuration lives in [`pyproject.toml`](pyproject.toml); linter and test dependencies are pinned under `[project.optional-dependencies] dev`. Ruff **select** matches audiometa; extra **ignores** document Django/DRF cleanup debt. Mypy is plugin-aligned but **gradual** (`ignore_missing_imports`, non-strict) until typing can match audiometa strictness.
 
-- **Packaging (PEP 621, audiometa-style)**: Runtime and dev dependencies are declared in `pyproject.toml` (`[project]` / `[project.optional-dependencies] dev`) with setuptools as the build backend. Local and CI use `pip install -e ".[dev]"`; production Docker builds use `pip install .`. There is no `requirements.txt`; `pyproject.toml` is the only dependency manifest. Release bumps now update `pyproject.toml` `[project] version` via bump2version. `fake-samples-loader` is pinned to `1.0.13`; `django-dynamic-fixture` is a dev extra (tests only).
+- **Packaging (PEP 621, audiometa-style)**: Runtime and dev dependencies are declared in `pyproject.toml` (`[project]` / `[project.optional-dependencies] dev`) with setuptools as the build backend. Local and CI use `pip install -e ".[dev]"`; production Docker builds use `pip install .`. There is no `requirements.txt`; `pyproject.toml` is the only dependency manifest. Release bumps update `pyproject.toml` `[project] version` via **bump-my-version** (`[tool.bumpversion]`). `fake-samples-loader` is pinned to `1.0.13`; `django-dynamic-fixture` is a dev extra (tests only).
 
 - **[`.pre-commit-hooks/`](.pre-commit-hooks/)**: Shell wrappers copied from audiometa-python (`tool-wrapper`, `check-tool-versions`, shellcheck, `no-assert`, etc.).
 
 ### Changed
 
-- **Git pre-commit workflow**: Added a tracked host hook at [`.githooks/pre-commit`](.githooks/pre-commit) that executes `pre-commit` inside the `api` Docker container on staged files. [`scripts/setup-host-dev-tools.sh`](scripts/setup-host-dev-tools.sh) installs this hook into `.git/hooks/pre-commit`.
+- **Git pre-commit workflow**: [`.githooks/pre-commit`](.githooks/pre-commit) runs **`pre-commit` only inside the `api` container**; commits fail if Docker or **`api`** is unavailable (no host fallback). [`scripts/setup-host-dev-tools.sh`](scripts/setup-host-dev-tools.sh) installs the hook and requires Docker on PATH.
 
 - **Workflow DB app naming variables**: Updated `.github/workflows/publish.yml`, `.github/workflows/test.yml`, and `.github/actionlint.yaml` to use `DB_APP_NAME_SUFFIX` instead of `DB_APP_NAME`. DB app/container names are derived by appending `DB_APP_NAME_SUFFIX` to `HTMT_API_APP_NAME`.
 
@@ -115,6 +115,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **Pre-commit cache persistence (Docker Compose)**: `api` now sets `PRE_COMMIT_HOME` and mounts a named volume (`api-pre-commit-cache`) at that path so pre-commit hook environments are reused across container recreations instead of re-initializing on each commit.
 
 - **Library path env contract**: Removed runtime usage of `LIBRARIES_DIR_NAME`; settings and user library path generation now rely on `LIBRARIES_DIR` only. Updated Compose defaults, test workflow env, and dev env example accordingly.
+
+- **Release tooling**: Replaced deprecated **bump2version** with **[bump-my-version](https://github.com/callowayproject/bump-my-version)** (`bump-my-version==1.3.0`); bump rules live under `[tool.bumpversion]` in [`pyproject.toml`](pyproject.toml) (`.bumpversion.cfg` removed). [`scripts/prepare_release_bump.py`](scripts/prepare_release_bump.py) runs `bump-my-version bump patch|minor|major`; maintainers only need the CLI on `PATH` (pipx, pyenv-backed install, or Compose `api` with dev extras). [CONTRIBUTING.md](CONTRIBUTING.md) §7 updated accordingly. Runtime **Click** is bumped from `7.0` to `8.3.3` (`click<8.4` required by bump-my-version) so dev installs can run the bump CLI in the same environment.
 
 ### CI
 
