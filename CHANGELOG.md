@@ -72,7 +72,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Added
 
-- **Dev setup**: [`scripts/setup-dev-tools.sh`](scripts/setup-dev-tools.sh) installs editable dev dependencies and `pre-commit` Git hooks (prefers `./.venv` then `./venv` for legacy trees); [`scripts/setup-worktree.sh`](scripts/setup-worktree.sh) creates `./.venv` and runs it. VS Code / [`pyrightconfig.json`](pyrightconfig.json) use `.venv` to match [`.pre-commit-hooks/tool-wrapper.sh`](.pre-commit-hooks/tool-wrapper.sh).
+- **Dev setup**: Split setup into explicit host and Docker scripts: [`scripts/setup-host-dev-tools.sh`](scripts/setup-host-dev-tools.sh) installs the tracked Docker-backed git hook ([`.githooks/pre-commit`](.githooks/pre-commit)) into `.git/hooks/pre-commit`, and [`scripts/setup-docker-dev-tools.sh`](scripts/setup-docker-dev-tools.sh) builds/starts `api` then verifies container tooling (`pre-commit`, `shellcheck`, `ruff`). [`scripts/setup-worktree.sh`](scripts/setup-worktree.sh) now runs both.
 
 - **Linting (audiometa-python baseline)**: [`.pre-commit-config.yaml`](.pre-commit-config.yaml) matches the audiometa-python hook stack (tool version check, YAML/JSON/TOML, shellcheck, `no-assert`, ruff-format, ruff, mypy + django-stubs, pydocstringformatter, long-comment fixer, Prettier, optional PSScriptAnalyzer) plus **`prefer-strenum`** (pre-commit no longer runs **isort**; org **v4.3+** verifier forbids it alongside **ruff format**). Configuration lives in [`pyproject.toml`](pyproject.toml); linter and test dependencies are pinned under `[project.optional-dependencies] dev`. Ruff **select** matches audiometa; extra **ignores** document Django/DRF cleanup debt. Mypy is plugin-aligned but **gradual** (`ignore_missing_imports`, non-strict) until typing can match audiometa strictness.
 
@@ -82,7 +82,19 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Changed
 
-- **Local Python environment**: Standardized on `./.venv` for new setups ([`scripts/setup-worktree.sh`](scripts/setup-worktree.sh), [README](README.md), [CONTRIBUTING](CONTRIBUTING.md), [`.vscode/settings.json`](.vscode/settings.json), [`pyrightconfig.json`](pyrightconfig.json)) so it matches pre-commit hook wrappers; a legacy `./venv` directory is still supported by [`scripts/setup-dev-tools.sh`](scripts/setup-dev-tools.sh) and is listed in [`.gitignore`](.gitignore).
+- **Git pre-commit workflow**: Added a tracked host hook at [`.githooks/pre-commit`](.githooks/pre-commit) that executes `pre-commit` inside the `api` Docker container on staged files. [`scripts/setup-host-dev-tools.sh`](scripts/setup-host-dev-tools.sh) installs this hook into `.git/hooks/pre-commit`.
+
+- **Workflow DB app naming variables**: Updated `.github/workflows/publish.yml`, `.github/workflows/test.yml`, and `.github/actionlint.yaml` to use `DB_APP_NAME_SUFFIX` instead of `DB_APP_NAME`. DB app/container names are derived by appending `DB_APP_NAME_SUFFIX` to `HTMT_API_APP_NAME`.
+
+- **Sync env contract (runtime paths)**: `.github/workflows/sync-env-to-server.yml` writes explicit runtime path keys in the server fragment; `scripts/setup-filesystem.sh` no longer calls `load_project_calculated_paths_env_vars`.
+
+- **Static files contract simplified**: Startup scripts use `STATIC_FILES` as the single runtime static path for collect and serving flows; split default/static path drift from `STATIC_FILES_DEFAULT` is removed where paths are generated.
+
+- **Workflows and Docker build**: CI and Docker workflows use `STATIC_FILES` (instead of `STATIC_FILES_INTERNAL`) as the canonical static path input where relevant.
+
+- **Removed calculated paths loader layer**: Deleted `scripts/generate-calculated-paths-env-file.sh` and removed `load_calculated_env_paths()` from Django settings; scripts and tests consume final runtime env vars directly (no `env/calculated_paths/.env` sourcing).
+
+- **Local Python tooling**: Pre-commit hooks resolve pinned tools from `PATH` ([`.pre-commit-hooks/tool-wrapper.sh`](.pre-commit-hooks/tool-wrapper.sh), [`check-tool-versions.sh`](.pre-commit-hooks/check-tool-versions.sh)); no `.venv`/`venv` activation or path injection. [`.vscode/settings.json`](.vscode/settings.json) no longer pins `./.venv`; [`pyrightconfig.json`](pyrightconfig.json) no longer references `.venv` extraPaths.
 
 - **Ruff**: Aligned `pyproject.toml` ignores with **0.15.x** (removed no-op `PT004` / `UP038`; `TRY302` → `TRY203`). Version remains **0.15.9**.
 
@@ -90,19 +102,45 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **pytest**: `pytest.ini` live logging default is **INFO** instead of **DEBUG** so suites do not look hung; use `-o log_cli_level=DEBUG` when diagnosing failures.
 
+- **Docker Compose local workflow (no legacy path layer)**: Added repository-level `docker-compose.yml` and `docker-compose.override.yml` for app-local development (`api`/`db`/`afp`) with direct runtime path variables (`MEDIA_DIR`, `TMP_UPLOADED_FILES`, `METADATA_SESSION_DIR`, `DJANGO_LOG_DIR`, `GUNICORN_LOG_DIR`) and shared conventions for image/env/healthcheck alignment with infra deployment.
+
+- **Docker Compose AFP pool volume**: The `afp` service mounts the same named volume as `api` at `TMP_UPLOADED_FILES`, and `POOL_DIR_EXTERNAL` follows that path, so uploaded files are visible to the fingerprinter (fixes integration tests that fingerprint pool files).
+
+- **Docker Compose + pytest optional flags**: [`docker-compose.yml`](docker-compose.yml) defaults `SPOTIFY_ENABLED`, `GOOGLE_OAUTH_ENABLED`, and `MUSICBRAINZ_LOOKUP_ENABLED` to **true** (with existing placeholder client secrets) so `docker compose exec api pytest` matches the suite’s “optional services enabled” guard; [`env/dev/.env.compose.dev.example`](env/dev/.env.compose.dev.example) documents the same.
+
+- **Dockerfile dev install toggle**: Added **`INSTALL_DEV`** build-arg (`false` by default for CI/production `pip install .`; Compose defaults **`INSTALL_DEV=true`** so the API image includes **`pip install -e ".[dev]"`** and `pytest` is available for `docker compose exec api pytest`).
+
+- **Host tooling env source**: Host-side scripts now load environment from repository root `.env` only (no fallback to `env/.env`), aligning local tooling with the Docker-first contract and reducing env-source ambiguity.
+
+- **Pre-commit cache persistence (Docker Compose)**: `api` now sets `PRE_COMMIT_HOME` and mounts a named volume (`api-pre-commit-cache`) at that path so pre-commit hook environments are reused across container recreations instead of re-initializing on each commit.
+
 ### CI
+
+- **Test workflow**: Workflow-level `STATIC_FILES` and `STATIC_FILES_URL` are omitted so Django uses `STATIC_FILES_STATE` `NOT_NEEDED` in CI (migrate/pytest/pre-commit); API tests do not rely on static file serving (`urls.py` only adds static routes when collecting/serving).
 
 - **Pre-commit**: PR workflow runs `pre-commit run --all-files` (StrEnum checker, Ruff fatal rules, YAML / merge-conflict checks) in an **inline** job (checkout, Python 3.14, `pip install -e ".[dev]"`), not via org `reusable-pre-commit`. Integration **pytest** stays in-repo. Added **`verify-python-project-standards`** ([`scripts/verify-standards.sh`](scripts/verify-standards.sh)); removed the `STANDARDS_VERSION` file and workflow pin checks. See [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md).
 
 ### Fixed
 
+- **Docker dev tooling parity**: Added `shellcheck` to [`scripts/install-dependencies.sh`](scripts/install-dependencies.sh) so `docker compose exec api pre-commit run --all-files` can run the local `shellcheck` hook without manual installation inside the API container.
+
+- **FLAC upload (`fix_md5_checking`)**: Replaced `os.rename` with `shutil.move` when moving the audiometa-corrected FLAC into `TemporaryUploadedFile`’s path so MD5 repair works across mount points (e.g. default temp dir vs `FILE_UPLOAD_TEMP_DIR` in Docker), avoiding `OSError: [Errno 18] Invalid cross-device link` and 500s on affected FLAC uploads.
+
+- **Metadata session imports**: Restored `api.utils.metadata_session` utility exports (`create_session`, `get_session`) so metadata-session view imports resolve correctly in API runtime.
+
+- **Audio metadata serializers**: Restored missing [`api/serializer/audio_metadata/Fields.py`](api/serializer/audio_metadata/Fields.py) and [`api/serializer/audio_metadata/AudioMetadataSessionDownload.py`](api/serializer/audio_metadata/AudioMetadataSessionDownload.py) so `api.urls` and metadata-session views import cleanly (fixes `ModuleNotFoundError` on Docker startup).
+
 - **`verify-standards.sh`**: Synced from **python-project-standards v3.0.1**: stricter local **ruff check** detection (not **`ruff-format`** alone); optional **`STANDARDS_VERSION`** vs **`@v…`** pin scan uses a workflow file loop instead of fragile **`grep -r --include`** ordering (still accepts **astral-sh/ruff-pre-commit** remote repo).
+
+- **Django startup in deploy images**: `coverage` is only appended to `INSTALLED_APPS` during pytest when the module is installed, avoiding `ModuleNotFoundError: No module named 'coverage'` in staging/production.
+
+- **API startup (Gunicorn)**: Runtime `setuptools` is pinned so `pkg_resources` remains available in slim deploy images.
 
 ### Documentation
 
 - **Development**: [DEVELOPMENT.md](DEVELOPMENT.md) links org-wide policy to [python-project-standards `docs/development.md`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md) (with [`string-enums.md`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/string-enums.md) for `StrEnum`); notes **Ruff UP042** as primary enforcement and **`prefer-strenum`** as an extra guardrail. [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md) references the same hub and notes org **v3+** dropped **reusable-test-matrix** (only **reusable-pre-commit** remains for shared lint).
 
-- **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md) documents `scripts/setup-dev-tools.sh` for dev installs and hooks (with a manual `pip` / `pre-commit install` alternative); the Testing section explains when pytest feels stuck (verbose logging, DB, pyenv).
+- **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md) documents explicit host (`scripts/setup-host-dev-tools.sh`) and Docker (`scripts/setup-docker-dev-tools.sh`) setup flows for pre-commit and Docker-based workflows; the Testing section explains when pytest feels stuck (verbose logging, DB).
 
 - **Cursor**: `.cursor/rules/strenum-string-enums.mdc` matches [python-project-standards `templates/cursor-rules/strenum-string-enums.mdc`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/templates/cursor-rules/strenum-string-enums.mdc) and encodes the `StrEnum` convention for contributors using Cursor.
 
@@ -111,6 +149,12 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **README**: Corrected the GrowTheMusicTree ecosystem link to the `grow-the-music-tree-frontend` repository.
 
 - **Git Flow / branch protection**: CONTRIBUTING and `.cursor/rules/git-flow-workflow.mdc` state how PRs to `develop` relate to classic Git Flow (`feature/*` plus `chore/*`, `dependabot/*`, `release/*`), list disallowed prefixes (e.g. `docs/*`), and describe the usual fix when the branch-name check fails. The branch protection workflow failure message and `docs/workflows.md` point to the same guidance. **Pre-PR checklist** and **pull-request-convention** Cursor rules are aligned (`dependabot/*`, target branches, invalid prefixes).
+
+- **Docker local dev**: Added Compose quick start and responsibility split guidance in [README.md](README.md), plus [env/dev/.env.compose.dev.example](env/dev/.env.compose.dev.example) as the dedicated app-repo Compose environment template.
+
+- **Docker-only local workflow**: Documented Docker Compose as the default developer path and aligned [CONTRIBUTING.md](CONTRIBUTING.md) and [`.cursor/rules/pre-pr-checklist.mdc`](.cursor/rules/pre-pr-checklist.mdc) setup/testing notes with `docker compose exec api …` (optional local `pip install -e ".[dev]"` for `pytest`; no dedicated `.venv` workflow).
+
+- **Env file contract (host scripts)**: One-time and helper scripts now use `.env` as the single default host env file (or explicit `ENV_FILE`) to avoid legacy `env/.env` drift from Docker Compose defaults.
 
 ## [v2.2.3] - 2026-04-01
 
@@ -144,7 +188,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Changed
 
-- **`FILE_UPLOAD_ENABLED` required at runtime**: No inference from `TMP_UPLOADED_FILES`. Django and `scripts/setup-filesystem.sh` fail fast if it is unset or not `true`/`false`. Set it in local `env/.env` (see `env/dev/.env.dev.example`). **Sync env to server** hardcodes **`FILE_UPLOAD_ENABLED=true`** (and the other compose-required API booleans) in the server fragment.
+- **`FILE_UPLOAD_ENABLED` required at runtime**: No inference from `TMP_UPLOADED_FILES`. Django and `scripts/setup-filesystem.sh` fail fast if it is unset or not `true`/`false`. Set it in local `.env` (see `env/dev/.env.dev.example`). **Sync env to server** hardcodes **`FILE_UPLOAD_ENABLED=true`** (and the other compose-required API booleans) in the server fragment.
 
 - **Sync env: compose API booleans hardcoded**: **Sync env to server** always writes **`FILE_UPLOAD_ENABLED=true`**, **`SPOTIFY_ENABLED=true`**, **`GOOGLE_OAUTH_ENABLED=true`**, **`MUSICBRAINZ_LOOKUP_ENABLED=true`**, **`HTMT_API_AFP_ENABLED=true`** (no GitHub Variables for those keys).
 

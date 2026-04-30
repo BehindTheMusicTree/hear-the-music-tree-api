@@ -1,0 +1,142 @@
+name: htmt-api-dev
+
+services:
+  db:
+    image: postgres:16.4
+    container_name: htmt-api-db
+    environment:
+      POSTGRES_DB: ${DB_APP_DB_NAME:-htmt_api}
+      POSTGRES_USER: ${DB_SUPERUSER_NAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_SUPERUSER_PASSWORD:-postgres}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_SUPERUSER_NAME:-postgres} -d ${DB_APP_DB_NAME:-htmt_api}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+  afp:
+    image: ${DOCKERHUB_USERNAME:-mignot}/${AFP_IMAGE_REPO:-audio-fingerprinter}:${AFP_VERSION:-v1.4.0}
+    container_name: htmt-api-afp
+    environment:
+      ENV: ${ENV:-dev}
+      DEBUG: ${DEBUG:-true}
+      APP_PORT: ${AFP_PORT:-7015}
+      POOL_DIR_EXTERNAL: ${TMP_UPLOADED_FILES:-/tmp/uploaded-files/}
+      FLASK_LOG_DIR_EXTERNAL: ${AFP_FLASK_LOG_DIR_EXTERNAL:-/app/log/flask/}
+      GUNICORN_LOG_DIR: ${AFP_GUNICORN_LOG_DIR_EXTERNAL:-/app/log/gunicorn/}
+    ports:
+      - "${AFP_PORT:-7015}:${AFP_PORT:-7015}"
+    volumes:
+      - api-uploads:${TMP_UPLOADED_FILES:-/tmp/uploaded-files/}
+      - afp-flask-log:${AFP_FLASK_LOG_DIR_EXTERNAL:-/app/log/flask/}
+      - afp-gunicorn-log:${AFP_GUNICORN_LOG_DIR_EXTERNAL:-/app/log/gunicorn/}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${AFP_PORT:-7015}/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_VERSION: ${APP_VERSION:-2.1.0}
+        APP_TITLE: ${APP_TITLE:-TheMusicTreeAPI}
+        API_DIR_NAME: ${API_DIR_NAME:-api}
+        INSTALL_DEV: "${INSTALL_DEV:-true}"
+    container_name: htmt-api
+    environment:
+      ENV: ${ENV:-dev}
+      APP_NAME: ${APP_NAME:-htmt-api}
+      APP_VERSION: ${APP_VERSION:-2.1.0}
+      APP_TITLE: ${APP_TITLE:-TheMusicTreeAPI}
+      API_DIR_NAME: ${API_DIR_NAME:-api}
+      APP_PORT: ${APP_PORT:-8000}
+      DEBUG: ${DEBUG:-true}
+      APP_IS_EXPOSED: ${APP_IS_EXPOSED:-false}
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-only-secret-key}
+      DB_IS_NEEDED: ${DB_IS_NEEDED:-true}
+      DB_CONTAINER_NAME: ${DB_CONTAINER_NAME:-db}
+      DB_URL: ${DB_URL:-db}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_CONNECTION_TEST_MAX_ATTEMPTS: ${DB_CONNECTION_TEST_MAX_ATTEMPTS:-20}
+      DB_CONNECTION_TEST_SLEEP_INTERVAL: ${DB_CONNECTION_TEST_SLEEP_INTERVAL:-2}
+      DB_APP_DB_NAME: ${DB_APP_DB_NAME:-htmt_api}
+      DB_APP_USERNAME: ${DB_APP_USERNAME:-htmt_api_user}
+      DB_APP_USER_PASSWORD: ${DB_APP_USER_PASSWORD:-htmt_api_password}
+      DB_SUPERUSER_NAME: ${DB_SUPERUSER_NAME:-postgres}
+      DB_SUPERUSER_PASSWORD: ${DB_SUPERUSER_PASSWORD:-postgres}
+      FILE_UPLOAD_ENABLED: ${FILE_UPLOAD_ENABLED:-true}
+      TMP_UPLOADED_FILES: ${TMP_UPLOADED_FILES:-/tmp/uploaded-files/}
+      METADATA_SESSION_DIR: ${METADATA_SESSION_DIR:-/tmp/metadata-sessions/}
+      MEDIA_DIR: ${MEDIA_DIR:-/tmp/htmt-media}
+      LIBRARIES_DIR_NAME: ${LIBRARIES_DIR_NAME:-libraries}
+      LIBRARIES_DIR: ${LIBRARIES_DIR:-/tmp/htmt-media/libraries}
+      DJANGO_LOG_DIR: ${DJANGO_LOG_DIR:-/var/log/django/}
+      DJANGO_LOG_GENERAL_FILENAME: ${DJANGO_LOG_GENERAL_FILENAME:-general.log}
+      DJANGO_LOG_INFO_FILENAME: ${DJANGO_LOG_INFO_FILENAME:-info.log}
+      DJANGO_LOG_REQUESTS_FILENAME: ${DJANGO_LOG_REQUESTS_FILENAME:-requests.log}
+      DJANGO_LOG_REQUESTS_DEBUG_FILENAME: ${DJANGO_LOG_REQUESTS_DEBUG_FILENAME:-requests.debug.log}
+      DJANGO_LOG_EXCEPTIONS_FILENAME: ${DJANGO_LOG_EXCEPTIONS_FILENAME:-exceptions.log}
+      DJANGO_LOG_DJANGO_FILENAME: ${DJANGO_LOG_DJANGO_FILENAME:-django.log}
+      DJANGO_LOG_APP_FILENAME: ${DJANGO_LOG_APP_FILENAME:-app.log}
+      GUNICORN_LOG_DIR: ${GUNICORN_LOG_DIR:-/var/log/gunicorn/}
+      GUNICORN_LOG_ERROR_FILENAME: ${GUNICORN_LOG_ERROR_FILENAME:-error.log}
+      GUNICORN_LOG_ACCESS_FILENAME: ${GUNICORN_LOG_ACCESS_FILENAME:-access.log}
+      STATIC_FILES_URL: ${STATIC_FILES_URL:-/static/}
+      AFP_ENABLED: ${AFP_ENABLED:-true}
+      AFP_CONTAINER_NAME: ${AFP_CONTAINER_NAME:-afp}
+      AFP_URL: ${AFP_URL:-afp}
+      AFP_PORT: ${AFP_PORT:-7015}
+      AFP_POST_ENDPOINT: ${AFP_POST_ENDPOINT:-fingerprint-audio}
+      MUSICBRAINZ_LOOKUP_ENABLED: ${MUSICBRAINZ_LOOKUP_ENABLED:-true}
+      ACOUSTID_API_KEY: ${ACOUSTID_API_KEY:-dev-acoustid-key}
+      SPOTIFY_ENABLED: ${SPOTIFY_ENABLED:-true}
+      SPOTIFY_CLIENT_ID: ${SPOTIFY_CLIENT_ID:-dev-spotify-client-id}
+      SPOTIFY_CLIENT_SECRET: ${SPOTIFY_CLIENT_SECRET:-dev-spotify-client-secret}
+      SPOTIFY_REDIRECT_URI: ${SPOTIFY_REDIRECT_URI:-http://127.0.0.1:9002/auth/spotify/callback}
+      SPOTIFY_SCOPES: ${SPOTIFY_SCOPES:-user-read-email}
+      GOOGLE_OAUTH_ENABLED: ${GOOGLE_OAUTH_ENABLED:-true}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-dev-google-client-id}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-dev-google-client-secret}
+      GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-http://127.0.0.1:9002/auth/google/callback}
+      PRE_COMMIT_HOME: ${PRE_COMMIT_HOME:-/var/cache/pre-commit}
+      TMTA_USERNAME: ${TMTA_USERNAME:-tmta}
+      SUPERADMIN_USERNAME: ${SUPERADMIN_USERNAME:-superadmin}
+      SUPERADMIN_PASSWORD: ${SUPERADMIN_PASSWORD:-superadmin}
+      SUPERADMIN_EMAIL: ${SUPERADMIN_EMAIL:-superadmin@example.com}
+      DEMO_USERNAME: ${DEMO_USERNAME:-demo}
+      DEMO_PASSWORD: ${DEMO_PASSWORD:-demo}
+      DEMO_EMAIL: ${DEMO_EMAIL:-demo@example.com}
+    ports:
+      - "${APP_PORT:-8000}:${APP_PORT:-8000}"
+    depends_on:
+      db:
+        condition: service_healthy
+      afp:
+        condition: service_started
+    volumes:
+      - api-media:${MEDIA_DIR:-/tmp/htmt-media}
+      - api-uploads:${TMP_UPLOADED_FILES:-/tmp/uploaded-files/}
+      - api-metadata-sessions:${METADATA_SESSION_DIR:-/tmp/metadata-sessions/}
+      - api-django-log:${DJANGO_LOG_DIR:-/var/log/django/}
+      - api-gunicorn-log:${GUNICORN_LOG_DIR:-/var/log/gunicorn/}
+      - api-pre-commit-cache:${PRE_COMMIT_HOME:-/var/cache/pre-commit}
+
+volumes:
+  db-data:
+  afp-flask-log:
+  afp-gunicorn-log:
+  api-media:
+  api-uploads:
+  api-metadata-sessions:
+  api-django-log:
+  api-gunicorn-log:
+  api-pre-commit-cache:

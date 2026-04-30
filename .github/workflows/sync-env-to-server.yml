@@ -1,8 +1,9 @@
 # Sync app env to server via shared workflow (BehindTheMusicTree/github-workflows).
 # Builds fragment per env (STAGING/PROD), uploads artifact, then calls reusable sync-env-to-server.
 # Writes /tmp/sync-env-<app>-<env>.env (required by infra redeploy) and merges into scripts/.env.
-# All compose-required API booleans are hardcoded true in the fragment (no GitHub Variables):
-# FILE_UPLOAD_ENABLED, SPOTIFY_ENABLED, GOOGLE_OAUTH_ENABLED, MUSICBRAINZ_LOOKUP_ENABLED, HTMT_API_AFP_ENABLED.
+# All compose-required API booleans and runtime paths are hardcoded in the fragment (no GitHub Variables):
+# FILE_UPLOAD_ENABLED, SPOTIFY_ENABLED, GOOGLE_OAUTH_ENABLED, MUSICBRAINZ_LOOKUP_ENABLED, HTMT_API_AFP_ENABLED,
+# MEDIA_DIR, LIBRARIES_DIR, TMP_UPLOADED_FILES.
 name: Sync env to server
 
 on:
@@ -26,7 +27,7 @@ jobs:
     steps:
       - name: Validate vars and build env fragment
         env:
-          VPS_IP: ${{ vars.VPS_IP }}
+          SERVER_HOST: ${{ vars.SERVER_HOST }}
           REDEPLOYMENT_ROOT: ${{ vars.REDEPLOYMENT_ROOT }}
           HTMT_API_APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
           DEMO_EMAIL: ${{ vars.DEMO_EMAIL }}
@@ -67,9 +68,12 @@ jobs:
             'SPOTIFY_ENABLED=true' \
             'GOOGLE_OAUTH_ENABLED=true' \
             'MUSICBRAINZ_LOOKUP_ENABLED=true' \
-            'HTMT_API_AFP_ENABLED=true' >> fragment.env
+            'HTMT_API_AFP_ENABLED=true' \
+            'MEDIA_DIR=/app/media' \
+            'LIBRARIES_DIR=/app/media/libraries/' \
+            'TMP_UPLOADED_FILES=/tmp/uploads' >> fragment.env
           required=(
-            VPS_IP REDEPLOYMENT_ROOT HTMT_API_APP_NAME
+            SERVER_HOST REDEPLOYMENT_ROOT HTMT_API_APP_NAME
             DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID
             SERVER_DEPLOY_USERNAME SERVER_DEPLOY_SSH_PRIVATE_KEY
             DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD DB_SUPERUSER_PASSWORD

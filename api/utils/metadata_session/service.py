@@ -8,7 +8,7 @@ from django.core.cache import cache
 
 from api import settings
 
-SESSION_TTL_SECONDS = 900  # 15 minutes
+SESSION_TTL_SECONDS = 900
 CACHE_KEY_PREFIX = "metadata_session:"
 
 
@@ -20,13 +20,12 @@ def _get_session_dir() -> Path:
 
 
 def _ensure_session_dir() -> Path:
-    d = _get_session_dir()
-    d.mkdir(parents=True, exist_ok=True)
-    return d
+    directory = _get_session_dir()
+    directory.mkdir(parents=True, exist_ok=True)
+    return directory
 
 
 def create_session(source_file_path: str, original_filename: str) -> tuple[str, int]:
-    """Store file in session dir, cache path and filename with TTL. Returns (token, ttl_seconds)."""
     ext = os.path.splitext(original_filename)[1] or ".bin"
     token = uuid.uuid4().hex
     session_dir = _ensure_session_dir()
@@ -42,7 +41,6 @@ def create_session(source_file_path: str, original_filename: str) -> tuple[str, 
 
 
 def get_session(token: str) -> tuple[str, str] | None:
-    """Return (file_path, original_filename) if session exists and is not expired, else None."""
     if not token or not token.strip():
         return None
     cache_key = f"{CACHE_KEY_PREFIX}{token.strip()}"

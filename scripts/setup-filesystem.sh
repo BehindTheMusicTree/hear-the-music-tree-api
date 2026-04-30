@@ -9,81 +9,41 @@ check_script_vars_are_set () {
     load_app_env_file_if_exists
     check_required_vars_are_set ENV
     check_bool_vars_are_set APP_IS_EXPOSED
-    load_project_calculated_paths_env_vars
+    if [ "$ENV" = "collect_static" ]; then
+        check_required_vars_are_set STATIC_FILES
+    else
+        check_required_vars_are_set MEDIA_DIR LIBRARIES_DIR TMP_UPLOADED_FILES
+    fi
     log_with_script_prefixe "Environment variables loaded for the filesystem setup."
 }
 
 setup_static_files_for_collection() {
-    check_required_vars_are_set STATIC_FILES_DEFAULT
+    local static_files_dir="${STATIC_FILES}"
     log_with_script_prefixe "ENV is set to collect_static. Setting up the filesystem..."
-    create_directory_if_not_exists_or_exit "$STATIC_FILES_DEFAULT"
-    log_with_script_prefixe "Checking if files exist in $STATIC_FILES_DEFAULT..."
-    if [ -z "$(ls -A $STATIC_FILES_DEFAULT)" ]; then
-        log_with_script_prefixe "No files found in $STATIC_FILES_DEFAULT."
+    create_directory_if_not_exists_or_exit "$static_files_dir"
+    log_with_script_prefixe "Checking if files exist in $static_files_dir..."
+    if [ -z "$(ls -A $static_files_dir)" ]; then
+        log_with_script_prefixe "No files found in $static_files_dir."
     else
-        log_with_script_prefixe "Files found in $STATIC_FILES_DEFAULT. Removing them..."
-        output=$(rm -rf "$STATIC_FILES_DEFAULT"/*)
+        log_with_script_prefixe "Files found in $static_files_dir. Removing them..."
+        output=$(rm -rf "$static_files_dir"/*)
         if [ $? -ne 0 ]; then
-            log_with_script_prefixe "ERROR: Failed to remove files from $STATIC_FILES_DEFAULT: $output" >&2
+            log_with_script_prefixe "ERROR: Failed to remove files from $static_files_dir: $output" >&2
             exit 1
         fi
-        log_with_script_prefixe "Files removed from $STATIC_FILES_DEFAULT."
+        log_with_script_prefixe "Files removed from $static_files_dir."
     fi
 }
 
 setup_static_files_for_serving() {
-    if [ -z "$STATIC_FILES_DEFAULT" ]; then
-        log_with_script_prefixe "ENV is not set to collect_static and STATIC_FILES_DEFAULT is not set. Static files are not needed."
-    else
-        log_with_script_prefixe "ENV is not set to collect_static and STATIC_FILES_DEFAULT is set. Static files are needed. "\
-            "Setting up the filesystem..."
-        log_with_script_prefixe "Checking if the directory $STATIC_FILES_DEFAULT exists..."
-        if [ ! -d "$STATIC_FILES_DEFAULT" ]; then
-            log_with_script_prefixe "ERROR: $STATIC_FILES_DEFAULT does not exist. Abort." >&2
-            exit 1
-        fi
-        if [ -z "$(ls -A $STATIC_FILES_DEFAULT)" ]; then
-            log_with_script_prefixe "ERROR: No files found in $STATIC_FILES_DEFAULT. Abort." >&2
-            exit 1
-        else
-            if [ "$STATIC_FILES_DEFAULT" = "$STATIC_FILES" ]; then
-                log_with_script_prefixe "STATIC_FILES_DEFAULT is not empty and STATIC_FILES is set to STATIC_FILES_DEFAULT. "\
-                    "The static files are already set up."
-            else
-                log_with_script_prefixe "STATIC_FILES_DEFAULT is not empty and STATIC_FILES is not set to STATIC_FILES_DEFAULT. "\
-                    "Setting up the filesystem..."
-                create_directory_if_not_exists_or_exit "$STATIC_FILES"
-                log_with_script_prefixe "Checking if files exist in $STATIC_FILES..."
-                if [ -z "$(ls -A $STATIC_FILES)" ]; then
-                    log_with_script_prefixe "No files found in $STATIC_FILES ."
-                else
-                    log_with_script_prefixe "Files found in $STATIC_FILES. Removing them..."
-                    output=$(rm -rf "$STATIC_FILES"/*)
-                    if [ $? -ne 0 ]; then
-                        log_with_script_prefixe "ERROR: Failed to remove files from $STATIC_FILES: $output" >&2
-                        exit 1
-                    fi
-                    log_with_script_prefixe "Files removed from $STATIC_FILES."
-                fi
-                log_with_script_prefixe "$STATIC_FILES is empty. Moving files from $STATIC_FILES_DEFAULT to $STATIC_FILES..."
-                output=$(mv "$STATIC_FILES_DEFAULT"/* "$STATIC_FILES")
-                if [ $? -ne 0 ]; then
-                    log_with_script_prefixe "ERROR: Failed to move files from $STATIC_FILES_DEFAULT to $STATIC_FILES: $output" >&2
-                    exit 1
-                fi
-                log_with_script_prefixe "Files moved from $STATIC_FILES_DEFAULT to $STATIC_FILES."
-                set_read_write_permissions_and_owner_or_exit "$STATIC_FILES"
-
-                log_with_script_prefixe "Removing the static files default directory..."
-                output=$(rmdir "$STATIC_FILES_DEFAULT")
-                if [ $? -ne 0 ]; then
-                    log_with_script_prefixe "ERROR: Failed to remove the static files default directory: $output" >&2
-                    exit 1
-                fi
-                log_with_script_prefixe "Static files default directory removed."
-            fi
-        fi
+    if [ -z "${STATIC_FILES:-}" ]; then
+        log_with_script_prefixe "ENV is not set to collect_static and STATIC_FILES is not set. Static files are not needed."
+        return
     fi
+    log_with_script_prefixe "STATIC_FILES is set to $STATIC_FILES. Ensuring runtime static directory exists..."
+    create_directory_if_not_exists_or_exit "$STATIC_FILES"
+    set_read_write_permissions_and_owner_or_exit "$STATIC_FILES"
+    log_with_script_prefixe "Runtime static directory is set up."
 }
 setup_django_log () {
     if [ -n "$DJANGO_LOG_DIR" ]; then
@@ -161,7 +121,7 @@ setup_media_dirs () {
     chmod a+rwx "$TMP_UPLOADED_FILES"
     log_with_script_prefixe "Temp uploaded files directory is set up (world-writable so AFP container and runner can both write)."
 
-    if [ -n "${METADATA_SESSION_DIR}" ]; then
+    if [ -n "${METADATA_SESSION_DIR:-}" ]; then
         create_directory_if_not_exists_or_exit "$METADATA_SESSION_DIR"
         set_read_write_permissions_and_owner_or_exit "$METADATA_SESSION_DIR"
         chmod a+rwx "$METADATA_SESSION_DIR"

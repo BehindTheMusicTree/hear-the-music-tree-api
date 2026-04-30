@@ -20,7 +20,7 @@ Before submitting a Pull Request, ensure all checks are completed. This checklis
 
 ## Tests
 
-- ✅ All tests pass: `pytest`
+- ✅ All tests pass: `docker compose exec api pytest` (or `pytest` after `python -m pip install -e ".[dev]"` on your machine)
 - ✅ New features have corresponding tests
 - ✅ Bug fixes include regression tests
 - ✅ Tests follow naming convention: `test_{scenario}_then_{expected_result}` (see `test-naming-convention.mdc`)
@@ -51,6 +51,6 @@ Before submitting a Pull Request, ensure all checks are completed. This checklis
 ## Quick Pre-PR Command
 
 ```bash
-# Run all checks at once
-pytest && git status
+# Run all checks at once (Docker dev stack)
+docker compose exec api pytest && git status
 ```

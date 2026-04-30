@@ -12,10 +12,11 @@ env:
 
   APP_VERSION: 'test'
   FILE_UPLOAD_ENABLED: true
-  TMP_UPLOADED_FILES_EXTERNAL: /tmp/ci-uploaded/
-  METADATA_SESSION_DIR_EXTERNAL: /tmp/ci-metadata-sessions/
-  MEDIA_DIR_INTERNAL: media/
+  TMP_UPLOADED_FILES: /tmp/ci-uploaded/
+  METADATA_SESSION_DIR: /tmp/ci-metadata-sessions/
+  MEDIA_DIR: /tmp/ci-media/
   LIBRARIES_DIR_NAME: libraries
+  LIBRARIES_DIR: /tmp/ci-media/libraries/
 
   DB_IS_NEEDED: true
   DB_URL: localhost
@@ -76,7 +77,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e ".[dev]"
 
-      # Same as pytest: env/calculated_paths/ is kept in git via .gitkeep; setup-filesystem.sh generates .env there.
       - name: Set up filesystem for Django (mypy)
         run: bash scripts/setup-filesystem.sh
 
@@ -101,7 +101,7 @@ jobs:
           DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
           DB_IMAGE_REPO: ${{ vars.DB_IMAGE_REPO }}
           DB_VERSION: ${{ vars.DB_VERSION }}
-          DB_CONTAINER_NAME: ${{ vars.DB_APP_NAME }}
+          DB_CONTAINER_NAME: ${{ format('{0}{1}', vars.HTMT_API_APP_NAME, vars.DB_APP_NAME_SUFFIX) }}
           AFP_CONTAINER_NAME: ${{ vars.AFP_APP_NAME }}
           AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
           AFP_VERSION: ${{ vars.AFP_VERSION }}
@@ -125,7 +125,7 @@ jobs:
       DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
       DB_IMAGE_REPO: ${{ vars.DB_IMAGE_REPO }}
       DB_VERSION: ${{ vars.DB_VERSION }}
-      DB_CONTAINER_NAME: ${{ vars.DB_APP_NAME }}
+      DB_CONTAINER_NAME: ${{ format('{0}{1}', vars.HTMT_API_APP_NAME, vars.DB_APP_NAME_SUFFIX) }}
       AFP_CONTAINER_NAME: ${{ vars.AFP_APP_NAME }}
       AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
       AFP_VERSION: ${{ vars.AFP_VERSION }}
@@ -221,11 +221,6 @@ jobs:
 
       - name: Run pytest
         run: |
-          set -a
-          # shellcheck source=env/calculated_paths/.env
-          . env/calculated_paths/.env
-          set +a
-          export TMP_UPLOADED_FILES
           if [ -n "${{ inputs.test_path || '' }}" ]; then
             pytest -v --tb=short -x --junitxml=test-results.xml "${{ inputs.test_path }}"
           else
