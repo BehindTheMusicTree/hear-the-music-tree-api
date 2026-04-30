@@ -108,6 +108,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Dockerfile dev install toggle**: Added **`INSTALL_DEV`** build-arg (`false` by default for CI/production `pip install .`; Compose defaults **`INSTALL_DEV=true`** so the API image includes **`pip install -e ".[dev]"`** and `pytest` is available for `docker compose exec api pytest`).
 
+- **Host tooling env source**: Host-side scripts now load environment from repository root `.env` only (no fallback to `env/.env`), aligning local tooling with the Docker-first contract and reducing env-source ambiguity.
+
 ### CI
 
 - **Test workflow**: Workflow-level `STATIC_FILES` and `STATIC_FILES_URL` are omitted so Django uses `STATIC_FILES_STATE` `NOT_NEEDED` in CI (migrate/pytest/pre-commit); API tests do not rely on static file serving (`urls.py` only adds static routes when collecting/serving).
@@ -117,6 +119,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ### Fixed
 
 - **FLAC upload (`fix_md5_checking`)**: Replaced `os.rename` with `shutil.move` when moving the audiometa-corrected FLAC into `TemporaryUploadedFile`’s path so MD5 repair works across mount points (e.g. default temp dir vs `FILE_UPLOAD_TEMP_DIR` in Docker), avoiding `OSError: [Errno 18] Invalid cross-device link` and 500s on affected FLAC uploads.
+
+- **Metadata session imports**: Restored `api.utils.metadata_session` utility exports (`create_session`, `get_session`) so metadata-session view imports resolve correctly in API runtime.
 
 - **Audio metadata serializers**: Restored missing [`api/serializer/audio_metadata/Fields.py`](api/serializer/audio_metadata/Fields.py) and [`api/serializer/audio_metadata/AudioMetadataSessionDownload.py`](api/serializer/audio_metadata/AudioMetadataSessionDownload.py) so `api.urls` and metadata-session views import cleanly (fixes `ModuleNotFoundError` on Docker startup).
 
