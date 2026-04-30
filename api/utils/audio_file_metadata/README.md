@@ -205,7 +205,7 @@ metadata = {
 }
 
 # Update file metadata
-audiometa_adapter.update_file_metadata(
+audiometa_adapter.update_file_metadata_app(
     file=uploaded_file,
     app_metadata=metadata,
     normalized_rating_max_value=100
@@ -277,7 +277,7 @@ except PermissionError as e:
 
 # Writing metadata
 try:
-    audiometa_adapter.update_file_metadata(file=uploaded_file, app_metadata=metadata)
+    audiometa_adapter.update_file_metadata_app(file=uploaded_file, app_metadata=metadata)
 except FileCorruptedError as e:
     # Handle corrupted file error
     print(f"File is corrupted: {e}")

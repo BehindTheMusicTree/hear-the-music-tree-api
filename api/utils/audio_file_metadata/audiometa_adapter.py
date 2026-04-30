@@ -4,6 +4,7 @@ This module provides a backward-compatible wrapper around audiometa-python 0.2.4
 """
 
 import os
+import shutil
 
 import audiometa
 from audiometa import UnifiedMetadata, UnifiedMetadataKey
@@ -181,7 +182,7 @@ def fix_md5_checking(file: FILE_TYPE) -> TemporaryUploadedFile:
         charset=None,
     )
     temp_file_path = temp_uploaded.temporary_file_path()
-    os.rename(fixed_path, temp_file_path)
+    shutil.move(fixed_path, temp_file_path)
     with open(temp_file_path, "rb") as f:
         f.read(1)
         f.seek(0)

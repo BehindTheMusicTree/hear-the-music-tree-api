@@ -98,47 +98,21 @@ export_value_removing_potential_surrounding_quotes() {
 load_app_env_file_if_exists() {
     local SCRIPTS_DIR=$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)/
     local PROJECT_DIR=$(realpath "${SCRIPTS_DIR}..")/
-    local ENV_FILE=${PROJECT_DIR}env/.env
+    local ENV_FILE="${ENV_FILE:-}"
+    if [ -z "$ENV_FILE" ]; then
+        ENV_FILE="${PROJECT_DIR}.env"
+    fi
     if [ ! -f "$ENV_FILE" ]; then
-        log_with_utils_prefixe "$ENV_FILE env file does not exist."
-    else
-        log_with_utils_prefixe "Loading environment variables from ${ENV_FILE} ..."
-        while IFS='=' read -r key value; do
-            key="${key#"${key%%[![:space:]]*}"}"
-            key="${key%"${key##*[![:space:]]}"}"
-            if [ -z "$key" ] || [ "${key#\#}" != "$key" ]; then continue; fi
-            export "$key=$value"
-        done < "$ENV_FILE"
+        log_with_utils_prefixe "No env file found at ${ENV_FILE}."
+        return
     fi
-}
-
-load_project_calculated_paths_env_vars() {
-    log_with_utils_prefixe "Loading calculated paths..."
-    check_bool_vars_are_set APP_IS_EXPOSED
-
-    local SCRIPTS_DIR=$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)/
-    local PROJECT_DIR=$(realpath "${SCRIPTS_DIR}..")/
-    local CALTULATED_PATHS_DIR="${PROJECT_DIR}env/calculated_paths/"
-
-    if [ ! -d "$CALTULATED_PATHS_DIR" ]; then
-        log_with_utils_prefixe "ERROR: $CALTULATED_PATHS_DIR directory does not exist" >&2
-        exit 1
-    fi
-
-    local CALCULATED_PATHS_ENV_FILE="${CALTULATED_PATHS_DIR}.env"
-    bash "${SCRIPTS_DIR}generate-calculated-paths-env-file.sh"
-    if [ $? -ne 0 ]; then
-        log_with_utils_prefixe "ERROR: failed to generate calculated paths env file: $output" >&2
-        exit 1
-    fi
-
-    log_with_utils_prefixe "Loading calculated paths from ${CALCULATED_PATHS_ENV_FILE}"
+    log_with_utils_prefixe "Loading environment variables from ${ENV_FILE} ..."
     while IFS='=' read -r key value; do
-        # Skip comments and empty lines
-        if [ -z "$key" ]; then continue; fi
+        key="${key#"${key%%[![:space:]]*}"}"
+        key="${key%"${key##*[![:space:]]}"}"
+        if [ -z "$key" ] || [ "${key#\#}" != "$key" ]; then continue; fi
         export "$key=$value"
-    done < "$CALCULATED_PATHS_ENV_FILE"
-    log_with_utils_prefixe "Calculated paths loaded successfully."
+    done < "$ENV_FILE"
 }
 
 determine_db_host_if_not_set () {

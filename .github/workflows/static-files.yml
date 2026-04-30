@@ -32,7 +32,7 @@ jobs:
       DEBUG: false
       DB_IS_NEEDED: false
       APP_IS_EXPOSED: false
-      STATIC_FILES_INTERNAL: ${{ vars.STATIC_FILES_INTERNAL }}
+      STATIC_FILES: ${{ vars.STATIC_FILES }}
       AFP_ENABLED: "false"
       MUSICBRAINZ_LOOKUP_ENABLED: "false"
       SPOTIFY_ENABLED: "false"
@@ -51,7 +51,7 @@ jobs:
           API_DIR_NAME: ${{ vars.API_DIR_NAME }}
           ENV: ${{ vars.ENV }}
           APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
-          STATIC_FILES_INTERNAL: ${{ vars.STATIC_FILES_INTERNAL }}
+          STATIC_FILES: ${{ vars.STATIC_FILES }}
           STATIC_FILES_URL: ${{ vars.STATIC_FILES_URL }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -59,7 +59,7 @@ jobs:
             API_DIR_NAME \
             ENV \
             APP_NAME \
-            STATIC_FILES_INTERNAL \
+            STATIC_FILES \
             STATIC_FILES_URL \
             GITHUB_TOKEN
 

@@ -1,7 +1,7 @@
 #!/bin/bash
 # One-time: run rename of htmt-api_* tables to htmt_api_*. Requires env (DB_*). Safe to re-run.
 # Usage: [ENV_FILE=/path/to/.env] bash run-rename-htmt-api-tables.sh
-#   On host: env/.env is loaded if present. In app container: DB_* must be set by orchestrator or pass ENV_FILE.
+#   On host: .env is loaded by default. In app container: DB_* must be set by orchestrator or pass ENV_FILE.
 
 SCRIPT_DIR=$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
 SCRIPTS_DIR=$(dirname "$(dirname "$SCRIPT_DIR")")
@@ -24,7 +24,7 @@ determine_db_host_if_not_set
 
 for var in DB_HOST DB_PORT DB_SUPERUSER_NAME DB_APP_DB_NAME DB_SUPERUSER_PASSWORD; do
     if [ -z "${!var}" ]; then
-        echo "ERROR: $var is not set. On host use env/.env. In app container set DB_* (or ENV_FILE=/path/to/.env)." >&2
+        echo "ERROR: $var is not set. On host use .env. In app container set DB_* (or ENV_FILE=/path/to/.env)." >&2
         exit 1
     fi
 done

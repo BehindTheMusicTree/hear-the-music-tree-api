@@ -10,7 +10,7 @@ from api.utils.audio_file_metadata import (
     get_duration_in_sec,
     get_specific_metadata,
     is_flac_md5_valid,
-    update_file_metadata,
+    update_file_metadata_app,
 )
 from api.utils.audio_file_metadata.audiometa_adapter import (
     _APP_TO_UNIFIED_KEY_MAP,
@@ -118,7 +118,7 @@ class TestUpdateFileMetadata:
             AppMetadataKey.RATING: 85,
         }
 
-        update_file_metadata("/path/to/file.mp3", app_metadata, normalized_rating_max_value=100)
+        update_file_metadata_app("/path/to/file.mp3", app_metadata, normalized_rating_max_value=100)
 
         mock_update.assert_called_once()
         call_args = mock_update.call_args

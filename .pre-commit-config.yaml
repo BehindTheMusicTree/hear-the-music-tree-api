@@ -1,6 +1,8 @@
 # Based on audiometa-python pre-commit layout; tools pinned in pyproject.toml ([project.optional-dependencies] dev).
-# Install: bash scripts/setup-dev-tools.sh   (or: pip install -e ".[dev]" && pre-commit install)
-# Hooks use language: system — activate .venv before committing locally.
+# Install:
+#   - Host hook wiring: bash scripts/setup-host-dev-tools.sh
+#   - Docker toolchain:  bash scripts/setup-docker-dev-tools.sh
+# Hooks use language: system — tools must be on PATH (same pins as CI).
 fail_fast: true
 
 repos:
@@ -59,7 +61,7 @@ repos:
     hooks:
       - id: prefer-strenum
         name: Prefer StrEnum over (str, Enum)
-        entry: python3 scripts/check_prefer_strenum.py
+        entry: bash -c 'if command -v python3 >/dev/null 2>&1; then python3 scripts/check_prefer_strenum.py; elif command -v python >/dev/null 2>&1; then python scripts/check_prefer_strenum.py; else echo "python interpreter not found on PATH" >&2; exit 1; fi'
         language: system
         types_or: [python]
         files: ^api/.*\.py$

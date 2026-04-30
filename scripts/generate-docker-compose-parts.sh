@@ -102,16 +102,14 @@ cat << EOF > "$DOCKER_COMPOSE_PARTIAL_API_FILE"
       - api-django-log-dir:\${DJANGO_LOG_DIR_EXTERNAL}
       - api-gunicorn-log-dir:\${GUNICORN_LOG_DIR}
       - api-media-dir:\${MEDIA_DIR_EXTERNAL}
-      - api-static-files:\${STATIC_FILES_EXTERNAL}
+      - api-static-files:\${STATIC_FILES}
       - api-upload-tmp-files:\${TMP_UPLOADED_FILES_EXTERNAL}
-      - api-metadata-sessions:\${METADATA_SESSION_DIR_EXTERNAL}
     environment:
       - DJANGO_LOG_DIR_EXTERNAL=\${DJANGO_LOG_DIR_EXTERNAL}
       - GUNICORN_LOG_DIR=\${GUNICORN_LOG_DIR}
       - MEDIA_DIR_EXTERNAL=\${MEDIA_DIR_EXTERNAL}
-      - STATIC_FILES_EXTERNAL=\${STATIC_FILES_EXTERNAL}
+      - STATIC_FILES=\${STATIC_FILES}
       - TMP_UPLOADED_FILES_EXTERNAL=\${TMP_UPLOADED_FILES_EXTERNAL}
-      - METADATA_SESSION_DIR_EXTERNAL=\${METADATA_SESSION_DIR_EXTERNAL}
     expose:
       - $APP_PORT
     depends_on:

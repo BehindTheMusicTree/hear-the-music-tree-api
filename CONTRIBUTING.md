@@ -142,7 +142,7 @@ cd the-music-tree-api
 
 2. Set up environment variables:
 
-   Create a copy of the file `env/dev/.env.dev.template` as `env/.env` and set the required values. See the [Environment Variables](#environment-variables) section below for details on all required variables.
+   Create a copy of the file `env/dev/.env.dev.template` as `.env` and set the required values. See the [Environment Variables](#environment-variables) section below for details on all required variables.
 
    **Note:** Environment variables are required for filesystem setup and running containers in the following steps.
 
@@ -160,25 +160,16 @@ cd the-music-tree-api
 
    **Note:** Tests that use WAV files require `ffprobe` (from ffmpeg) to be installed and working. If pytest exits with "ffprobe failed to run" or you see "File corrupted" when running audio tests, ffmpeg may be broken (e.g. missing libvpx on macOS). Fix by reinstalling: `brew reinstall ffmpeg` (macOS) or re-run `scripts/install-dependencies.sh` (Linux).
 
-4. Create and activate a virtual environment:
+4. Start the Docker Compose development stack:
 
    ```bash
-   python -m venv .venv
-   source .venv/bin/activate  # (Linux/macOS)
-   .venv\Scripts\activate      # (Windows)
+   cp env/dev/.env.compose.dev.example .env
+   docker compose up --build
    ```
 
-5. Install Python dev dependencies and Git hooks (editable install from [`pyproject.toml`](pyproject.toml) plus `pre-commit install` when [`.pre-commit-config.yaml`](.pre-commit-config.yaml) is present). From the repo root:
+   This is the default local workflow for this repository. It runs API + DB + AFP with the same runtime env contract used by deployment.
 
-   ```bash
-   bash scripts/setup-dev-tools.sh
-   ```
-
-   The script activates `./.venv` if it exists, otherwise `./venv`, when you are not already inside a virtual environment (local pre-commit wrappers use `./.venv` when the shell is not activated; prefer `.venv` for new clones). Tools must match versions in [`pyproject.toml`](pyproject.toml) (see `.pre-commit-hooks/check-tool-versions.sh`). Run all hooks on the tree: `pre-commit run --all-files`. Requires **shellcheck** and (for PowerShell hooks) **pwsh** locally where those hooks apply.
-
-   Manual alternative: `pip install -e ".[dev]"` then `pre-commit install`.
-
-6. Set up filesystem:
+5. Set up filesystem:
 
    ```bash
    bash scripts/setup-filesystem.sh
@@ -192,7 +183,7 @@ cd the-music-tree-api
    - Media files and libraries
    - Temporary uploaded files
 
-7. Run database and Audio Fingerprinter containers:
+6. Run database and Audio Fingerprinter containers:
 
    ```bash
    bash scripts/run-db-and-afp-containers.sh
@@ -220,7 +211,7 @@ The application uses strict environment variable validation:
 - **Application data**: Application data files (like reference data, fixtures) are stored relative to the codebase (`BASE_DIR`) and do not require environment variables
 
 **Development:**
-Create a copy of the file `env/dev/.env.dev.template` as `env/.env` and set the values.
+Create a copy of the file `env/dev/.env.dev.template` as `.env` and set the values.
 
 **Build:**
 The docker build requires the following environment variables:
@@ -228,8 +219,8 @@ The docker build requires the following environment variables:
 - `APP_NAME`
 - `APP_VERSION`
 - `FILE_UPLOAD_ENABLED`
-- `LIBRARIES_DIR_NAME`
-- `STATIC_FILES_INTERNAL`
+- `LIBRARIES_DIR_INTERNAL` (local/internal path mode) or `LIBRARIES_DIR_EXTERNAL` (server/external path mode)
+- `STATIC_FILES`
 - `DJANGO_LOG_GENERAL_FILENAME`
 - `DJANGO_LOG_INFO_FILENAME`
 - `DJANGO_LOG_REQUESTS_FILENAME`
@@ -240,7 +231,8 @@ The docker build requires the following environment variables:
 - `GUNICORN_LOG_ERROR_FILENAME`
 - `GUNICORN_LOG_ACCESS_FILENAME`
 
-For production deploy, path variables (`METADATA_SESSION_DIR_EXTERNAL`, `TMP_UPLOADED_FILES_EXTERNAL`, `MEDIA_DIR_EXTERNAL`, `STATIC_FILES_EXTERNAL`, `DJANGO_LOG_DIR_EXTERNAL`, `GUNICORN_LOG_DIR`) are set at runtime on the server (e.g. in a `.env` next to docker-compose), not by the workflow. Do not add them to GitHub repo or environment vars; the server supplies them when starting the stack.
+For production deploy, path variables (`TMP_UPLOADED_FILES_EXTERNAL`, `MEDIA_DIR_EXTERNAL`, `STATIC_FILES_EXTERNAL`, `DJANGO_LOG_DIR_EXTERNAL`, `GUNICORN_LOG_DIR`) are set at runtime on the server (e.g. in a `.env` next to docker-compose), not by the workflow. The runtime static path consumed by the app is `STATIC_FILES`. Do not add host-specific path values to GitHub repo or environment vars; the server supplies them when starting the stack.
+`STATIC_FILES_INTERNAL` / `STATIC_FILES_EXTERNAL` are deprecated for this app runtime; use `STATIC_FILES` directly.
 
 Log and static filenames (e.g. `GUNICORN_LOG_ERROR_FILENAME`, `DJANGO_LOG_GENERAL_FILENAME`) stay in the workflow. Industry practice: paths vary by host/deployment so they are runtime config (12-factor); filenames are usually fixed or set at deploy time because they rarely differ per environment. Strict 12-factor also prefers logging to stdout and letting the execution environment handle files; when using file-based logging, path = runtime, filename = workflow or code default is a common compromise.
 
@@ -281,7 +273,7 @@ One-off DB or data fix scripts (e.g. table renames, one-time backfills) live in 
 
 For audio fingerprinting, the HearTheMusicTree API requires an app called Audio Fingerprinter. You can find the Audio Fingerprinter app on GitHub at the following link: [Audio Fingerprinter](https://github.com/BehindTheMusicTree/audio-fingerprinter)
 
-The AFP image creates the Flask app log from `FLASK_LOG_APP_FILENAME` (e.g. `app.log`), which must match what `settings.py` expects (`LOG_APP_FILE`). Path variables (`GUNICORN_LOG_DIR`, `FLASK_LOG_DIR_EXTERNAL`, `POOL_DIR_EXTERNAL`) are runtime-only and required when running the container; the AFP entrypoint fails fast if any is missing. For CI and local runs with `--user`, the AFP image must support non-root (writable `/app/log` and `/app/env/calculated_paths`). See the AFP README.
+The AFP image creates the Flask app log from `FLASK_LOG_APP_FILENAME` (e.g. `app.log`), which must match what `settings.py` expects (`LOG_APP_FILE`). Path variables (`GUNICORN_LOG_DIR`, `FLASK_LOG_DIR_EXTERNAL`, `POOL_DIR_EXTERNAL`) are runtime-only and required when running the container; the AFP entrypoint fails fast if any is missing. For CI and local runs with `--user`, the AFP image must support non-root (writable `/app/log`). See the AFP README.
 
 ### 2. Branching
 
@@ -461,7 +453,7 @@ pytest -o log_cli_level=DEBUG
 
 - **Live logging:** `pytest.ini` sets `log_cli = true`. At **DEBUG** every log line is printed and the suite can look frozen. The default level is **INFO**; use `-o log_cli=false` for minimal console noise or `-o log_cli_level=DEBUG` only when chasing a failure.
 - **Database:** Integration and most Django tests need **PostgreSQL** (and env) as in [Environment Setup](#1-environment-setup). A missing or unreachable DB often blocks on connect instead of failing immediately—start `run-db-and-afp-containers.sh` (or your CI-like stack) first.
-- **pyenv:** If `pytest` is not found, activate the venv or run `python -m pytest` with the interpreter that has `pip install -e ".[dev]"` applied (see [Prerequisites](#prerequisites) under Environment Setup).
+- **Container context:** If `pytest` is not found on your host, run tests from the API container (`docker compose exec api pytest ...`) or install dev dependencies with `python -m pip install -e ".[dev]"` in your active Python environment so `pytest` is on your `PATH`.
 
 **Test Structure:**
 
@@ -563,12 +555,14 @@ git push origin --delete v0.3.6-dev-improve-cicd
 
 We follow a structured commit format inspired by [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
-**IMPORTANT:** Always activate the project's virtual environment (`.venv`) before committing if you're using pre-commit hooks.
+**IMPORTANT:** Run checks from the Docker workflow so local validation matches the repository runtime.
 
 **Quick reference:**
 
 - Format: `<type>(<scope>): <summary>`
-- Activate virtual environment: `source .venv/bin/activate` (Linux/macOS) or `.venv\Scripts\activate` (Windows)
+- Run checks in container: `docker compose exec api pytest`
+
+**Pre-commit hook behavior:** This repository installs a tracked host git hook at [`.githooks/pre-commit`](.githooks/pre-commit) via [`scripts/setup-host-dev-tools.sh`](scripts/setup-host-dev-tools.sh). Docker-side tooling is set up via [`scripts/setup-docker-dev-tools.sh`](scripts/setup-docker-dev-tools.sh). The hook shells into Docker and runs `pre-commit` inside the `api` container against staged files. Start the stack before committing: `docker compose up -d api`.
 
 **Commit Types:**
 
@@ -612,7 +606,7 @@ Before submitting a Pull Request, ensure the following checks are completed:
 
 **2. Tests**
 
-- ✅ All tests pass: `pytest`
+- ✅ All tests pass: `docker compose exec api pytest` (or `pytest` after `python -m pip install -e ".[dev]"` locally)
 - ✅ New features have corresponding tests
 - ✅ Bug fixes include regression tests
 - ✅ Tests follow the naming convention: `test_{scenario}_then_{expected_result}`
@@ -838,7 +832,7 @@ Quick release process:
 
 3. **On the release branch, prepare the release:**
 
-   - **Automated (recommended):** from the repo root, with `bump2version` on your PATH (`pip install -e ".[dev]"` in your venv):
+   - **Automated (recommended):** from the repo root, with `bump2version` available in your execution context:
 
      ```bash
      python3 scripts/prepare_release_bump.py patch   # or: minor | major

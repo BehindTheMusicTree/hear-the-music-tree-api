@@ -19,7 +19,6 @@ handle_db_timeout() {
 
 check_script_vars_are_set() {
 	load_app_env_file_if_exists
-	load_project_calculated_paths_env_vars
 
 	REQUIRED_NON_BOOL_VARS=(
     	PROJECT_DIR
