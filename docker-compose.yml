@@ -107,6 +107,7 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-dev-google-client-id}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-dev-google-client-secret}
       GOOGLE_REDIRECT_URI: ${GOOGLE_REDIRECT_URI:-http://127.0.0.1:9002/auth/google/callback}
+      PRE_COMMIT_HOME: ${PRE_COMMIT_HOME:-/var/cache/pre-commit}
       TMTA_USERNAME: ${TMTA_USERNAME:-tmta}
       SUPERADMIN_USERNAME: ${SUPERADMIN_USERNAME:-superadmin}
       SUPERADMIN_PASSWORD: ${SUPERADMIN_PASSWORD:-superadmin}
@@ -127,6 +128,7 @@ services:
       - api-metadata-sessions:${METADATA_SESSION_DIR:-/tmp/metadata-sessions/}
       - api-django-log:${DJANGO_LOG_DIR:-/var/log/django/}
       - api-gunicorn-log:${GUNICORN_LOG_DIR:-/var/log/gunicorn/}
+      - api-pre-commit-cache:${PRE_COMMIT_HOME:-/var/cache/pre-commit}
 
 volumes:
   db-data:
@@ -137,3 +139,4 @@ volumes:
   api-metadata-sessions:
   api-django-log:
   api-gunicorn-log:
+  api-pre-commit-cache:

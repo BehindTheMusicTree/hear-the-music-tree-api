@@ -562,7 +562,7 @@ We follow a structured commit format inspired by [Conventional Commits](https://
 - Format: `<type>(<scope>): <summary>`
 - Run checks in container: `docker compose exec api pytest`
 
-**Pre-commit hooks on the host:** Hooks resolve `ruff`, `mypy`, etc. from your **`PATH`** at the versions pinned in [`pyproject.toml`](pyproject.toml). Install dev deps into the interpreter you use for commits: `python -m pip install -e ".[dev]"`, then `pre-commit install` (or run [`scripts/setup-dev-tools.sh`](scripts/setup-dev-tools.sh)).
+**Pre-commit hook behavior:** This repository installs a tracked host git hook at [`.githooks/pre-commit`](.githooks/pre-commit) via [`scripts/setup-host-dev-tools.sh`](scripts/setup-host-dev-tools.sh). Docker-side tooling is set up via [`scripts/setup-docker-dev-tools.sh`](scripts/setup-docker-dev-tools.sh). The hook shells into Docker and runs `pre-commit` inside the `api` container against staged files. Start the stack before committing: `docker compose up -d api`.
 
 **Commit Types:**
 

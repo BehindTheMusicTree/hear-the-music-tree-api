@@ -72,7 +72,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Added
 
-- **Dev setup**: [`scripts/setup-dev-tools.sh`](scripts/setup-dev-tools.sh) installs editable dev dependencies via the active interpreter (`python -m pip install -e ".[dev]"`) and `pre-commit` hooks when configured; [`scripts/setup-worktree.sh`](scripts/setup-worktree.sh) runs dev installs, npm, and filesystem setup without creating a virtualenv.
+- **Dev setup**: Split setup into explicit host and Docker scripts: [`scripts/setup-host-dev-tools.sh`](scripts/setup-host-dev-tools.sh) installs the tracked Docker-backed git hook ([`.githooks/pre-commit`](.githooks/pre-commit)) into `.git/hooks/pre-commit`, and [`scripts/setup-docker-dev-tools.sh`](scripts/setup-docker-dev-tools.sh) builds/starts `api` then verifies container tooling (`pre-commit`, `shellcheck`, `ruff`). [`scripts/setup-worktree.sh`](scripts/setup-worktree.sh) now runs both.
 
 - **Linting (audiometa-python baseline)**: [`.pre-commit-config.yaml`](.pre-commit-config.yaml) matches the audiometa-python hook stack (tool version check, YAML/JSON/TOML, shellcheck, `no-assert`, ruff-format, ruff, mypy + django-stubs, pydocstringformatter, long-comment fixer, Prettier, optional PSScriptAnalyzer) plus **`prefer-strenum`** (pre-commit no longer runs **isort**; org **v4.3+** verifier forbids it alongside **ruff format**). Configuration lives in [`pyproject.toml`](pyproject.toml); linter and test dependencies are pinned under `[project.optional-dependencies] dev`. Ruff **select** matches audiometa; extra **ignores** document Django/DRF cleanup debt. Mypy is plugin-aligned but **gradual** (`ignore_missing_imports`, non-strict) until typing can match audiometa strictness.
 
@@ -81,6 +81,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **[`.pre-commit-hooks/`](.pre-commit-hooks/)**: Shell wrappers copied from audiometa-python (`tool-wrapper`, `check-tool-versions`, shellcheck, `no-assert`, etc.).
 
 ### Changed
+
+- **Git pre-commit workflow**: Added a tracked host hook at [`.githooks/pre-commit`](.githooks/pre-commit) that executes `pre-commit` inside the `api` Docker container on staged files. [`scripts/setup-host-dev-tools.sh`](scripts/setup-host-dev-tools.sh) installs this hook into `.git/hooks/pre-commit`.
 
 - **Workflow DB app naming variables**: Updated `.github/workflows/publish.yml`, `.github/workflows/test.yml`, and `.github/actionlint.yaml` to use `DB_APP_NAME_SUFFIX` instead of `DB_APP_NAME`. DB app/container names are derived by appending `DB_APP_NAME_SUFFIX` to `HTMT_API_APP_NAME`.
 
@@ -110,6 +112,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Host tooling env source**: Host-side scripts now load environment from repository root `.env` only (no fallback to `env/.env`), aligning local tooling with the Docker-first contract and reducing env-source ambiguity.
 
+- **Pre-commit cache persistence (Docker Compose)**: `api` now sets `PRE_COMMIT_HOME` and mounts a named volume (`api-pre-commit-cache`) at that path so pre-commit hook environments are reused across container recreations instead of re-initializing on each commit.
+
 ### CI
 
 - **Test workflow**: Workflow-level `STATIC_FILES` and `STATIC_FILES_URL` are omitted so Django uses `STATIC_FILES_STATE` `NOT_NEEDED` in CI (migrate/pytest/pre-commit); API tests do not rely on static file serving (`urls.py` only adds static routes when collecting/serving).
@@ -117,6 +121,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **Pre-commit**: PR workflow runs `pre-commit run --all-files` (StrEnum checker, Ruff fatal rules, YAML / merge-conflict checks) in an **inline** job (checkout, Python 3.14, `pip install -e ".[dev]"`), not via org `reusable-pre-commit`. Integration **pytest** stays in-repo. Added **`verify-python-project-standards`** ([`scripts/verify-standards.sh`](scripts/verify-standards.sh)); removed the `STANDARDS_VERSION` file and workflow pin checks. See [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md).
 
 ### Fixed
+
+- **Docker dev tooling parity**: Added `shellcheck` to [`scripts/install-dependencies.sh`](scripts/install-dependencies.sh) so `docker compose exec api pre-commit run --all-files` can run the local `shellcheck` hook without manual installation inside the API container.
 
 - **FLAC upload (`fix_md5_checking`)**: Replaced `os.rename` with `shutil.move` when moving the audiometa-corrected FLAC into `TemporaryUploadedFile`’s path so MD5 repair works across mount points (e.g. default temp dir vs `FILE_UPLOAD_TEMP_DIR` in Docker), avoiding `OSError: [Errno 18] Invalid cross-device link` and 500s on affected FLAC uploads.
 
@@ -134,7 +140,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Development**: [DEVELOPMENT.md](DEVELOPMENT.md) links org-wide policy to [python-project-standards `docs/development.md`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md) (with [`string-enums.md`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/string-enums.md) for `StrEnum`); notes **Ruff UP042** as primary enforcement and **`prefer-strenum`** as an extra guardrail. [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md) references the same hub and notes org **v3+** dropped **reusable-test-matrix** (only **reusable-pre-commit** remains for shared lint).
 
-- **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md) documents dev installs via `python -m pip install -e ".[dev]"` / [`scripts/setup-dev-tools.sh`](scripts/setup-dev-tools.sh) and Docker-based workflows; the Testing section explains when pytest feels stuck (verbose logging, DB).
+- **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md) documents explicit host (`scripts/setup-host-dev-tools.sh`) and Docker (`scripts/setup-docker-dev-tools.sh`) setup flows for pre-commit and Docker-based workflows; the Testing section explains when pytest feels stuck (verbose logging, DB).
 
 - **Cursor**: `.cursor/rules/strenum-string-enums.mdc` matches [python-project-standards `templates/cursor-rules/strenum-string-enums.mdc`](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/templates/cursor-rules/strenum-string-enums.mdc) and encodes the `StrEnum` convention for contributors using Cursor.
 

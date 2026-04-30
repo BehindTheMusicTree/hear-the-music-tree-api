@@ -1,10 +1,10 @@
 from unittest.mock import patch
 
 import pytest
-from api.serializer.audio_metadata.Fields import Fields
 from rest_framework import status
 
 from api.serializer.audio_metadata.AudioMetadataFull import AudioMetadataFullSerializer
+from api.serializer.audio_metadata.Fields import Fields
 from api.test.tests.integration.audio_metadata.AudioMetadataTestCase import AudioMetadataTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.utils.data_transformer import to_camel_case

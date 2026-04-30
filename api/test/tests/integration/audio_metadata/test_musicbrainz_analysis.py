@@ -1,9 +1,9 @@
 from unittest.mock import patch
 
-from api.serializer.audio_metadata.Fields import Fields
 from rest_framework import status
 
 from api.serializer.audio_metadata.AudioMetadataFull import AudioMetadataFullSerializer
+from api.serializer.audio_metadata.Fields import Fields
 from api.test.tests.integration.audio_metadata.AudioMetadataTestCase import AudioMetadataTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.utils.audio_fingerprinter import service as audio_fingerprinter_service
