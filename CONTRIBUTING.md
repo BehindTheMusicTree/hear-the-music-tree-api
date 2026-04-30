@@ -832,7 +832,7 @@ Quick release process:
 
 3. **On the release branch, prepare the release:**
 
-   - **Automated (recommended):** from the repo root, with `bump2version` available in your execution context:
+   - **Automated (recommended):** from the repo root, with `bump2version` on `PATH` (same pin as dev deps in [`pyproject.toml`](pyproject.toml), currently `bump2version==1.0.1` — e.g. `pipx install bump2version==1.0.1`, or run bump steps inside the Compose `api` dev image where dev extras are installed). No project `.venv` is required.
 
      ```bash
      python3 scripts/prepare_release_bump.py patch   # or: minor | major

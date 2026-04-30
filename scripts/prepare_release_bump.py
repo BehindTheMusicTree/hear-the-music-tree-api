@@ -7,9 +7,9 @@
 3. Runs ``fix_changelog_after_bump.py`` (release date, indent cleanup).
 4. Inserts an empty ``## [Unreleased]`` above the new ``## [vX.Y.Z] - …`` heading.
 
-Must be run **inside an activated project virtualenv** (or with that venv's
-``python``), after ``pip install -e ".[dev]"`` so ``bump2version`` is
-on PATH.
+Requires ``bump2version`` on ``PATH`` (same pin as ``[project.optional-dependencies] dev``
+in ``pyproject.toml``, currently ``bump2version==1.0.1``). Examples: ``pipx install bump2version==1.0.1``,
+or use the interpreter where dev deps are installed (no project ``venv`` required).
 
 From repo root::
 
@@ -45,19 +45,6 @@ MARKER_HEADING = "## [Unreleased]  <!-- release -->"
 def _fail(msg: str) -> NoReturn:
     print(msg, file=sys.stderr)
     sys.exit(1)
-
-
-def _require_venv() -> None:
-    base = getattr(sys, "base_prefix", sys.prefix)
-    if sys.prefix != base:
-        return
-    _fail(
-        "prepare_release_bump.py must run inside a Python virtual environment.\n"
-        "Create and use the project venv, install deps, then retry. Example:\n"
-        "  python3 -m venv .venv && source .venv/bin/activate "
-        '&& pip install -e ".[dev]"\n'
-        "  python3 scripts/prepare_release_bump.py patch"
-    )
 
 
 def _find_note_index(text: str) -> int:
@@ -122,7 +109,14 @@ def ensure_empty_unreleased_section(text: str) -> tuple[str, bool]:
 
 def _run_bump2version(kind: str, allow_dirty: bool) -> None:
     if not shutil.which("bump2version"):
-        _fail('bump2version not found on PATH. In your project venv run: pip install -e ".[dev]"')
+        _fail(
+            "bump2version not found on PATH. Install the dev-extra pin (bump2version==1.0.1), e.g.\n"
+            "  pipx install bump2version==1.0.1\n"
+            "Or run bump2version from an environment where `pip install -e \".[dev]\"` was used.\n"
+            "With Docker Compose dev (`INSTALL_DEV=true`): from repo root, "
+            "`docker compose exec -w /home/app api bump2version patch --allow-dirty` "
+            "(adjust segment flags as needed)."
+        )
     cmd = ["bump2version", kind]
     if allow_dirty:
         cmd.append("--allow-dirty")
@@ -171,7 +165,6 @@ def main() -> None:
     args = parser.parse_args()
     allow_dirty = not args.no_allow_dirty
 
-    _require_venv()
     _warn_branch()
     raw = CHANGELOG_PATH.read_text()
     updated, changed = ensure_bump_marker(raw)
