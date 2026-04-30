@@ -98,7 +98,6 @@ AFP_ENABLED: bool
 MUSICBRAINZ_LOOKUP_ENABLED: bool
 MEDIA_ROOT: Path
 MEDIA_URL: str
-LIBRARIES_DIR_NAME: str
 LIBRARIES_DIR: Path
 
 # Data
@@ -804,11 +803,8 @@ def setup_media_dirs():
         global MEDIA_URL
         MEDIA_URL = load_required_str_env_var("MEDIA_URL")
 
-    global LIBRARIES_DIR_NAME
-    LIBRARIES_DIR_NAME = load_required_str_env_var("LIBRARIES_DIR_NAME")
-
     global LIBRARIES_DIR
-    LIBRARIES_DIR = MEDIA_ROOT / LIBRARIES_DIR_NAME
+    LIBRARIES_DIR = load_required_path_env_var("LIBRARIES_DIR")
     print_django("LIBRARIES_DIR: " + str(LIBRARIES_DIR))
     if not LIBRARIES_DIR.is_dir():
         raise OSError(
@@ -868,7 +864,7 @@ else:
     STATIC_FILES = os.getenv("STATIC_FILES")
     if ENV == "collect_static":
         STATIC_FILES_STATE = StaticFileStates.COLLECTING
-        LIBRARIES_DIR_NAME = ""  # Needed to setup the database (User model)
+        LIBRARIES_DIR = Path()  # Needed to setup the database (User model)
         setup_static_files()
     elif not STATIC_FILES:
         print_django("Static files are not needed.")
@@ -905,7 +901,7 @@ else:
             "ACOUSTID_API_KEY",
             "MEDIA_DIR",
             "METADATA_SESSION_DIR",
-            "LIBRARIES_DIR_NAME",
+            "LIBRARIES_DIR",
             "TMP_UPLOADED_FILES",
         ]:
             if os.getenv(var_name):

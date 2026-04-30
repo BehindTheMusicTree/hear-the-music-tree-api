@@ -114,6 +114,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Pre-commit cache persistence (Docker Compose)**: `api` now sets `PRE_COMMIT_HOME` and mounts a named volume (`api-pre-commit-cache`) at that path so pre-commit hook environments are reused across container recreations instead of re-initializing on each commit.
 
+- **Library path env contract**: Removed runtime usage of `LIBRARIES_DIR_NAME`; settings and user library path generation now rely on `LIBRARIES_DIR` only. Updated Compose defaults, test workflow env, and dev env example accordingly.
+
 ### CI
 
 - **Test workflow**: Workflow-level `STATIC_FILES` and `STATIC_FILES_URL` are omitted so Django uses `STATIC_FILES_STATE` `NOT_NEEDED` in CI (migrate/pytest/pre-commit); API tests do not rely on static file serving (`urls.py` only adds static routes when collecting/serving).

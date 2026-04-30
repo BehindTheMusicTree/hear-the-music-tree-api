@@ -77,7 +77,6 @@ services:
       TMP_UPLOADED_FILES: ${TMP_UPLOADED_FILES:-/tmp/uploaded-files/}
       METADATA_SESSION_DIR: ${METADATA_SESSION_DIR:-/tmp/metadata-sessions/}
       MEDIA_DIR: ${MEDIA_DIR:-/tmp/htmt-media}
-      LIBRARIES_DIR_NAME: ${LIBRARIES_DIR_NAME:-libraries}
       LIBRARIES_DIR: ${LIBRARIES_DIR:-/tmp/htmt-media/libraries}
       DJANGO_LOG_DIR: ${DJANGO_LOG_DIR:-/var/log/django/}
       DJANGO_LOG_GENERAL_FILENAME: ${DJANGO_LOG_GENERAL_FILENAME:-general.log}
