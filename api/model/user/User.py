@@ -47,13 +47,13 @@ class User(AbstractUser, BaseModel):
         expression=ConditionalExpression(
             condition_field=Fields.IS_TEST_USER,
             when_true=ConcatOp(
-                Value(str(settings.LIBRARIES_DIR_NAME)),
+                Value(str(settings.LIBRARIES_DIR.name)),
                 Value("/"),
                 Value(settings.TEST_USER_LIBRARIES_DIR_NAME_PREFIXE),
                 F(Fields.ID),
             ),
             when_false=ConcatOp(
-                Value(str(settings.LIBRARIES_DIR_NAME)),
+                Value(str(settings.LIBRARIES_DIR.name)),
                 Value("/"),
                 Value(settings.USER_LIBRARIES_DIR_NAME_PREFIXE),
                 F(Fields.ID),

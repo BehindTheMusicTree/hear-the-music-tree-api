@@ -15,7 +15,6 @@ env:
   TMP_UPLOADED_FILES: /tmp/ci-uploaded/
   METADATA_SESSION_DIR: /tmp/ci-metadata-sessions/
   MEDIA_DIR: /tmp/ci-media/
-  LIBRARIES_DIR_NAME: libraries
   LIBRARIES_DIR: /tmp/ci-media/libraries/
 
   DB_IS_NEEDED: true
@@ -41,7 +40,7 @@ jobs:
   pre-commit:
     name: Pre-commit
     runs-on: ubuntu-latest
-    # Dummy identity + flags only. Inherits workflow paths for FILE_UPLOAD (models need MEDIA_ROOT / LIBRARIES_DIR_NAME at import).
+    # Dummy identity + flags only. Inherits workflow paths for FILE_UPLOAD (models need LIBRARIES_DIR at import).
     # No GitHub Environment or secrets: DB and external integrations off for mypy-only Django load.
     env:
       APP_NAME: htmt_api_mypy_ci
