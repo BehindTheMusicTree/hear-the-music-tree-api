@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Set release date and fix Unreleased heading indent in CHANGELOG.md after bump2version."""
+"""Set release date and fix Unreleased heading indent in CHANGELOG.md after bump-my-version."""
 
 from datetime import date
 from pathlib import Path

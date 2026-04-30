@@ -17,7 +17,7 @@ dependencies = [
     "blinker==1.4",
     "certifi==2019.11.28",
     "chardet==3.0.4",
-    "Click==7.0",
+    "Click==8.3.3",
     "colorama==0.4.3",
     "Django==5.2.8",
     "django-cors-headers==4.3.1",
@@ -60,7 +60,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "bump2version==1.0.1",
+    "bump-my-version==1.3.0",
     "coverage==6.5.0",
     "django-dynamic-fixture==4.0.1",
     "django-stubs==5.2.1",
@@ -139,3 +139,35 @@ ignore_errors = true
 [[tool.mypy.overrides]]
 module = "pytest"
 ignore_missing_imports = true
+
+# Release bumps (maintainers): `bump-my-version bump patch|minor|major` or `scripts/prepare_release_bump.py`.
+# https://github.com/callowayproject/bump-my-version
+[tool.bumpversion]
+current_version = "2.2.3"
+commit = false
+tag = false
+parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"
+serialize = ["{major}.{minor}.{patch}"]
+
+[[tool.bumpversion.files]]
+filename = "VERSION"
+
+[[tool.bumpversion.files]]
+filename = "package.json"
+search = "\"version\": \"{current_version}\""
+replace = "\"version\": \"{new_version}\""
+
+[[tool.bumpversion.files]]
+filename = "schema.yml"
+search = "version: {current_version}"
+replace = "version: {new_version}"
+
+[[tool.bumpversion.files]]
+filename = "CHANGELOG.md"
+search = "## [Unreleased]  <!-- release -->"
+replace = "## [v{new_version}] - YYYY-MM-DD"
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = "version = \"{current_version}\""
+replace = "version = \"{new_version}\""

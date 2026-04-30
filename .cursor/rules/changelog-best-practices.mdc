@@ -139,7 +139,7 @@ Documentation changes should be grouped under the **Documentation** category, no
 
 ## Release Process
 
-Follow **CONTRIBUTING.md §7 (Releasing for maintainers)** (Git Flow: `release/*` branch). Maintainers **must run** **`python3 scripts/prepare_release_bump.py`** `patch`|`minor`|`major` before creating/pushing a `release/*` branch. The script applies the `## [Unreleased]  <!-- release -->` marker (see `.bumpversion.cfg`), runs **bump2version**, **`scripts/fix_changelog_after_bump.py`**, and inserts an empty `## [Unreleased]` for the next cycle. Contributors use plain `## [Unreleased]` until the maintainer runs the script.
+Follow **CONTRIBUTING.md §7 (Releasing for maintainers)** (Git Flow: `release/*` branch). Maintainers **must run** **`python3 scripts/prepare_release_bump.py`** `patch`|`minor`|`major` before creating/pushing a `release/*` branch. The script applies the `## [Unreleased]  <!-- release -->` marker (see `[tool.bumpversion]` in `pyproject.toml`), runs **bump-my-version**, **`scripts/fix_changelog_after_bump.py`**, and inserts an empty `## [Unreleased]` for the next cycle. Contributors use plain `## [Unreleased]` until the maintainer runs the script.
 
 During releases, maintainers also:
 1. Review and consolidate entries moved under the new version

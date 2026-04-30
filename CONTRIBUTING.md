@@ -832,15 +832,15 @@ Quick release process:
 
 3. **On the release branch, prepare the release:**
 
-   - **Automated (recommended):** from the repo root, with `bump2version` on `PATH` (same pin as dev deps in [`pyproject.toml`](pyproject.toml), currently `bump2version==1.0.1` — e.g. `pipx install bump2version==1.0.1`, or run bump steps inside the Compose `api` dev image where dev extras are installed). No project `.venv` is required.
+   - **Automated (recommended):** from the repo root, with `bump-my-version` on `PATH` (same pin as dev deps in [`pyproject.toml`](pyproject.toml), currently `bump-my-version==1.3.0` — e.g. `pipx install bump-my-version==1.3.0`, a pyenv (or other) Python where `pip install -e ".[dev]"` is allowed, or run bump steps inside the Compose `api` dev image where dev extras are installed). No project `.venv` is required.
 
      ```bash
      python3 scripts/prepare_release_bump.py patch   # or: minor | major
      ```
 
-     This sets the live `## [Unreleased]  <!-- release -->` marker (only the heading **after** the maintainer Note—not the fenced example), runs [bump2version](https://github.com/c4urself/bump2version), runs `python scripts/fix_changelog_after_bump.py`, and adds an empty `## [Unreleased]` above the new version section. By default it passes `--allow-dirty` to bump2version so you can commit once at the end; use `--no-allow-dirty` if you need a clean tree.
+     This sets the live `## [Unreleased]  <!-- release -->` marker (only the heading **after** the maintainer Note—not the fenced example), runs [bump-my-version](https://github.com/callowayproject/bump-my-version), runs `python scripts/fix_changelog_after_bump.py`, and adds an empty `## [Unreleased]` above the new version section. By default it passes `--allow-dirty` so you can commit once at the end; use `--no-allow-dirty` if you need a clean tree.
 
-   - **Manual sequence** (same end state): set the live heading after the Note to `## [Unreleased]  <!-- release -->`, then `bump2version patch` (or minor/major; add `--allow-dirty` if needed), then `python scripts/fix_changelog_after_bump.py`, then ensure an empty `## [Unreleased]` sits above `## [vX.Y.Z] - …`. `.bumpversion.cfg` only replaces that one changelog line; everything below it until the next `## [` belongs to that release.
+   - **Manual sequence** (same end state): set the live heading after the Note to `## [Unreleased]  <!-- release -->`, then `bump-my-version bump patch` (or `bump minor` / `bump major`; add `--allow-dirty` if needed), then `python scripts/fix_changelog_after_bump.py`, then ensure an empty `## [Unreleased]` sits above `## [vX.Y.Z] - …`. Release bump file rules live under `[tool.bumpversion]` in [`pyproject.toml`](pyproject.toml); the changelog rule only replaces that one heading line — everything below it until the next `## [` belongs to that release.
 
    - Review and finalize `CHANGELOG.md`:
 
@@ -876,7 +876,7 @@ Quick release process:
    ./scripts/remove_prerelease_tags.sh
    ```
 
-   The script uses the version from the `VERSION` file (same as after `bump2version`). You can also pass a version explicitly: `./scripts/remove_prerelease_tags.sh 0.2.1`.
+   The script uses the version from the `VERSION` file (same as after a release bump). You can also pass a version explicitly: `./scripts/remove_prerelease_tags.sh 0.2.1`.
 
    **Note:** Pre-release tags are temporary and should be cleaned up after the release is published to keep the repository clean.
 
