@@ -1,32 +1,27 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+if ! command -v docker >/dev/null 2>&1; then
+    echo "error: docker is required to run pre-commit in the api container" >&2
+    exit 1
+fi
+
+container_id="$(docker compose ps -q api 2>/dev/null || true)"
+if [ -z "$container_id" ]; then
+    echo "error: api container is not available. Start it with: docker compose up -d api" >&2
+    exit 1
+fi
+
+is_running="$(docker inspect -f '{{.State.Running}}' "$container_id" 2>/dev/null || true)"
+if [ "$is_running" != "true" ]; then
+    echo "error: api container is not running. Start it with: docker compose up -d api" >&2
+    exit 1
+fi
+
 mapfile -t staged_files < <(git diff --cached --name-only --diff-filter=ACMR)
 if [ "${#staged_files[@]}" -eq 0 ]; then
     exit 0
 fi
 
-use_docker=false
-if command -v docker >/dev/null 2>&1; then
-    container_id="$(docker compose ps -q api 2>/dev/null || true)"
-    if [ -n "$container_id" ]; then
-        is_running="$(docker inspect -f '{{.State.Running}}' "$container_id" 2>/dev/null || true)"
-        if [ "$is_running" = "true" ]; then
-            use_docker=true
-        fi
-    fi
-fi
-
-if [ "$use_docker" = true ]; then
-    echo "Running pre-commit in Docker (api) on staged files..."
-    docker compose exec -T api pre-commit run --hook-stage commit --files "${staged_files[@]}"
-else
-    if ! command -v pre-commit >/dev/null 2>&1; then
-        echo "error: Docker api is not running and pre-commit is not on PATH." >&2
-        echo "  Start the stack: docker compose up -d api" >&2
-        echo "  Or install dev tooling: pip install -e \".[dev]\"" >&2
-        exit 1
-    fi
-    echo "Running pre-commit on host (Docker api unavailable; use docker compose up -d api for container parity)..."
-    pre-commit run --hook-stage commit --files "${staged_files[@]}"
-fi
+echo "Running pre-commit in Docker (api) on staged files..."
+docker compose exec -T api pre-commit run --hook-stage commit --files "${staged_files[@]}"

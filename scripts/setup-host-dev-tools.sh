@@ -14,7 +14,8 @@ if ! command -v git >/dev/null 2>&1; then
 fi
 
 if ! command -v docker >/dev/null 2>&1; then
-    echo "warning: docker not on PATH; the git hook will run pre-commit on the host unless the api container is up" >&2
+    echo "error: docker not found on PATH" >&2
+    exit 1
 fi
 
 HOOK_SOURCE="${REPO_ROOT}/.githooks/pre-commit"

@@ -562,7 +562,7 @@ We follow a structured commit format inspired by [Conventional Commits](https://
 - Format: `<type>(<scope>): <summary>`
 - Run checks in container: `docker compose exec api pytest`
 
-**Pre-commit hook behavior:** This repository installs a tracked host git hook at [`.githooks/pre-commit`](.githooks/pre-commit) via [`scripts/setup-host-dev-tools.sh`](scripts/setup-host-dev-tools.sh). Docker-side tooling is set up via [`scripts/setup-docker-dev-tools.sh`](scripts/setup-docker-dev-tools.sh). When the **`api`** container is running (`docker compose up -d api`), the hook runs **`pre-commit` inside that container** on staged files (preferred, closest to Compose runtime). If Docker is missing or **`api`** is not running, the hook runs **`pre-commit` on the host** instead (requires **`pre-commit` on PATH**, e.g. after **`pip install -e ".[dev]"`**), so you can still commit without **`--no-verify`**—start **`api`** when you want container parity.
+**Pre-commit hook behavior:** This repository installs a tracked host git hook at [`.githooks/pre-commit`](.githooks/pre-commit) via [`scripts/setup-host-dev-tools.sh`](scripts/setup-host-dev-tools.sh). Docker-side tooling is set up via [`scripts/setup-docker-dev-tools.sh`](scripts/setup-docker-dev-tools.sh). The hook shells into Docker and runs `pre-commit` inside the `api` container against staged files. **Commits fail if `api` is not running**—start the stack before committing: `docker compose up -d api`.
 
 **Commit Types:**
 
