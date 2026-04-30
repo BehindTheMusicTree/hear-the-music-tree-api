@@ -116,6 +116,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Library path env contract**: Removed runtime usage of `LIBRARIES_DIR_NAME`; settings and user library path generation now rely on `LIBRARIES_DIR` only. Updated Compose defaults, test workflow env, and dev env example accordingly.
 
+- **Release tooling**: [`scripts/prepare_release_bump.py`](scripts/prepare_release_bump.py) no longer requires an activated project virtualenv; maintainers only need `bump2version` on `PATH` (same pin as dev deps). [CONTRIBUTING.md](CONTRIBUTING.md) §7 documents `pipx`, dev installs, or Compose `api` as options. [`.gitignore`](.gitignore) adds `.venv-release/` for optional local one-off venvs.
+
 ### CI
 
 - **Test workflow**: Workflow-level `STATIC_FILES` and `STATIC_FILES_URL` are omitted so Django uses `STATIC_FILES_STATE` `NOT_NEEDED` in CI (migrate/pytest/pre-commit); API tests do not rely on static file serving (`urls.py` only adds static routes when collecting/serving).
