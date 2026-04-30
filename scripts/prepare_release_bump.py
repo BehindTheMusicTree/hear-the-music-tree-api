@@ -2,21 +2,22 @@
 """Prepare a release version bump in one step (on a release/* branch from develop).
 
 1. Sets the live ``## [Unreleased]`` line after the maintainer Note to
-   ``## [Unreleased]  <!-- release -->`` for bump2version.
-2. Runs bump2version (patch, minor, or major).
+   ``## [Unreleased]  <!-- release -->`` for the version bump tool.
+2. Runs **bump-my-version** (``bump patch|minor|major``).
 3. Runs ``fix_changelog_after_bump.py`` (release date, indent cleanup).
 4. Inserts an empty ``## [Unreleased]`` above the new ``## [vX.Y.Z] - …`` heading.
 
-Requires ``bump2version`` on ``PATH`` (same pin as ``[project.optional-dependencies] dev``
-in ``pyproject.toml``, currently ``bump2version==1.0.1``). Examples: ``pipx install bump2version==1.0.1``,
-or use the interpreter where dev deps are installed (no project ``venv`` required).
+Requires the ``bump-my-version`` CLI on ``PATH`` (same pin as dev deps in ``pyproject.toml``,
+currently ``bump-my-version==1.3.0``). No project ``venv`` is required: use **pipx**,
+a **pyenv** (or other) Python where ``pip install`` is allowed, the Compose ``api`` dev
+image (``INSTALL_DEV=true``), or any environment with dev extras installed.
 
 From repo root::
 
     python3 scripts/prepare_release_bump.py patch
     python3 scripts/prepare_release_bump.py minor --no-allow-dirty
 
-``--no-allow-dirty``: do not pass ``--allow-dirty`` to bump2version (default is to
+``--no-allow-dirty``: do not pass ``--allow-dirty`` to bump-my-version (default is to
 allow a dirty tree so step 1 can change CHANGELOG.md without a prior commit).
 """
 
@@ -86,7 +87,7 @@ def ensure_empty_unreleased_section(text: str) -> tuple[str, bool]:
     m = RELEASE_VERSION_HEADING.search(tail)
     if not m:
         _fail(
-            "CHANGELOG.md: could not find ## [vX.Y.Z] - <date> after bump (expected version heading from bump2version)."
+            "CHANGELOG.md: could not find ## [vX.Y.Z] - <date> after bump (expected version heading from bump-my-version)."
         )
     version_line_start = idx + m.start()
     head = text[:version_line_start]
@@ -107,17 +108,17 @@ def ensure_empty_unreleased_section(text: str) -> tuple[str, bool]:
     return text[:version_line_start] + insert + text[version_line_start:], True
 
 
-def _run_bump2version(kind: str, allow_dirty: bool) -> None:
-    if not shutil.which("bump2version"):
+def _run_bump_my_version(kind: str, allow_dirty: bool) -> None:
+    if not shutil.which("bump-my-version"):
         _fail(
-            "bump2version not found on PATH. Install the dev-extra pin (bump2version==1.0.1), e.g.\n"
-            "  pipx install bump2version==1.0.1\n"
-            "Or run bump2version from an environment where `pip install -e \".[dev]\"` was used.\n"
-            "With Docker Compose dev (`INSTALL_DEV=true`): from repo root, "
-            "`docker compose exec -w /home/app api bump2version patch --allow-dirty` "
-            "(adjust segment flags as needed)."
+            "bump-my-version not found on PATH. Install the dev-extra pin (bump-my-version==1.3.0), e.g.\n"
+            "  pipx install bump-my-version==1.3.0\n"
+            "Or use a pyenv/other Python where `pip install -e \".[dev]\"` is allowed.\n"
+            "With Docker Compose dev (`INSTALL_DEV=true`), from repo root:\n"
+            "  docker compose exec -w /home/app api bump-my-version bump patch --allow-dirty\n"
+            "(adjust patch|minor|major as needed)."
         )
-    cmd = ["bump2version", kind]
+    cmd = ["bump-my-version", "bump", kind]
     if allow_dirty:
         cmd.append("--allow-dirty")
     proc = subprocess.run(cmd, cwd=REPO_ROOT, check=False)
@@ -160,7 +161,7 @@ def main() -> None:
     parser.add_argument(
         "--no-allow-dirty",
         action="store_true",
-        help="Omit --allow-dirty (bump2version refuses if the working tree is dirty).",
+        help="Omit --allow-dirty (bump-my-version refuses if the working tree is dirty).",
     )
     args = parser.parse_args()
     allow_dirty = not args.no_allow_dirty
@@ -171,7 +172,7 @@ def main() -> None:
     if changed:
         CHANGELOG_PATH.write_text(updated)
 
-    _run_bump2version(args.kind, allow_dirty)
+    _run_bump_my_version(args.kind, allow_dirty)
     _run_fix_changelog()
 
     raw = CHANGELOG_PATH.read_text()

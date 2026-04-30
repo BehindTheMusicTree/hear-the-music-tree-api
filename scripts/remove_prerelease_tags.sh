@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Remove local and remote git tags that are prerelease/dev for the given version
-# (e.g. v2.2.1-staging, v2.2.1-dev.15, v2.2.1-rc). Use after bump2version when releasing.
+# (e.g. v2.2.1-staging, v2.2.1-dev.15, v2.2.1-rc). Use after the release version bump when tagging.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
