@@ -64,6 +64,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Documentation
+
+- **Cursor / Git Flow**: [`.cursor/rules/git-flow-workflow.mdc`](.cursor/rules/git-flow-workflow.mdc) and [`.cursor/rules/pre-pr-checklist.mdc`](.cursor/rules/pre-pr-checklist.mdc) state that **`develop` is updated only through merged PRs**, including syncing **`main` → `develop`** after a release (no direct push of merge commits that bypass branch protection).
+
 ## [v2.2.4] - 2026-04-30
 
 ### CI

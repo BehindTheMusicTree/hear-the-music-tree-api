@@ -44,6 +44,7 @@ Before submitting a Pull Request, ensure all checks are completed. This checklis
 
 ## Branch Target
 
+- ✅ **`develop` is updated only through merged PRs** — no direct pushes of merge commits to `develop`; after a **`release/*`** merge to **`main`**, sync **`develop`** with a PR (**`main` → `develop`** or a **`chore/sync-*`** branch from **`main`**).
 - ✅ `feature/*`, `chore/*`, `dependabot/*`, and `release/*` (when merging into `develop`) target the `develop` branch
 - ✅ Hotfix branches target `main` branch
 - ✅ Release branches target both `main` and `develop` (maintainers only)
