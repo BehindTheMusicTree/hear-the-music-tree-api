@@ -1,5 +1,3 @@
-from typing import Type
-
 from django.utils.translation import gettext_lazy as _
 
 from api.exception.validation.app.AppValidationException import AppValidationException
@@ -9,40 +7,43 @@ from api.filtering.set.AppFilterSet import AppFilterSet
 
 
 class EnumCharFilter(EmptiableCharFilter):
-    def __init__(self, *args, enum_class: Type, **kwargs):
+    def __init__(self, *args, enum_class: type, **kwargs):
         self.enum_class = enum_class
         super().__init__(*args, **kwargs)
 
     @property
     def valid_values(self) -> list[str]:
-        return [str(value).lower() for name, value in vars(self.enum_class).items()
-                if not name.startswith('_') and isinstance(value, str)]
+        return [
+            str(value).lower()
+            for name, value in vars(self.enum_class).items()
+            if not name.startswith("_") and isinstance(value, str)
+        ]
 
     def filter(self, qs, value):
-        if value == '':
-            raise AppValidationException(field_name=str(self.field_name),
-                                         message=_('This field may not be blank.'),
-                                         field_validation_error_code=FieldValidationErrorCode.BLANK)
+        if value == "":
+            raise AppValidationException(
+                field_name=str(self.field_name),
+                message=_("This field may not be blank."),
+                field_validation_error_code=FieldValidationErrorCode.BLANK,
+            )
 
         if value is not None:
             normalized_value = str(value).lower()
             if normalized_value not in self.valid_values:
                 raise AppValidationException(
                     field_name=str(self.field_name),
-                    message=_('%(value)s is not a valid value. Allowed values are: %(valid_values)s') % {
-                        'value': value,
-                        'valid_values': ', '.join(self.valid_values)
-                    },
-                    field_validation_error_code=FieldValidationErrorCode.ENUM_INVALID
+                    message=_("%(value)s is not a valid value. Allowed values are: %(valid_values)s")
+                    % {"value": value, "valid_values": ", ".join(self.valid_values)},
+                    field_validation_error_code=FieldValidationErrorCode.ENUM_INVALID,
                 )
 
             # If we have a method defined, use it for filtering
             if self.method_name:
-                if hasattr(self, 'parent'):
+                if hasattr(self, "parent"):
                     parent: AppFilterSet = self.parent  # type: ignore
                     method = getattr(parent, self.method_name, None)
                     if not method:
-                        raise AttributeError(f'{parent} object has no attribute {self.method_name}')
+                        raise AttributeError(f"{parent} object has no attribute {self.method_name}")
                     return method(qs, self.field_name, value)
                 return qs
 

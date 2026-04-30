@@ -1,2 +1,2 @@
 class Fields:
-    USER = 'user'
+    USER = "user"

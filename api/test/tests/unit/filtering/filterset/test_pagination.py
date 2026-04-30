@@ -1,4 +1,3 @@
-
 from rest_framework import status
 
 from api import settings
@@ -6,7 +5,6 @@ from api.test.tests.integration.album.AlbumTestCase import AlbumTestCase
 
 
 class TestCase(AlbumTestCase):
-
     def test_page_invalid_then_400_bad_request(self):
         response = self._list_albums(page=0)
         assert response.status_code == status.HTTP_400_BAD_REQUEST

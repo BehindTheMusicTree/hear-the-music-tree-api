@@ -1,9 +1,8 @@
-
 from dataclasses import dataclass
 
 from api.model.musicbrainz_resource.children.recording.MbRecording import MbRecording
 from api.model.musicbrainz_resource.children.recording.missing_cause.MbRecordingMissingCause import (
-    MbRecordingMissingCause
+    MbRecordingMissingCause,
 )
 
 
@@ -13,11 +12,10 @@ class MusicbrainzRecordingLookupResult:
     _missing_cause: MbRecordingMissingCause | None = None
 
     class Meta:
-        verbose_name = 'MusicBrainz Recording Lookup Result'
-        verbose_name_plural = 'MusicBrainz Recording Lookup Results'
+        verbose_name = "MusicBrainz Recording Lookup Result"
+        verbose_name_plural = "MusicBrainz Recording Lookup Results"
 
-    def __init__(self, recording: MbRecording | None,
-                 missing_cause: MbRecordingMissingCause | None):
+    def __init__(self, recording: MbRecording | None, missing_cause: MbRecordingMissingCause | None):
         self._recording = recording
         self._missing_cause = missing_cause
 

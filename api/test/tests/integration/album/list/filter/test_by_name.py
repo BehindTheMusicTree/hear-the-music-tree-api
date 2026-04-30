@@ -2,26 +2,25 @@ from rest_framework import status
 
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.serializer.model.album.Fields import Fields as AlbumFields
-from api.test.utils.field.filter.char.NotNullableFreeCharFilterTestCase import NotNullableFreeCharFilterTestCase
 from api.test.tests.integration.album.AlbumTestCase import AlbumTestCase
+from api.test.utils.field.filter.char.NotNullableFreeCharFilterTestCase import NotNullableFreeCharFilterTestCase
 
 
 class TestCase(AlbumTestCase, NotNullableFreeCharFilterTestCase):
-
     def test_empty_then_400_bad_request(self):
-        response = self._list_albums(name='')
+        response = self._list_albums(name="")
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert len(self.bad_request_result_field_errors) == 1
         error = self.bad_request_result_field_errors[0]
-        assert error['field'] == AlbumFields.NAME_PUBLIC
-        assert error['code'] == FieldValidationErrorCode.BLANK
+        assert error["field"] == AlbumFields.NAME_PUBLIC
+        assert error["code"] == FieldValidationErrorCode.BLANK
 
     def test_contains_in_another_case_then_results(self):
         album = self.model_fixture_factory.create_album(name="Black")
         self.model_fixture_factory.create_album(name="Jon")
 
-        response = self._list_albums(name='BLA')
+        response = self._list_albums(name="BLA")
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 1

@@ -1,0 +1,25 @@
+# After you push an annotated SemVer tag (vX.Y.Z), publish the GitHub Release
+# from the matching CHANGELOG.md section (scripts/publish_github_release.py).
+name: Release on tag
+
+on:
+  push:
+    tags:
+      # Trigger on any v* tag; job-level guard below keeps release creation to stable tags.
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  github-release:
+    # Only publish GitHub Releases for stable tags like vX.Y.Z (no prerelease/build suffixes).
+    if: ${{ github.ref_type == 'tag' && startsWith(github.ref_name, 'v') && !contains(github.ref_name, '-') && !contains(github.ref_name, '+') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Publish GitHub Release from CHANGELOG
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/publish_github_release.py "${GITHUB_REF_NAME}"

@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class UploadedTrackInputFieldKey(str, Enum):
+class UploadedTrackInputFieldKey(StrEnum):
     TRACK_FILE_INTERNAL = "track_file"
     TRACK_FILE_PUBLIC = "file"
     TRACK_FILE_FINGERPRINT_MUST_BE_UNIQUE = "track_file_fingerprint_must_be_unique"

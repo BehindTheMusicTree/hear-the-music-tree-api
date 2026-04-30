@@ -1,4 +1,3 @@
-
 from drf_spectacular.utils import extend_schema
 from rest_framework.exceptions import APIException
 
@@ -11,14 +10,14 @@ from api.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 class AllUploadedTracksViewSet(AppModelViewSet[AllUploadedTracksMixin]):
     def __init__(self, **kwargs):
-        super().__init__(model_class=AllUploadedTracksMixin,
-                         simple_serializer_class=UploadedTrackMinimumSerializer,
-                         **kwargs)
+        super().__init__(
+            model_class=AllUploadedTracksMixin, simple_serializer_class=UploadedTrackMinimumSerializer, **kwargs
+        )
 
     def get_object(self):
         user = self.request.user
         if not isinstance(user, User):
-            raise ValueError('User is not instance of User')
+            raise ValueError("User is not instance of User")
         return user.all_uploaded_tracks_mixin
 
     @extend_schema(responses=UploadedTrackMinimumSerializer(many=True))

@@ -7,15 +7,15 @@ from api.test.tests.integration.album.AlbumTestCase import AlbumTestCase
 
 
 class TestCase(AlbumTestCase):
-
     def test_exception_then_rollback(self):
         uploaded_track_title = "Assassin"
         muse_artist = self.model_fixture_factory.create_artist(name="Muse")
         black_holes_album = self.model_fixture_factory.create_album(name="Black Holes And Revelations")
         self.model_fixture_factory.create_uploaded_track_with_file(
-            title=uploaded_track_title, artists=[muse_artist], album=black_holes_album)
+            title=uploaded_track_title, artists=[muse_artist], album=black_holes_album
+        )
 
-        with patch('api.model.artist.Artist.Artist.delete') as mock_delete:
+        with patch("api.model.artist.Artist.Artist.delete") as mock_delete:
             exception_message = "Delete failed!"
             mock_delete.side_effect = Exception(exception_message)
 

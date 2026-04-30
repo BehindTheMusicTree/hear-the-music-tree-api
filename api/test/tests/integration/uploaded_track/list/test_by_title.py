@@ -1,12 +1,11 @@
 from rest_framework import status
 
 from api.serializer.model.uploaded_track.output.UploadedTrackOutputFieldKey import UploadedTrackOutputFieldKey
-from api.test.utils.field.filter.char.NotNullableFreeCharFilterTestCase import NotNullableFreeCharFilterTestCase
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.field.filter.char.NotNullableFreeCharFilterTestCase import NotNullableFreeCharFilterTestCase
 
 
 class TestCase(UploadedTrackTestCase, NotNullableFreeCharFilterTestCase):
-
     def test_not_provided_then_results(self):
         self.model_fixture_factory.create_uploaded_track_with_file(title="Life")
         self.model_fixture_factory.create_uploaded_track_with_file(title="Hey")
@@ -20,7 +19,7 @@ class TestCase(UploadedTrackTestCase, NotNullableFreeCharFilterTestCase):
         self.model_fixture_factory.create_uploaded_track_with_file(title="Life")
         self.model_fixture_factory.create_uploaded_track_with_file(title="Hey")
 
-        response = self._list_uploaded_tracks(title='')
+        response = self._list_uploaded_tracks(title="")
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 2
@@ -29,7 +28,7 @@ class TestCase(UploadedTrackTestCase, NotNullableFreeCharFilterTestCase):
         track = self.model_fixture_factory.create_uploaded_track_with_file(title="LIfe")
         self.model_fixture_factory.create_uploaded_track_with_file(title="Hey")
 
-        response = self._list_uploaded_tracks(title='Lif')
+        response = self._list_uploaded_tracks(title="Lif")
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 1

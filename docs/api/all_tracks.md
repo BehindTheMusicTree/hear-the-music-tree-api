@@ -1,21 +1,26 @@
 # all-tracks
 
 ## Overview
+
 List all uploaded tracks for the user
 
 ## Base URL
+
 /v1/all-tracks/
 
 ## Authentication
+
 JWT token required
 
 ## Permissions
+
 Authenticated users only (IsAuthenticated)
 
 ## Endpoints
-| Method | Path | Action | Description |
-|------|------|--------|-------------|
-| GET | / | list | List all uploaded tracks |
+
+| Method | Path | Action | Description              |
+| ------ | ---- | ------ | ------------------------ |
+| GET    | /    | list   | List all uploaded tracks |
 
 ## Request / Response
 
@@ -36,9 +41,10 @@ None
 
 **Response**
 Status codes:
- | 00 OK
+| 00 OK
 
 Body:
+
 ```json
 {
   "count": 10,
@@ -55,19 +61,23 @@ Body:
 ```
 
 ### Validation Rules
+
 None
 
 ### Business Rules
+
 None
 
 ### Errors
-Code	Meaning
- | 00	Bad Request - Invalid parameters
- | 01	Unauthorized - Invalid token	
+
+Code Meaning
+| 00 Bad Request - Invalid parameters
+| 01 Unauthorized - Invalid token
 
 ### Versioning
 
 API path prefix uses the major version only (e.g. `v1`), derived from `APP_VERSION`.
 
 ### Notes
+
 None

@@ -1,4 +1,3 @@
-
 from api.model.playlist.children.criteria.CriteriaPlaylist import Fields as ModelFields
 from api.serializer.model.playlist.children.detailed import Fields as ChildPlayListFields
 

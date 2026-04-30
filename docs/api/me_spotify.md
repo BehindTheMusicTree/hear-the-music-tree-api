@@ -1,21 +1,26 @@
 # me/spotify
 
 ## Overview
+
 Get the current user's Spotify profile. Only one endpoint: list returns 0 or 1 item.
 
 ## Base URL
+
 /v1/me/spotify/
 
 ## Authentication
+
 JWT token required
 
 ## Permissions
+
 - **List** (`GET /`): Requires app authentication (JWT). Returns 401 if not logged in. Returns 403 if logged in but Spotify not linked (code 1005). Returns paginated list of 0 or 1 item (current user's Spotify profile).
 
 ## Endpoints
-| Method | Path | Description |
-|--------|------|--------------|
-| GET | / | Get current user's Spotify profile (list of 0 or 1 item) |
+
+| Method | Path | Description                                              |
+| ------ | ---- | -------------------------------------------------------- |
+| GET    | /    | Get current user's Spotify profile (list of 0 or 1 item) |
 
 `GET /{id}/` is not supported; use `GET /` instead.
 
@@ -43,6 +48,7 @@ Status codes:
 | 403 | Forbidden - Logged in but Spotify not linked (code 1005) |
 
 Body (200, one profile):
+
 ```json
 {
   "count": 1,
@@ -66,17 +72,19 @@ Body (200, one profile):
 ```
 
 ### Business Rules
+
 - User must be authenticated to the app (JWT).
 - User must have completed Spotify OAuth (be a Spotify user) to get a non-empty result; otherwise the API returns 403 with code 1005.
 
 ### Errors
-| HTTP | API code | details.code | Meaning |
-|------|----------|--------------|---------|
-| 401 | 1006 | `authentication_required` | Not logged in to the app → redirect to app login |
-| 403 | 1005 | `spotify_authorization_required` | Logged in but Spotify not linked → redirect to Spotify OAuth |
-| 401 | 1007 | `spotify_user_not_allowlisted` | Spotify app in dev mode; user not in dashboard User Management (e.g. from `POST /auth/spotify/`) |
-| 401 | 1001 | `authentication_failed` / `spotify_authentication_error` | Invalid/expired token or Spotify auth failed |
-| 405 | - | - | GET /{id}/ is not supported; use GET / |
+
+| HTTP | API code | details.code                                             | Meaning                                                                                          |
+| ---- | -------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| 401  | 1006     | `authentication_required`                                | Not logged in to the app → redirect to app login                                                 |
+| 403  | 1005     | `spotify_authorization_required`                         | Logged in but Spotify not linked → redirect to Spotify OAuth                                     |
+| 401  | 1007     | `spotify_user_not_allowlisted`                           | Spotify app in dev mode; user not in dashboard User Management (e.g. from `POST /auth/spotify/`) |
+| 401  | 1001     | `authentication_failed` / `spotify_authentication_error` | Invalid/expired token or Spotify auth failed                                                     |
+| 405  | -        | -                                                        | GET /{id}/ is not supported; use GET /                                                           |
 
 **Frontend:** See [Authentication and Spotify handling](../frontend/authentication-and-spotify.md) for how to handle 401/403 and these codes.
 
@@ -85,4 +93,5 @@ Body (200, one profile):
 API path prefix uses the major version only (e.g. `v1`), derived from `APP_VERSION`.
 
 ### Notes
+
 Only the current user's own profile is accessible. Retrieve by id is not provided; use list.

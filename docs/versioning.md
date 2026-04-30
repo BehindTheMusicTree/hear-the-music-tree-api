@@ -106,10 +106,12 @@ Release candidate version tags are used to test builds and deployments from **re
 #### Pre-Release Identifiers
 
 - **`rc`** (Release Candidate): A version that is feature-complete and ready for final testing before release. **RC** stands for "Release Candidate" - it's a candidate for becoming the final release if testing passes.
+
   - Format: `v0.2.0-rc1`, `v0.2.0-rc2`, etc.
   - Example: `v0.2.0-rc1` → Docker image: `username/repo:0.2.0-rc1`
 
 - **`beta`** (Beta Release): An early release for testing with most features complete but may have known issues.
+
   - Format: `v0.2.0-beta1`, `v0.2.0-beta2`, etc.
   - Example: `v0.2.0-beta1` → Docker image: `username/repo:0.2.0-beta1`
 
@@ -153,7 +155,7 @@ The workflow extracts the version from the ref, uses it for the Docker image tag
 
 ### Creating a Release
 
-**Source of truth:** full Git Flow (release branch, `python3 scripts/prepare_release_bump.py` or `bump2version` by hand, `CHANGELOG.md`, PR to `main`, tag with `v` prefix, merge back to `develop`, delete release branch) is documented in [CONTRIBUTING.md](../CONTRIBUTING.md#7-releasing-for-maintainers) §7. The steps below are a short tag/publish reminder only.
+**Source of truth:** full Git Flow (release branch, `python3 scripts/prepare_release_bump.py` or `bump-my-version bump …` by hand, `CHANGELOG.md`, PR to `main`, tag with `v` prefix, merge back to `develop`, delete release branch) is documented in [CONTRIBUTING.md](../CONTRIBUTING.md#7-releasing-for-maintainers) §7. The steps below are a short tag/publish reminder only.
 
 ```bash
 # After VERSION and CHANGELOG on main match the release (see CONTRIBUTING.md §7):

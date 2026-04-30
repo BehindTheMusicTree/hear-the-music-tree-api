@@ -1,0 +1,122 @@
+# Based on audiometa-python pre-commit layout; tools pinned in pyproject.toml ([project.optional-dependencies] dev).
+# Install:
+#   - Host hook wiring: bash scripts/setup-host-dev-tools.sh
+#   - Docker toolchain:  bash scripts/setup-docker-dev-tools.sh
+# Hooks use language: system — tools must be on PATH (same pins as CI).
+fail_fast: true
+
+repos:
+  - repo: local
+    hooks:
+      - id: check-tool-versions
+        name: Verify tool versions match pyproject.toml
+        entry: bash -c '.pre-commit-hooks/check-tool-versions.sh'
+        language: system
+        pass_filenames: false
+        always_run: true
+
+      - id: verify-python-project-standards
+        name: Verify python-project-standards baseline
+        entry: bash scripts/verify-standards.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-yaml
+      - id: check-added-large-files
+        args: ["--maxkb=10000"]
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: debug-statements
+      - id: trailing-whitespace
+
+  - repo: local
+    hooks:
+      - id: shellcheck
+        name: ShellCheck
+        entry: bash -c '.pre-commit-hooks/shellcheck-wrapper.sh "$@"' --
+        language: system
+        files: \.(sh|bash)$
+        pass_filenames: true
+      - id: fix-shell-trailing-blank-lines
+        name: Fix trailing blank lines in shell scripts
+        entry: bash -c '.pre-commit-hooks/fix-shell-trailing-blank-lines.sh "$@"' --
+        language: system
+        files: \.(sh|bash)$
+
+  - repo: local
+    hooks:
+      - id: no-assert
+        name: Check for assert statements in production code
+        entry: bash -c '.pre-commit-hooks/no-assert.sh "$@"' --
+        language: system
+        files: ^api/.*\.py$
+        exclude: ^(api/test/|scripts/)
+
+  - repo: local
+    hooks:
+      - id: prefer-strenum
+        name: Prefer StrEnum over (str, Enum)
+        entry: bash -c 'if command -v python3 >/dev/null 2>&1; then python3 scripts/check_prefer_strenum.py; elif command -v python >/dev/null 2>&1; then python scripts/check_prefer_strenum.py; else echo "python interpreter not found on PATH" >&2; exit 1; fi'
+        language: system
+        types_or: [python]
+        files: ^api/.*\.py$
+
+  - repo: local
+    hooks:
+      - id: ruff-format
+        name: ruff-format
+        entry: bash -c '.pre-commit-hooks/tool-wrapper.sh ruff format --line-length=120 "$@"' --
+        language: system
+        files: ^(api/|\.pre-commit-hooks/|scripts/).*\.py$
+      - id: ruff
+        name: ruff
+        entry: bash -c '.pre-commit-hooks/tool-wrapper.sh ruff check --fix --line-length=120 "$@"' --
+        language: system
+        files: ^(api/|\.pre-commit-hooks/|scripts/).*\.py$
+      - id: mypy
+        name: mypy
+        entry: bash -c '.pre-commit-hooks/tool-wrapper.sh mypy --config-file=pyproject.toml api'
+        language: system
+        files: ^api/.*\.py$
+        pass_filenames: false
+      - id: pydocstringformatter
+        name: pydocstringformatter
+        entry: bash -c '.pre-commit-hooks/tool-wrapper.sh pydocstringformatter --write --max-line-length=120 --no-split-summary-body --no-final-period --linewrap-full-docstring "$@"' --
+        language: system
+        files: ^api/.*\.py$
+        exclude: ^(api/test/|api/migrations/)
+        pass_filenames: true
+      - id: fix-long-comments
+        name: Fix long comment lines
+        entry: bash -c '.pre-commit-hooks/fix-long-comments.py "$@"' --
+        language: system
+        files: ^api/.*\.py$
+        exclude: ^scripts/
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        types_or: [markdown]
+        additional_dependencies:
+          - prettier@3.3.3
+
+  - repo: local
+    hooks:
+      - id: py-psscriptanalyzer
+        name: PowerShell ScriptAnalyzer
+        entry: bash -c '.pre-commit-hooks/psscriptanalyzer-wrapper.sh "$@"' --
+        language: system
+        files: \.ps1$
+        pass_filenames: true
+      - id: py-psscriptanalyzer-format
+        name: PowerShell ScriptAnalyzer Format
+        entry: bash -c '.pre-commit-hooks/psscriptanalyzer-format-wrapper.sh "$@"' --
+        language: system
+        files: \.ps1$
+        pass_filenames: true

@@ -1,12 +1,11 @@
 from rest_framework import status
 
 from api import settings
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_none_then_generated(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3)
 
@@ -18,25 +17,25 @@ class TestCase(UploadedTrackTestCase):
 
         assert response.status_code == status.HTTP_201_CREATED
         assert len(self.saved_object.title) == settings.UPLOADED_TRACK_TITLE_LEN_MAX_ID3V1
-        assert self.saved_object.title == 'a' * settings.UPLOADED_TRACK_TITLE_LEN_MAX_ID3V1
+        assert self.saved_object.title == "a" * settings.UPLOADED_TRACK_TITLE_LEN_MAX_ID3V1
 
     def test_long_from_id3v2_then_truncated(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_LONG_A_ID3V2_SMALL_MP3)
 
         assert response.status_code == status.HTTP_201_CREATED
         assert len(self.saved_object.title) == settings.UPLOADED_TRACK_TITLE_LEN_MAX
-        assert self.saved_object.title == 'a' * settings.UPLOADED_TRACK_TITLE_LEN_MAX
+        assert self.saved_object.title == "a" * settings.UPLOADED_TRACK_TITLE_LEN_MAX
 
     def test_long_from_riff_then_truncated(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_LONG_A_RIFF_SMALL_WAV)
 
         assert response.status_code == status.HTTP_201_CREATED
         assert len(self.saved_object.title) == settings.UPLOADED_TRACK_TITLE_LEN_MAX
-        assert self.saved_object.title == 'a' * settings.UPLOADED_TRACK_TITLE_LEN_MAX
+        assert self.saved_object.title == "a" * settings.UPLOADED_TRACK_TITLE_LEN_MAX
 
     def test_long_from_vorbis_then_truncated(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_LONG_A_VORBIS_SMALL_FLAC)
 
         assert response.status_code == status.HTTP_201_CREATED
         assert len(self.saved_object.title) == settings.UPLOADED_TRACK_TITLE_LEN_MAX
-        assert self.saved_object.title == 'a' * settings.UPLOADED_TRACK_TITLE_LEN_MAX
+        assert self.saved_object.title == "a" * settings.UPLOADED_TRACK_TITLE_LEN_MAX

@@ -1,4 +1,4 @@
-from rest_framework_simplejwt.tokens import RefreshToken, AccessToken
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 
 def create_jwt_token(user) -> dict:

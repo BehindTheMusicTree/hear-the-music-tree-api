@@ -6,7 +6,6 @@ from ..AllUploadedTracksMixinTestCase import AllUploadedTracksMixinTestCase
 
 
 class TestCase(AllUploadedTracksMixinTestCase):
-
     def test_get_then_results(self):
         self.model_fixture_factory.create_uploaded_track_with_file(title="test")
         self.model_fixture_factory.create_uploaded_track_with_file(title="test2")
@@ -25,7 +24,9 @@ class TestCase(AllUploadedTracksMixinTestCase):
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 3
-        uploaded_track_titles = [uploaded_track[UploadedTrackOutputFieldKey.TITLE.value] for uploaded_track in self.results]
+        uploaded_track_titles = [
+            uploaded_track[UploadedTrackOutputFieldKey.TITLE.value] for uploaded_track in self.results
+        ]
         assert uploaded_track_titles[0] == track3_title
         assert uploaded_track_titles[1] == track2_title
         assert uploaded_track_titles[2] == track1_title

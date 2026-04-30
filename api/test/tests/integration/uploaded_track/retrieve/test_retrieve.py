@@ -4,7 +4,6 @@ from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import Uplo
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_retrieve_then_ok(self):
         title = "We're All To Blame"
         track_uuid = self.model_fixture_factory.create_uploaded_track_with_file(title=title).uuid

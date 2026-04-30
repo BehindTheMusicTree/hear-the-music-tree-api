@@ -1,5 +1,6 @@
-import pytest
 from unittest import mock
+
+import pytest
 from rest_framework import status
 
 from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
@@ -34,18 +35,11 @@ class TestCase(SpotifyLibTrackTestCase):
             ApiFields.Names.NAME: "Test Spotify Track",
             ApiFields.Names.POPULARITY: 85,
             ApiFields.Names.DURATION_MS: 240000,
-            ApiFields.Names.ARTISTS: [
-                {ApiFields.Names.ID: "artist_123", ApiFields.Names.NAME: "Test Artist"}
-            ],
-            ApiFields.Names.ALBUM: {
-                ApiFields.Names.ID: "album_123",
-                ApiFields.Names.NAME: "Test Album"
-            }
+            ApiFields.Names.ARTISTS: [{ApiFields.Names.ID: "artist_123", ApiFields.Names.NAME: "Test Artist"}],
+            ApiFields.Names.ALBUM: {ApiFields.Names.ID: "album_123", ApiFields.Names.NAME: "Test Album"},
         }
         self.mock_spotify_client.get_user_saved_tracks.return_value = {
-            ApiFields.Names.ITEMS: [{
-                ApiFields.Names.TRACK: self.mock_track_data
-            }]
+            ApiFields.Names.ITEMS: [{ApiFields.Names.TRACK: self.mock_track_data}]
         }
 
     def test_spotify_library_sync_then_ok(self):
@@ -61,8 +55,8 @@ class TestCase(SpotifyLibTrackTestCase):
         response = self._list_spotify_lib_tracks()
         assert response.status_code == status.HTTP_200_OK
 
-        if hasattr(self, 'results') and self.results:
-            track_ids = [t.get('spotifyId') for t in self.results]
+        if hasattr(self, "results") and self.results:
+            track_ids = [t.get("spotifyId") for t in self.results]
             if tracks:
                 assert any(track.spotify_id in track_ids for track in tracks)
 

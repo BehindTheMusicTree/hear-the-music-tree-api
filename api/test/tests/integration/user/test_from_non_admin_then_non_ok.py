@@ -4,7 +4,6 @@ from api.test.tests.integration.user.UserTestCase import UserTestCase
 
 
 class TestCase(UserTestCase):
-
     def test_non_admin_then_post_403(self):
         response = self._post_user()
         assert response.status_code == status.HTTP_403_FORBIDDEN

@@ -6,13 +6,11 @@ from django.db import models
 from api.model.private_unique_resource.PrivateUniqueResource import PrivateUniqueResource
 from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
 
-
 if TYPE_CHECKING:
     from api.model.uploaded_track.UploadedTrack import UploadedTrack
 
 
 class UploadedTrackMixin(PrivateUniqueResource):
-
     class Meta:
         abstract = True
 
@@ -23,17 +21,17 @@ class UploadedTrackMixin(PrivateUniqueResource):
 
     @property
     @abstractmethod
-    def uploaded_tracks(self) -> models.QuerySet['UploadedTrack']:
+    def uploaded_tracks(self) -> models.QuerySet[UploadedTrack]:
         pass
 
     @property
     @abstractmethod
-    def uploaded_tracks_not_archived(self) -> models.QuerySet['UploadedTrack']:
+    def uploaded_tracks_not_archived(self) -> models.QuerySet[UploadedTrack]:
         return self.uploaded_tracks.filter(archived=False)
 
     @property
-    def uploaded_tracks_not_archived_sorted(self) -> models.QuerySet['UploadedTrack']:
-        return self.uploaded_tracks_not_archived.order_by(f'-{UploadedTrackFields.CREATED_ON.value}')
+    def uploaded_tracks_not_archived_sorted(self) -> models.QuerySet[UploadedTrack]:
+        return self.uploaded_tracks_not_archived.order_by(f"-{UploadedTrackFields.CREATED_ON.value}")
 
     @property
     def uploaded_tracks_not_archived_count(self) -> int:

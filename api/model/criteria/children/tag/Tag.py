@@ -1,15 +1,15 @@
 from api.model.criteria.Criteria import Criteria
 from api.model.criteria.type.CriteriaType import CriteriaType
 from api.model.criteria.type.CriteriaTypePks import CriteriaTypePks
+
 from .TagManager import TagManager
 
 
 class Tag(Criteria):
-
-    objects: 'TagManager' = TagManager()
+    objects: TagManager = TagManager()
 
     class Meta:
-        db_table = 'htmt_api_tag'
+        db_table = "htmt_api_tag"
         proxy = True
 
     def save(self, *args, **kwargs):

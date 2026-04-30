@@ -4,9 +4,8 @@ from api.test.tests.integration.playlist.base.PlaylistTestCase import PlaylistTe
 
 
 class TestCase(PlaylistTestCase):
-
     def test_put_then_405(self):
-        genre = self.model_fixture_factory.create_genre(name='genre')
+        genre = self.model_fixture_factory.create_genre(name="genre")
 
         response = self._delete_playlist(uuid=genre.criteria_playlist.uuid)
 

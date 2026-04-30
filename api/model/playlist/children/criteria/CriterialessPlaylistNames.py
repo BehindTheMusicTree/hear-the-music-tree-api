@@ -1,3 +1,3 @@
 class CriterialessPlaylistNames:
-    GENRE = 'Genreless'
-    TAG = 'Tagless'
+    GENRE = "Genreless"
+    TAG = "Tagless"

@@ -1,19 +1,19 @@
 from django.conf import settings as django_settings
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
-from rest_framework import status
+from django.contrib.auth import login
 from django.utils import timezone
 from django.utils.crypto import get_random_string
-from django.contrib.auth import login
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
 
-from api.utils.spotify_api.oauth import SpotifyOAuthService
-from api.utils.jwt import create_jwt_token
-from api.model.user.User import User
-from api.model.user.Fields import Fields as UserFields
-from api.model.spotify_resource.Fields import Fields as SpotifyFields
 from api.exception.validation.app.AppValidationException import AppValidationException
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
+from api.model.spotify_resource.Fields import Fields as SpotifyFields
+from api.model.user.Fields import Fields as UserFields
+from api.model.user.User import User
+from api.utils.jwt import create_jwt_token
+from api.utils.spotify_api.oauth import SpotifyOAuthService
 
 
 class SpotifyProfileFields:
@@ -25,35 +25,28 @@ class SpotifyProfileFields:
     URI = "uri"
 
 
-@api_view(['POST'])
+@api_view(["POST"])
 @permission_classes([AllowAny])
 def spotify_auth(request):
-    """
-    Exchange Spotify code for session. One account can link both Spotify and Google (matched by email).
-    """
-    code = request.data.get('code')
+    """Exchange Spotify code for session. One account can link both Spotify and Google (matched by email)."""
+    code = request.data.get("code")
     if not code:
         raise AppValidationException(
-            field_name='code',
-            message='No code provided',
-            field_validation_error_code=FieldValidationErrorCode.REQUIRED
+            field_name="code", message="No code provided", field_validation_error_code=FieldValidationErrorCode.REQUIRED
         )
 
-    if not (getattr(django_settings, 'SPOTIFY_CLIENT_ID', None) or '').strip():
-        return Response(
-            {'detail': 'Spotify OAuth is not configured.'},
-            status=status.HTTP_503_SERVICE_UNAVAILABLE
-        )
+    if not (getattr(django_settings, "SPOTIFY_CLIENT_ID", None) or "").strip():
+        return Response({"detail": "Spotify OAuth is not configured."}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
     oauth_service = SpotifyOAuthService()
     token_info = oauth_service.get_access_token(code)
-    access_token = token_info['access_token']
-    refresh_token = token_info['refresh_token']
+    access_token = token_info["access_token"]
+    refresh_token = token_info["refresh_token"]
     user_info = oauth_service.get_user_info(access_token)
 
-    spotify_id = user_info['id']
-    email = user_info.get('email')
-    display_name = user_info.get('display_name', spotify_id)
+    spotify_id = user_info["id"]
+    email = user_info.get("email")
+    display_name = user_info.get("display_name", spotify_id)
     username = (display_name or spotify_id)[:150]
 
     user = User.objects.filter(spotify_id=spotify_id).first()
@@ -61,7 +54,7 @@ def spotify_auth(request):
         user.spotify_access_token = access_token
         user.spotify_refresh_token = refresh_token
         user.spotify_profile = user_info
-        user.spotify_token_expires_at = timezone.now() + timezone.timedelta(seconds=token_info['expires_in'])
+        user.spotify_token_expires_at = timezone.now() + timezone.timedelta(seconds=token_info["expires_in"])
         user.save()
     elif email:
         user = User.objects.filter(email__iexact=email).first()
@@ -70,7 +63,7 @@ def spotify_auth(request):
             user.spotify_access_token = access_token
             user.spotify_refresh_token = refresh_token
             user.spotify_profile = user_info
-            user.spotify_token_expires_at = timezone.now() + timezone.timedelta(seconds=token_info['expires_in'])
+            user.spotify_token_expires_at = timezone.now() + timezone.timedelta(seconds=token_info["expires_in"])
             user.save()
         else:
             user = User.objects.create(
@@ -81,7 +74,7 @@ def spotify_auth(request):
                 spotify_access_token=access_token,
                 spotify_refresh_token=refresh_token,
                 spotify_profile=user_info,
-                spotify_token_expires_at=timezone.now() + timezone.timedelta(seconds=token_info['expires_in']),
+                spotify_token_expires_at=timezone.now() + timezone.timedelta(seconds=token_info["expires_in"]),
             )
             user.set_unusable_password()
             user.save()
@@ -94,7 +87,7 @@ def spotify_auth(request):
             spotify_access_token=access_token,
             spotify_refresh_token=refresh_token,
             spotify_profile=user_info,
-            spotify_token_expires_at=timezone.now() + timezone.timedelta(seconds=token_info['expires_in']),
+            spotify_token_expires_at=timezone.now() + timezone.timedelta(seconds=token_info["expires_in"]),
         )
         user.set_unusable_password()
         user.save()
@@ -103,20 +96,22 @@ def spotify_auth(request):
     login(request, user)
 
     profile = user.spotify_profile or {}
-    return Response({
-        'accessToken': jwt_token['access'],
-        'refreshToken': jwt_token['refresh'],
-        'expiresAt': jwt_token['expires_at_ms'],
-        'spotifyUser': {
-            UserFields.SPOTIFY_PROFILE: user.spotify_profile,
-            UserFields.ID: user.id,
-            UserFields.EMAIL: user.email,
-            SpotifyFields.SPOTIFY_ID: user.spotify_id,
-            SpotifyProfileFields.DISPLAY_NAME: profile.get('display_name'),
-            SpotifyProfileFields.FOLLOWERS: profile.get('followers'),
-            SpotifyProfileFields.HREF: profile.get('href'),
-            SpotifyProfileFields.IMAGES: profile.get('images'),
-            SpotifyProfileFields.TYPE: profile.get('type'),
-            SpotifyProfileFields.URI: profile.get('uri')
+    return Response(
+        {
+            "accessToken": jwt_token["access"],
+            "refreshToken": jwt_token["refresh"],
+            "expiresAt": jwt_token["expires_at_ms"],
+            "spotifyUser": {
+                UserFields.SPOTIFY_PROFILE: user.spotify_profile,
+                UserFields.ID: user.id,
+                UserFields.EMAIL: user.email,
+                SpotifyFields.SPOTIFY_ID: user.spotify_id,
+                SpotifyProfileFields.DISPLAY_NAME: profile.get("display_name"),
+                SpotifyProfileFields.FOLLOWERS: profile.get("followers"),
+                SpotifyProfileFields.HREF: profile.get("href"),
+                SpotifyProfileFields.IMAGES: profile.get("images"),
+                SpotifyProfileFields.TYPE: profile.get("type"),
+                SpotifyProfileFields.URI: profile.get("uri"),
+            },
         }
-    })
+    )

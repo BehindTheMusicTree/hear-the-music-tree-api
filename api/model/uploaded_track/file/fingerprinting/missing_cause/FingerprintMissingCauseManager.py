@@ -4,7 +4,6 @@ from .Fields import Fields
 
 
 class FingerprintMissingCauseManager(StandardResourceManager):
-
     def create(self, *args, **kwargs):
         from .code.FingerprintMissingCauseCode import FingerprintMissingCauseCode
 

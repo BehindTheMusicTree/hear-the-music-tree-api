@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 # No Useless Comments
@@ -21,4 +21,4 @@ Bad comments:
 - "Verify Metal branch" (redundant with code)
 - "Check root" (obvious from code)
 - "Get the genre" (redundant with method name)
-- "Loop through items" (obvious from code) 
+- "Loop through items" (obvious from code)

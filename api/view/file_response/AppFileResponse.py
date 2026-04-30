@@ -31,10 +31,7 @@ class AppFileResponse:
         effective_filename = AppFileResponse._build_effective_filename(filename)
         fallback_filename = AppFileResponse._build_ascii_fallback_filename(effective_filename)
         encoded_filename = quote(effective_filename, safe="")
-        return (
-            f'attachment; filename="{fallback_filename}"; '
-            f"filename*=UTF-8''{encoded_filename}"
-        )
+        return f"attachment; filename=\"{fallback_filename}\"; filename*=UTF-8''{encoded_filename}"
 
     @staticmethod
     def _build_ascii_fallback_filename(filename: str) -> str:

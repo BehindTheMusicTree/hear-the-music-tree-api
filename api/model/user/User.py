@@ -17,7 +17,6 @@ from api.model.utils.ConditionalExpression import ConditionalExpression
 from .Fields import Fields
 from .UserManager import UserManager
 
-
 if TYPE_CHECKING:
     from api.model.all_uploaded_tracks_mixin.AllUploadedTracksMixin import AllUploadedTracksMixin
 
@@ -26,8 +25,7 @@ class User(AbstractUser, BaseModel):
     DEFAULT_UPLOADED_TRACK_FILENAME_WITH_EXTENSION = "default.mp3"
 
     is_system = models.BooleanField(
-        default=False,
-        help_text="Designates a user as a system-owned account. Cannot log in."
+        default=False, help_text="Designates a user as a system-owned account. Cannot log in."
     )
     is_test_user = models.BooleanField(default=False)
 
@@ -48,17 +46,23 @@ class User(AbstractUser, BaseModel):
     lib_path_relative_to_media = models.GeneratedField(  # type: ignore
         expression=ConditionalExpression(
             condition_field=Fields.IS_TEST_USER,
-            when_true=ConcatOp(Value(str(settings.LIBRARIES_DIR_NAME)),
-                               Value('/'),
-                               Value(settings.TEST_USER_LIBRARIES_DIR_NAME_PREFIXE),
-                               F(Fields.ID)),
-            when_false=ConcatOp(Value(str(settings.LIBRARIES_DIR_NAME)),
-                                Value('/'),
-                                Value(settings.USER_LIBRARIES_DIR_NAME_PREFIXE),
-                                F(Fields.ID)),
-            output_field=AppCharField(max_length=256)),
+            when_true=ConcatOp(
+                Value(str(settings.LIBRARIES_DIR.name)),
+                Value("/"),
+                Value(settings.TEST_USER_LIBRARIES_DIR_NAME_PREFIXE),
+                F(Fields.ID),
+            ),
+            when_false=ConcatOp(
+                Value(str(settings.LIBRARIES_DIR.name)),
+                Value("/"),
+                Value(settings.USER_LIBRARIES_DIR_NAME_PREFIXE),
+                F(Fields.ID),
+            ),
+            output_field=AppCharField(max_length=256),
+        ),
         output_field=AppCharField(max_length=256),
-        db_persist=True)
+        db_persist=True,
+    )
 
     objects: UserManager = UserManager()
 
@@ -67,8 +71,9 @@ class User(AbstractUser, BaseModel):
         return settings.MEDIA_ROOT / self.lib_path_relative_to_media
 
     @cached_property
-    def all_uploaded_tracks_mixin(self) -> 'AllUploadedTracksMixin':
+    def all_uploaded_tracks_mixin(self) -> AllUploadedTracksMixin:
         from api.model.all_uploaded_tracks_mixin.AllUploadedTracksMixin import AllUploadedTracksMixin
+
         all_uploaded_tracks_mixin, _ = AllUploadedTracksMixin.objects.get_or_create(user=self)
         return all_uploaded_tracks_mixin
 
@@ -92,6 +97,6 @@ class User(AbstractUser, BaseModel):
         return self.username
 
     class Meta:
-        db_table = 'htmt_api_user'
-        verbose_name = 'User'
-        verbose_name_plural = 'Users'
+        db_table = "htmt_api_user"
+        verbose_name = "User"
+        verbose_name_plural = "Users"

@@ -10,16 +10,19 @@ This is a template you can copy when creating new discussions. Choose the approp
 [Your question here]
 
 **Context:**
+
 - What are you trying to achieve?
 - What have you already tried?
 - What's your current setup?
 
 **Environment:**
+
 - Python version: [e.g., 3.11]
 - Django version: [e.g., 5.0.3]
 - OS: [e.g., macOS, Linux, Windows]
 
 **Error Messages/Logs (if applicable):**
+
 ```
 [Paste error messages or logs here]
 ```
@@ -41,6 +44,7 @@ This is a template you can copy when creating new discussions. Choose the approp
 [How would this work?]
 
 **Use Cases:**
+
 1. [Use case 1]
 2. [Use case 2]
 3. [Use case 3]
@@ -68,6 +72,7 @@ This is a template you can copy when creating new discussions. Choose the approp
 [What you've built or how you're using HearTheMusicTree API]
 
 **Key Features:**
+
 - Feature 1
 - Feature 2
 - Feature 3
@@ -82,6 +87,7 @@ This is a template you can copy when creating new discussions. Choose the approp
 [Any feedback about the API or suggestions for improvement]
 
 **Links:**
+
 - Repository: [link]
 - Demo: [link]
 - Documentation: [link]
@@ -97,6 +103,7 @@ This is a template you can copy when creating new discussions. Choose the approp
 [Background information]
 
 **Discussion Points:**
+
 1. [Point 1]
 2. [Point 2]
 3. [Point 3]
@@ -122,11 +129,10 @@ This is a template you can copy when creating new discussions. Choose the approp
 
 - Use `backticks` for inline code
 - Use triple backticks for code blocks:
-  ````python
+  ```python
   # Your code here
-  ````
+  ```
 - Use `-` or `*` for bullet points
 - Use `##` for section headers
 - Use `**bold**` for emphasis
 - Use `[link text](url)` for links
-

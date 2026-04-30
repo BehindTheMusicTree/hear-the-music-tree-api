@@ -2,16 +2,16 @@ from unittest import mock
 
 from api.exception.spotify import (
     SpotifyAuthenticationException,
-    SpotifyUserNotAllowlistedException,
     SpotifyInvalidGrantException,
+    SpotifyUserNotAllowlistedException,
 )
+from api.serializer.token.Fields import Fields
 from api.test.utils.AppTestCase import AppTestCase
 from api.utils.spotify_api.oauth import SpotifyOAuthService
-from api.serializer.token.Fields import Fields
 
 
 class TestSpotifyOAuthAuth(AppTestCase):
-    @mock.patch('api.utils.spotify_api.oauth.SpotifyOAuth')
+    @mock.patch("api.utils.spotify_api.oauth.SpotifyOAuth")
     def test_get_auth_url_then_returns_url(self, mock_oauth):
         mock_oauth.return_value.get_authorize_url.return_value = "https://accounts.spotify.com/authorize"
 
@@ -21,12 +21,12 @@ class TestSpotifyOAuthAuth(AppTestCase):
         assert url == "https://accounts.spotify.com/authorize"
         mock_oauth.return_value.get_authorize_url.assert_called_once()
 
-    @mock.patch('api.utils.spotify_api.oauth.SpotifyOAuth')
+    @mock.patch("api.utils.spotify_api.oauth.SpotifyOAuth")
     def test_get_access_token_with_valid_code_then_returns_tokens(self, mock_oauth):
         mock_oauth.return_value.get_access_token.return_value = {
             Fields.ACCESS_TOKEN: "test_access_token",
             Fields.REFRESH_TOKEN: "test_refresh_token",
-            Fields.EXPIRES_IN: 3600
+            Fields.EXPIRES_IN: 3600,
         }
 
         service = SpotifyOAuthService()
@@ -35,11 +35,9 @@ class TestSpotifyOAuthAuth(AppTestCase):
         assert tokens[Fields.ACCESS_TOKEN] == "test_access_token"
         assert tokens[Fields.REFRESH_TOKEN] == "test_refresh_token"
         assert tokens[Fields.EXPIRES_IN] == 3600
-        mock_oauth.return_value.get_access_token.assert_called_once_with(
-            "valid_code", check_cache=False
-        )
+        mock_oauth.return_value.get_access_token.assert_called_once_with("valid_code", check_cache=False)
 
-    @mock.patch('api.utils.spotify_api.oauth.SpotifyOAuth')
+    @mock.patch("api.utils.spotify_api.oauth.SpotifyOAuth")
     def test_get_access_token_with_invalid_code_then_raises_exception(self, mock_oauth):
         mock_oauth.return_value.get_access_token.side_effect = Exception("Invalid code")
 
@@ -48,7 +46,7 @@ class TestSpotifyOAuthAuth(AppTestCase):
             service.get_access_token("invalid_code")
         assert "Failed to get access token" in str(context.exception)
 
-    @mock.patch('api.utils.spotify_api.oauth.SpotifyOAuth')
+    @mock.patch("api.utils.spotify_api.oauth.SpotifyOAuth")
     def test_get_access_token_when_spotify_returns_invalid_grant_then_raises_SpotifyInvalidGrantException(
         self, mock_oauth
     ):
@@ -62,11 +60,11 @@ class TestSpotifyOAuthAuth(AppTestCase):
         assert "expired or already used" in str(context.exception)
         assert "try connecting with Spotify again" in str(context.exception)
 
-    @mock.patch('api.utils.spotify_api.oauth.SpotifyOAuth')
+    @mock.patch("api.utils.spotify_api.oauth.SpotifyOAuth")
     def test_refresh_access_token_with_valid_token_then_returns_new_token(self, mock_oauth):
         mock_oauth.return_value.refresh_access_token.return_value = {
             Fields.ACCESS_TOKEN: "new_access_token",
-            Fields.EXPIRES_IN: 3600
+            Fields.EXPIRES_IN: 3600,
         }
 
         service = SpotifyOAuthService()
@@ -76,7 +74,7 @@ class TestSpotifyOAuthAuth(AppTestCase):
         assert tokens[Fields.EXPIRES_IN] == 3600
         mock_oauth.return_value.refresh_access_token.assert_called_once_with("valid_refresh_token")
 
-    @mock.patch('api.utils.spotify_api.oauth.SpotifyOAuth')
+    @mock.patch("api.utils.spotify_api.oauth.SpotifyOAuth")
     def test_refresh_access_token_with_invalid_token_then_raises_exception(self, mock_oauth):
         mock_oauth.return_value.refresh_access_token.side_effect = Exception("Invalid refresh token")
 
@@ -85,12 +83,12 @@ class TestSpotifyOAuthAuth(AppTestCase):
             service.refresh_access_token("invalid_refresh_token")
         assert "Failed to refresh access token" in str(context.exception)
 
-    @mock.patch('api.utils.spotify_api.oauth.spotipy.Spotify')
+    @mock.patch("api.utils.spotify_api.oauth.spotipy.Spotify")
     def test_get_user_info_with_valid_token_then_returns_user_info(self, mock_spotify):
         mock_spotify.return_value.current_user.return_value = {
             "id": "test_user",
             "email": "test@example.com",
-            "display_name": "Test User"
+            "display_name": "Test User",
         }
 
         service = SpotifyOAuthService()
@@ -101,7 +99,7 @@ class TestSpotifyOAuthAuth(AppTestCase):
         assert user_info["display_name"] == "Test User"
         mock_spotify.return_value.current_user.assert_called_once()
 
-    @mock.patch('api.utils.spotify_api.oauth.spotipy.Spotify')
+    @mock.patch("api.utils.spotify_api.oauth.spotipy.Spotify")
     def test_get_user_info_with_invalid_token_then_raises_exception(self, mock_spotify):
         mock_spotify.return_value.current_user.side_effect = Exception("Invalid token")
 
@@ -110,7 +108,7 @@ class TestSpotifyOAuthAuth(AppTestCase):
             service.get_user_info("invalid_token")
         assert "Failed to get user info" in str(context.exception)
 
-    @mock.patch('api.utils.spotify_api.oauth.spotipy.Spotify')
+    @mock.patch("api.utils.spotify_api.oauth.spotipy.Spotify")
     def test_get_user_info_when_spotify_returns_403_user_not_registered_then_raises_SpotifyUserNotAllowlistedException(
         self, mock_spotify
     ):

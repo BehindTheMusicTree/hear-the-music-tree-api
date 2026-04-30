@@ -5,7 +5,6 @@ from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestCase(GenreTestCase):
-
     def test_empty_then_empty_tree(self):
         response = self._get_genres_tree()
 

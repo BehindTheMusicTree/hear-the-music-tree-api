@@ -1,4 +1,3 @@
-
 from django.contrib.contenttypes.fields import GenericForeignKey
 
 from api.serializer.field.foreign_key.UserContentObjectUuidField import PrivateContentUuidField

@@ -1,15 +1,15 @@
 # api/view/health.py
-"""
-Health check endpoint pour monitoring et orchestration Docker
-"""
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.permissions import AllowAny
-from django.db import connection
+"""Health check endpoint pour monitoring et orchestration Docker"""
+
+import time
+
 from django.conf import settings
 from django.core.cache import cache
-import time
+from django.db import connection
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 # Track application start time
 START_TIME = time.time()
@@ -20,6 +20,7 @@ class HealthCheckView(APIView):
     Health check endpoint accessible sans authentification
     Utilisé par Docker, Kubernetes, et les load balancers
     """
+
     permission_classes = [AllowAny]
     authentication_classes = []  # Désactive complètement l'auth
 
@@ -33,9 +34,9 @@ class HealthCheckView(APIView):
         """
         health_status = {
             "status": "healthy",
-            "version": getattr(settings, 'APP_VERSION', 'unknown'),
+            "version": getattr(settings, "APP_VERSION", "unknown"),
             "uptime_seconds": int(time.time() - START_TIME),
-            "checks": {}
+            "checks": {},
         }
 
         # Critical check: Database
@@ -47,10 +48,7 @@ class HealthCheckView(APIView):
         # Determine overall status
         if not db_healthy:
             health_status["status"] = "unhealthy"
-            return Response(
-                health_status,
-                status=status.HTTP_503_SERVICE_UNAVAILABLE
-            )
+            return Response(health_status, status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
         return Response(health_status, status=status.HTTP_200_OK)
 
@@ -65,34 +63,21 @@ class HealthCheckView(APIView):
             with connection.cursor() as cursor:
                 cursor.execute("SELECT 1")
 
-            health_status["checks"]["database"] = {
-                "status": "ok",
-                "vendor": connection.vendor
-            }
+            health_status["checks"]["database"] = {"status": "ok", "vendor": connection.vendor}
             return True
 
         except Exception as e:
-            health_status["checks"]["database"] = {
-                "status": "error",
-                "message": str(e)
-            }
+            health_status["checks"]["database"] = {"status": "error", "message": str(e)}
             return False
 
     def _check_cache(self, health_status):
-        """
-        Vérifie le cache (non-critique)
-        """
+        """Vérifie le cache (non-critique)"""
         try:
-            test_key = 'health_check_test'
-            cache.set(test_key, 'ok', timeout=10)
+            test_key = "health_check_test"
+            cache.set(test_key, "ok", timeout=10)
             result = cache.get(test_key)
 
-            health_status["checks"]["cache"] = {
-                "status": "ok" if result == 'ok' else "warning"
-            }
+            health_status["checks"]["cache"] = {"status": "ok" if result == "ok" else "warning"}
 
         except Exception as e:
-            health_status["checks"]["cache"] = {
-                "status": "warning",
-                "message": str(e)
-            }
+            health_status["checks"]["cache"] = {"status": "warning", "message": str(e)}

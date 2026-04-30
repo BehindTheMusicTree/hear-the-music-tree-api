@@ -11,5 +11,5 @@ from api.view.pagination.PaginatedResponseFields import PaginatedResponseFields
 
 class ReferencePlayTestCase(ReferenceTestCase):
     def test_reference_play_list_then_200(self):
-        response = self.api_client.get(path=reverse('reference-play-list'))
+        response = self.api_client.get(path=reverse("reference-play-list"))
         self._assert_all_results_belong_to_tmta(response, Play)

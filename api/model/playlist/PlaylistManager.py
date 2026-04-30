@@ -29,40 +29,51 @@ class PlaylistManager(StandardResourceManager):
             manual_playlist_queryset = self.none()
             if type_filter is None or type_filter.lower() == PlaylistTypesLabel.MANUAL.lower():
                 manual_playlist_queryset = queryset.filter(
-                    manual_playlist__isnull=False,
-                    manual_playlist__name__icontains=name_filter
+                    manual_playlist__isnull=False, manual_playlist__name__icontains=name_filter
                 )
 
             criteria_playlist_queryset = self.none()
-            if type_filter is None or type_filter.lower() in [PlaylistTypesLabel.GENRE.lower(),
-                                                              PlaylistTypesLabel.TAG.lower()]:
+            if type_filter is None or type_filter.lower() in [
+                PlaylistTypesLabel.GENRE.lower(),
+                PlaylistTypesLabel.TAG.lower(),
+            ]:
                 criteria_playlist_queryset = queryset.filter(
                     criteria_playlist__isnull=False,
-                    criteria_playlist__type__label__icontains=type_filter.upper() if type_filter else '',
-                    criteria_playlist__criteria__name__icontains=name_filter
+                    criteria_playlist__type__label__icontains=type_filter.upper() if type_filter else "",
+                    criteria_playlist__criteria__name__icontains=name_filter,
                 )
 
             genreless_playlist = self.none()
-            if (not name_filter or name_filter.lower() in CriterialessPlaylistNames.GENRE.lower()) \
-                    and type_filter in [None, PlaylistTypesLabel.GENRE]:
-                genreless_playlist = queryset.filter(criteria_playlist__isnull=False,
-                                                     criteria_playlist__criteria__isnull=True,
-                                                     criteria_playlist__type_id=CriteriaTypePks.GENRE)
+            if (not name_filter or name_filter.lower() in CriterialessPlaylistNames.GENRE.lower()) and type_filter in [
+                None,
+                PlaylistTypesLabel.GENRE,
+            ]:
+                genreless_playlist = queryset.filter(
+                    criteria_playlist__isnull=False,
+                    criteria_playlist__criteria__isnull=True,
+                    criteria_playlist__type_id=CriteriaTypePks.GENRE,
+                )
 
             tagless_playlist = self.none()
-            if (not name_filter or name_filter.lower() in CriterialessPlaylistNames.TAG.lower()) \
-                    and type_filter in [None, PlaylistTypesLabel.TAG]:
-                tagless_playlist = queryset.filter(criteria_playlist__isnull=False,
-                                                   criteria_playlist__criteria__isnull=True,
-                                                   criteria_playlist__type_id=CriteriaTypePks.TAG)
+            if (not name_filter or name_filter.lower() in CriterialessPlaylistNames.TAG.lower()) and type_filter in [
+                None,
+                PlaylistTypesLabel.TAG,
+            ]:
+                tagless_playlist = queryset.filter(
+                    criteria_playlist__isnull=False,
+                    criteria_playlist__criteria__isnull=True,
+                    criteria_playlist__type_id=CriteriaTypePks.TAG,
+                )
 
-            queryset = manual_playlist_queryset.union(
-                criteria_playlist_queryset).union(
-                genreless_playlist).union(tagless_playlist)
+            queryset = (
+                manual_playlist_queryset.union(criteria_playlist_queryset)
+                .union(genreless_playlist)
+                .union(tagless_playlist)
+            )
 
         return queryset
 
-    def get_ordered_relations_for_playlist(self, playlist: 'Playlist') -> dict[int | None, 'UploadedTrack']:
+    def get_ordered_relations_for_playlist(self, playlist: Playlist) -> dict[int | None, UploadedTrack]:
         """
         Returns a dictionary of UploadedTrack objects where dict[position] = uploaded_track.
         Includes both non-archived tracks (with position) and archived tracks (position is None).
@@ -70,12 +81,13 @@ class PlaylistManager(StandardResourceManager):
         Returns empty dict if no tracks.
         """
         from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
+
         relations = UploadedTrackPlaylistRel.objects.get_ordered_relations_for_playlist(playlist)
 
         if not relations.exists():
             return {}
 
-        result: dict[int | None, 'UploadedTrack'] = {}
+        result: dict[int | None, UploadedTrack] = {}
         for relation in relations.filter(position__isnull=False):
             relation = cast(UploadedTrackPlaylistRel, relation)
             result[relation.position] = relation.uploaded_track

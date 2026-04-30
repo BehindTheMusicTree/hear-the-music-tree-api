@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 # Pre-PR Checklist
@@ -16,10 +16,11 @@ Before submitting a Pull Request, ensure all checks are completed. This checklis
 - ✅ One class per file (see `one-class-per-file.mdc`)
 - ✅ Use field name constants from `Fields.py` files (see `field-name-constants.mdc`)
 - ✅ Private resource filtering includes user in query (see `private-resource-filtering.mdc`)
+- ✅ String enums use `StrEnum`, not `(str, Enum)` (see `.cursor/rules/strenum-string-enums.mdc`, [python-project-standards development baseline](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md) → [string enums](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/string-enums.md), `scripts/check_prefer_strenum.py`, pre-commit / CI `pre-commit` job)
 
 ## Tests
 
-- ✅ All tests pass: `pytest`
+- ✅ All tests pass: `docker compose exec api pytest` (or `pytest` after `python -m pip install -e ".[dev]"` on your machine)
 - ✅ New features have corresponding tests
 - ✅ Bug fixes include regression tests
 - ✅ Tests follow naming convention: `test_{scenario}_then_{expected_result}` (see `test-naming-convention.mdc`)
@@ -37,19 +38,19 @@ Before submitting a Pull Request, ensure all checks are completed. This checklis
 ## Git Hygiene
 
 - ✅ Commit messages follow the commit message convention (see `commit-message-convention.mdc`)
-- ✅ Branch is up to date with target branch (`develop` for features, `main` for hotfixes)
-- ✅ Branch follows naming convention (`feature/`, `chore/`, `hotfix/`, `release/`)
+- ✅ Branch is up to date with target branch (`develop` for `feature/*`, `chore/*`, `dependabot/*`, `release/*`; `main` for `hotfix/*`, `release/*`)
+- ✅ Branch follows naming convention for PRs to `develop`: `feature/`, `chore/`, `dependabot/`, `release/`; for PRs to `main`: `hotfix/`, `release/` (see `git-flow-workflow.mdc` and CONTRIBUTING.md **Branch Protection**)
 - ✅ No accidental commits (large files, secrets, personal configs)
 
 ## Branch Target
 
-- ✅ Feature branches target `develop` branch
+- ✅ `feature/*`, `chore/*`, `dependabot/*`, and `release/*` (when merging into `develop`) target the `develop` branch
 - ✅ Hotfix branches target `main` branch
 - ✅ Release branches target both `main` and `develop` (maintainers only)
 
 ## Quick Pre-PR Command
 
 ```bash
-# Run all checks at once
-pytest && git status
+# Run all checks at once (Docker dev stack)
+docker compose exec api pytest && git status
 ```

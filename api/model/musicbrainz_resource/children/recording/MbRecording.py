@@ -17,7 +17,8 @@ class MbRecording(MusicbrainzResource):
     musicbrainz_link = models.GeneratedField(  # type: ignore
         expression=ConcatOp(Value(settings.MB_RECORDING_URL), F(Fields.MUSICBRAINZ_ID)),
         output_field=AppCharField(max_length=len(settings.MB_RECORDING_URL) + settings.UUID_LEN),
-        db_persist=True)
+        db_persist=True,
+    )
     title = AppCharField(max_length=settings.MB_RECORDING_TITLE_LEN_MAX, editable=False)
     score = models.DecimalField(max_digits=9, decimal_places=8, editable=False)
     duration_in_sec = models.IntegerField(editable=False, null=True)
@@ -32,7 +33,7 @@ class MbRecording(MusicbrainzResource):
         return f"{self.title} - {self.musicbrainz_artists} ({self.duration_str_in_hour_min_sec})"
 
     class Meta:
-        db_table = 'htmt_api_mb_recording'
-        verbose_name = 'MusicBrainz Recording'
-        verbose_name_plural = 'MusicBrainz Recordings'
-        indexes = [models.Index(fields=[Fields.MUSICBRAINZ_ID], name='mb_recording_id_idx')]
+        db_table = "htmt_api_mb_recording"
+        verbose_name = "MusicBrainz Recording"
+        verbose_name_plural = "MusicBrainz Recordings"
+        indexes = [models.Index(fields=[Fields.MUSICBRAINZ_ID], name="mb_recording_id_idx")]

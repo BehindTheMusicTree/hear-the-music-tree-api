@@ -1,8 +1,8 @@
 from rest_framework import status
 
 from api.serializer.model.spotify.lib_track.output.Fields import Fields as SpotifyLibTrackFields
-from api.test.utils.field.filter.char.NotNullableFreeCharFilterTestCase import NotNullableFreeCharFilterTestCase
 from api.test.tests.integration.spotify.lib_track.SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
+from api.test.utils.field.filter.char.NotNullableFreeCharFilterTestCase import NotNullableFreeCharFilterTestCase
 
 
 class TestCase(SpotifyLibTrackTestCase, NotNullableFreeCharFilterTestCase):
@@ -19,7 +19,7 @@ class TestCase(SpotifyLibTrackTestCase, NotNullableFreeCharFilterTestCase):
         self.model_fixture_factory.create_spotify_lib_track(name="Life")
         self.model_fixture_factory.create_spotify_lib_track(name="Hey")
 
-        response = self._list_spotify_lib_tracks(name='')
+        response = self._list_spotify_lib_tracks(name="")
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
 
@@ -27,7 +27,7 @@ class TestCase(SpotifyLibTrackTestCase, NotNullableFreeCharFilterTestCase):
         track = self.model_fixture_factory.create_spotify_lib_track(name="LIfe")
         self.model_fixture_factory.create_spotify_lib_track(name="Hey")
 
-        response = self._list_spotify_lib_tracks(name='Lif')
+        response = self._list_spotify_lib_tracks(name="Lif")
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 1

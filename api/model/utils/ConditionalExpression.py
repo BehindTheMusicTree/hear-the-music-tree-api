@@ -11,11 +11,8 @@ class ConditionalExpression(Expression):
     def resolve_expression(self, query=None, allow_joins=True, reuse=None, summarize=False, for_save=False):
         condition = F(self.condition_field)
         case = Case(
-            When(
-                **{self.condition_field: True},
-                then=self.when_true
-            ),
+            When(**{self.condition_field: True}, then=self.when_true),
             default=self.when_false,
-            output_field=self.output_field
+            output_field=self.output_field,
         )
         return case.resolve_expression(query, allow_joins, reuse, summarize, for_save)

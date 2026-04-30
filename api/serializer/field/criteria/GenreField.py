@@ -1,4 +1,3 @@
-
 from api.model.criteria.children.genre.Genre import Genre
 from api.serializer.field.criteria.CriteriaField import CriteriaField
 from api.serializer.field.criteria.CriteriaFieldInputType import CriteriaFieldInputType

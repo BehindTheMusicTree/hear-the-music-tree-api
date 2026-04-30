@@ -1,6 +1,6 @@
 ---
-description: 
-globs: 
+description:
+globs:
 alwaysApply: true
 ---
 # Git Flow Workflow
@@ -21,6 +21,14 @@ This project follows **strict Git Flow**. All changes must follow the branching 
 1. Use lowercase with hyphens: `feature/add-track-upload`, not `Feature/AddTrackUpload`
 2. Include issue numbers when applicable: `feature/123-add-ogg-support`
 3. Be descriptive: `feature/improve-genre-classification`, not `feature/fix`
+
+## Pull Requests to `develop` (enforced in CI)
+
+Allowed **source branch** prefixes only: `feature/`, `chore/`, `dependabot/`, `release/`.
+
+Classic Git Flow uses **`feature/*`** to integrate features and fixes into `develop`. This repository also allows **`chore/*`** (maintenance, documentation, CI), **`dependabot/*`**, and **`release/*`** when merging release work back into `develop`.
+
+Do **not** use other top-level prefixes (e.g. `docs/`, `fix/`, `refactor/`) for the branch name — CI will fail. Use `feature/<topic>` or `chore/<topic>` instead.
 
 ## Important Rules
 

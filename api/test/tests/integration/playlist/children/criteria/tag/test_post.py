@@ -4,7 +4,6 @@ from api.test.tests.integration.playlist.children.criteria.tag.TagPlaylistTestCa
 
 
 class TestCase(TagPlaylistTestCase):
-
     def test_post_then_not_allowed(self):
         response = self._post_tag_playlist()
 

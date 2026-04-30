@@ -1,13 +1,13 @@
 from typing import cast
+
 from rest_framework import status
 
 from api.model.uploaded_track.file.TrackFile import TrackFile
-from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_small_wav(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.BITRATE_IN_KBPS_SMALL_1152_WAV)
         assert response.status_code == status.HTTP_201_CREATED

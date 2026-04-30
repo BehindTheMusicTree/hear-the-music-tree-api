@@ -1,11 +1,9 @@
-
 import pytest
 
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
 class TestCase(UploadedTrackTestCase):
-
     def test_multiple_release_dates_then_earliest(self):
         # TODO: Analyse musicbrainz best recoding selection
         # response = self._post_uploaded_track(TestUploadedTrackFilename.RECORDING_QUEEN_MULTIPLE_RELEASE_DATES_MP3)

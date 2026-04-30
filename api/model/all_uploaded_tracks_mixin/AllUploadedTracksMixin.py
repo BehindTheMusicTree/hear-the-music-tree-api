@@ -9,21 +9,20 @@ from .Fields import Fields
 
 # One per user
 class AllUploadedTracksMixin(UploadedTrackMixin):
-
     objects: AllUploadedTrackMixinManager = AllUploadedTrackMixinManager()
 
     class Meta:
-        db_table = 'htmt_api_all_uploaded_tracks_mixin'
-        verbose_name = 'All Uploaded Tracks Mixin'
-        verbose_name_plural = 'All Uploaded Tracks Mixins'
-        constraints = [models.UniqueConstraint(fields=[Fields.USER], name=f'unique_{Fields.USER}_all_tracks_mixin')]
+        db_table = "htmt_api_all_uploaded_tracks_mixin"
+        verbose_name = "All Uploaded Tracks Mixin"
+        verbose_name_plural = "All Uploaded Tracks Mixins"
+        constraints = [models.UniqueConstraint(fields=[Fields.USER], name=f"unique_{Fields.USER}_all_tracks_mixin")]
 
     def __str__(self):
         return f"{self.name} | {self.user}"
 
     @property
     def name(self):
-        return 'All Tracks'
+        return "All Tracks"
 
     @property
     def uploaded_tracks(self) -> models.QuerySet[UploadedTrack]:

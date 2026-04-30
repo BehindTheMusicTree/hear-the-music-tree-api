@@ -16,12 +16,12 @@ class TestCase(UploadedTrackTestCase):
         response = self._post_uploaded_track_from_url(UploadedTrackDownloadTestUrl.LONG_MP3)
         if response.status_code == 400:
             try:
-                body = json.loads(response.content) if getattr(response, 'content', None) else {}
-            except (json.JSONDecodeError, TypeError):
+                body = json.loads(response.content) if getattr(response, "content", None) else {}
+            except json.JSONDecodeError, TypeError:
                 body = {}
             err = json.dumps(body) if isinstance(body, dict) else str(body)
             err = err.lower()
-            if any(k in err for k in ('url', 'download', 'failed', 'invalid')):
+            if any(k in err for k in ("url", "download", "failed", "invalid")):
                 pytest.skip("URL unreachable or validation failed (no network?)")
         assert response.status_code == status.HTTP_201_CREATED, response.content
         assert self.saved_object.title.startswith(settings.UPLOADED_TRACK_GENERATED_TITLE_PREFIXE)

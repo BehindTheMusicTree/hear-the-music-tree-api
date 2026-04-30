@@ -1,6 +1,8 @@
-from drf_spectacular.utils import OpenApiParameter  # type: ignore
 from drf_spectacular.types import OpenApiTypes  # type: ignore
-from drf_spectacular.utils import extend_schema
+from drf_spectacular.utils import (
+    OpenApiParameter,  # type: ignore
+    extend_schema,
+)
 
 from api.filtering.set.artist.ArtistFilterSet import ArtistFilterSet
 from api.filtering.set.artist.ArtistFilterSet import Fields as FilterFields
@@ -11,15 +13,19 @@ from api.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 class ArtistViewSet(AppModelViewSet[Artist]):
     def __init__(self, **kwargs):
-        super().__init__(model_class=Artist,
-                         filterset_class=ArtistFilterSet,
-                         simple_serializer_class=ArtistDetailedSerializer,
-                         detailed_serializer_class=ArtistDetailedSerializer,
-                         **kwargs)
+        super().__init__(
+            model_class=Artist,
+            filterset_class=ArtistFilterSet,
+            simple_serializer_class=ArtistDetailedSerializer,
+            detailed_serializer_class=ArtistDetailedSerializer,
+            **kwargs,
+        )
 
-    @extend_schema(parameters=[
-        OpenApiParameter(name=FilterFields.NAME_PUBLIC, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
-    ])
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(name=FilterFields.NAME_PUBLIC, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
+        ]
+    )
     def list(self, *args, **kwargs):
         return self._handle_list()
 

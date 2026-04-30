@@ -1,8 +1,8 @@
-from rest_framework import status
 from django.urls import reverse
+from rest_framework import status
 
-from api.test.tests.integration.spotify_artist.SpotifyArtistTestCase import SpotifyArtistTestCase
 from api.model.spotify_resource.children.artist.Fields import Fields as ModelFields
+from api.test.tests.integration.spotify_artist.SpotifyArtistTestCase import SpotifyArtistTestCase
 
 
 class TestInvalidMethods(SpotifyArtistTestCase):
@@ -12,32 +12,30 @@ class TestInvalidMethods(SpotifyArtistTestCase):
             name="Test Artist",
             popularity=90,
             genres=["Rock", "Metal"],
-            images=[{"url": "https://example.com/image.jpg"}]
+            images=[{"url": "https://example.com/image.jpg"}],
         )
 
     def test_post_spotify_artist_then_405_method_not_allowed(self):
         response = self.api_client.post(
-            path=reverse('spotify-artist-detail', kwargs={'pk': self.artist.spotify_id}),
-            data={ModelFields.NAME: 'Test Artist'}
+            path=reverse("spotify-artist-detail", kwargs={"pk": self.artist.spotify_id}),
+            data={ModelFields.NAME: "Test Artist"},
         )
         assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
     def test_put_spotify_artist_then_405_method_not_allowed(self):
         response = self.api_client.put(
-            path=reverse('spotify-artist-detail', kwargs={'pk': self.artist.spotify_id}),
-            data={ModelFields.NAME: 'Test Artist'}
+            path=reverse("spotify-artist-detail", kwargs={"pk": self.artist.spotify_id}),
+            data={ModelFields.NAME: "Test Artist"},
         )
         assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
     def test_patch_spotify_artist_then_405_method_not_allowed(self):
         response = self.api_client.patch(
-            path=reverse('spotify-artist-detail', kwargs={'pk': self.artist.spotify_id}),
-            data={ModelFields.NAME: 'Test Artist'}
+            path=reverse("spotify-artist-detail", kwargs={"pk": self.artist.spotify_id}),
+            data={ModelFields.NAME: "Test Artist"},
         )
         assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
     def test_delete_spotify_artist_then_405_method_not_allowed(self):
-        response = self.api_client.delete(
-            path=reverse('spotify-artist-detail', kwargs={'pk': self.artist.spotify_id})
-        )
+        response = self.api_client.delete(path=reverse("spotify-artist-detail", kwargs={"pk": self.artist.spotify_id}))
         assert response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED

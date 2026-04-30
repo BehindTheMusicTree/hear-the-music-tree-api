@@ -1,6 +1,4 @@
 {
-  "venvPath": ".",
-  "venv": "venv",
   "pythonVersion": "3.14",
   "typeCheckingMode": "basic",
   "reportMissingImports": "warning",
@@ -10,8 +8,7 @@
     {
       "root": ".",
       "pythonVersion": "3.14",
-      "pythonPlatform": "Darwin",
-      "extraPaths": ["venv/lib/python3.14/site-packages"]
+      "pythonPlatform": "Darwin"
     }
   ]
 }
