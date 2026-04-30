@@ -113,7 +113,7 @@ def _run_bump_my_version(kind: str, allow_dirty: bool) -> None:
         _fail(
             "bump-my-version not found on PATH. Install the dev-extra pin (bump-my-version==1.3.0), e.g.\n"
             "  pipx install bump-my-version==1.3.0\n"
-            'Or use a pyenv/other Python where `pip install -e ".[dev]"` is allowed.\n'
+            "Or use a pyenv/other Python where `pip install -e \".[dev]\"` is allowed.\n"
             "With Docker Compose dev (`INSTALL_DEV=true`), from repo root:\n"
             "  docker compose exec -w /home/app api bump-my-version bump patch --allow-dirty\n"
             "(adjust patch|minor|major as needed)."
