@@ -72,7 +72,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Added
 
-- **Dev setup**: Split setup into explicit host and Docker scripts: [`scripts/setup-host-dev-tools.sh`](scripts/setup-host-dev-tools.sh) installs the tracked Docker-backed git hook ([`.githooks/pre-commit`](.githooks/pre-commit)) into `.git/hooks/pre-commit`, and [`scripts/setup-docker-dev-tools.sh`](scripts/setup-docker-dev-tools.sh) builds/starts `api` then verifies container tooling (`pre-commit`, `shellcheck`, `ruff`). [`scripts/setup-worktree.sh`](scripts/setup-worktree.sh) now runs both.
+- **Dev setup**: Split setup into explicit host and Docker scripts: [`scripts/setup-host-dev-tools.sh`](scripts/setup-host-dev-tools.sh) installs the tracked git hook ([`.githooks/pre-commit`](.githooks/pre-commit), Docker-first with host fallback) into `.git/hooks/pre-commit`, and [`scripts/setup-docker-dev-tools.sh`](scripts/setup-docker-dev-tools.sh) builds/starts `api` then verifies container tooling (`pre-commit`, `shellcheck`, `ruff`). [`scripts/setup-worktree.sh`](scripts/setup-worktree.sh) now runs both.
 
 - **Linting (audiometa-python baseline)**: [`.pre-commit-config.yaml`](.pre-commit-config.yaml) matches the audiometa-python hook stack (tool version check, YAML/JSON/TOML, shellcheck, `no-assert`, ruff-format, ruff, mypy + django-stubs, pydocstringformatter, long-comment fixer, Prettier, optional PSScriptAnalyzer) plus **`prefer-strenum`** (pre-commit no longer runs **isort**; org **v4.3+** verifier forbids it alongside **ruff format**). Configuration lives in [`pyproject.toml`](pyproject.toml); linter and test dependencies are pinned under `[project.optional-dependencies] dev`. Ruff **select** matches audiometa; extra **ignores** document Django/DRF cleanup debt. Mypy is plugin-aligned but **gradual** (`ignore_missing_imports`, non-strict) until typing can match audiometa strictness.
 
@@ -82,7 +82,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Changed
 
-- **Git pre-commit workflow**: Added a tracked host hook at [`.githooks/pre-commit`](.githooks/pre-commit) that executes `pre-commit` inside the `api` Docker container on staged files. [`scripts/setup-host-dev-tools.sh`](scripts/setup-host-dev-tools.sh) installs this hook into `.git/hooks/pre-commit`.
+- **Git pre-commit workflow**: [`.githooks/pre-commit`](.githooks/pre-commit) prefers **`docker compose exec api pre-commit`** when **`api`** is running; otherwise it runs **`pre-commit` on the host** (requires **`pre-commit` on PATH**, e.g. **`pip install -e ".[dev]"`**) so hooks are not skipped with **`--no-verify`** only because the stack is down. [`scripts/setup-host-dev-tools.sh`](scripts/setup-host-dev-tools.sh) installs the hook and **warns** if Docker is missing instead of failing.
 
 - **Workflow DB app naming variables**: Updated `.github/workflows/publish.yml`, `.github/workflows/test.yml`, and `.github/actionlint.yaml` to use `DB_APP_NAME_SUFFIX` instead of `DB_APP_NAME`. DB app/container names are derived by appending `DB_APP_NAME_SUFFIX` to `HTMT_API_APP_NAME`.
 
