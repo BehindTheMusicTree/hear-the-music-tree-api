@@ -1,7 +1,7 @@
-from api.serializer.audio_metadata.Fields import Fields
 from django.urls import reverse
 from rest_framework import status
 
+from api.serializer.audio_metadata.Fields import Fields
 from api.test.tests.integration.audio_metadata.AudioMetadataTestCase import AudioMetadataTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 

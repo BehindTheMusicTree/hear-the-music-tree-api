@@ -1,5 +1,7 @@
 # Based on audiometa-python pre-commit layout; tools pinned in pyproject.toml ([project.optional-dependencies] dev).
-# Install: bash scripts/setup-dev-tools.sh   (or: python -m pip install -e ".[dev]" && pre-commit install)
+# Install:
+#   - Host hook wiring: bash scripts/setup-host-dev-tools.sh
+#   - Docker toolchain:  bash scripts/setup-docker-dev-tools.sh
 # Hooks use language: system — tools must be on PATH (same pins as CI).
 fail_fast: true
 
