@@ -155,7 +155,7 @@ The workflow extracts the version from the ref, uses it for the Docker image tag
 
 ### Creating a Release
 
-**Source of truth:** full Git Flow (release branch, `python3 scripts/prepare_release_bump.py` or `bump2version` by hand, `CHANGELOG.md`, PR to `main`, tag with `v` prefix, merge back to `develop`, delete release branch) is documented in [CONTRIBUTING.md](../CONTRIBUTING.md#7-releasing-for-maintainers) §7. The steps below are a short tag/publish reminder only.
+**Source of truth:** full Git Flow (release branch, `python3 scripts/prepare_release_bump.py` or `bump-my-version bump …` by hand, `CHANGELOG.md`, PR to `main`, tag with `v` prefix, merge back to `develop`, delete release branch) is documented in [CONTRIBUTING.md](../CONTRIBUTING.md#7-releasing-for-maintainers) §7. The steps below are a short tag/publish reminder only.
 
 ```bash
 # After VERSION and CHANGELOG on main match the release (see CONTRIBUTING.md §7):

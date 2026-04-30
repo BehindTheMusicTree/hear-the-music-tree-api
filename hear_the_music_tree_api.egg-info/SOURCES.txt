@@ -224,7 +224,6 @@ api/serializer/audio_metadata/AudioMetadataRequestFile.py
 api/serializer/audio_metadata/AudioMetadataRequestUrl.py
 api/serializer/audio_metadata/AudioMetadataSessionDownload.py
 api/serializer/audio_metadata/Fields.py
-api/serializer/audio_metadata/WritableMetadataFieldsMixin.py
 api/serializer/field/AppBooleanField.py
 api/serializer/field/AppCharField.py
 api/serializer/field/AppDictField.py
@@ -406,7 +405,6 @@ api/test/tests/integration/artist/list/filter/test_not_existing.py
 api/test/tests/integration/artist/retrieve/__init__.py
 api/test/tests/integration/artist/retrieve/test_lib_tracks.py
 api/test/tests/integration/audio_metadata/AudioMetadataTestCase.py
-api/test/tests/integration/audio_metadata/__init__.py
 api/test/tests/integration/audio_metadata/test_full.py
 api/test/tests/integration/audio_metadata/test_metadata_session.py
 api/test/tests/integration/audio_metadata/test_musicbrainz_analysis.py
@@ -746,11 +744,11 @@ api/test/tests/integration/uploaded_track/input/save/test_extra_field.py
 api/test/tests/integration/uploaded_track/input/save/test_language.py
 api/test/tests/integration/uploaded_track/input/save/test_rating.py
 api/test/tests/integration/uploaded_track/input/save/test_title.py
-api/test/tests/integration/uploaded_track/input/save/album attributes/__init__.py
-api/test/tests/integration/uploaded_track/input/save/album attributes/test_album.py
-api/test/tests/integration/uploaded_track/input/save/album attributes/test_album_and_album_artists.py
-api/test/tests/integration/uploaded_track/input/save/album attributes/test_album_artists.py
-api/test/tests/integration/uploaded_track/input/save/album attributes/test_track_number.py
+api/test/tests/integration/uploaded_track/input/save/album_attributes/__init__.py
+api/test/tests/integration/uploaded_track/input/save/album_attributes/test_album.py
+api/test/tests/integration/uploaded_track/input/save/album_attributes/test_album_and_album_artists.py
+api/test/tests/integration/uploaded_track/input/save/album_attributes/test_album_artists.py
+api/test/tests/integration/uploaded_track/input/save/album_attributes/test_track_number.py
 api/test/tests/integration/uploaded_track/input/save/genre/__init__.py
 api/test/tests/integration/uploaded_track/input/save/genre/test_genre_name.py
 api/test/tests/integration/uploaded_track/input/save/genre/test_genre_uuid.py
@@ -832,14 +830,12 @@ api/test/tests/unit/serializer/test_model_serializer_inheritance.py
 api/test/tests/unit/serializer/field/__init__.py
 api/test/tests/unit/serializer/field/test_app_boolean_field.py
 api/test/tests/unit/serializer/field/test_field_inheritance.py
-api/test/tests/unit/utils/audio_file_metadata/test_metadata_session_app_metadata.py
 api/test/tests/unit/utils/audio_fingerprinter/test_analysis.py
 api/test/tests/unit/utils/audiometa_adapter/__init__.py
 api/test/tests/unit/utils/audiometa_adapter/test_audiometa_adapter.py
 api/test/tests/unit/utils/decorators/test_spotify_user_required_decorator.py
 api/test/tests/unit/utils/file_path_utils/__init__.py
 api/test/tests/unit/utils/file_path_utils/test_file_path_utils.py
-api/test/tests/unit/utils/metadata_session/test_service.py
 api/test/tests/unit/utils/musicbrainz/__init__.py
 api/test/tests/unit/utils/musicbrainz/test_create_or_update.py
 api/test/tests/unit/utils/musicbrainz/test_recording_analysis.py
