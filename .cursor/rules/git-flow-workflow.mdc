@@ -32,7 +32,8 @@ Do **not** use other top-level prefixes (e.g. `docs/`, `fix/`, `refactor/`) for 
 
 ## Important Rules
 
-- **No direct commits** to `main` or `develop` - all changes must go through Pull Requests
+- **No direct commits** to `main` or `develop` — all changes must land via **Pull Requests**.
+- **`develop` merges via PR only** — never push merge commits directly to `develop` (including syncing **`main` → `develop`** after a release). Use a PR (e.g. **`main` → `develop`**, or a branch **`chore/sync-main-to-develop-after-vX.Y.Z`** cut from **`main`** targeting **`develop`**). Avoid bypassing branch protection except documented emergencies.
 - Feature branches **must** target `develop`
 - Hotfix branches **must** target `main`
 - Release branches merge into both `main` and `develop`
