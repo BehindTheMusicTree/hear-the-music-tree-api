@@ -2,14 +2,11 @@ from rest_framework import status
 
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.serializer.model.playlist.children.criteria.output.detailed import Fields as RietrieveFields
-from api.test.utils.field.filter.foreign_key.PrivateForeignKeyFilterTestCase import (
-    PrivateForeignKeyFilterTestCase
-)
 from api.test.tests.integration.playlist.children.criteria.tag.TagPlaylistTestCase import TagPlaylistTestCase
+from api.test.utils.field.filter.foreign_key.PrivateForeignKeyFilterTestCase import PrivateForeignKeyFilterTestCase
 
 
 class TestCase(TagPlaylistTestCase, PrivateForeignKeyFilterTestCase):
-
     def setUp(self, methods_names_to_implement=None):
         return super().setUp(allow_empty_value=True, methods_names_to_implement=methods_names_to_implement)
 
@@ -26,19 +23,18 @@ class TestCase(TagPlaylistTestCase, PrivateForeignKeyFilterTestCase):
     def test_invalid_uuid_then_400_bad_request(self):
         self.model_fixture_factory.create_tag(name="Fiesta")
 
-        response = self._list_tag_playlists(**{RietrieveFields.PARENT: 'invalid-uuid'})
+        response = self._list_tag_playlists(**{RietrieveFields.PARENT: "invalid-uuid"})
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert self.bad_request_result_field_errors[0]['field'] == RietrieveFields.PARENT
-        assert self.bad_request_result_field_errors[0][
-            'code'] == FieldValidationErrorCode.FORMAT_INVALID
+        assert self.bad_request_result_field_errors[0]["field"] == RietrieveFields.PARENT
+        assert self.bad_request_result_field_errors[0]["code"] == FieldValidationErrorCode.FORMAT_INVALID
 
     def test_empty_then_results(self):
         tag_fiesta = self.model_fixture_factory.create_tag(name="Fiesta")
         tag_fiestaabilly = self.model_fixture_factory.create_tag(name="Fiestaabilly")
         tag_koko = self.model_fixture_factory.create_tag(name="Koko", parent=tag_fiesta)
 
-        response = self._list_tag_playlists(**{RietrieveFields.PARENT: ''})
+        response = self._list_tag_playlists(**{RietrieveFields.PARENT: ""})
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 3

@@ -1,0 +1,29 @@
+{
+  "python_version": "3.14",
+  "plugins": ["mypy_django_plugin.main"],
+  "warn_unused_configs": true,
+  "ignore_missing_imports": true,
+  "check_untyped_defs": false,
+  "disallow_untyped_defs": false,
+  "disallow_incomplete_defs": false,
+  "no_implicit_optional": false,
+  "warn_return_any": false,
+  "disable_error_code": [
+    "abstract",
+    "arg-type",
+    "assignment",
+    "attr-defined",
+    "dict-item",
+    "misc",
+    "no-redef",
+    "operator",
+    "override",
+    "return",
+    "return-value",
+    "type-abstract",
+    "type-var",
+    "union-attr",
+    "valid-type",
+    "var-annotated"
+  ]
+}

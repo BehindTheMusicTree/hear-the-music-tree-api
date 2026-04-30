@@ -17,37 +17,37 @@ diverse, inclusive, and healthy community.
 Examples of behavior that contributes to a positive environment for our
 community include:
 
-* **Being respectful and inclusive**: Using welcoming and inclusive language,
+- **Being respectful and inclusive**: Using welcoming and inclusive language,
   being respectful of differing viewpoints and experiences, gracefully accepting
   constructive criticism, focusing on what is best for the community, and
   showing empathy towards other community members
 
-* **Collaborating effectively**: Working together towards common goals, sharing
+- **Collaborating effectively**: Working together towards common goals, sharing
   knowledge and expertise, helping others learn and grow, and being open to
   feedback and suggestions
 
-* **Being constructive**: Providing helpful, specific, and actionable feedback
+- **Being constructive**: Providing helpful, specific, and actionable feedback
   in code reviews, issue discussions, and pull requests
 
-* **Focusing on the code, not the person**: Criticizing ideas, not individuals,
+- **Focusing on the code, not the person**: Criticizing ideas, not individuals,
   and keeping discussions technical and professional
 
-* **Being patient and understanding**: Recognizing that contributors come from
+- **Being patient and understanding**: Recognizing that contributors come from
   diverse backgrounds and may have different levels of experience
 
 Examples of unacceptable behavior include:
 
-* The use of sexualized language or imagery, and sexual attention or advances of
+- The use of sexualized language or imagery, and sexual attention or advances of
   any kind
 
-* Trolling, insulting or derogatory comments, and personal or political attacks
+- Trolling, insulting or derogatory comments, and personal or political attacks
 
-* Public or private harassment
+- Public or private harassment
 
-* Publishing others' private information, such as a physical or email address,
+- Publishing others' private information, such as a physical or email address,
   without their explicit permission
 
-* Other conduct which could reasonably be considered inappropriate in a
+- Other conduct which could reasonably be considered inappropriate in a
   professional setting
 
 ## Enforcement Responsibilities
@@ -86,6 +86,7 @@ Community leaders will follow these Community Impact Guidelines in determining
 the consequences for any action they deem in violation of this Code of Conduct:
 
 ### 1. Correction
+
 **Community Impact**: Use of inappropriate language or other behavior deemed
 unprofessional or unwelcome in the community.
 
@@ -94,6 +95,7 @@ clarity around the nature of the violation and an explanation of why the
 behavior was inappropriate. A public apology may be requested.
 
 ### 2. Warning
+
 **Community Impact**: A violation through a single incident or series of
 actions.
 
@@ -105,6 +107,7 @@ like social media. Violating these terms may lead to a temporary or permanent
 ban.
 
 ### 3. Temporary Ban
+
 **Community Impact**: A serious violation of community standards, including
 sustained inappropriate behavior.
 
@@ -115,6 +118,7 @@ with those enforcing the Code of Conduct, is allowed during this period.
 Violating these terms may lead to a permanent ban.
 
 ### 4. Permanent Ban
+
 **Community Impact**: Demonstrating a pattern of violation of community
 standards, including sustained inappropriate behavior, harassment of an
 individual, or aggression toward or disparagement of classes of individuals.
@@ -136,4 +140,3 @@ https://www.contributor-covenant.org/faq
 
 [homepage]: https://www.contributor-covenant.org
 [Mozilla CoC]: https://github.com/mozilla/diversity
-

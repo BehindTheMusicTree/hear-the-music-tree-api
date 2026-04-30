@@ -21,7 +21,7 @@ None (public endpoints).
 
 ### POST /v1/audio/metadata/session/
 
-**Description**  
+**Description**
 Upload an audio file (or send a URL to an audio file). The server stores the file temporarily, returns the same metadata as `POST /v1/audio/metadata/full/` (see [audio_metadata.md](audio_metadata.md)), plus a **session token** and **session_expires_in_seconds** (900 = 15 minutes). Use the token in the download endpoint.
 
 **Request**
@@ -52,7 +52,7 @@ Example (camelCase in actual response if using camelCase renderer):
 }
 ```
 
-**Errors**  
+**Errors**
 Same as full metadata (400, 413 for invalid or oversized file).
 
 ---
@@ -61,7 +61,7 @@ Same as full metadata (400, 413 for invalid or oversized file).
 
 ### POST /v1/audio/metadata/session-download/
 
-**Description**  
+**Description**
 Returns the file associated with the session token, with optional metadata written in. You can call this **multiple times** with the same token and different metadata; the session stays valid until it expires (15 minutes after creation).
 
 **Request**
@@ -96,16 +96,16 @@ Body example:
 - The stored file is never modified; the server copies it, writes the requested metadata into the copy, and streams that copy. So the same session can be used for several downloads with different metadata.
 - Session and temp file are removed automatically after 15 minutes (TTL). A periodic cleanup of the session directory is recommended for orphaned files.
 
-**Storage**  
+**Storage**
 Session files are stored in the env-defined directory `METADATA_SESSION_DIR`. This directory is separate from `TMP_UPLOADED_FILES` (Django’s request upload temp dir): each has its own path. When `TMP_UPLOADED_FILES` is set, `METADATA_SESSION_DIR` must be set (via `METADATA_SESSION_DIR_INTERNAL` or `METADATA_SESSION_DIR_EXTERNAL` in the paths script). No default; the app fails to start if `METADATA_SESSION_DIR` is missing when uploads are enabled. On production deploy, `METADATA_SESSION_DIR_EXTERNAL` is supplied at runtime by the server or Compose environment (not by the deploy workflow).
 
 ---
 
 ## Summary
 
-| Step | Endpoint | Action |
-|------|----------|--------|
-| 1 | `POST /v1/audio/metadata/session/` | Upload file (or URL); get metadata + `session_token` + `session_expires_in_seconds` (900). |
-| 2 | `POST /v1/audio/metadata/session-download/` | Send `X-Session-Token` (or `session_token` in body) + optional metadata; get file with tags written. Repeatable until session expires. |
+| Step | Endpoint                                    | Action                                                                                                                                 |
+| ---- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| 1    | `POST /v1/audio/metadata/session/`          | Upload file (or URL); get metadata + `session_token` + `session_expires_in_seconds` (900).                                             |
+| 2    | `POST /v1/audio/metadata/session-download/` | Send `X-Session-Token` (or `session_token` in body) + optional metadata; get file with tags written. Repeatable until session expires. |
 
 Session TTL: **15 minutes**. Multi-use: **yes** (multiple downloads per session).

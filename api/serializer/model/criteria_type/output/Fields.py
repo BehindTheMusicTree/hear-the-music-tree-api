@@ -1,2 +1,2 @@
 class Fields:
-    LABEL = 'label'
+    LABEL = "label"

@@ -19,7 +19,6 @@ handle_db_timeout() {
 
 check_script_vars_are_set() {
 	load_app_env_file_if_exists
-	load_project_calculated_paths_env_vars
 
 	REQUIRED_NON_BOOL_VARS=(
     	PROJECT_DIR
@@ -134,7 +133,7 @@ empty_db() {
 		log_with_script_prefixe "ERROR: Failed to drop the user: $output" >&2
 		exit 1
 		fi
-	else 
+	else
 		log_with_script_prefixe "User $DB_SUPERUSER_NAME does not exist."
 	fi
 }

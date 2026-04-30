@@ -1,7 +1,7 @@
 import logging
+import time
 import traceback
 import uuid
-import time
 
 from api.view.error.ErrorResponse import ErrorResponse
 
@@ -14,11 +14,10 @@ def _generate_log_about_headers(request):
 
 
 class RequestLoggingMiddleware:
-
     def __init__(self, get_response):
         self.get_response = get_response
-        self.requestLogger = logging.getLogger('request')
-        self.requestDebugLogger = logging.getLogger('django.request')
+        self.requestLogger = logging.getLogger("request")
+        self.requestDebugLogger = logging.getLogger("django.request")
 
     def __call__(self, request):
         # Generate a unique request ID and start time
@@ -27,54 +26,59 @@ class RequestLoggingMiddleware:
         start_time = time.time()
 
         # Log request details
-        logMessage = f"[{request_id}] Incoming Request: {request.method} {request.path} {request.META.get('REMOTE_ADDR')} "
+        logMessage = (
+            f"[{request_id}] Incoming Request: {request.method} {request.path} {request.META.get('REMOTE_ADDR')} "
+        )
         self.requestLogger.info(logMessage)
         self.requestDebugLogger.info(logMessage)
         self.requestDebugLogger.info(_generate_log_about_headers(request))
 
         # Log request body for non-GET requests (skip multipart: stream is consumed by POST/FILES parsing)
-        if request.method != 'GET':
+        if request.method != "GET":
             try:
                 content_type = (request.content_type or "").lower()
                 if content_type.startswith("multipart/"):
                     self.requestDebugLogger.info(f"[{request_id}] Request Body: <multipart form data>")
                     body = None
                 else:
-                    body = getattr(request, '_body', None)
+                    body = getattr(request, "_body", None)
                     if body is None:
                         body = request.body
                         request._body = body
 
                 if body:
                     try:
-                        body_str = body.decode('utf-8')
+                        body_str = body.decode("utf-8")
                         if body_str:
                             self.requestDebugLogger.info(f"[{request_id}] Request Body: {body_str}")
                     except UnicodeDecodeError:
                         self.requestDebugLogger.info(f"[{request_id}] Request Body: <binary data>")
             except Exception as e:
                 # Log the error but don't fail the request
-                self.requestDebugLogger.error(f"[{request_id}] Error reading request body: {str(e)}")
+                self.requestDebugLogger.error(f"[{request_id}] Error reading request body: {e!s}")
 
         try:
             response = self.get_response(request)
             duration = time.time() - start_time
 
             # Log response details
-            responseCodeMessage = f"[{request_id}] Response: {response.status_code} {response.reason_phrase} (took {duration:.3f}s)"
+            responseCodeMessage = (
+                f"[{request_id}] Response: {response.status_code} {response.reason_phrase} (took {duration:.3f}s)"
+            )
             self.requestLogger.info(responseCodeMessage)
             self.requestDebugLogger.info(responseCodeMessage)
 
             # Special logging for PUT requests to genres
-            if request.method == 'PUT' and '/genres/' in request.path:
+            if request.method == "PUT" and "/genres/" in request.path:
                 self.requestDebugLogger.info(
-                    f"[{request_id}] DEBUG: PUT request to genres completed with status {response.status_code}")
+                    f"[{request_id}] DEBUG: PUT request to genres completed with status {response.status_code}"
+                )
 
             # Log response body for non-streaming responses; skip full body for HTML/error pages
-            if hasattr(response, 'content') and not getattr(response, 'streaming', False):
+            if hasattr(response, "content") and not getattr(response, "streaming", False):
                 try:
-                    content_type = response.get('Content-Type', '') or ''
-                    is_html = 'text/html' in content_type
+                    content_type = response.get("Content-Type", "") or ""
+                    is_html = "text/html" in content_type
                     is_error = 400 <= response.status_code < 600
                     if is_html or is_error:
                         size = len(response.content)
@@ -84,7 +88,7 @@ class RequestLoggingMiddleware:
                             f"{size} bytes, omitted>"
                         )
                     else:
-                        content = response.content.decode('utf-8')
+                        content = response.content.decode("utf-8")
                         if content:
                             self.requestDebugLogger.info(f"[{request_id}] Response Body: {content}")
                 except UnicodeDecodeError:
@@ -115,29 +119,33 @@ class RequestLoggingMiddleware:
                         log_error_str = f"{type(log_error).__name__}: <unable to stringify>"
                 try:
                     self.requestDebugLogger.error(
-                        f"[{request_id}] Error logging exception: {type(log_error).__name__}: {log_error_str}")
+                        f"[{request_id}] Error logging exception: {type(log_error).__name__}: {log_error_str}"
+                    )
                 except Exception:
                     pass
 
             # Special logging for PUT requests to genres
-            if request.method == 'PUT' and '/genres/' in request.path:
+            if request.method == "PUT" and "/genres/" in request.path:
                 try:
                     exc_str = str(e)
                 except Exception:
                     exc_str = f"{type(e).__name__}: <unable to stringify exception>"
                 try:
                     self.requestDebugLogger.error(
-                        f"[{request_id}] DEBUG: PUT request to genres failed with exception: {type(e).__name__}: {exc_str}")
+                        f"[{request_id}] DEBUG: PUT request to genres failed with exception: {type(e).__name__}: {exc_str}"
+                    )
                     self.requestDebugLogger.error(
-                        f"[{request_id}] DEBUG: Exception traceback: {traceback.format_exc()}")
+                        f"[{request_id}] DEBUG: Exception traceback: {traceback.format_exc()}"
+                    )
                 except Exception as log_error:
                     self.requestDebugLogger.error(
-                        f"[{request_id}] Error in detailed logging: {type(log_error).__name__}: {str(log_error)}")
+                        f"[{request_id}] Error in detailed logging: {type(log_error).__name__}: {log_error!s}"
+                    )
 
             raise
 
     def process_exception(self, request, exception):
-        request_id = getattr(request, 'request_id', 'unknown')
+        request_id = getattr(request, "request_id", "unknown")
         try:
             exc_str = str(exception)
         except Exception:
@@ -145,19 +153,20 @@ class RequestLoggingMiddleware:
         try:
             self.requestLogger.error(f"[{request_id}] Exception: {type(exception).__name__} - {exc_str}")
             try:
-                tb_str = '\n'.join(traceback.format_exception(
-                    type(exception), exception, exception.__traceback__))
+                tb_str = "\n".join(traceback.format_exception(type(exception), exception, exception.__traceback__))
                 self.requestLogger.error(tb_str)
             except Exception:
                 self.requestDebugLogger.error(
-                    f"[{request_id}] Error formatting traceback for {type(exception).__name__}")
+                    f"[{request_id}] Error formatting traceback for {type(exception).__name__}"
+                )
         except Exception as log_error:
             try:
                 log_error_str = str(log_error)
             except Exception:
                 log_error_str = f"{type(log_error).__name__}: <unable to stringify>"
             self.requestDebugLogger.error(
-                f"[{request_id}] Error logging exception details: {type(log_error).__name__}: {log_error_str}")
+                f"[{request_id}] Error logging exception details: {type(log_error).__name__}: {log_error_str}"
+            )
 
         try:
             response = ErrorResponse.handle_exception(exception)
@@ -169,19 +178,20 @@ class RequestLoggingMiddleware:
                 e_str = f"{type(e).__name__}: <unable to stringify exception>"
             try:
                 self.requestLogger.error(
-                    f"[{request_id}] Error in ErrorResponse Handling: {type(e).__name__} - {e_str}")
+                    f"[{request_id}] Error in ErrorResponse Handling: {type(e).__name__} - {e_str}"
+                )
                 try:
-                    tb_str = '\n'.join(traceback.format_exception(type(e), e, e.__traceback__))
+                    tb_str = "\n".join(traceback.format_exception(type(e), e, e.__traceback__))
                     self.requestLogger.error(tb_str)
                 except Exception:
                     self.requestDebugLogger.error(
-                        f"[{request_id}] Error formatting traceback for ErrorResponse handling error")
+                        f"[{request_id}] Error formatting traceback for ErrorResponse handling error"
+                    )
             except Exception as log_error:
                 try:
                     log_error_str = str(log_error)
                 except Exception:
                     log_error_str = f"{type(log_error).__name__}: <unable to stringify>"
                 self.requestDebugLogger.error(
-                    f"[{request_id}] Error logging ErrorResponse handling error: {type(log_error).__name__}: {log_error_str}")
-
-        return None
+                    f"[{request_id}] Error logging ErrorResponse handling error: {type(log_error).__name__}: {log_error_str}"
+                )

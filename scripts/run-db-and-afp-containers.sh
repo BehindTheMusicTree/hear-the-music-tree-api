@@ -19,12 +19,10 @@ log_pull_debug () {
 
 check_script_vars_are_set () {
     load_app_env_file_if_exists
-    load_project_calculated_paths_env_vars
 
     local REQUIRED_NON_BOOL_VARS=(
         ENV
         DOCKERHUB_USERNAME
-        LIBRARIES_DIR_NAME
         TMP_UPLOADED_FILES
         DB_CONTAINER_NAME
         DB_IMAGE_REPO
@@ -52,10 +50,13 @@ check_script_vars_are_set () {
 main() {
     SCRIPTS_DIR=$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)/
     PROJECT_DIR=$(realpath $(dirname "$SCRIPTS_DIR"))/
-    APP_ENV_FILE="${PROJECT_DIR}env/.env"
+    APP_ENV_FILE="${ENV_FILE:-}"
+    if [ -z "$APP_ENV_FILE" ]; then
+        APP_ENV_FILE="${PROJECT_DIR}.env"
+    fi
     source "${SCRIPTS_DIR}utils.sh"
 
-    if [ -f "$APP_ENV_FILE" ]; then
+    if [ -n "$APP_ENV_FILE" ] && [ -f "$APP_ENV_FILE" ]; then
         set -a
         . "$APP_ENV_FILE"
         set +a

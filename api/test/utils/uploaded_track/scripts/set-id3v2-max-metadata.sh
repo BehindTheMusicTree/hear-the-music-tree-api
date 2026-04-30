@@ -131,13 +131,13 @@ if [ $HAS_IMAGEMAGICK -eq 1 ]; then
     TEMP_IMAGE=$(mktemp).jpg
     convert -size 1200x1200 xc:white -pointsize 20 -gravity center \
         -draw "text 0,0 'Test Cover Art'" "$TEMP_IMAGE"
-    
+
     mid3v2 --APIC "$TEMP_IMAGE" "$RESOLVED_FILE"
-    
+
     if [ $? -ne 0 ]; then
         echo "Warning: Failed to write cover art"
     fi
-    
+
     rm -f "$TEMP_IMAGE"
 else
     echo "Note: ImageMagick not found - skipping cover art test"

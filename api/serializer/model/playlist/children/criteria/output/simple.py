@@ -1,4 +1,3 @@
-
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework import serializers
 
@@ -34,11 +33,13 @@ class CriteriaPlaylistSimpleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CriteriaPlaylist
-        fields = [Fields.UUID,
-                  Fields.NAME,
-                  Fields.CRITERIA,
-                  Fields.PARENT,
-                  Fields.ROOT,
-                  Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC,
-                  Fields.CREATED_ON,
-                  Fields.UPDATED_ON,]
+        fields = [
+            Fields.UUID,
+            Fields.NAME,
+            Fields.CRITERIA,
+            Fields.PARENT,
+            Fields.ROOT,
+            Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC,
+            Fields.CREATED_ON,
+            Fields.UPDATED_ON,
+        ]

@@ -1,12 +1,11 @@
 from rest_framework import status
 
 from api.serializer.model.uploaded_track.output.UploadedTrackOutputFieldKey import UploadedTrackOutputFieldKey
-from api.test.utils.field.filter.char.NullableCharFilterTestCase import NullableCharFilterTestCase
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.field.filter.char.NullableCharFilterTestCase import NullableCharFilterTestCase
 
 
 class TestCase(UploadedTrackTestCase, NullableCharFilterTestCase):
-
     def test_not_provided_then_results(self):
         track_life = self.model_fixture_factory.create_uploaded_track_with_file(title="Life")
         track_hey = self.model_fixture_factory.create_uploaded_track_with_file(title="Hey")
@@ -28,7 +27,7 @@ class TestCase(UploadedTrackTestCase, NullableCharFilterTestCase):
         genre = self.model_fixture_factory.create_genre(name="Rock")
         self.model_fixture_factory.create_uploaded_track_with_file(title="Hey", genre=genre)
 
-        response = self._list_uploaded_tracks(genre_name='')
+        response = self._list_uploaded_tracks(genre_name="")
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 2
@@ -40,7 +39,7 @@ class TestCase(UploadedTrackTestCase, NullableCharFilterTestCase):
         genre_punk = self.model_fixture_factory.create_genre(name="Punk")
         self.model_fixture_factory.create_uploaded_track_with_file(title="Hey", genre=genre_punk)
 
-        response = self._list_uploaded_tracks(genre_name='RoC')
+        response = self._list_uploaded_tracks(genre_name="RoC")
 
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 1

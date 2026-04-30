@@ -4,81 +4,89 @@ import os
 from typing import TYPE_CHECKING, cast
 
 import audiometa
+from django.conf import settings as django_settings
 from django.core.files.uploadedfile import TemporaryUploadedFile
 from django.db import models
-from django.db.models.fields.files import FieldFile
 from django.db.models import F
+from django.db.models.fields.files import FieldFile
 from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
 from django.utils.translation import gettext as _
 
-from django.conf import settings as django_settings
-
 from api import settings
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.exception.validation.app.AppValidationException import AppValidationException
+from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.model.field.foreign_key.AppForeignKey import AppForeignKey
 from api.model.field.foreign_key.AppOneToOneField import AppOneToOneField
 from api.model.field.foreign_key.PrivateOneToOneField import PrivateOneToOneField
 from api.model.musicbrainz_resource.children.recording.MbRecording import MbRecording
-from api.model.musicbrainz_resource.children.recording.MbRecordingLookupResult import (
-    MusicbrainzRecordingLookupResult
+from api.model.musicbrainz_resource.children.recording.MbRecordingLookupResult import MusicbrainzRecordingLookupResult
+from api.model.musicbrainz_resource.children.recording.missing_cause.code.MbRecordingMissingCauseCode import (
+    MbRecordingMissingCauseCode,
 )
 from api.model.musicbrainz_resource.children.recording.missing_cause.MbRecordingMissingCause import (
-    MbRecordingMissingCause
-)
-from api.model.musicbrainz_resource.children.recording.missing_cause.code.MbRecordingMissingCauseCode import (
-    MbRecordingMissingCauseCode
+    MbRecordingMissingCause,
 )
 from api.model.private_standard_resource.PrivateStandardResource import PrivateStandardResource
 from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
 from api.model.utils import utils as model_utils
 from api.model.utils.PreserveSpacesStorage import PreserveSpacesStorage
-from api.utils import audio_fingerprinter, audio_file_metadata, musicbrainz
-from api.utils.audio_file_metadata.types import AppMetadata
+from api.utils import audio_file_metadata, audio_fingerprinter, musicbrainz
 from api.utils.audio_file_metadata.exceptions import FileCorruptedError
+from api.utils.audio_file_metadata.types import AppMetadata
 from api.validator.TrackFileValidator import TrackFileValidator
 
 from .Fields import Fields
 from .fingerprinting.FingerprintingResult import FingerprintingResult
-from .fingerprinting.missing_cause.FingerprintMissingCause import FingerprintMissingCause
 from .fingerprinting.missing_cause.code.FingerprintMissingCauseCode import FingerprintMissingCauseCode
+from .fingerprinting.missing_cause.FingerprintMissingCause import FingerprintMissingCause
 
 
 class TrackFile(PrivateStandardResource):
     uploaded_track = PrivateOneToOneField(  # type: ignore
-        'UploadedTrack', on_delete=models.CASCADE, related_name=UploadedTrackFields.TRACK_FILE_INTERNAL.value)
+        "UploadedTrack", on_delete=models.CASCADE, related_name=UploadedTrackFields.TRACK_FILE_INTERNAL.value
+    )
     file: TemporaryUploadedFile | FieldFile = models.FileField(  # type: ignore
         upload_to=model_utils.get_user_lib_path,
         storage=PreserveSpacesStorage(),
         help_text="Only audio formats accepted.",
-        validators=[TrackFileValidator(),],
-        max_length=settings.FILE_PATH_MAX_LENGTH)
+        validators=[
+            TrackFileValidator(),
+        ],
+        max_length=settings.FILE_PATH_MAX_LENGTH,
+    )
     duration_in_sec = models.PositiveIntegerField()
     fingerprint_memory = models.BinaryField(null=True, blank=True, default=None, editable=True)
     fingerprint_missing_cause = AppForeignKey(
-        FingerprintMissingCause,  on_delete=models.DO_NOTHING, null=True, blank=True)
+        FingerprintMissingCause, on_delete=models.DO_NOTHING, null=True, blank=True
+    )
     md5_has_been_corrected = models.BooleanField(default=False)
     size_in_bytes = models.DecimalField(max_digits=11, decimal_places=2)
-    size_in_ko = models.GeneratedField(expression=F(Fields.SIZE_IN_BYTES) / 1024,  # type: ignore
-                                       output_field=models.DecimalField(max_digits=8, decimal_places=2),
-                                       db_persist=True)
-    size_in_mo = models.GeneratedField(expression=F(Fields.SIZE_IN_BYTES) / (1024 * 1024),  # type: ignore
-                                       output_field=models.DecimalField(max_digits=5, decimal_places=2),
-                                       db_persist=True)
+    size_in_ko = models.GeneratedField(
+        expression=F(Fields.SIZE_IN_BYTES) / 1024,  # type: ignore
+        output_field=models.DecimalField(max_digits=8, decimal_places=2),
+        db_persist=True,
+    )
+    size_in_mo = models.GeneratedField(
+        expression=F(Fields.SIZE_IN_BYTES) / (1024 * 1024),  # type: ignore
+        output_field=models.DecimalField(max_digits=5, decimal_places=2),
+        db_persist=True,
+    )
     bitrate_in_kbps = models.IntegerField()
     musicbrainz_recording = AppForeignKey(MbRecording, on_delete=models.DO_NOTHING, default=None, null=True)
     musicbrainz_recording_missing_cause = AppOneToOneField(
-        MbRecordingMissingCause, on_delete=models.DO_NOTHING, null=True)
+        MbRecordingMissingCause, on_delete=models.DO_NOTHING, null=True
+    )
 
     if TYPE_CHECKING:
         from ..UploadedTrack import UploadedTrack
+
         uploaded_track: UploadedTrack
 
     class Meta:
-        db_table = 'htmt_api_track_file'
-        verbose_name = 'Track File'
-        verbose_name_plural = 'Track Files'
+        db_table = "htmt_api_track_file"
+        verbose_name = "Track File"
+        verbose_name_plural = "Track Files"
 
     @property
     def filename(self) -> str:
@@ -106,55 +114,61 @@ class TrackFile(PrivateStandardResource):
 
         if django_settings.AFP_ENABLED:
             fingerprinting_result = audio_fingerprinter.get_fingerprinting_result(
-                user=self.user, track_file=self.file, title=self.uploaded_track.title)
+                user=self.user, track_file=self.file, title=self.uploaded_track.title
+            )
 
             if fingerprinting_result.is_success:
                 fingerprint = binascii.hexlify(fingerprinting_result.fingerprint)
 
                 if self.uploaded_track.track_file_fingerprint_must_be_unique:
                     existing_track_file = cast(
-                        'TrackFile | None',
-                        self.__class__.objects.filter(user=self.user, fingerprint_memory=fingerprint).first())
+                        "TrackFile | None",
+                        self.__class__.objects.filter(user=self.user, fingerprint_memory=fingerprint).first(),
+                    )
                     if existing_track_file:
                         raise AppValidationException(
-                            field_name='file',
-                            message=_(f'The file {self.filename} has the same fingerprint as the track "'
-                                      f'{existing_track_file.uploaded_track.simple_str()}"'),
-                            field_validation_error_code=FieldValidationErrorCode.TRACK_FILE_FINGERPRINT_DUPLICATE)
+                            field_name="file",
+                            message=_(
+                                f'The file {self.filename} has the same fingerprint as the track "'
+                                f'{existing_track_file.uploaded_track.simple_str()}"'
+                            ),
+                            field_validation_error_code=FieldValidationErrorCode.TRACK_FILE_FINGERPRINT_DUPLICATE,
+                        )
                 self.fingerprint_memory = fingerprint
             else:
                 self.fingerprint_missing_cause = fingerprinting_result.missing_cause
         else:
             self.fingerprint_missing_cause = FingerprintMissingCause.objects.create(
-                user=self.user, code=FingerprintMissingCauseCode.Codes.AFP_DISABLED)
+                user=self.user, code=FingerprintMissingCauseCode.Codes.AFP_DISABLED
+            )
 
         return fingerprinting_result
 
-    def _manage_musicbrainz_recording(self, fingerprinting_result_nullable: FingerprintingResult | None
-                                      ) -> MusicbrainzRecordingLookupResult | None:
+    def _manage_musicbrainz_recording(
+        self, fingerprinting_result_nullable: FingerprintingResult | None
+    ) -> MusicbrainzRecordingLookupResult | None:
         musicbrainz_recording_lookup_result = None
 
         if self.fingerprint_missing_cause:
-            if self.fingerprint_missing_cause.code.code == \
-                    FingerprintMissingCauseCode.Codes.AFP_DISABLED:
+            if self.fingerprint_missing_cause.code.code == FingerprintMissingCauseCode.Codes.AFP_DISABLED:
                 self.musicbrainz_recording_missing_cause = MbRecordingMissingCause.objects.create(
-                    user=self.user,
-                    code=MbRecordingMissingCauseCode.Codes.AFP_DISABLED)
+                    user=self.user, code=MbRecordingMissingCauseCode.Codes.AFP_DISABLED
+                )
             else:
                 self.musicbrainz_recording_missing_cause = MbRecordingMissingCause.objects.create(
                     user=self.user,
                     code=MbRecordingMissingCauseCode.Codes.TRACK_FILE_FINGERPRINTING_FAILED,
-                    message=f"Fingerprinting failed.")
+                    message="Fingerprinting failed.",
+                )
         elif not django_settings.MUSICBRAINZ_LOOKUP_ENABLED:
             self.musicbrainz_recording_missing_cause = MbRecordingMissingCause.objects.create(
-                user=self.user,
-                code=MbRecordingMissingCauseCode.Codes.MUSICBRAINZ_LOOKUP_DISABLED)
+                user=self.user, code=MbRecordingMissingCauseCode.Codes.MUSICBRAINZ_LOOKUP_DISABLED
+            )
         else:
             fingerprinting_result: FingerprintingResult = fingerprinting_result_nullable  # type: ignore
-            musicbrainz_recording_lookup_result = \
-                musicbrainz.get_musicbrainz_recording_lookup_result(user=self.user,
-                                                                    fingerprint=fingerprinting_result.fingerprint,
-                                                                    duration_in_sec=self.duration_in_sec)
+            musicbrainz_recording_lookup_result = musicbrainz.get_musicbrainz_recording_lookup_result(
+                user=self.user, fingerprint=fingerprinting_result.fingerprint, duration_in_sec=self.duration_in_sec
+            )
 
             if musicbrainz_recording_lookup_result.is_success:
                 self.musicbrainz_recording = musicbrainz_recording_lookup_result.recording
@@ -164,7 +178,7 @@ class TrackFile(PrivateStandardResource):
         return musicbrainz_recording_lookup_result
 
     def _prepare_save(self, ctx) -> dict:
-        if self.extension.lower() == '.flac':
+        if self.extension.lower() == ".flac":
             if audio_file_metadata.is_flac_md5_valid(self.file):
                 self.md5_has_been_corrected = False
             else:
@@ -175,8 +189,9 @@ class TrackFile(PrivateStandardResource):
                 except FileCorruptedError as e:
                     raise AppValidationException(
                         field_name=Fields.FILE,
-                        message='The FLAC file appears to be corrupted and cannot be processed.',
-                        field_validation_error_code=FieldValidationErrorCode.TRACK_FILE_CORRUPTED)
+                        message="The FLAC file appears to be corrupted and cannot be processed.",
+                        field_validation_error_code=FieldValidationErrorCode.TRACK_FILE_CORRUPTED,
+                    )
         try:
             duration = audio_file_metadata.get_duration_in_sec(self.file)
             self.duration_in_sec = duration if duration > 1 else 1
@@ -186,16 +201,20 @@ class TrackFile(PrivateStandardResource):
             self._manage_musicbrainz_recording(fingerprinting_result)
             return ctx.kwargs
         except FileCorruptedError as e:
-            raise AppValidationException(field_name=Fields.FILE,
-                                         message="File corrupted",
-                                         field_validation_error_code=FieldValidationErrorCode.TRACK_FILE_CORRUPTED)
+            raise AppValidationException(
+                field_name=Fields.FILE,
+                message="File corrupted",
+                field_validation_error_code=FieldValidationErrorCode.TRACK_FILE_CORRUPTED,
+            )
         except Exception:
             raise
 
     def update_file_metadata(self, app_metadata: AppMetadata):
-        audio_file_metadata.update_file_metadata(file=self.file,
-                                                 app_metadata=app_metadata,
-                                                 normalized_rating_max_value=settings.UPLOADED_TRACK_RATING_VALUE_MAX)
+        audio_file_metadata.update_file_metadata(
+            file=self.file,
+            app_metadata=app_metadata,
+            normalized_rating_max_value=settings.UPLOADED_TRACK_RATING_VALUE_MAX,
+        )
 
     def handle_flac_md5(self) -> bool:
         return False

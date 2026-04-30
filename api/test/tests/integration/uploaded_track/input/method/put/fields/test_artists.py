@@ -2,12 +2,11 @@ from rest_framework import status
 
 from api.model.artist.Artist import Artist
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
-from api.test.utils.field.body_data.method.PutBodyDataTestCase import PutBodyDataTestCase
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from api.test.utils.field.body_data.method.PutBodyDataTestCase import PutBodyDataTestCase
 
 
 class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
-
     def test_not_provided_then_unchanged(self):
         artist = self.model_fixture_factory.create_artist(name="a-ha")
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="Love", artists=[artist])
@@ -22,7 +21,9 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         artist_old = self.model_fixture_factory.create_artist(name="a-ha")
         uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="koko", artists=[artist_old])
 
-        response = self._put_uploaded_track(uuid=uploaded_track.uuid, **{UploadedTrackInputFieldKey.ARTISTS_NAMES_MULTIPART.value: []})
+        response = self._put_uploaded_track(
+            uuid=uploaded_track.uuid, **{UploadedTrackInputFieldKey.ARTISTS_NAMES_MULTIPART.value: []}
+        )
 
         assert response.status_code == status.HTTP_200_OK
         assert self.saved_object.artists.count() == 0
@@ -71,7 +72,9 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         track = self.model_fixture_factory.create_uploaded_track_with_file(title="Foire", artists=[artist])
         self.model_fixture_factory.create_uploaded_track_with_file(title="Josie", artists=[artist])
 
-        response = self._put_uploaded_track(uuid=track.uuid, **{UploadedTrackInputFieldKey.ARTISTS_NAMES_MULTIPART.value: [artist_name]})
+        response = self._put_uploaded_track(
+            uuid=track.uuid, **{UploadedTrackInputFieldKey.ARTISTS_NAMES_MULTIPART.value: [artist_name]}
+        )
         assert response.status_code == status.HTTP_200_OK
         assert Artist.objects.filter(user=self.test_user1, name=artist_name).exists()
 
@@ -82,7 +85,9 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         album = self.model_fixture_factory.create_album(name="Hunting High and Low", album_artists=[artist])
         self.model_fixture_factory.create_uploaded_track_with_file(title="Josie", album=album)
 
-        response = self._put_uploaded_track(uuid=track.uuid, **{UploadedTrackInputFieldKey.ARTISTS_NAMES_MULTIPART.value: [artist_name]})
+        response = self._put_uploaded_track(
+            uuid=track.uuid, **{UploadedTrackInputFieldKey.ARTISTS_NAMES_MULTIPART.value: [artist_name]}
+        )
 
         assert response.status_code == status.HTTP_200_OK
         assert Artist.objects.filter(user=self.test_user1, name=artist_name).exists()

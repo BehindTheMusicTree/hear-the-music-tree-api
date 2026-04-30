@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class CriteriaOutputFieldKey(str, Enum):
+class CriteriaOutputFieldKey(StrEnum):
     CREATED_ON = "created_on"
     UPDATED_ON = "updated_on"
     UUID = "uuid"

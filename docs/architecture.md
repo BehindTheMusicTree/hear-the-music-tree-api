@@ -50,6 +50,7 @@ For detailed information about the input data flow, see [Input Data Flow documen
 According to the HTTP specification (RFC 7578), duplicate field names are standard and allowed in `multipart/form-data`. However, this application enforces a validation rule that **rejects duplicate fields** to prevent confusion and ensure data integrity. This is an application-level constraint, not a protocol requirement.
 
 **Rules:**
+
 - ❌ **Duplicate fields are rejected** - Sending the same field name multiple times will result in a `400 Bad Request` error with error code `duplicate`
 - ✅ **List fields are allowed** - Fields with a `[]` suffix (e.g., `artists_names[]`) are allowed to have multiple values, as this is the intended way to send arrays in multipart form data
 
@@ -117,11 +118,11 @@ This follows common practice (e.g. Spotify’s `/v1/me/playlists`, Google/Micros
 
 **Examples:**
 
-| Purpose              | URL pattern           | Example                    |
-|----------------------|-----------------------|----------------------------|
-| User’s resource      | `/{resource}/` or `/{scope}/{resource}/` | `genres/`, `me/genres/`   |
-| Reference (system)   | `reference/{resource}/`                  | `reference/genres/`       |
-| Resource by ID       | `/{resource}/{id}/` or `/{scope}/{resource}/{id}/` | `reference/genres/{uuid}/` |
+| Purpose            | URL pattern                                        | Example                    |
+| ------------------ | -------------------------------------------------- | -------------------------- |
+| User’s resource    | `/{resource}/` or `/{scope}/{resource}/`           | `genres/`, `me/genres/`    |
+| Reference (system) | `reference/{resource}/`                            | `reference/genres/`        |
+| Resource by ID     | `/{resource}/{id}/` or `/{scope}/{resource}/{id}/` | `reference/genres/{uuid}/` |
 
 ## Core Architectural Patterns
 
@@ -148,6 +149,7 @@ The application uses a hierarchical model structure with base classes for common
 **Best Practices:**
 
 **Good example:**
+
 ```python
 # Genre.py
 from api.model.genre.Fields import Fields
@@ -156,7 +158,7 @@ class Genre(PrivateStandardResource):
     name = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.CASCADE, db_index=True)
     parent = models.ForeignKey('self', null=True, on_delete=models.CASCADE)
-    
+
     class Meta:
         indexes = [
             models.Index(fields=[Fields.USER, Fields.NAME]),
@@ -168,6 +170,7 @@ def get_user_genres(user: User) -> QuerySet:
 ```
 
 **Bad example:**
+
 ```python
 # Bad - Missing user filter
 def get_genre(genre_id: UUID) -> Genre:
@@ -202,6 +205,7 @@ def get_genre(genre_id: UUID) -> Genre:
 **AppInputSerializer Overview:**
 
 `AppInputSerializer` extends Django REST Framework's `Serializer` to provide input validation features:
+
 - Consistent error handling using `AppValidationException`
 - Multipart form data normalization and validation
 - Duplicate field detection (for JSON requests)
@@ -215,11 +219,13 @@ def get_genre(genre_id: UUID) -> Genre:
 The serializer handles multipart and JSON requests differently:
 
 1. **List Fields**:
+
    - **Multipart**: List fields MUST use `[]` suffix (e.g., `artists_names[]`)
    - **JSON**: List fields can be specified without `[]` suffix
    - The serializer automatically maps `[]` suffix fields to their base field names
 
 2. **Field Normalization**:
+
    - Multipart data is normalized: single values are extracted from lists for non-list fields
    - JSON data is used as-is
 
@@ -230,6 +236,7 @@ The serializer handles multipart and JSON requests differently:
 **AppField Overview:**
 
 All custom field classes should inherit from `AppField` (not DRF's `Field` directly). `AppField` provides:
+
 - Consistent error handling using `AppValidationException` (for input validation)
 - Automatic error code mapping from DRF validation keys
 - Proper field name handling for list fields (with `[]` suffix)
@@ -239,6 +246,7 @@ All custom field classes should inherit from `AppField` (not DRF's `Field` direc
 **Error Code Mapping:**
 
 `AppField` automatically maps common DRF validation keys to application-specific error codes:
+
 - `'required'` → `FieldValidationErrorCode.REQUIRED`
 - `'null'` → `FieldValidationErrorCode.REQUIRED`
 - `'blank'` → `FieldValidationErrorCode.BLANK`
@@ -261,7 +269,7 @@ from api.serializer.field.AppListField import AppListField
 class GenreSerializer(AppInputSerializer):
     name = AppCharField()
     tags = AppListField(child=AppCharField())
-    
+
     class Meta:
         fields = [Fields.NAME, Fields.TAGS]
 ```
@@ -389,7 +397,7 @@ The `ConsistentParametersFilterBackend` ensures consistent parameter handling wi
 ```python
 class GenreFilterSet(AppFilterSet):
     name = AppFilter(field_name=Fields.NAME)
-    
+
     class Meta:
         model = Genre
         fields = [Fields.NAME]
@@ -423,6 +431,7 @@ class GenreFilterSet(AppFilterSet):
 **Best Practices:**
 
 **Good example:**
+
 ```python
 from api.exception.validation.app.AppValidationException import AppValidationException
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
@@ -438,6 +447,7 @@ def validate_genre_name(self, name: str, user: User) -> None:
 ```
 
 **Bad example:**
+
 ```python
 # Bad - Using DRF ValidationError
 from rest_framework.exceptions import ValidationError

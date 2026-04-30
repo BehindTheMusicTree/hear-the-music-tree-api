@@ -28,5 +28,5 @@ class MusicbrainzRecordingDetailedSerializer(AppModelSerializer):
             Fields.MUSICBRAINZ_LINK,
             Fields.DURATION_IN_SEC,
             Fields.DURATION_STR_IN_HOUR_MIN_SEC,
-            Fields.RELEASE_DATE
+            Fields.RELEASE_DATE,
         ]

@@ -1,4 +1,3 @@
-
 from api.model.album.Fields import Fields as ModelFields
 
 

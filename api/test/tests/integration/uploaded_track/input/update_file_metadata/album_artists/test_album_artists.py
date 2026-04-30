@@ -4,7 +4,7 @@ from api.test.tests import conftest
 from api.test.tests.integration.uploaded_track.input.update_file_metadata.album_artists.TestCase import (
     FlacTestCase,
     Mp3TestCase,
-    WavTestCase
+    WavTestCase,
 )
 
 

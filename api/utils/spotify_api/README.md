@@ -24,9 +24,10 @@ pip install -r requirements.txt
      - Development: `http://localhost:{port}/spotify/callback/`
      - Production: `https://your-domain.com/spotify/callback/`
 
-> **Note about Redirect URIs**: 
-> - This integration uses the client credentials flow which doesn't actually use the redirect URI, but Spotify requires 
->one to be set
+> **Note about Redirect URIs**:
+>
+> - This integration uses the client credentials flow which doesn't actually use the redirect URI, but Spotify requires
+>   one to be set
 > - If you later implement user authentication with Spotify, you'll need a proper callback endpoint to handle the OAuth flow
 > - You can add multiple redirect URIs in the Spotify dashboard for different environments
 

@@ -1,4 +1,3 @@
-
 from rest_framework import serializers
 
 from api.model.playlist.Fields import Fields as PlayListFields
@@ -28,12 +27,14 @@ class ChildPlaylistSerializer(PlaylistSimpleSerializer):
     uploaded_tracks_archived_count = serializers.IntegerField()
 
     class Meta:
-        fields = [Fields.UUID,
-                  Fields.CREATED_ON,
-                  Fields.UPDATED_ON,
-                  Fields.NAME,
-                  Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC,
-                  Fields.UPLOADED_TRACKS_NOT_ARCHIVED_PUBLIC,
-                  Fields.UPLOADED_TRACKS_ARCHIVED_COUNT_PUBLIC,
-                  Fields.DURATION_IN_SEC,
-                  Fields.DURATION_STR_IN_HOUR_MIN_SEC]
+        fields = [
+            Fields.UUID,
+            Fields.CREATED_ON,
+            Fields.UPDATED_ON,
+            Fields.NAME,
+            Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC,
+            Fields.UPLOADED_TRACKS_NOT_ARCHIVED_PUBLIC,
+            Fields.UPLOADED_TRACKS_ARCHIVED_COUNT_PUBLIC,
+            Fields.DURATION_IN_SEC,
+            Fields.DURATION_STR_IN_HOUR_MIN_SEC,
+        ]

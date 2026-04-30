@@ -1,12 +1,10 @@
-
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
 class TestCase(UploadedTrackTestCase):
-
     """
     As the file is too big to be uploaded on Github, the pytest won't work during Github's
-    actions. Therefore we have to comment this test before any dev push (as it triggers 
+    actions. Therefore we have to comment this test before any dev push (as it triggers
     Github actions)
 
     response = self.postSampleTrack(

@@ -5,17 +5,14 @@ Always pin exact versions for all dependencies. Never use "latest", "*", or vers
 ## Package Managers
 
 ### npm/package.json
-- Use exact versions: `"package-name": "1.2.3"` 
+- Use exact versions: `"package-name": "1.2.3"`
 - Avoid: `"latest"`, `"*"`, `"^1.2.3"` (caret ranges), `"~1.2.3"` (tilde ranges)
 - Exception: Caret ranges (`^`) are acceptable for devDependencies if explicitly needed, but prefer exact versions
 
-### Python/requirements.txt
-- Use exact versions: `package-name==1.2.3`
-- Avoid: `package-name>=1.2.3`, `package-name`, `package-name~=1.2.3`
-
-### pip/pyproject.toml
-- Use exact versions: `package-name = "==1.2.3"`
-- Avoid: version ranges or unpinned dependencies
+### Python (canonical: pyproject.toml)
+- Declare runtime deps under `[project] dependencies` and dev-only deps under `[project.optional-dependencies] dev`
+- Use exact versions: `package-name==1.2.3` in the dependency strings
+- Avoid: unpinned dependencies, loose ranges
 
 ## Benefits
 - Ensures reproducible builds
@@ -25,10 +22,8 @@ Always pin exact versions for all dependencies. Never use "latest", "*", or vers
 
 # Draft Documents Location
 
-All draft planning documents (PR descriptions, feature descriptions, issue descriptions) should be stored in:
-- `.github/descriptions/`
-
-This directory is gitignored to keep internal planning documents out of version control.
+- **PR descriptions**: Always draft in `.github/pr-descriptions/` (see `.cursor/rules/pr-description-in-separate-file.mdc`). That directory is git-ignored except any explicitly tracked template files.
+- **Other internal planning drafts** (feature notes, etc.): `.github/descriptions/` — git-ignored to keep planning out of version control unless committed intentionally.
 
 
 

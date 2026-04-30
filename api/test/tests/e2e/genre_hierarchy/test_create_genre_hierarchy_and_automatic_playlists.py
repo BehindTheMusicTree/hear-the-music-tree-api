@@ -42,14 +42,22 @@ class TestCase(AppTestCase):
         assert parent_genre.parent is None
 
         response = genre_test_case._post_genre(
-            **{PostUploadedTrackInputFieldKey.NAME_PUBLIC: child_genre_name, PostUploadedTrackInputFieldKey.PARENT: parent_genre.uuid})
+            **{
+                PostUploadedTrackInputFieldKey.NAME_PUBLIC: child_genre_name,
+                PostUploadedTrackInputFieldKey.PARENT: parent_genre.uuid,
+            }
+        )
         assert response.status_code == status.HTTP_201_CREATED
         child_genre = genre_test_case.saved_object
         assert child_genre.name == child_genre_name
         assert child_genre.parent == parent_genre
 
-        response = genre_test_case._post_genre(**{PostUploadedTrackInputFieldKey.NAME_PUBLIC: grandchild_genre_name,
-                                                  PostUploadedTrackInputFieldKey.PARENT: child_genre.uuid})
+        response = genre_test_case._post_genre(
+            **{
+                PostUploadedTrackInputFieldKey.NAME_PUBLIC: grandchild_genre_name,
+                PostUploadedTrackInputFieldKey.PARENT: child_genre.uuid,
+            }
+        )
         assert response.status_code == status.HTTP_201_CREATED
         grandchild_genre = genre_test_case.saved_object
         assert grandchild_genre.name == grandchild_genre_name
@@ -61,23 +69,25 @@ class TestCase(AppTestCase):
         assert genres.filter(name=child_genre_name).exists()
         assert genres.filter(name=grandchild_genre_name).exists()
 
-        parent_genre_playlist = CriteriaPlaylist.objects.get(
-            user=self.test_user1, criteria__name=parent_genre_name)
-        child_genre_playlist = CriteriaPlaylist.objects.get(
-            user=self.test_user1, criteria__name=child_genre_name)
+        parent_genre_playlist = CriteriaPlaylist.objects.get(user=self.test_user1, criteria__name=parent_genre_name)
+        child_genre_playlist = CriteriaPlaylist.objects.get(user=self.test_user1, criteria__name=child_genre_name)
         grandchild_genre_playlist = CriteriaPlaylist.objects.get(
-            user=self.test_user1, criteria__name=grandchild_genre_name)
+            user=self.test_user1, criteria__name=grandchild_genre_name
+        )
 
         assert parent_genre_playlist is not None
         assert child_genre_playlist is not None
         assert grandchild_genre_playlist is not None
 
         response = uploaded_track_test_case._post_uploaded_track(
-            UploadedTrackTestFilename.DEFAULT_MP3, title="Test Track")
+            UploadedTrackTestFilename.DEFAULT_MP3, title="Test Track"
+        )
         assert response.status_code == status.HTTP_201_CREATED
         track = uploaded_track_test_case.saved_object
 
-        response = uploaded_track_test_case._put_uploaded_track(track.uuid, **{UploadedTrackInputFieldKey.GENRE.value: grandchild_genre_name})
+        response = uploaded_track_test_case._put_uploaded_track(
+            track.uuid, **{UploadedTrackInputFieldKey.GENRE.value: grandchild_genre_name}
+        )
         assert response.status_code == status.HTTP_200_OK
 
         track.refresh_from_db()

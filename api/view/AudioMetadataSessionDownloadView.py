@@ -25,16 +25,21 @@ class AudioMetadataSessionDownloadView(APIView):
     """POST: send session_token (header or body) + optional metadata; returns file with tags written. Multi-use."""
 
     @extend_schema(
-        request={"application/json": {"type": "object", "properties": {
-            "session_token": {"type": "string"},
-            "title": {"type": "string"},
-            "artists_names": {"type": "array", "items": {"type": "string"}},
-            "album_name": {"type": "string"},
-            "album_artists_names": {"type": "array", "items": {"type": "string"}},
-            "genres_names": {"type": "array", "items": {"type": "string"}},
-            "rating": {"type": "integer"},
-            "language": {"type": "string"},
-        }}},
+        request={
+            "application/json": {
+                "type": "object",
+                "properties": {
+                    "session_token": {"type": "string"},
+                    "title": {"type": "string"},
+                    "artists_names": {"type": "array", "items": {"type": "string"}},
+                    "album_name": {"type": "string"},
+                    "album_artists_names": {"type": "array", "items": {"type": "string"}},
+                    "genres_names": {"type": "array", "items": {"type": "string"}},
+                    "rating": {"type": "integer"},
+                    "language": {"type": "string"},
+                },
+            }
+        },
         responses={200: OpenApiTypes.BINARY, 404: None, 410: None},
         description=(
             "Download the file for the given session token with optional metadata written in. "
@@ -51,7 +56,9 @@ class AudioMetadataSessionDownloadView(APIView):
             AudioMetadataSessionDownloadSerializer,
         )
 
-        token = request.headers.get(SESSION_TOKEN_HEADER) or (request.data.get(Fields.SESSION_TOKEN) if request.data else None)
+        token = request.headers.get(SESSION_TOKEN_HEADER) or (
+            request.data.get(Fields.SESSION_TOKEN) if request.data else None
+        )
         if not token or not str(token).strip():
             return Response(
                 {"detail": "Missing session token. Send X-Session-Token header or session_token in body."},

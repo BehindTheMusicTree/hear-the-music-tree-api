@@ -1,9 +1,9 @@
 import pytest
 from rest_framework import status
 
+from api.filtering.set.search.Fields import Fields as SearchUploadedTrackInputFieldKey
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.serializer.model.criteria.input.post import Fields as PostUploadedTrackInputFieldKey
-from api.filtering.set.search.Fields import Fields as SearchUploadedTrackInputFieldKey
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 from api.test.tests.integration.search.SearchTestCase import SearchMixin
@@ -33,27 +33,40 @@ class TestCase(GenreTestCase, SearchMixin):
         assert response.status_code == status.HTTP_201_CREATED
         parent_genre = self.saved_object
 
-        response = self._post_genre(**{PostUploadedTrackInputFieldKey.NAME_PUBLIC: child_genre_name, PostUploadedTrackInputFieldKey.PARENT: parent_genre.uuid})
+        response = self._post_genre(
+            **{
+                PostUploadedTrackInputFieldKey.NAME_PUBLIC: child_genre_name,
+                PostUploadedTrackInputFieldKey.PARENT: parent_genre.uuid,
+            }
+        )
         assert response.status_code == status.HTTP_201_CREATED
         child_genre = self.saved_object
 
-        response = self._post_genre(**{PostUploadedTrackInputFieldKey.NAME_PUBLIC: grandchild_genre_name,
-                                    PostUploadedTrackInputFieldKey.PARENT: child_genre.uuid})
+        response = self._post_genre(
+            **{
+                PostUploadedTrackInputFieldKey.NAME_PUBLIC: grandchild_genre_name,
+                PostUploadedTrackInputFieldKey.PARENT: child_genre.uuid,
+            }
+        )
         assert response.status_code == status.HTTP_201_CREATED
         grandchild_genre = self.saved_object
 
         track_helper = self._domain_helper(UploadedTrackTestCase)
         track1 = self.model_fixture_factory.create_uploaded_track_with_file(
-            title="Electronic Minimal Track",
-            test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3)
+            title="Electronic Minimal Track", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3
+        )
         track2 = self.model_fixture_factory.create_uploaded_track_with_file(
-            title="Techno Track",
-            test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3)
+            title="Techno Track", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3
+        )
 
-        response = track_helper._put_uploaded_track(track1.uuid, **{UploadedTrackInputFieldKey.GENRE.value: grandchild_genre_name})
+        response = track_helper._put_uploaded_track(
+            track1.uuid, **{UploadedTrackInputFieldKey.GENRE.value: grandchild_genre_name}
+        )
         assert response.status_code == status.HTTP_200_OK
 
-        response = track_helper._put_uploaded_track(track2.uuid, **{UploadedTrackInputFieldKey.GENRE.value: child_genre_name})
+        response = track_helper._put_uploaded_track(
+            track2.uuid, **{UploadedTrackInputFieldKey.GENRE.value: child_genre_name}
+        )
         assert response.status_code == status.HTTP_200_OK
 
         response = self._search(**{SearchUploadedTrackInputFieldKey.QUERY: "Electronic"})

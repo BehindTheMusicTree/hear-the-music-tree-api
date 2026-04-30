@@ -4,11 +4,10 @@ from api.model.public_standard_resource.StandardResourceManager import StandardR
 
 from .Fields import Fields
 
-
 if TYPE_CHECKING:
     from api.model.uploaded_track_mixin.UploadedTrackMixin import UploadedTrackMixin
 
-T = TypeVar('T', bound='UploadedTrackMixin')
+T = TypeVar("T", bound="UploadedTrackMixin")
 
 
 class UploadedTrackMixinManager(StandardResourceManager[T]):

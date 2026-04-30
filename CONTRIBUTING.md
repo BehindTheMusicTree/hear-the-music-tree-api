@@ -22,6 +22,7 @@ This project is currently maintained by a solo developer, but contributions, sug
     - [6.2. Opening a Pull Request](#62-opening-a-pull-request)
   - [7. Releasing _(For Maintainers)_](#7-releasing-for-maintainers)
 - [⚙️ GitHub Actions Workflows](docs/workflows.md)
+- [CI: python-project-standards alignment](docs/ci/python-project-standards.md)
 - [🪪 License & Attribution](#-license--attribution)
 - [📜 Code of Conduct](#-code-of-conduct)
 - [📋 TODO List](#-todo-list)
@@ -141,7 +142,7 @@ cd the-music-tree-api
 
 2. Set up environment variables:
 
-   Create a copy of the file `env/dev/.env.dev.template` as `env/.env` and set the required values. See the [Environment Variables](#environment-variables) section below for details on all required variables.
+   Create a copy of the file `env/dev/.env.dev.template` as `.env` and set the required values. See the [Environment Variables](#environment-variables) section below for details on all required variables.
 
    **Note:** Environment variables are required for filesystem setup and running containers in the following steps.
 
@@ -159,40 +160,37 @@ cd the-music-tree-api
 
    **Note:** Tests that use WAV files require `ffprobe` (from ffmpeg) to be installed and working. If pytest exits with "ffprobe failed to run" or you see "File corrupted" when running audio tests, ffmpeg may be broken (e.g. missing libvpx on macOS). Fix by reinstalling: `brew reinstall ffmpeg` (macOS) or re-run `scripts/install-dependencies.sh` (Linux).
 
-4. Create and activate a virtual environment:
+4. Start the Docker Compose development stack:
 
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # (Linux/macOS)
-   venv\Scripts\activate     # (Windows)
+   cp env/dev/.env.compose.dev.example .env
+   docker compose up --build
    ```
 
-5. Install Python dependencies:
+   This is the default local workflow for this repository. It runs API + DB + AFP with the same runtime env contract used by deployment.
 
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-6. Set up filesystem:
+5. Set up filesystem:
 
    ```bash
    bash scripts/setup-filesystem.sh
    ```
 
    This creates necessary directories for:
+
    - Static files
    - Django logs
    - Gunicorn logs (if app is exposed)
    - Media files and libraries
    - Temporary uploaded files
 
-7. Run database and Audio Fingerprinter containers:
+6. Run database and Audio Fingerprinter containers:
 
    ```bash
    bash scripts/run-db-and-afp-containers.sh
    ```
 
    This starts the required Docker containers:
+
    - PostgreSQL database container
    - Audio Fingerprinter (AFP) container
 
@@ -205,6 +203,7 @@ You need to set up several environment variables for development, build, and run
 **Environment Variable Handling:**
 
 The application uses strict environment variable validation:
+
 - **Required variables**: Must be set or the application will fail to start with a clear error message
 - **No fallbacks**: Required environment variables do not have default values - they must be explicitly set
 - **Path validation**: Path variables (like `MEDIA_DIR`) are validated to ensure the directories exist
@@ -212,15 +211,16 @@ The application uses strict environment variable validation:
 - **Application data**: Application data files (like reference data, fixtures) are stored relative to the codebase (`BASE_DIR`) and do not require environment variables
 
 **Development:**
-Create a copy of the file `env/dev/.env.dev.template` as `env/.env` and set the values.
+Create a copy of the file `env/dev/.env.dev.template` as `.env` and set the values.
 
 **Build:**
 The docker build requires the following environment variables:
+
 - `APP_NAME`
 - `APP_VERSION`
 - `FILE_UPLOAD_ENABLED`
-- `LIBRARIES_DIR_NAME`
-- `STATIC_FILES_INTERNAL`
+- `LIBRARIES_DIR_INTERNAL` (local/internal path mode) or `LIBRARIES_DIR_EXTERNAL` (server/external path mode)
+- `STATIC_FILES`
 - `DJANGO_LOG_GENERAL_FILENAME`
 - `DJANGO_LOG_INFO_FILENAME`
 - `DJANGO_LOG_REQUESTS_FILENAME`
@@ -231,12 +231,14 @@ The docker build requires the following environment variables:
 - `GUNICORN_LOG_ERROR_FILENAME`
 - `GUNICORN_LOG_ACCESS_FILENAME`
 
-For production deploy, path variables (`METADATA_SESSION_DIR_EXTERNAL`, `TMP_UPLOADED_FILES_EXTERNAL`, `MEDIA_DIR_EXTERNAL`, `STATIC_FILES_EXTERNAL`, `DJANGO_LOG_DIR_EXTERNAL`, `GUNICORN_LOG_DIR`) are set at runtime on the server (e.g. in a `.env` next to docker-compose), not by the workflow. Do not add them to GitHub repo or environment vars; the server supplies them when starting the stack.
+For production deploy, path variables (`TMP_UPLOADED_FILES_EXTERNAL`, `MEDIA_DIR_EXTERNAL`, `STATIC_FILES_EXTERNAL`, `DJANGO_LOG_DIR_EXTERNAL`, `GUNICORN_LOG_DIR`) are set at runtime on the server (e.g. in a `.env` next to docker-compose), not by the workflow. The runtime static path consumed by the app is `STATIC_FILES`. Do not add host-specific path values to GitHub repo or environment vars; the server supplies them when starting the stack.
+`STATIC_FILES_INTERNAL` / `STATIC_FILES_EXTERNAL` are deprecated for this app runtime; use `STATIC_FILES` directly.
 
 Log and static filenames (e.g. `GUNICORN_LOG_ERROR_FILENAME`, `DJANGO_LOG_GENERAL_FILENAME`) stay in the workflow. Industry practice: paths vary by host/deployment so they are runtime config (12-factor); filenames are usually fixed or set at deploy time because they rarely differ per environment. Strict 12-factor also prefers logging to stdout and letting the execution environment handle files; when using file-based logging, path = runtime, filename = workflow or code default is a common compromise.
 
 **Running the container:**
 Running the container requires the following environment variables:
+
 - `DJANGO_SECRET_KEY`
 - `ACOUSTID_API_KEY`
 - `CSRF_TRUSTED_ORIGINS`
@@ -271,7 +273,7 @@ One-off DB or data fix scripts (e.g. table renames, one-time backfills) live in 
 
 For audio fingerprinting, the HearTheMusicTree API requires an app called Audio Fingerprinter. You can find the Audio Fingerprinter app on GitHub at the following link: [Audio Fingerprinter](https://github.com/BehindTheMusicTree/audio-fingerprinter)
 
-The AFP image creates the Flask app log from `FLASK_LOG_APP_FILENAME` (e.g. `app.log`), which must match what `settings.py` expects (`LOG_APP_FILE`). Path variables (`GUNICORN_LOG_DIR`, `FLASK_LOG_DIR_EXTERNAL`, `POOL_DIR_EXTERNAL`) are runtime-only and required when running the container; the AFP entrypoint fails fast if any is missing. For CI and local runs with `--user`, the AFP image must support non-root (writable `/app/log` and `/app/env/calculated_paths`). See the AFP README.
+The AFP image creates the Flask app log from `FLASK_LOG_APP_FILENAME` (e.g. `app.log`), which must match what `settings.py` expects (`LOG_APP_FILE`). Path variables (`GUNICORN_LOG_DIR`, `FLASK_LOG_DIR_EXTERNAL`, `POOL_DIR_EXTERNAL`) are runtime-only and required when running the container; the AFP entrypoint fails fast if any is missing. For CI and local runs with `--user`, the AFP image must support non-root (writable `/app/log`). See the AFP README.
 
 ### 2. Branching
 
@@ -288,19 +290,30 @@ We follow **strict Git Flow** with the following branch structure:
 
 #### Develop Branch (`develop`)
 
--- The integration branch for ongoing development
--- All feature and chore branches merge into `develop`
+- The integration branch for ongoing development
+- Feature and chore branches merge into `develop` via pull requests
 - `develop` is merged into `main` via release branches
-- **No direct commits allowed** - All changes must go through Pull Requests
--- Only receives merges from `feature/*`, `chore/*`, and `dependabot/*` branches
-- **Branch protection enforced** - GitHub Actions automatically blocks PRs to `develop` that don't come from `feature/*`, `chore/*`, or `dependabot/*` branches (see `.github/workflows/branch-protection.yml`)
+- **No direct commits allowed** — all changes must go through pull requests
+- Pull requests to `develop` are only accepted from `feature/*`, `chore/*`, `dependabot/*`, or `release/*` branches (see **Branch Protection** below)
+- **Branch protection enforced** — GitHub Actions blocks PRs to `develop` that do not use one of those source branch prefixes (see `.github/workflows/branch-protection.yml`)
 
 #### 🛡️ Branch Protection
 
-- **PRs to `main`** must come from `hotfix/*` or `release/*` branches only. This ensures production fixes are traceable and carefully released.
-- **PRs to `develop`** must come from `feature/*`, `chore/*`, or `dependabot/*` branches only. PRs from other branch types (e.g., `fix/*`, `refactor/*`, etc.) will be blocked by the branch protection workflow.
-- Branch protection is enforced by the `branch-protection.yml` GitHub Actions workflow located at `.github/workflows/branch-protection.yml`.
+- **PRs to `main`** must come from `hotfix/*` or `release/*` branches only. This keeps production changes traceable and tied to releases or hotfixes.
+- **PRs to `develop`** must come from `feature/*`, `chore/*`, `dependabot/*`, or `release/*` branches only. Other prefixes (e.g. `docs/*`, `fix/*`, `refactor/*`) fail the **Branch Protection Check / Verify PR source branch** job and cannot be merged while required checks are enabled.
 
+**How this maps to Git Flow:** In the classic model, work is integrated into `develop` through **`feature/*`** branches. This repository also uses **`chore/*`** for maintenance and documentation-only changes, **`dependabot/*`** for dependency automation, and **`release/*`** when merging release-line work back into `develop`.
+
+**If your PR fails the branch name check:**
+
+1. **Rename the branch locally** (on your work branch): `git branch -m feature/<descriptive-name>` or `git branch -m chore/<descriptive-name>`.
+2. **Push the new name** and set upstream: `git push -u origin HEAD`.
+3. **Remove the old remote branch** if you already pushed it: `git push origin --delete <old-branch-name>`.
+4. **Open a new pull request** from the correctly named branch and close the previous one. (GitHub does not reliably let you retarget an existing PR to a differently named head branch.)
+
+If you had not pushed yet, only steps 1–2 and a new PR are needed. Maintainers cannot “approve past” a failing required check without changing branch protection rules or using an admin merge override — the usual fix is a correctly prefixed branch.
+
+- Enforcement lives in the `branch-protection.yml` workflow at `.github/workflows/branch-protection.yml`.
 
 #### Feature Branches (`feature/<name>`)
 
@@ -398,7 +411,6 @@ We follow **strict Git Flow** with the following branch structure:
 - Dependabot opens Pull Requests that should target `develop` for dependency bumps and security updates
 - Merge into `develop` via Pull Request when complete; treat them like `chore/*` changes or dependency maintenance
 
-
 ### 3. Developing
 
 See [DEVELOPMENT.md](DEVELOPMENT.md) for comprehensive coding standards and best practices.
@@ -429,7 +441,19 @@ pytest -v
 
 # Run a specific test file
 pytest api/test/tests/integration/view/uploaded_track/test_specific.py
+
+# Quieter / faster-feeling run (disables live log streaming entirely)
+pytest -o log_cli=false
+
+# Maximum verbosity for debugging a failure
+pytest -o log_cli_level=DEBUG
 ```
+
+**If pytest seems stuck or extremely slow:**
+
+- **Live logging:** `pytest.ini` sets `log_cli = true`. At **DEBUG** every log line is printed and the suite can look frozen. The default level is **INFO**; use `-o log_cli=false` for minimal console noise or `-o log_cli_level=DEBUG` only when chasing a failure.
+- **Database:** Integration and most Django tests need **PostgreSQL** (and env) as in [Environment Setup](#1-environment-setup). A missing or unreachable DB often blocks on connect instead of failing immediately—start `run-db-and-afp-containers.sh` (or your CI-like stack) first.
+- **Container context:** If `pytest` is not found on your host, run tests from the API container (`docker compose exec api pytest ...`) or install dev dependencies with `python -m pip install -e ".[dev]"` in your active Python environment so `pytest` is on your `PATH`.
 
 **Test Structure:**
 
@@ -492,6 +516,7 @@ git push origin v0.3.6-dev-improve-cicd
 ```
 
 This automatically triggers the `publish.yml` workflow which will:
+
 - Build Docker image: `username/repo:0.3.6-dev-improve-cicd`
 - Deploy to the test server
 - Allow you to validate your changes before creating a PR
@@ -501,6 +526,7 @@ This automatically triggers the `publish.yml` workflow which will:
 Git tags are immutable once pushed. If you make changes and need to republish:
 
 1. **Delete the old tag** (recommended for dev tags):
+
    ```bash
    git tag -d v0.3.6-dev-improve-cicd
    git push origin --delete v0.3.6-dev-improve-cicd
@@ -519,6 +545,7 @@ Git tags are immutable once pushed. If you make changes and need to republish:
    ```
 
 **Note:** Development tags are for testing purposes only and should not be used for releases. Delete them after testing if desired:
+
 ```bash
 git tag -d v0.3.6-dev-improve-cicd
 git push origin --delete v0.3.6-dev-improve-cicd
@@ -528,12 +555,14 @@ git push origin --delete v0.3.6-dev-improve-cicd
 
 We follow a structured commit format inspired by [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
 
-**IMPORTANT:** Always activate the project's virtual environment (`venv`) before committing if you're using pre-commit hooks.
+**IMPORTANT:** Run checks from the Docker workflow so local validation matches the repository runtime.
 
 **Quick reference:**
 
 - Format: `<type>(<scope>): <summary>`
-- Activate virtual environment: `source venv/bin/activate` (Linux/macOS) or `venv\Scripts\activate` (Windows)
+- Run checks in container: `docker compose exec api pytest`
+
+**Pre-commit hook behavior:** This repository installs a tracked host git hook at [`.githooks/pre-commit`](.githooks/pre-commit) via [`scripts/setup-host-dev-tools.sh`](scripts/setup-host-dev-tools.sh). Docker-side tooling is set up via [`scripts/setup-docker-dev-tools.sh`](scripts/setup-docker-dev-tools.sh). The hook shells into Docker and runs `pre-commit` inside the `api` container against staged files. **Commits fail if `api` is not running**—start the stack before committing: `docker compose up -d api`.
 
 **Commit Types:**
 
@@ -573,10 +602,11 @@ Before submitting a Pull Request, ensure the following checks are completed:
 - ✅ Code follows Django best practices
 - ✅ Type hints are used where appropriate
 - ✅ No debug statements or commented-out code
+- ✅ With hooks installed: `pre-commit run --all-files` passes (or run `python3 scripts/check_prefer_strenum.py` before pushing)
 
 **2. Tests**
 
-- ✅ All tests pass: `pytest`
+- ✅ All tests pass: `docker compose exec api pytest` (or `pytest` after `python -m pip install -e ".[dev]"` locally)
 - ✅ New features have corresponding tests
 - ✅ Bug fixes include regression tests
 - ✅ Tests follow the naming convention: `test_{scenario}_then_{expected_result}`
@@ -595,7 +625,7 @@ Before submitting a Pull Request, ensure the following checks are completed:
 - ✅ Commit messages follow the commit message convention
 - ✅ Branch is up to date with target branch (`develop` for features, `main` for hotfixes)
 - ✅ No accidental commits (large files, secrets, personal configs)
-- ✅ Branch follows naming convention (`feature/`, `chore/`, `hotfix/`, `release/`)
+- ✅ Branch follows naming convention (`feature/`, `chore/`, `dependabot/`, `hotfix/`, `release/`) — see **Branching** / **Branch Protection**
 
 **5. Branch Target**
 
@@ -754,16 +784,19 @@ These automations help streamline the review process and ensure consistency acro
 The project uses focused, reusable GitHub Actions workflows for CI/CD. For a full description of each workflow (triggers, steps, environments), see [GitHub Actions Workflows](docs/workflows.md).
 
 **Test Workflow** (`.github/workflows/test.yml`):
+
 - Runs automatically on pushes to `main` and `develop` branches
 - Runs automatically on pull requests targeting `main` or `develop`
 - Executes the full test suite with pytest
 - Publishes test results to GitHub Actions UI
 
 **Publish Workflow** (`.github/workflows/publish.yml`):
+
 - Runs on **push to `main`** (staging, TEST env) or **push of version tags** (e.g. `v0.2.1`; prerelease tags → staging/TEST, release tags → production/PROD)
 - Orchestrates the release process: collects/commits static files, builds and pushes Docker image, deploys to staging or production
 
 **Other Workflows**:
+
 - `build-and-push.yml` - Builds and pushes Docker images (reusable)
 - `deploy.yml` - Handles server deployment (reusable)
 - `static-files.yml` - Collects and commits static files (reusable)
@@ -771,6 +804,7 @@ The project uses focused, reusable GitHub Actions workflows for CI/CD. For a ful
 - `labeler.yml` - Automatically labels PRs based on changed files
 
 **Workflow Philosophy**:
+
 - **Separation of concerns**: Tests run on every change, publishing only on releases
 - **Reusability**: Individual workflows can be called independently or as part of a pipeline
 - **Maintainability**: Each workflow has a single, focused responsibility
@@ -798,15 +832,18 @@ Quick release process:
 
 3. **On the release branch, prepare the release:**
 
-   - **Automated (recommended):** from the repo root, with `bump2version` on your PATH (`pip install -r requirements.txt` in your venv):
+   - **Automated (recommended):** from the repo root, with `bump-my-version` on `PATH` (same pin as dev deps in [`pyproject.toml`](pyproject.toml), currently `bump-my-version==1.3.0` — e.g. `pipx install bump-my-version==1.3.0`, a pyenv (or other) Python where `pip install -e ".[dev]"` is allowed, or run bump steps inside the Compose `api` dev image where dev extras are installed). No project `.venv` is required.
+
      ```bash
      python3 scripts/prepare_release_bump.py patch   # or: minor | major
      ```
-     This sets the live `## [Unreleased]  <!-- release -->` marker (only the heading **after** the maintainer Note—not the fenced example), runs [bump2version](https://github.com/c4urself/bump2version), runs `python scripts/fix_changelog_after_bump.py`, and adds an empty `## [Unreleased]` above the new version section. By default it passes `--allow-dirty` to bump2version so you can commit once at the end; use `--no-allow-dirty` if you need a clean tree.
 
-   - **Manual sequence** (same end state): set the live heading after the Note to `## [Unreleased]  <!-- release -->`, then `bump2version patch` (or minor/major; add `--allow-dirty` if needed), then `python scripts/fix_changelog_after_bump.py`, then ensure an empty `## [Unreleased]` sits above `## [vX.Y.Z] - …`. `.bumpversion.cfg` only replaces that one changelog line; everything below it until the next `## [` belongs to that release.
+     This sets the live `## [Unreleased]  <!-- release -->` marker (only the heading **after** the maintainer Note—not the fenced example), runs [bump-my-version](https://github.com/callowayproject/bump-my-version), runs `python scripts/fix_changelog_after_bump.py`, and adds an empty `## [Unreleased]` above the new version section. By default it passes `--allow-dirty` so you can commit once at the end; use `--no-allow-dirty` if you need a clean tree.
+
+   - **Manual sequence** (same end state): set the live heading after the Note to `## [Unreleased]  <!-- release -->`, then `bump-my-version bump patch` (or `bump minor` / `bump major`; add `--allow-dirty` if needed), then `python scripts/fix_changelog_after_bump.py`, then ensure an empty `## [Unreleased]` sits above `## [vX.Y.Z] - …`. Release bump file rules live under `[tool.bumpversion]` in [`pyproject.toml`](pyproject.toml); the changelog rule only replaces that one heading line — everything below it until the next `## [` belongs to that release.
 
    - Review and finalize `CHANGELOG.md`:
+
      - Review the new version entry and the content that was under `[Unreleased]`
      - Review and consolidate entries if needed
 
@@ -839,7 +876,7 @@ Quick release process:
    ./scripts/remove_prerelease_tags.sh
    ```
 
-   The script uses the version from the `VERSION` file (same as after `bump2version`). You can also pass a version explicitly: `./scripts/remove_prerelease_tags.sh 0.2.1`.
+   The script uses the version from the `VERSION` file (same as after a release bump). You can also pass a version explicitly: `./scripts/remove_prerelease_tags.sh 0.2.1`.
 
    **Note:** Pre-release tags are temporary and should be cleaned up after the release is published to keep the repository clean.
 
@@ -862,10 +899,11 @@ Quick release process:
 9. **CI/CD will automatically:**
 
    When you push the version tag (step 5), the `publish.yml` workflow will automatically:
+
    - Collect and commit static files
    - Build and push Docker image to Docker Hub
    - Deploy to the test server
-   
+
    See the [GitHub Actions Workflows](#github-actions-workflows) section above for details on the workflow structure.
 
 **Hotfix Release Process:**
@@ -923,6 +961,7 @@ This project maintains a [TODO list](TODO.md) that tracks future work, improveme
 - **Documentation** - Documentation improvements and guides
 
 **Important Notes**:
+
 - **Maintainers are responsible** - Project maintainers are responsible for maintaining and updating the TODO list
 - **Contributors should NOT modify it** - Contributors should not edit the TODO list directly
 - **Suggest tasks via issues** - If you'd like to suggest a new task or work on an existing one, please open a GitHub issue first for discussion
@@ -938,4 +977,3 @@ You can open:
 - **Discussions** → suggestions, architecture, or music-related topics
 
 Let's make this API grow together 🌱
-

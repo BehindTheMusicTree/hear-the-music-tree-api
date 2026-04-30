@@ -11,23 +11,28 @@ class PlaylistTestCase(AppTestCase[Playlist]):
     saved_object: Playlist
 
     def _post_playlist(self, **kwargs):
-        return self.api_client.post(path=reverse('me-playlist-list'),
-                                    data=kwargs,
-                                    content_type='application/json',
-                                    handle_response=self._set_results)
+        return self.api_client.post(
+            path=reverse("me-playlist-list"),
+            data=kwargs,
+            content_type="application/json",
+            handle_response=self._set_results,
+        )
 
     def _get_playlists(self, **kwargs):
-        return self.api_client.get(path=reverse('me-playlist-list'), data=kwargs, handle_response=self._set_results)
+        return self.api_client.get(path=reverse("me-playlist-list"), data=kwargs, handle_response=self._set_results)
 
     def _retrieve_playlist(self, uuid: UUID):
         return self.api_client.get(
-            path=reverse('me-playlist-detail', kwargs={'pk': uuid}), handle_response=self._set_results)
+            path=reverse("me-playlist-detail", kwargs={"pk": uuid}), handle_response=self._set_results
+        )
 
     def _put_playlist(self, uuid: UUID, **kwargs):
-        return self.api_client.put(path=reverse('me-playlist-detail', kwargs={'pk': uuid}),
-                                   data=kwargs,
-                                   content_type='application/json',
-                                   handle_response=self._set_results)
+        return self.api_client.put(
+            path=reverse("me-playlist-detail", kwargs={"pk": uuid}),
+            data=kwargs,
+            content_type="application/json",
+            handle_response=self._set_results,
+        )
 
     def _delete_playlist(self, uuid: UUID):
-        return self.api_client.delete(path=reverse('me-playlist-detail', kwargs={'pk': uuid}))
+        return self.api_client.delete(path=reverse("me-playlist-detail", kwargs={"pk": uuid}))

@@ -13,7 +13,7 @@
 - [Features](#features)
 - [Vision](VISION.md)
 - [Getting Started](#getting-started)
-  - [Developer environment (recommended)](#developer-environment-recommended)
+  - [Developer environment (recommended): Docker Compose](#developer-environment-recommended-docker-compose)
 - [API](#api)
   - [Base URL & Interactive Documentation](#base-url--interactive-documentation)
   - [Authentication](#authentication)
@@ -48,7 +48,13 @@
 
 ## Introduction
 
-HearTheMusicTree API is a cloud-based audio file manager that empowers music collectors, DJs, curators, and listeners to organize and discover music through powerful metadata handling, genre intelligence, and cross-platform synchronization. This project is part of the [BehindTheMusicTree ecosystem](https://github.com/behindthemusictree) — a collection of open-source tools designed to transform music libraries into living, contextualized experiences.
+HearTheMusicTree API is a cloud-based audio file manager for collectors, DJs, curators, and listeners who want powerful metadata workflows, genre intelligence, and cross-platform synchronization.
+
+Built inside the **[BehindTheMusicTree](https://github.com/BehindTheMusicTree)** ecosystem.
+
+Want the big picture? Explore the full project universe on **[themusictree.org](https://themusictree.org)**, and see where this API fits on **[HearTheMusicTree](https://themusictree.org/projects/hear-the-music-tree)**.
+
+The portfolio website content lives in **[the-music-tree-frontend](https://github.com/BehindTheMusicTree/the-music-tree-frontend)**; this README focuses on building, running, testing, and contributing to this API.
 
 ### Mission
 
@@ -65,10 +71,10 @@ HearTheMusicTree aims to provide a user-first, extensible platform for organizin
 
 ### Ecosystem Integration
 
-HearTheMusicTree integrates seamlessly with other projects in the BehindTheMusicTree ecosystem:
+HearTheMusicTree integrates with other BehindTheMusicTree projects:
 
 - **[AudioMeta Python](https://github.com/BehindTheMusicTree/audiometa)**: Reliable metadata reading and updating across formats (ID3v1, ID3v2, Vorbis, RIFF)
-- **[GrowTheMusicTree](https://github.com/BehindTheMusicTree/grow-the-music-tree)**: Community-driven taxonomy curation for classification and playlist generation
+- **[GrowTheMusicTree](https://github.com/BehindTheMusicTree/grow-the-music-tree-frontend)**: Community-driven taxonomy curation for classification and playlist generation
 - **[TheMusicTreeAPI](https://github.com/BehindTheMusicTree/the-music-tree-api)**: Authoritative RESTful endpoints for genre references, hierarchies, and detection
 
 > **⚠️ Note**: The API is currently undergoing server migration and is not available online. Please set up a local development environment to use the API. See [Getting Started](#getting-started) for setup instructions.
@@ -120,37 +126,44 @@ For detailed setup and installation instructions, please see the [Contributing G
   </tbody>
 </table>
 
-### Developer environment (recommended)
+### Developer environment (recommended): Docker Compose
 
-To keep a consistent, reproducible development environment across contributors, we recommend creating a workspace-local virtual environment named `venv` in the project root and pointing Visual Studio Code to use that interpreter.
+This repository provides a local-first Docker Compose setup:
 
-1) Create a `venv` in the project root:
+- `docker-compose.yml`: base stack (`api`, `db`, `afp`) with pinned defaults
+- `docker-compose.override.yml`: development override (bind mount + Django `runserver`)
+
+Quick start:
+
+1. Create a local env file for Compose:
 
 ```bash
-python3 -m venv venv
+cp env/dev/.env.compose.dev.example .env
 ```
 
-2) Activate the virtualenv:
+2. Build (installs dev extras including pytest inside the API image) and start the stack:
 
-- macOS / Linux:
-	```bash
-	source venv/bin/activate
-	```
-- Windows (PowerShell):
-	```powershell
-	.\venv\Scripts\Activate.ps1
-	```
-
-3) Install dependencies:
 ```bash
-pip install -r requirements.txt
+docker compose build api && docker compose up
 ```
 
-4) VS Code setup
-- The repository workspace settings now reference `${workspaceFolder}/venv/bin/python` (instead of a machine-local absolute path) so VS Code will automatically pick the correct interpreter if your `venv` is in the project root.
-- Alternatively, run the VS Code command `Python: Select Interpreter` and choose `venv/bin/python`.
+3. Open the API:
 
-If you prefer a different venv name or layout, adjust your local VS Code interpreter selection. The repository stores a workspace-relative default to keep experience consistent for new contributors.
+- App: `http://localhost:8000`
+- Swagger: `http://localhost:8000/docs/`
+
+Conventions used in this repository:
+
+- No legacy calculated path layer in Compose.
+- Runtime path variables are direct (`MEDIA_DIR`, `TMP_UPLOADED_FILES`, `METADATA_SESSION_DIR`, `DJANGO_LOG_DIR`, `GUNICORN_LOG_DIR`).
+- The Audio Fingerprinter pool uses the same path and Docker volume as `TMP_UPLOADED_FILES` (see Compose).
+- Optional integration flags (`SPOTIFY_ENABLED`, `GOOGLE_OAUTH_ENABLED`, `MUSICBRAINZ_LOOKUP_ENABLED`) default to **enabled** in Compose with placeholder credentials so the test suite can run without extra env wiring; override in `.env` if you need them off locally.
+- Local development Compose lives in this app repository.
+
+Deployment note:
+
+- Keep deployment Compose/manifests in your infra repository.
+- Share conventions across repos (image names/tags, env var names, healthchecks), but keep separate files for dev and deployment responsibilities.
 
 ## API
 
@@ -183,6 +196,7 @@ The API uses JWT (JSON Web Tokens) for authentication. Most endpoints require au
 **Endpoint**: `POST /v1/auth/token/`
 
 **Request Body**:
+
 ```json
 {
   "username": "your_username",
@@ -191,6 +205,7 @@ The API uses JWT (JSON Web Tokens) for authentication. Most endpoints require au
 ```
 
 **Response**:
+
 ```json
 {
   "access": "eyJ0eXAiOiJKV1QiLCJhbGc...",
@@ -203,6 +218,7 @@ The API uses JWT (JSON Web Tokens) for authentication. Most endpoints require au
 **Endpoint**: `POST /api/{version}/auth/token/refresh/`
 
 **Request Body**:
+
 ```json
 {
   "refresh": "your_refresh_token"
@@ -210,6 +226,7 @@ The API uses JWT (JSON Web Tokens) for authentication. Most endpoints require au
 ```
 
 **Response**:
+
 ```json
 {
   "access": "eyJ0eXAiOiJKV1QiLCJhbGc..."
@@ -225,6 +242,7 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc...
 ```
 
 **Token Lifetime**:
+
 - Access tokens: 100 minutes
 - Refresh tokens: 1 day
 
@@ -235,6 +253,7 @@ The API supports authentication via Spotify OAuth, allowing users to sign in wit
 **OAuth Flow**:
 
 1. **Redirect to Spotify Authorization**: Your frontend should redirect users to Spotify's authorization URL to obtain an authorization code. The authorization URL should include:
+
    - `client_id`: Your Spotify app client ID
    - `redirect_uri`: Your registered redirect URI
    - `scope`: Required scopes (e.g., `user-read-email user-read-private user-library-read`)
@@ -246,6 +265,7 @@ The API supports authentication via Spotify OAuth, allowing users to sign in wit
 **Endpoint**: `POST /api/{version}/auth/spotify/`
 
 **Request Body**:
+
 ```json
 {
   "code": "spotify_authorization_code"
@@ -253,6 +273,7 @@ The API supports authentication via Spotify OAuth, allowing users to sign in wit
 ```
 
 **Response**:
+
 ```json
 {
   "accessToken": "eyJ0eXAiOiJKV1QiLCJhbGc...",
@@ -281,6 +302,7 @@ The API supports authentication via Spotify OAuth, allowing users to sign in wit
 ```
 
 **What Happens**:
+
 - The API exchanges the authorization code for Spotify access and refresh tokens
 - Creates or updates a Spotify user account in the system
 - Returns JWT tokens (access and refresh) for API authentication
@@ -300,6 +322,7 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc...
 **Endpoint**: `POST /api/{version}/auth/google/`
 
 **Request Body**:
+
 ```json
 {
   "code": "<authorization_code_from_google_callback>"
@@ -307,6 +330,7 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc...
 ```
 
 **Response** (same session shape as Spotify):
+
 ```json
 {
   "accessToken": "eyJ0eXAiOiJKV1QiLCJhbGc...",
@@ -325,152 +349,153 @@ All endpoints are prefixed with the API base URL (`{version}/`). Most endpoints 
 
 ### Authentication
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `POST` | `auth/token/` | Obtain JWT access and refresh tokens | 🔓 |
-| `POST` | `auth/token/refresh/` | Refresh access token | 🔓 |
-| `POST` | `auth/spotify/` | Authenticate with Spotify | 🔓 |
-| `POST` | `auth/google/` | Authenticate with Google OAuth | 🔓 |
+| Method | Endpoint              | Description                          | Auth Required |
+| ------ | --------------------- | ------------------------------------ | ------------- |
+| `POST` | `auth/token/`         | Obtain JWT access and refresh tokens | 🔓            |
+| `POST` | `auth/token/refresh/` | Refresh access token                 | 🔓            |
+| `POST` | `auth/spotify/`       | Authenticate with Spotify            | 🔓            |
+| `POST` | `auth/google/`        | Authenticate with Google OAuth       | 🔓            |
 
 ### Library Management
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `me/library/uploaded/` | List user's uploaded tracks | 🔒 |
-| `POST` | `me/library/uploaded/` | Upload a new track | 🔒 |
-| `GET` | `me/library/uploaded/{id}/` | Retrieve a specific uploaded track | 🔒 |
-| `PUT` | `me/library/uploaded/{id}/` | Update an uploaded track | 🔒 |
-| `DELETE` | `me/library/uploaded/{id}/` | Delete an uploaded track | 🔒 |
-| `GET` | `reference/library/uploaded/` | List reference uploaded tracks | 🔓 |
-| `GET` | `reference/library/uploaded/{id}/` | Retrieve a specific reference uploaded track | 🔓 |
-| `GET` | `me/library/spotify/` | List user's Spotify library tracks | 🔒 |
-| `GET` | `me/library/spotify/{id}/` | Retrieve a specific Spotify track | 🔒 |
-| `GET` | `all-tracks/` | Get all tracks (uploaded and Spotify) | 🔒 |
+| Method   | Endpoint                           | Description                                  | Auth Required |
+| -------- | ---------------------------------- | -------------------------------------------- | ------------- |
+| `GET`    | `me/library/uploaded/`             | List user's uploaded tracks                  | 🔒            |
+| `POST`   | `me/library/uploaded/`             | Upload a new track                           | 🔒            |
+| `GET`    | `me/library/uploaded/{id}/`        | Retrieve a specific uploaded track           | 🔒            |
+| `PUT`    | `me/library/uploaded/{id}/`        | Update an uploaded track                     | 🔒            |
+| `DELETE` | `me/library/uploaded/{id}/`        | Delete an uploaded track                     | 🔒            |
+| `GET`    | `reference/library/uploaded/`      | List reference uploaded tracks               | 🔓            |
+| `GET`    | `reference/library/uploaded/{id}/` | Retrieve a specific reference uploaded track | 🔓            |
+| `GET`    | `me/library/spotify/`              | List user's Spotify library tracks           | 🔒            |
+| `GET`    | `me/library/spotify/{id}/`         | Retrieve a specific Spotify track            | 🔒            |
+| `GET`    | `all-tracks/`                      | Get all tracks (uploaded and Spotify)        | 🔒            |
 
 ### Music Metadata
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `artists/` | List artists | 🔒 |
-| `POST` | `artists/` | Create an artist | 🔒 |
-| `GET` | `artists/{id}/` | Retrieve a specific artist | 🔒 |
-| `PUT` | `artists/{id}/` | Update an artist | 🔒 |
-| `DELETE` | `artists/{id}/` | Delete an artist | 🔒 |
-| `GET` | `albums/` | List albums | 🔒 |
-| `POST` | `albums/` | Create an album | 🔒 |
-| `GET` | `albums/{id}/` | Retrieve a specific album | 🔒 |
-| `PUT` | `albums/{id}/` | Update an album | 🔒 |
-| `DELETE` | `albums/{id}/` | Delete an album | 🔒 |
-| `GET` | `spotify-artists/` | List Spotify artists | 🔒 |
-| `GET` | `spotify-artists/{id}/` | Retrieve a specific Spotify artist | 🔒 |
+| Method   | Endpoint                | Description                        | Auth Required |
+| -------- | ----------------------- | ---------------------------------- | ------------- |
+| `GET`    | `artists/`              | List artists                       | 🔒            |
+| `POST`   | `artists/`              | Create an artist                   | 🔒            |
+| `GET`    | `artists/{id}/`         | Retrieve a specific artist         | 🔒            |
+| `PUT`    | `artists/{id}/`         | Update an artist                   | 🔒            |
+| `DELETE` | `artists/{id}/`         | Delete an artist                   | 🔒            |
+| `GET`    | `albums/`               | List albums                        | 🔒            |
+| `POST`   | `albums/`               | Create an album                    | 🔒            |
+| `GET`    | `albums/{id}/`          | Retrieve a specific album          | 🔒            |
+| `PUT`    | `albums/{id}/`          | Update an album                    | 🔒            |
+| `DELETE` | `albums/{id}/`          | Delete an album                    | 🔒            |
+| `GET`    | `spotify-artists/`      | List Spotify artists               | 🔒            |
+| `GET`    | `spotify-artists/{id}/` | Retrieve a specific Spotify artist | 🔒            |
 
 ### Audio metadata (read raw)
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `POST` | `audio/metadata/` | Extract raw metadata from an audio file (file not stored) | 🔓 |
+| Method | Endpoint          | Description                                               | Auth Required |
+| ------ | ----------------- | --------------------------------------------------------- | ------------- |
+| `POST` | `audio/metadata/` | Extract raw metadata from an audio file (file not stored) | 🔓            |
 
 **Request**: `multipart/form-data` with `file` (audio file). Supported formats: `.mp3`, `.flac`, `.wav`. See [audio_metadata.md](docs/api/audio_metadata.md) for full request/response details.
 
 ### Genres (me)
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `me/genres/` | List genres | 🔒 |
-| `POST` | `me/genres/` | Create a genre | 🔒 |
-| `GET` | `me/genres/{id}/` | Retrieve a specific genre | 🔒 |
-| `PUT` | `me/genres/{id}/` | Update a genre | 🔒 |
-| `DELETE` | `me/genres/{id}/` | Delete a genre | 🔒 |
-| `GET` | `me/genres/tree/` | Get genres tree | 🔒 |
-| `POST` | `me/genres/tree/import/` | Import genres tree | 🔒 |
+| Method   | Endpoint                 | Description               | Auth Required |
+| -------- | ------------------------ | ------------------------- | ------------- |
+| `GET`    | `me/genres/`             | List genres               | 🔒            |
+| `POST`   | `me/genres/`             | Create a genre            | 🔒            |
+| `GET`    | `me/genres/{id}/`        | Retrieve a specific genre | 🔒            |
+| `PUT`    | `me/genres/{id}/`        | Update a genre            | 🔒            |
+| `DELETE` | `me/genres/{id}/`        | Delete a genre            | 🔒            |
+| `GET`    | `me/genres/tree/`        | Get genres tree           | 🔒            |
+| `POST`   | `me/genres/tree/import/` | Import genres tree        | 🔒            |
 
 ### Reference Genres
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `reference/genres/` | List reference genres | 🔓 |
-| `POST` | `reference/genres/` | Create a reference genre | 🔓 |
-| `GET` | `reference/genres/{id}/` | Retrieve a reference genre | 🔓 |
-| `PUT` | `reference/genres/{id}/` | Update a reference genre | 🔓 |
-| `DELETE` | `reference/genres/{id}/` | Delete a reference genre | 🔓 |
-| `GET` | `reference/genres/tree/` | Get reference genres tree | 🔓 |
-| `POST` | `reference/genres/tree/import/` | Import reference genres tree | 🔓 |
+| Method   | Endpoint                        | Description                  | Auth Required |
+| -------- | ------------------------------- | ---------------------------- | ------------- |
+| `GET`    | `reference/genres/`             | List reference genres        | 🔓            |
+| `POST`   | `reference/genres/`             | Create a reference genre     | 🔓            |
+| `GET`    | `reference/genres/{id}/`        | Retrieve a reference genre   | 🔓            |
+| `PUT`    | `reference/genres/{id}/`        | Update a reference genre     | 🔓            |
+| `DELETE` | `reference/genres/{id}/`        | Delete a reference genre     | 🔓            |
+| `GET`    | `reference/genres/tree/`        | Get reference genres tree    | 🔓            |
+| `POST`   | `reference/genres/tree/import/` | Import reference genres tree | 🔓            |
 
 ### Tags (me)
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `me/tags/` | List tags | 🔒 |
-| `POST` | `me/tags/` | Create a tag | 🔒 |
-| `GET` | `me/tags/{id}/` | Retrieve a specific tag | 🔒 |
-| `PUT` | `me/tags/{id}/` | Update a tag | 🔒 |
-| `DELETE` | `me/tags/{id}/` | Delete a tag | 🔒 |
-| `GET` | `me/tags/tree/` | Get tags tree | 🔒 |
-| `POST` | `me/tags/tree/import/` | Import tags tree | 🔒 |
+| Method   | Endpoint               | Description             | Auth Required |
+| -------- | ---------------------- | ----------------------- | ------------- |
+| `GET`    | `me/tags/`             | List tags               | 🔒            |
+| `POST`   | `me/tags/`             | Create a tag            | 🔒            |
+| `GET`    | `me/tags/{id}/`        | Retrieve a specific tag | 🔒            |
+| `PUT`    | `me/tags/{id}/`        | Update a tag            | 🔒            |
+| `DELETE` | `me/tags/{id}/`        | Delete a tag            | 🔒            |
+| `GET`    | `me/tags/tree/`        | Get tags tree           | 🔒            |
+| `POST`   | `me/tags/tree/import/` | Import tags tree        | 🔒            |
 
 ### Reference Tags
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `reference/tags/` | List reference tags | 🔓 |
-| `POST` | `reference/tags/` | Create a reference tag | 🔓 |
-| `GET` | `reference/tags/{id}/` | Retrieve a reference tag | 🔓 |
-| `PUT` | `reference/tags/{id}/` | Update a reference tag | 🔓 |
-| `DELETE` | `reference/tags/{id}/` | Delete a reference tag | 🔓 |
-| `GET` | `reference/tags/tree/` | Get reference tags tree | 🔓 |
-| `POST` | `reference/tags/tree/import/` | Import reference tags tree | 🔓 |
+| Method   | Endpoint                      | Description                | Auth Required |
+| -------- | ----------------------------- | -------------------------- | ------------- |
+| `GET`    | `reference/tags/`             | List reference tags        | 🔓            |
+| `POST`   | `reference/tags/`             | Create a reference tag     | 🔓            |
+| `GET`    | `reference/tags/{id}/`        | Retrieve a reference tag   | 🔓            |
+| `PUT`    | `reference/tags/{id}/`        | Update a reference tag     | 🔓            |
+| `DELETE` | `reference/tags/{id}/`        | Delete a reference tag     | 🔓            |
+| `GET`    | `reference/tags/tree/`        | Get reference tags tree    | 🔓            |
+| `POST`   | `reference/tags/tree/import/` | Import reference tags tree | 🔓            |
 
 ### Playlists
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `me/playlists/` | List my playlists | 🔒 |
-| `GET` | `me/playlists/{id}/` | Retrieve a specific playlist | 🔒 |
-| `GET` | `reference/playlists/` | List reference playlists | 🔓 |
-| `GET` | `reference/playlists/{id}/` | Retrieve a reference playlist | 🔓 |
-| `GET` | `me/manual-playlists/` | List my manual playlists | 🔒 |
-| `POST` | `me/manual-playlists/` | Create a manual playlist | 🔒 |
-| `GET` | `me/manual-playlists/{id}/` | Retrieve a manual playlist | 🔒 |
-| `PUT` | `me/manual-playlists/{id}/` | Update a manual playlist | 🔒 |
-| `GET` | `reference/manual-playlists/` | List reference manual playlists | 🔓 |
-| `GET` | `reference/manual-playlists/{id}/` | Retrieve a reference manual playlist | 🔓 |
-| `GET` | `me/genre-playlists/` | List my genre-based playlists | 🔒 |
-| `GET` | `me/genre-playlists/{id}/` | Retrieve a genre playlist | 🔒 |
-| `GET` | `reference/genre-playlists/` | List reference genre playlists | 🔓 |
-| `GET` | `reference/genre-playlists/{id}/` | Retrieve a reference genre playlist | 🔓 |
-| `GET` | `me/tag-playlists/` | List my tag-based playlists | 🔒 |
-| `GET` | `me/tag-playlists/{id}/` | Retrieve a tag playlist | 🔒 |
-| `GET` | `reference/tag-playlists/` | List reference tag playlists | 🔓 |
-| `GET` | `reference/tag-playlists/{id}/` | Retrieve a reference tag playlist | 🔓 |
+| Method | Endpoint                           | Description                          | Auth Required |
+| ------ | ---------------------------------- | ------------------------------------ | ------------- |
+| `GET`  | `me/playlists/`                    | List my playlists                    | 🔒            |
+| `GET`  | `me/playlists/{id}/`               | Retrieve a specific playlist         | 🔒            |
+| `GET`  | `reference/playlists/`             | List reference playlists             | 🔓            |
+| `GET`  | `reference/playlists/{id}/`        | Retrieve a reference playlist        | 🔓            |
+| `GET`  | `me/manual-playlists/`             | List my manual playlists             | 🔒            |
+| `POST` | `me/manual-playlists/`             | Create a manual playlist             | 🔒            |
+| `GET`  | `me/manual-playlists/{id}/`        | Retrieve a manual playlist           | 🔒            |
+| `PUT`  | `me/manual-playlists/{id}/`        | Update a manual playlist             | 🔒            |
+| `GET`  | `reference/manual-playlists/`      | List reference manual playlists      | 🔓            |
+| `GET`  | `reference/manual-playlists/{id}/` | Retrieve a reference manual playlist | 🔓            |
+| `GET`  | `me/genre-playlists/`              | List my genre-based playlists        | 🔒            |
+| `GET`  | `me/genre-playlists/{id}/`         | Retrieve a genre playlist            | 🔒            |
+| `GET`  | `reference/genre-playlists/`       | List reference genre playlists       | 🔓            |
+| `GET`  | `reference/genre-playlists/{id}/`  | Retrieve a reference genre playlist  | 🔓            |
+| `GET`  | `me/tag-playlists/`                | List my tag-based playlists          | 🔒            |
+| `GET`  | `me/tag-playlists/{id}/`           | Retrieve a tag playlist              | 🔒            |
+| `GET`  | `reference/tag-playlists/`         | List reference tag playlists         | 🔓            |
+| `GET`  | `reference/tag-playlists/{id}/`    | Retrieve a reference tag playlist    | 🔓            |
 
 ### Play History
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `plays/` | List play history | 🔒 |
-| `POST` | `plays/` | Record a play | 🔒 |
-| `GET` | `plays/{id}/` | Retrieve a specific play record | 🔒 |
+| Method | Endpoint      | Description                     | Auth Required |
+| ------ | ------------- | ------------------------------- | ------------- |
+| `GET`  | `plays/`      | List play history               | 🔒            |
+| `POST` | `plays/`      | Record a play                   | 🔒            |
+| `GET`  | `plays/{id}/` | Retrieve a specific play record | 🔒            |
 
 ### Search
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `search/` | Search across tracks, albums, artists, and playlists | 🔒 |
+| Method | Endpoint  | Description                                          | Auth Required |
+| ------ | --------- | ---------------------------------------------------- | ------------- |
+| `GET`  | `search/` | Search across tracks, albums, artists, and playlists | 🔒            |
 
 **Query Parameters**:
+
 - `query`: Search query string
 - `type`: Filter by type (track, album, artist, playlist)
 
 ### User Management
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| `GET` | `users/` | List users | 🔒 |
-| `POST` | `users/` | Create a user | 🔒 |
-| `GET` | `users/{id}/` | Retrieve a specific user | 🔒 |
-| `PUT` | `users/{id}/` | Update a user | 🔒 |
-| `DELETE` | `users/{id}/` | Delete a user | 🔒 |
-| `GET` | `me/spotify/` | Get current user's Spotify profile (list of 0 or 1 item) | 🔒 |
+| Method   | Endpoint      | Description                                              | Auth Required |
+| -------- | ------------- | -------------------------------------------------------- | ------------- |
+| `GET`    | `users/`      | List users                                               | 🔒            |
+| `POST`   | `users/`      | Create a user                                            | 🔒            |
+| `GET`    | `users/{id}/` | Retrieve a specific user                                 | 🔒            |
+| `PUT`    | `users/{id}/` | Update a user                                            | 🔒            |
+| `DELETE` | `users/{id}/` | Delete a user                                            | 🔒            |
+| `GET`    | `me/spotify/` | Get current user's Spotify profile (list of 0 or 1 item) | 🔒            |
 
 ## Usage
 
@@ -488,6 +513,7 @@ curl -X POST http://localhost:8000/v1/auth/token/ \
 ```
 
 Response:
+
 ```json
 {
   "access": "eyJ0eXAiOiJKV1QiLCJhbGc...",
@@ -504,6 +530,7 @@ curl -X POST http://localhost:8000/v1/library/uploaded/ \
 ```
 
 The API will automatically:
+
 - Extract metadata from the audio file
 - Fingerprint the audio using AcoustID
 - Match against MusicBrainz to retrieve additional metadata
@@ -575,6 +602,7 @@ Genre and tag playlists are automatically generated based on your track classifi
 #### MusicBrainz Integration
 
 When uploading tracks, the API automatically:
+
 1. Fingerprints the audio using Chromaprint
 2. Matches against AcoustID database
 3. Retrieves metadata from MusicBrainz
@@ -637,8 +665,10 @@ HearTheMusicTree uses a dedicated **TMTA system user** (username: `tmta`) to man
 Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
 
 ## License
+
 This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgements
+
 This project use acoustid to fingerprint the audio files in order to identify each track.
 Please visit [Acoustid Web Service](https://acoustid.org/webservice).

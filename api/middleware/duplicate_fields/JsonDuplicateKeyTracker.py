@@ -1,5 +1,4 @@
 class JsonDuplicateKeyTracker:
-
     def __init__(self):
         self.object_stack = []  # Stack to track current object context
         self.duplicates = []
