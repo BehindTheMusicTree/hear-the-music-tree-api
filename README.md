@@ -141,13 +141,38 @@ Quick start:
 cp env/dev/.env.compose.dev.example .env
 ```
 
-2. Build (installs dev extras including pytest inside the API image) and start the stack:
+The `afp` service pulls **`ghcr.io/<GHCR_IMAGE_NAMESPACE>/audio-fingerprinter:<AFP_VERSION>`** (set in `.env`; default namespace matches org infra **`behindthemusictree`**).
+
+**GHCR pull errors (`unauthorized` / `denied`):** Org packages are often **private**. Docker must authenticate with a **real** GitHub token (not placeholder text from examples).
+
+**Interactive `docker login ghcr.io`:** When prompted for **Password**, paste a **personal access token** (classic: `ghp_…`; fine-grained: `github_pat_…`) with **`read:packages`**. **Your normal GitHub sign-in password is not accepted** and yields **`Get "https://ghcr.io/v2/": denied`**. **Username** must be that same account’s **GitHub login** (e.g. `andreas-garcia`). If you already tried the wrong password, run **`docker logout ghcr.io`** then log in again with a PAT.
+
+**Where to keep the token:** You do **not** need `GHCR_PAT` in the project **`.env`** for image pulls — Compose does not pass it to `docker pull`; the **Docker daemon** uses registry credentials from **`docker login`**. After a successful login, Docker stores auth under **`~/.docker/config.json`** (often with a **credential helper** / OS keychain), similar in spirit to how **`npm login`** ends up in **`~/.npmrc`**. There is **no** official **`~/.ghrc`** for PATs; [**GitHub CLI**](https://cli.github.com/) keeps tokens in its own store after **`gh auth login`**. Avoid committing secrets: this repo **gitignores** `.env`, but do not put PATs in tracked files or paste them into shell history if you can avoid it (use **`read -s GHCR_PAT`** or **`gh auth token`** instead of a long-lived line in **`~/.zshrc`**).
+
+- Create a **classic** PAT at [GitHub → Settings → Developer settings → Personal access tokens](https://github.com/settings/tokens) with scope **`read:packages`** (add **`write:packages`** only if you also push images). If **BehindTheMusicTree** uses **SAML SSO**, open the token on GitHub and click **Configure SSO** → **Authorize** for that org.
+- Log in (**`-u`** must be the **same GitHub username** as the account that owns the PAT). A one-off **`export`** is only to pipe the token; you can skip keeping **`GHCR_PAT`** anywhere afterward:
+
+```bash
+export GHCR_PAT='paste-token-here'
+echo "$GHCR_PAT" | docker login ghcr.io -u 'your-github-username' --password-stdin
+unset GHCR_PAT
+```
+
+If you use **GitHub CLI** (`gh auth login` already done), you can reuse that session (token must still include **`read:packages`** for private packages):
+
+```bash
+gh auth token | docker login ghcr.io -u "$(gh api user -q .login)" --password-stdin
+```
+
+Then **`docker compose pull afp`** (or **`docker compose up`**) again.
+
+3. Build (installs dev extras including pytest inside the API image) and start the stack:
 
 ```bash
 docker compose build api && docker compose up
 ```
 
-3. Open the API:
+4. Open the API:
 
 - App: `http://localhost:8000`
 - Swagger: `http://localhost:8000/docs/`
