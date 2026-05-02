@@ -169,6 +169,8 @@ cd the-music-tree-api
 
    This is the default local workflow for this repository. It runs API + DB + AFP with the same runtime env contract used by deployment.
 
+   **Compose-only tests:** With this stack, Postgres and AFP are already running as Compose services. Run the suite with **`docker compose exec api pytest`** (see [Testing](#testing)). **Do not** run step 6 in that workflow—it starts duplicate **`docker run`** containers and will **clash on names** with the Compose services. Step 5 is optional on the host when you need the same directories for scripts outside the container; the **`api`** image startup also prepares paths inside the container.
+
 5. Set up filesystem:
 
    ```bash
@@ -183,18 +185,17 @@ cd the-music-tree-api
    - Media files and libraries
    - Temporary uploaded files
 
-6. Run database and Audio Fingerprinter containers:
+6. **Alternative — DB and AFP only (host `pytest`, same pattern as CI):**
+
+   If you install the app with **`pip install -e ".[dev]"`** on the host and run **`pytest`** there (instead of inside the **`api`** container), start Postgres and AFP with:
 
    ```bash
    bash scripts/run-db-and-afp-containers.sh
    ```
 
-   This starts the required Docker containers:
+   This script **`docker pull`**s images (via **`docker_image_ref_from_repo_tag`** in **`scripts/utils.sh`**, so **`GHCR_IMAGE_NAMESPACE`** must be set for short image repo names) and **`docker run`**s DB + AFP. GitHub Actions **`.github/workflows/test.yml`** uses the same step. For private **`ghcr.io`** images, **`docker login ghcr.io`** on the host first (see [README](README.md) Quick start).
 
-   - PostgreSQL database container
-   - Audio Fingerprinter (AFP) container
-
-   **Note:** Make sure Docker is running before running this script.
+   **Note:** Docker must be running. Skip this step when you rely solely on step 4’s Compose stack.
 
 #### Environment Variables
 
@@ -256,7 +257,7 @@ Running the container requires the following environment variables:
 
 #### Database Requirement
 
-The HearTheMusicTree API requires a PostgreSQL database to function. The database runs in a Docker container, which is started by the `run-db-and-afp-containers.sh` script. This ensures a consistent development environment across all contributors.
+The HearTheMusicTree API requires a PostgreSQL database to function. With **Docker Compose** (step 4), the database is the Compose **`db`** service. With **host `pytest`** (step 6 / CI), the database is a container started by **`scripts/run-db-and-afp-containers.sh`**.
 
 #### Database migrations
 

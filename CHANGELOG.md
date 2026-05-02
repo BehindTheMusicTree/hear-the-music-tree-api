@@ -80,6 +80,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **README**: Docker Compose quick start documents **`ghcr.io`** **`afp`** pulls (**`GHCR_IMAGE_NAMESPACE`**), **`docker login`** (PAT as password—not account password—plus **`docker logout ghcr.io`**), **`~/.docker/config.json`** vs project **`.env`**, optional **`gh auth token`**, and **SSO** for **`unauthorized`** / **`denied`**.
 
+- **CONTRIBUTING**: [Environment setup](CONTRIBUTING.md) clarifies **Compose-only** dev (**skip** **`scripts/run-db-and-afp-containers.sh`** to avoid container name clashes) vs **host `pytest`** + that script (same pattern as [`.github/workflows/test.yml`](.github/workflows/test.yml)); database requirement text matches both paths.
+
 ### Removed
 
 - **Scripts**: Removed legacy **`scripts/generate-docker-compose-parts.sh`**; server deploy compose is owned by [**BehindTheMusicTree/infrastructure**](https://github.com/BehindTheMusicTree/infrastructure) (**`generate-docker-compose.sh`** + **`docker-compose.yml.template`**), not partial compose snippets generated from this repository.
