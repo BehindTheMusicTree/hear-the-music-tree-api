@@ -64,10 +64,6 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
-### Fixed
-
-- **Pytest / CI apparent infinite hang after settings**: [`api/test/tests/conftest.py`](api/test/tests/conftest.py) imports **`from django.conf import settings`** instead of **`from api import settings`**, so the full **`api.settings`** module is not run during conftest import (avoids bad interaction with pytest-django startup and **`log_cli`**). [`api/settings.py`](api/settings.py) no longer appends **`coverage`** to **`INSTALLED_APPS`** (the **`coverage`** PyPI package is not a Django application). [`pytest.ini`](pytest.ini) defaults **`log_cli=false`**; use **`pytest -o log_cli=true`** when you want live logs.
-
 ### CI
 
 - **Static files workflow**: [`.github/workflows/static-files.yml`](.github/workflows/static-files.yml) sets **`ENV=collect_static`** in the job environment (Django collect-static path in **`api/settings.py`**); it is no longer read from the GitHub Variable **`ENV`**.
@@ -84,7 +80,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Improved
 
-- **Django / pytest startup visibility**: [`api/utils/utils.py`](api/utils/utils.py) **`print_django`** uses **`flush=True`**. [`api/settings.py`](api/settings.py) logs that **`django.setup()`** follows settings and installs [`api/CiPytestStartupTracer.py`](api/CiPytestStartupTracer.py) **`CiPytestStartupTracer`** (pytest/CI: **`apps.populate()`** start/end, every **`AppConfig.ready()`** start/end, and **`get_resolver()`** around ROOT_URLCONF import). [`api/models.py`](api/models.py) logs before/after the **`api`** model import chain and notes that **`ready()`** runs next. [`api/urls.py`](api/urls.py) logs start/end of URLconf import (loads after **`apps.populate()`**). [`api/test/conftest.py`](api/test/conftest.py) (parent) logs when pytest imports it (after pytest-django’s **`django.setup()`** in the usual hook order). [`api/test/tests/conftest.py`](api/test/tests/conftest.py) logs the first import line (stdlib-only), then **`pytest_configure`**, **`pytest_sessionstart`**, and **`pytest_collectstart`** (session) so stalls after **`apps.populate()`** narrow to conftest import vs collection.
+- **Django / pytest startup visibility**: [`api/utils/utils.py`](api/utils/utils.py) **`print_django`** uses **`flush=True`**. [`api/settings.py`](api/settings.py) installs [`api/CiPytestStartupTracer.py`](api/CiPytestStartupTracer.py) for **`apps.populate()`** / **`AppConfig.ready()`** / **`get_resolver()`** in CI/pytest. **[`pyproject.toml`](pyproject.toml)** registers **[`api/ci_pytest_startup_plugin.py`](api/ci_pytest_startup_plugin.py)** as **`pytest11`** **`htmt-ci-startup`**: a **`pytest_load_initial_conftests`** hookwrapper (**`tryfirst=True`**) prints **outer enter/leave** around the whole inner chain (capture, pytest-django **`django.setup()`**, initial conftest import), because conftest files cannot implement that hook. [`api/urls.py`](api/urls.py) logs URLconf import; [`api/test/conftest.py`](api/test/conftest.py) and [`api/test/tests/conftest.py`](api/test/tests/conftest.py) add **`[pytest]`** progress markers.
 
 ### Changed
 

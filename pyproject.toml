@@ -58,6 +58,9 @@ dependencies = [
     "werkzeug==2.2.2",
 ]
 
+[project.entry-points.pytest11]
+htmt-ci-startup = "api.ci_pytest_startup_plugin"
+
 [project.optional-dependencies]
 dev = [
     "bump-my-version==1.3.0",
