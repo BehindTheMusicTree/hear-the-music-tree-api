@@ -80,6 +80,9 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **README**: Docker Compose quick start documents **`ghcr.io`** **`afp`** pulls (**`GHCR_IMAGE_NAMESPACE`**), **`docker login`** (PAT as password—not account password—plus **`docker logout ghcr.io`**), **`~/.docker/config.json`** vs project **`.env`**, optional **`gh auth token`**, and **SSO** for **`unauthorized`** / **`denied`**.
 
+### Removed
+
+- **Scripts**: Removed legacy **`scripts/generate-docker-compose-parts.sh`**; server deploy compose is owned by [**BehindTheMusicTree/infrastructure**](https://github.com/BehindTheMusicTree/infrastructure) (**`generate-docker-compose.sh`** + **`docker-compose.yml.template`**), not partial compose snippets generated from this repository.
 
 ## [v2.2.4] - 2026-04-30
 
