@@ -64,6 +64,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Fixed
+
+- **Pytest / CI apparent infinite hang after settings**: [`api/test/tests/conftest.py`](api/test/tests/conftest.py) imports **`from django.conf import settings`** instead of **`from api import settings`**, so the full **`api.settings`** module is not run during conftest import (avoids bad interaction with pytest-django startup and **`log_cli`**). [`api/settings.py`](api/settings.py) no longer appends **`coverage`** to **`INSTALLED_APPS`** (the **`coverage`** PyPI package is not a Django application). [`pytest.ini`](pytest.ini) defaults **`log_cli=false`**; use **`pytest -o log_cli=true`** when you want live logs.
+
 ### CI
 
 - **Static files workflow**: [`.github/workflows/static-files.yml`](.github/workflows/static-files.yml) sets **`ENV=collect_static`** in the job environment (Django collect-static path in **`api/settings.py`**); it is no longer read from the GitHub Variable **`ENV`**.
@@ -80,7 +84,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Improved
 
-- **Django / pytest startup visibility**: [`api/utils/utils.py`](api/utils/utils.py) **`print_django`** uses **`flush=True`**. [`api/settings.py`](api/settings.py) logs that **`django.setup()`** follows settings. [`api/urls.py`](api/urls.py) logs start/end of URLconf import; [`api/apps.py`](api/apps.py) **`ApiConfig.ready()`** logs when the app registry finishes the **`api`** app. [`api/test/tests/conftest.py`](api/test/tests/conftest.py) keeps **`[pytest]`** session/collection progress so long phases after settings do not look like a hang.
+- **Django / pytest startup visibility**: [`api/utils/utils.py`](api/utils/utils.py) **`print_django`** uses **`flush=True`**. [`api/settings.py`](api/settings.py) logs that **`django.setup()`** follows settings. [`api/models.py`](api/models.py) logs before/after the **`api`** model import chain (often the long gap before **`api.urls`**). [`api/urls.py`](api/urls.py) logs start/end of URLconf import; [`api/apps.py`](api/apps.py) **`ApiConfig.ready()`** logs when the **`api`** app **`ready()`** runs. [`api/test/tests/conftest.py`](api/test/tests/conftest.py) keeps **`[pytest]`** session/collection progress.
 
 ### Changed
 
