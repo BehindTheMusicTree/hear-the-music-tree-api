@@ -49,6 +49,11 @@ class CiPytestStartupTracer:
             print("[Django] apps.populate() start (models, then AppConfig.ready() per app).", flush=True)
             original_populate(installed_apps)
             print("[Django] apps.populate() finished.", flush=True)
+            print(
+                "[Django] django.setup() is finishing; next output is pytest (configure → sessionstart → "
+                "collection). ROOT_URLCONF imports only on first URL resolution / test client.",
+                flush=True,
+            )
 
         apps.populate = traced_populate  # type: ignore[method-assign]
 
