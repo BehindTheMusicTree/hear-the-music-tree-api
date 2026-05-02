@@ -159,7 +159,7 @@ jobs:
   redeploy-webhook-call:
     name: Redeploy webhook
     needs: [build-and-push, set-version-api, set-version-db, set-version-afp, check-pinned-tags, determine-version]
-    uses: BehindTheMusicTree/github-workflows/.github/workflows/call-redeployment-webhook.yml@v0.2.0
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/call-redeployment-webhook.yml@v0.3.0
     with:
       env: ${{ needs.determine-version.outputs.env }}
       hook_id_base: ${{ vars.REDEPLOYMENT_HOOK_ID_BASE }}

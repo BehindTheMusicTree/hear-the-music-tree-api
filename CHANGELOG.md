@@ -74,7 +74,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Publish unit test results**: Pytest job adds **`checks: write`** and **`pull-requests: write`** for [**`EnricoMi/publish-unit-test-result-action`**](https://github.com/EnricoMi/publish-unit-test-result-action) (**`@v2.23.0`**) so the Checks API is usable; skips that step on **fork** **`pull_request`** workflows (read-only **`GITHUB_TOKEN`**).
 
-- **Publish**: **`call-redeployment-webhook`** pinned to **`@v0.2.0`**; pass required **`hook_id_base`** from **`vars.REDEPLOYMENT_HOOK_ID_BASE`** ([**BehindTheMusicTree/github-workflows**](https://github.com/BehindTheMusicTree/github-workflows/releases/tag/v0.2.0)). [**.github/actionlint.yaml**](.github/actionlint.yaml): allow **`REDEPLOYMENT_HOOK_ID_BASE`** for actionlint.
+- **Publish**: **`call-redeployment-webhook`** pinned to **`@v0.3.0`**; pass required **`hook_id_base`** from **`vars.REDEPLOYMENT_HOOK_ID_BASE`** ([**BehindTheMusicTree/github-workflows**](https://github.com/BehindTheMusicTree/github-workflows/releases/tag/v0.3.0)). GitHub secrets **`BTMT_REDEPLOYMENT_WEBHOOK_SECRET_PROD`** / **`BTMT_REDEPLOYMENT_WEBHOOK_SECRET_STAGING`** (rename from **`REDEPLOYMENT_WEBHOOK_SECRET_*`**; same values). [**.github/actionlint.yaml**](.github/actionlint.yaml): allow **`REDEPLOYMENT_HOOK_ID_BASE`** for actionlint.
 
 - **Postgres and publish pins**: Compose and CI use **`postgres:16.4`** only (removed **`docker-compose.ci.yml`**, **`COMPOSE_DB_IMAGE`**, and **`DB_VERSION`**). [**`publish.yml`**](.github/workflows/publish.yml) **`check-pinned-tags`** enforces **`AFP_VERSION`** only; **`set-version-db`** writes tag **`16.4`**.
 
