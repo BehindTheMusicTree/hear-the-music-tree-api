@@ -160,6 +160,8 @@ jobs:
 
       - name: GHCR image namespace for Compose (lowercase)
         shell: bash
+        env:
+          GHCR_NS: ${{ vars.GHCR_IMAGE_NAMESPACE }}
         run: |
           set -euo pipefail
           ns_lc="${GHCR_NS,,}"
