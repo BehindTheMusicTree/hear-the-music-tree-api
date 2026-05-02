@@ -913,8 +913,11 @@ else:
 
 print_django("Finished loading settings.")
 if "pytest" in sys.argv[0] or os.environ.get("ENV") == "ci_test":
+    from api.CiPytestStartupTracer import CiPytestStartupTracer
+
+    CiPytestStartupTracer.install_appconfig_ready_tracer()
     print(
-        "[Django] Next: django.setup() loads apps/models and ROOT_URLCONF (api.urls); "
-        "this can take minutes in CI with no further [Django] lines until complete.",
+        "[Django] Next: django.setup() runs apps.populate() (models, then one AppConfig.ready() per app); "
+        "ROOT_URLCONF (api.urls) loads only after that. Long gaps: watch which ready() starts but never ends.",
         flush=True,
     )
