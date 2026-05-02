@@ -71,15 +71,15 @@ Single publish workflow: collect static files, build Docker image, set image tag
 
 **File:** `.github/workflows/build-and-push.yml`
 
-Builds the app Docker image and pushes it to Docker Hub.
+Builds the app Docker image and pushes it to **GitHub Container Registry** (`ghcr.io`).
 
 **Triggers:**
 
 - **Callable** via `workflow_call` (optional `commit_hash`; optional `environment`, default `TEST`; used by Publish)
 
-**Jobs:** **build-and-push-to-dockerhub** – checkout at ref → login to Docker Hub → build and push image with build-args from repo vars. Uses **environment** (TEST or PROD) for secrets/vars.
+**Jobs:** **build-and-push-to-ghcr** – checkout at ref → login to `ghcr.io` with **`GITHUB_TOKEN`** → build and push image with build-args from repo vars. Uses **environment** (TEST or PROD) for vars. Workflow declares **`permissions: packages: write`**.
 
-**Environment:** Dynamic from caller: **TEST** or **PROD**. Image tag: `$DOCKERHUB_USERNAME/$HTMT_API_IMAGE_REPO:$IMAGE_TAG`.
+**Environment:** Dynamic from caller: **TEST** or **PROD**. Image ref: **`ghcr.io/<GHCR_IMAGE_NAMESPACE>/<HTMT_API_IMAGE_REPO>:<IMAGE_TAG>`** (namespace must match **BehindTheMusicTree/infrastructure** variable **`GHCR_IMAGE_NAMESPACE`**). Remove **`DOCKERHUB_USERNAME`** / **`DOCKERHUB_ACCESS_TOKEN`**; set variable **`GHCR_IMAGE_NAMESPACE`** (lowercase org or user).
 
 ## Sync env to server
 

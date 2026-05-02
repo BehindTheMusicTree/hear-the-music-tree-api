@@ -11,7 +11,9 @@ log_pull_debug () {
     log_with_script_prefixe "docker version (timeout ${debug_timeout}s):"
     timeout $debug_timeout docker version 2>&1 | sed 's/^/[AFP and DB runner]   /' || log_with_script_prefixe "   (timed out or failed)"
     hub_code=$(curl -sS --connect-timeout 5 -o /dev/null -w "%{http_code}" https://registry-1.docker.io/v2/ 2>/dev/null) || hub_code="failed"
-    log_with_script_prefixe "Docker Hub reachable (registry-1.docker.io): HTTP $hub_code"
+    log_with_script_prefixe "Docker registry-1.docker.io: HTTP $hub_code"
+    ghcr_code=$(curl -sS --connect-timeout 5 -o /dev/null -w "%{http_code}" https://ghcr.io/v2/ 2>/dev/null) || ghcr_code="failed"
+    log_with_script_prefixe "GHCR (ghcr.io/v2/): HTTP $ghcr_code"
     log_with_script_prefixe "docker info excerpt (timeout ${debug_timeout}s):"
     timeout $debug_timeout docker info 2>&1 | grep -E "^(Server Version|Operating System|Docker Root Dir|HTTP Proxy|HTTPS Proxy|No Proxy)" | sed 's/^/[AFP and DB runner]   /' || log_with_script_prefixe "   (timed out or no match)"
     log_with_script_prefixe "--- end debug ---"
@@ -22,7 +24,7 @@ check_script_vars_are_set () {
 
     local REQUIRED_NON_BOOL_VARS=(
         ENV
-        DOCKERHUB_USERNAME
+        GHCR_IMAGE_NAMESPACE
         TMP_UPLOADED_FILES
         DB_CONTAINER_NAME
         DB_IMAGE_REPO
@@ -75,28 +77,30 @@ main() {
     DOCKER_PULL_TIMEOUT=200
     log_with_script_prefixe "Pulling images (timeout ${DOCKER_PULL_TIMEOUT}s each)..."
 
-    log_with_script_prefixe "Pulling DB image: $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION"
-    timeout $DOCKER_PULL_TIMEOUT docker pull $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION
+    db_image=$(docker_image_ref_from_repo_tag "$DB_IMAGE_REPO" "$DB_VERSION")
+    log_with_script_prefixe "Pulling DB image: $db_image"
+    timeout $DOCKER_PULL_TIMEOUT docker pull "$db_image"
     pull_exit=$?
     if [ $pull_exit -ne 0 ]; then
         if [ $pull_exit -eq 124 ]; then
             log_with_script_prefixe "ERROR: DB image pull timed out after ${DOCKER_PULL_TIMEOUT}s." >&2
         else
-            log_with_script_prefixe "ERROR: DB image pull failed (exit $pull_exit). Check: docker login, network, image $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION." >&2
+            log_with_script_prefixe "ERROR: DB image pull failed (exit $pull_exit). Check: docker login ghcr.io (if private), network, image $db_image." >&2
         fi
         log_pull_debug "DB"
         exit 1
     fi
     log_with_script_prefixe "DB image pulled."
 
-    log_with_script_prefixe "Pulling AFP image: $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION"
-    timeout $DOCKER_PULL_TIMEOUT docker pull $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION
+    afp_image=$(docker_image_ref_from_repo_tag "$AFP_IMAGE_REPO" "$AFP_VERSION")
+    log_with_script_prefixe "Pulling AFP image: $afp_image"
+    timeout $DOCKER_PULL_TIMEOUT docker pull "$afp_image"
     pull_exit=$?
     if [ $pull_exit -ne 0 ]; then
         if [ $pull_exit -eq 124 ]; then
             log_with_script_prefixe "ERROR: AFP image pull timed out after ${DOCKER_PULL_TIMEOUT}s." >&2
         else
-            log_with_script_prefixe "ERROR: AFP image pull failed (exit $pull_exit). Check: docker login, network, image $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION." >&2
+            log_with_script_prefixe "ERROR: AFP image pull failed (exit $pull_exit). Check: docker login ghcr.io (if private), network, image $afp_image." >&2
         fi
         log_pull_debug "AFP"
         exit 1
@@ -140,7 +144,7 @@ main() {
             -e POSTGRES_USER=$DB_SUPERUSER_NAME \
             -e POSTGRES_PASSWORD=$DB_SUPERUSER_PASSWORD \
             -e POSTGRES_PORT=$DB_PORT \
-            -d $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION
+            -d "$db_image"
     else
         timeout 60 docker run \
             --name=$DB_CONTAINER_NAME \
@@ -150,7 +154,7 @@ main() {
             -e POSTGRES_USER=$DB_SUPERUSER_NAME \
             -e POSTGRES_PASSWORD=$DB_SUPERUSER_PASSWORD \
             -e POSTGRES_PORT=$DB_PORT \
-            -d $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION
+            -d "$db_image"
     fi
     if [ $? -ne 0 ]; then
         log_with_script_prefixe "ERROR: Failed to run database container (timeout or error)." >&2
@@ -169,7 +173,7 @@ main() {
         -e "POOL_DIR_EXTERNAL=$AFP_POOL_DIR_EXTERNAL"
         -e "FLASK_LOG_DIR_EXTERNAL=${AFP_FLASK_LOG_DIR_EXTERNAL:-/app/log/flask/}"
         -e "GUNICORN_LOG_DIR=${AFP_GUNICORN_LOG_DIR_EXTERNAL:-/app/log/gunicorn/}"
-        -d "$DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION"
+        -d "$afp_image"
     )
     if [ "${RUN_AFP_AS_HOST_USER:-false}" = true ]; then
         # Run as host user so the shared pool volume is writable by both AFP and the host (CI runner / local dev).
