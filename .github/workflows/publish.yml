@@ -10,6 +10,10 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   determine-version:
     name: Determine version
