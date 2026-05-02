@@ -20,7 +20,7 @@ services:
       start_period: 10s
 
   afp:
-    image: ghcr.io/${GHCR_IMAGE_NAMESPACE:-mignot}/${AFP_IMAGE_REPO:-audio-fingerprinter}:${AFP_VERSION:-v1.4.0}
+    image: ghcr.io/${GHCR_IMAGE_NAMESPACE:-behindthemusictree}/${AFP_IMAGE_REPO:-audio-fingerprinter}:${AFP_VERSION:-v1.4.4}
     container_name: htmt-api-afp
     environment:
       ENV: ${ENV:-dev}

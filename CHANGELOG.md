@@ -70,6 +70,16 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Publish**: **`call-redeployment-webhook`** pinned to **`@v0.2.0`**; pass required **`hook_id_base`** from **`vars.REDEPLOYMENT_HOOK_ID_BASE`** ([**BehindTheMusicTree/github-workflows**](https://github.com/BehindTheMusicTree/github-workflows/releases/tag/v0.2.0)). [**.github/actionlint.yaml**](.github/actionlint.yaml): allow **`REDEPLOYMENT_HOOK_ID_BASE`** for actionlint.
 
+### Changed
+
+- **Audio Fingerprinter**: Default and dev example **`AFP_VERSION`** **`v1.4.4`** ([**Release 1.4.4**](https://github.com/BehindTheMusicTree/audio-fingerprinter/releases/tag/v1.4.4)) in [`docker-compose.yml`](docker-compose.yml) and [`env/dev/.env.compose.dev.example`](env/dev/.env.compose.dev.example) / [`env/dev/.env.dev.example`](env/dev/.env.dev.example). Set GitHub repository variable **`AFP_VERSION`** to **`v1.4.4`** (or **`1.4.4`** per existing publish convention) so CI and publish match.
+
+- **Local Compose GHCR namespace**: Default and dev examples use **`GHCR_IMAGE_NAMESPACE=behindthemusictree`** (lowercase org) in [`docker-compose.yml`](docker-compose.yml) and [`env/dev/.env.*.example`](env/dev/) so **`afp`** pulls match [**`BehindTheMusicTree/infrastructure`**](https://github.com/BehindTheMusicTree/infrastructure) rather than a personal user path that returns **`denied`** when the image is not published there.
+
+### Documentation
+
+- **README**: Docker Compose quick start documents **`ghcr.io`** **`afp`** pulls (**`GHCR_IMAGE_NAMESPACE`**), **`docker login`** (PAT as password—not account password—plus **`docker logout ghcr.io`**), **`~/.docker/config.json`** vs project **`.env`**, optional **`gh auth token`**, and **SSO** for **`unauthorized`** / **`denied`**.
+
 ## [v2.2.4] - 2026-04-30
 
 ### CI
