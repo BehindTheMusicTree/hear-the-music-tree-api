@@ -64,6 +64,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### CI
+
+- **Publish**: **`call-redeployment-webhook`** pinned to **`@v0.2.0`**; pass required **`hook_id_base`** from **`vars.REDEPLOYMENT_HOOK_ID_BASE`** ([**BehindTheMusicTree/github-workflows**](https://github.com/BehindTheMusicTree/github-workflows/releases/tag/v0.2.0)). [**.github/actionlint.yaml**](.github/actionlint.yaml): allow **`REDEPLOYMENT_HOOK_ID_BASE`** for actionlint.
+
 ## [v2.2.4] - 2026-04-30
 
 ### CI
