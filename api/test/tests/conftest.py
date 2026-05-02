@@ -198,7 +198,13 @@ def _require_optional_services_enabled() -> None:
         )
 
 
+def _pytest_log(msg: str) -> None:
+    """Visible progress during sessionstart/collection (avoids 'hangs' after Django settings load)."""
+    print(f"[pytest] {msg}", flush=True)
+
+
 def pytest_sessionstart(session: Session) -> None:
+    _pytest_log("sessionstart: checking ffprobe (after Django settings; next is test collection)")
     ffprobe = shutil.which("ffprobe")
     if ffprobe is None:
         pytest.exit(
@@ -222,6 +228,7 @@ def pytest_sessionstart(session: Session) -> None:
         )
     wav_fixture = Path(__file__).parent.parent / "utils" / "uploaded_track" / "files" / "duration=472s.wav"
     if wav_fixture.exists():
+        _pytest_log(f"sessionstart: probing WAV fixture ({wav_fixture.name}, timeout 30s)")
         probe_result = subprocess.run(
             [ffprobe, "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", str(wav_fixture)],
             capture_output=True,
@@ -235,6 +242,7 @@ def pytest_sessionstart(session: Session) -> None:
                 f"ffprobe output: {err or probe_result.returncode}",
                 returncode=2,
             )
+    _pytest_log("sessionstart: ffprobe checks OK; collecting tests (this can take a while with no output)")
 
 
 def pytest_configure(config):
@@ -336,6 +344,7 @@ def _check_musicbrainz_reachable() -> tuple[bool, str]:
 
 
 def pytest_collection_finish(session: Session) -> None:
+    _pytest_log(f"collection_finish: {len(session.items)} items; checking optional services / e2e reachability")
     _require_optional_services_enabled()
     if not _run_has_e2e_tests(session):
         return

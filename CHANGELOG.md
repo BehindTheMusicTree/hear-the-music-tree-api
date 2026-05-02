@@ -78,6 +78,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Postgres and publish pins**: Compose and CI use **`postgres:16.4`** only (removed **`docker-compose.ci.yml`**, **`COMPOSE_DB_IMAGE`**, and **`DB_VERSION`**). [**`publish.yml`**](.github/workflows/publish.yml) **`check-pinned-tags`** enforces **`AFP_VERSION`** only; **`set-version-db`** writes tag **`16.4`**.
 
+### Improved
+
+- **Pytest logs**: [`api/test/tests/conftest.py`](api/test/tests/conftest.py) prints **`[pytest]`** progress after Django settings load (sessionstart ffprobe / collection_finish) so long **collection** does not look like a hang.
+
 ### Changed
 
 - **Audio Fingerprinter**: Default and dev example **`AFP_VERSION`** **`v1.4.4`** ([**Release 1.4.4**](https://github.com/BehindTheMusicTree/audio-fingerprinter/releases/tag/v1.4.4)) in [`docker-compose.yml`](docker-compose.yml) and [`env/dev/.env.compose.dev.example`](env/dev/.env.compose.dev.example) / [`env/dev/.env.dev.example`](env/dev/.env.dev.example). Set GitHub repository variable **`AFP_VERSION`** to **`v1.4.4`** (or **`1.4.4`** per existing publish convention) so CI and publish match.
