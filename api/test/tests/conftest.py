@@ -1,7 +1,11 @@
 import os
+import sys
+
+if os.environ.get("ENV") == "ci_test" or "pytest" in (sys.argv[0] or "") or any(a == "pytest" for a in sys.argv):
+    print("[pytest] api/test/tests/conftest.py: import line 1 (stdlib only; next imports may block)", flush=True)
+
 import shutil
 import subprocess
-import sys
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -25,7 +29,7 @@ def _pytest_startup_progress() -> bool:
 
 if _pytest_startup_progress():
     print(
-        "[pytest] conftest.py: top-level imports finished (django.setup may already have run via pytest-django).",
+        "[pytest] api/test/tests/conftest.py: top-level imports finished (django.setup may already have run).",
         flush=True,
     )
 
