@@ -30,7 +30,7 @@ Runs the full test suite with pytest.
 - **Pull request** targeting `main` or `develop`
 - **Callable** by other workflows via **`workflow_call`** (optional **`test_path`** input)
 
-**Jobs:** **pre-commit** – checkout, Python 3.14, `pip install -e ".[dev]"`, `pre-commit run --all-files` (see [docs/ci/python-project-standards.md](ci/python-project-standards.md)); **check-vars-and-secrets** (Check vars and secrets) – validates required env vars and secrets; **pytest** (Pytest) – checkout → login to `ghcr.io` → build **`api`** with Compose → pull **`db`** / **`afp`** (pins from org vars) → **`docker compose up --wait`** for **`db`** and **`afp`** → **`docker compose run api`** (setup filesystem, wait for Postgres and AFP, init Django data, pytest with JUnit XML on the workspace mount) → publish test results → Compose teardown.
+**Jobs:** **pre-commit** – checkout, Python 3.14, `pip install -e ".[dev]"`, `pre-commit run --all-files` (see [docs/ci/python-project-standards.md](ci/python-project-standards.md)); **check-vars-and-secrets** (Check vars and secrets) – validates required env vars and secrets; **pytest** (Pytest) – checkout → login to `ghcr.io` → build **`api`** with Compose → pull **`db`** (`postgres:16.4` from [`docker-compose.yml`](docker-compose.yml)) and **`afp`** (org **`AFP_*`** pins) → **`docker compose up --wait`** for **`db`** and **`afp`** → **`docker compose run api`** (setup filesystem, wait for Postgres and AFP, init Django data, pytest with JUnit XML on the workspace mount) → publish test results → Compose teardown.
 
 **Environment:** `ci_test` (uses repo vars and secrets for DB, AFP, AcousticID, etc.).
 
@@ -54,7 +54,7 @@ Single publish workflow: collect static files, build Docker image, set image tag
 1. **determine-version** – from ref: main → staging + TEST; tag with `-` → TEST; tag without `-` → PROD
 2. **static** – calls `static-files.yml`, commits and pushes collected static files
 3. **build-and-push** – calls `build-and-push.yml` with commit hash and **environment** (TEST or PROD)
-4. **check-pinned-tags** – requires `DB_VERSION` and `AFP_VERSION` in Settings → Variables (no `latest`)
+4. **check-pinned-tags** – requires **`AFP_VERSION`** in Settings → Variables (no `latest`); DB image is **`postgres:16.4`** (fixed in [`docker-compose.yml`](docker-compose.yml); publish sets server DB tag **`16.4`**)
 5. **set-version-api** / **set-version-db** / **set-version-afp** – shared workflows from `BehindTheMusicTree/github-workflows`
 6. **redeploy-webhook-call** – shared workflow **`call-redeployment-webhook`** (pinned **`@v0.2.0`**) with required **`hook_id_base: ${{ vars.REDEPLOYMENT_HOOK_ID_BASE }}`** and **`secrets: inherit`**
 
