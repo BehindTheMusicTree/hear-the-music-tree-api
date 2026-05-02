@@ -66,6 +66,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### CI
 
+- **Static files workflow**: [`.github/workflows/static-files.yml`](.github/workflows/static-files.yml) sets **`ENV=collect_static`** in the job environment (Django collect-static path in **`api/settings.py`**); it is no longer read from the GitHub Variable **`ENV`**.
+
 - **GHCR (align with infrastructure)**: [**`build-and-push.yml`**](.github/workflows/build-and-push.yml) pushes **`ghcr.io/<GHCR_IMAGE_NAMESPACE>/<HTMT_API_IMAGE_REPO>:<tag>`** with **`docker/login-action`** + **`GITHUB_TOKEN`** (`packages: write`); removes **`DOCKERHUB_USERNAME`** / **`DOCKERHUB_ACCESS_TOKEN`**. [**`test.yml`**](.github/workflows/test.yml) requires **`GHCR_IMAGE_NAMESPACE`**, logs in to **`ghcr.io`** for image pulls (`packages: read`). [**`scripts/utils.sh`**](scripts/utils.sh) **`docker_image_ref_from_repo_tag`**: repo with **`/`** → Docker Hub-style ref; short name → **`ghcr.io/<GHCR_IMAGE_NAMESPACE>/...`**.
 
 - **Pytest job (Compose-only)**: [**`test.yml`**](.github/workflows/test.yml) builds **`api`**, starts **`db`** and **`afp`** with [**`docker-compose.yml`**](docker-compose.yml) + [**`docker-compose.ci.yml`**](docker-compose.ci.yml) (org-pinned DB image via **`COMPOSE_DB_IMAGE`**), then runs **`docker compose run --rm api`** for filesystem setup, waits, **`init-django-data.sh`**, and pytest (JUnit XML on the repo mount). Optional **`workflow_call`** input **`test_path`**. Removes host **`pip`** / **`install-dependencies`** / duplicate container bootstrapping for that job.

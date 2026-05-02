@@ -106,6 +106,8 @@ Collects Django static files and commits/pushes them back to the repo.
 
 **Environment:** `collect_static`. Outputs are used by Publish so Build uses the commit that includes collected static files and the correct version.
 
+**Django `ENV`:** The workflow sets **`ENV=collect_static`** on the job (see `api/settings.py`); it is **not** read from a GitHub Variable.
+
 ## Branch Protection
 
 **File:** `.github/workflows/branch-protection.yml`
