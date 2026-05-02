@@ -80,6 +80,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **README**: Docker Compose quick start documents **`ghcr.io`** **`afp`** pulls (**`GHCR_IMAGE_NAMESPACE`**), **`docker login`** (PAT as password—not account password—plus **`docker logout ghcr.io`**), **`~/.docker/config.json`** vs project **`.env`**, optional **`gh auth token`**, and **SSO** for **`unauthorized`** / **`denied`**.
 
+
 ## [v2.2.4] - 2026-04-30
 
 ### CI
