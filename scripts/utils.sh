@@ -117,8 +117,8 @@ load_app_env_file_if_exists() {
 
 # If repo contains '/', treat as registry path on Docker Hub (e.g. library/postgres). Otherwise ghcr.io/GHCR_IMAGE_NAMESPACE/repo:tag.
 docker_image_ref_from_repo_tag() {
-    repo="$1"
-    tag="$2"
+    local repo="$1"
+    local tag="$2"
     case "$repo" in
     */*)
         printf '%s:%s\n' "$repo" "$tag"
