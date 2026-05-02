@@ -15,7 +15,6 @@ REQUIRED_NON_BOOL_VARS=(
   DB_COMPOSE_PART_FILENAME
   AFP_COMPOSE_PART_FILENAME
   APP_COMPOSE_PART_FILENAME
-  DOCKERHUB_USERNAME
   DB_IMAGE_REPO
   DB_VERSION
   DB_CONTAINER_NAME
@@ -42,11 +41,15 @@ REQUIRED_NON_BOOL_VARS=(
 )
 check_required_vars_are_set "${REQUIRED_NON_BOOL_VARS[@]}"
 
+db_image=$(docker_image_ref_from_repo_tag "$DB_IMAGE_REPO" "$DB_VERSION")
+afp_image=$(docker_image_ref_from_repo_tag "$AFP_IMAGE_REPO" "$AFP_VERSION")
+api_image=$(docker_image_ref_from_repo_tag "$HTMT_API_IMAGE_REPO" "$APP_VERSION")
+
 DOCKER_COMPOSE_PARTIAL_DB_FILE="${SCRIPTS_DIR}${DB_COMPOSE_PART_FILENAME}"
 log "Generating the DB partial docker-compose files in $DOCKER_COMPOSE_PARTIAL_DB_FILE..."
 cat << EOF > "$DOCKER_COMPOSE_PARTIAL_DB_FILE"
   db:
-    image: $DOCKERHUB_USERNAME/$DB_IMAGE_REPO:$DB_VERSION
+    image: $db_image
     container_name: $DB_CONTAINER_NAME
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -h localhost -p $DB_PORT_CONTAINER"]
@@ -67,7 +70,7 @@ log "Generating the AFP partial docker-compose files in $DOCKER_COMPOSE_PARTIAL_
 cat << EOF > "$DOCKER_COMPOSE_PARTIAL_AFP_FILE"
   audio_fingerprinter:
     working_dir: /app/
-    image: $DOCKERHUB_USERNAME/$AFP_IMAGE_REPO:$AFP_VERSION
+    image: $afp_image
     container_name: $AFP_CONTAINER_NAME
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:${AFP_PORT}/health/"]
@@ -90,7 +93,7 @@ log "Generating the API partial docker-compose files in $DOCKER_COMPOSE_PARTIAL_
 cat << EOF > "$DOCKER_COMPOSE_PARTIAL_API_FILE"
   ${APP_SERVICE_NAME}:
     working_dir: $APP_ROOT_DIR
-    image: $DOCKERHUB_USERNAME/$HTMT_API_IMAGE_REPO:$APP_VERSION
+    image: $api_image
     container_name: $APP_CONTAINER_NAME
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:${APP_PORT}/health/"]

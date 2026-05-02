@@ -97,7 +97,7 @@ jobs:
           API_DIR_NAME: ${{ vars.API_DIR_NAME }}
           APP_TITLE: ${{ vars.APP_TITLE }}
           APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
-          DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
+          GHCR_IMAGE_NAMESPACE: ${{ vars.GHCR_IMAGE_NAMESPACE }}
           DB_IMAGE_REPO: ${{ vars.DB_IMAGE_REPO }}
           DB_VERSION: ${{ vars.DB_VERSION }}
           DB_CONTAINER_NAME: ${{ format('{0}{1}', vars.HTMT_API_APP_NAME, vars.DB_APP_NAME_SUFFIX) }}
@@ -108,12 +108,15 @@ jobs:
           DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
           DB_APP_USERNAME: ${{ secrets.DB_APP_USERNAME }}
           DB_APP_USER_PASSWORD: ${{ secrets.DB_APP_USER_PASSWORD }}
-        run: bash scripts/check-workflow-env.sh API_DIR_NAME APP_TITLE APP_NAME DOCKERHUB_USERNAME DB_IMAGE_REPO DB_VERSION DB_CONTAINER_NAME AFP_CONTAINER_NAME AFP_IMAGE_REPO AFP_VERSION DB_SUPERUSER_PASSWORD DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD
+        run: bash scripts/check-workflow-env.sh API_DIR_NAME APP_TITLE APP_NAME GHCR_IMAGE_NAMESPACE DB_IMAGE_REPO DB_VERSION DB_CONTAINER_NAME AFP_CONTAINER_NAME AFP_IMAGE_REPO AFP_VERSION DB_SUPERUSER_PASSWORD DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD
 
   pytest:
     name: Pytest
     needs: [check-vars-and-secrets]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
     environment:
       name: ci_test
     env:
@@ -121,7 +124,7 @@ jobs:
       API_DIR_NAME: ${{ vars.API_DIR_NAME }}
       APP_TITLE: ${{ vars.APP_TITLE }}
       APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
-      DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
+      GHCR_IMAGE_NAMESPACE: ${{ vars.GHCR_IMAGE_NAMESPACE }}
       DB_IMAGE_REPO: ${{ vars.DB_IMAGE_REPO }}
       DB_VERSION: ${{ vars.DB_VERSION }}
       DB_CONTAINER_NAME: ${{ format('{0}{1}', vars.HTMT_API_APP_NAME, vars.DB_APP_NAME_SUFFIX) }}
@@ -151,6 +154,13 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5.0.1
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -212,7 +222,7 @@ jobs:
             -e ENV=ci_test -e DEBUG=true -e APP_PORT=${{ env.AFP_PORT }} -e POOL_DIR_EXTERNAL=/tmp/pool/ \
             -e GUNICORN_LOG_DIR=/app/log/gunicorn/ -e FLASK_LOG_DIR_EXTERNAL=/app/log/flask/ \
             -v /tmp/ci-uploaded:/tmp/pool \
-            ${{ env.DOCKERHUB_USERNAME }}/${{ env.AFP_IMAGE_REPO }}:${{ env.AFP_VERSION }} \
+            ghcr.io/${{ vars.GHCR_IMAGE_NAMESPACE }}/${{ env.AFP_IMAGE_REPO }}:${{ env.AFP_VERSION }} \
             bash -c 'echo "FLASK_LOG_APP_FILENAME=${FLASK_LOG_APP_FILENAME:-not set}"; bash scripts/setup-filesystem.sh 2>&1; echo "---"; ls -la /app/log/flask/ 2>&1'
 
       - name: Init django data

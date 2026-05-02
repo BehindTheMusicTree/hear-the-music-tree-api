@@ -901,7 +901,7 @@ Quick release process:
    When you push the version tag (step 5), the `publish.yml` workflow will automatically:
 
    - Collect and commit static files
-   - Build and push Docker image to Docker Hub
+   - Build and push Docker image to GHCR (`ghcr.io`)
    - Deploy to the test server
 
    See the [GitHub Actions Workflows](#github-actions-workflows) section above for details on the workflow structure.
