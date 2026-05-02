@@ -1,0 +1,4 @@
+# CI: database image from org pins (set COMPOSE_DB_IMAGE in GitHub Actions before compose).
+services:
+  db:
+    image: ${COMPOSE_DB_IMAGE:-postgres:16.4}
