@@ -119,7 +119,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      packages: read
       checks: write
       pull-requests: write
     environment:
@@ -159,28 +158,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5.0.1
 
-      - name: GHCR namespace for Compose and docker login
+      - name: GHCR image namespace for Compose (lowercase)
         shell: bash
         run: |
           set -euo pipefail
           ns_lc="${GHCR_NS,,}"
-          owner_lc="${GITHUB_REPOSITORY_OWNER,,}"
           if [ -z "$ns_lc" ]; then
             echo "ERROR: GHCR_IMAGE_NAMESPACE GitHub Variable is empty."
             exit 1
           fi
           echo "GHCR_IMAGE_NAMESPACE=${ns_lc}" >> "${GITHUB_ENV}"
-          echo "Logging in to ghcr.io as ${owner_lc} (GITHUB_TOKEN). If pulls are denied, grant this repo Read under the AFP package Settings → Actions access."
-          echo "${GITHUB_TOKEN}" | docker login ghcr.io -u "${owner_lc}" --password-stdin
-        env:
-          GHCR_NS: ${{ vars.GHCR_IMAGE_NAMESPACE }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build api image and start db and afp
         run: |
           set -euo pipefail
           compose=(docker compose -f docker-compose.yml)
           "${compose[@]}" build api
+          # Public GHCR images pull anonymously; drop any cached ghcr creds so Docker does not send a bad token (denied).
+          docker logout ghcr.io 2>/dev/null || true
           "${compose[@]}" pull db
           "${compose[@]}" pull afp
           "${compose[@]}" up -d --wait db afp
