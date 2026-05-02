@@ -70,9 +70,11 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **GHCR (align with infrastructure)**: [**`build-and-push.yml`**](.github/workflows/build-and-push.yml) pushes **`ghcr.io/<GHCR_IMAGE_NAMESPACE>/<HTMT_API_IMAGE_REPO>:<tag>`** with **`docker/login-action`** + **`GITHUB_TOKEN`** (`packages: write`); removes **`DOCKERHUB_USERNAME`** / **`DOCKERHUB_ACCESS_TOKEN`**. [**`test.yml`**](.github/workflows/test.yml) requires **`GHCR_IMAGE_NAMESPACE`**, logs in to **`ghcr.io`** for image pulls (`packages: read`). [**`scripts/utils.sh`**](scripts/utils.sh) **`docker_image_ref_from_repo_tag`**: repo with **`/`** → Docker Hub-style ref; short name → **`ghcr.io/<GHCR_IMAGE_NAMESPACE>/...`**.
 
-- **Pytest job (Compose-only)**: [**`test.yml`**](.github/workflows/test.yml) builds **`api`**, starts **`db`** and **`afp`** with [**`docker-compose.yml`**](docker-compose.yml) + [**`docker-compose.ci.yml`**](docker-compose.ci.yml) (org-pinned DB image via **`COMPOSE_DB_IMAGE`**), then runs **`docker compose run --rm api`** for filesystem setup, waits, **`init-django-data.sh`**, and pytest (JUnit XML on the repo mount). Optional **`workflow_call`** input **`test_path`**. Removes host **`pip`** / **`install-dependencies`** / duplicate container bootstrapping for that job.
+- **Pytest job (Compose-only)**: [**`test.yml`**](.github/workflows/test.yml) builds **`api`**, starts **`db`** (**`postgres:16.4`**, [`docker-compose.yml`](docker-compose.yml)) and **`afp`**, then runs **`docker compose run --rm api`** for filesystem setup, waits, **`init-django-data.sh`**, and pytest (JUnit XML on the repo mount). Optional **`workflow_call`** input **`test_path`**. Removes host **`pip`** / **`install-dependencies`** / duplicate container bootstrapping for that job.
 
 - **Publish**: **`call-redeployment-webhook`** pinned to **`@v0.2.0`**; pass required **`hook_id_base`** from **`vars.REDEPLOYMENT_HOOK_ID_BASE`** ([**BehindTheMusicTree/github-workflows**](https://github.com/BehindTheMusicTree/github-workflows/releases/tag/v0.2.0)). [**.github/actionlint.yaml**](.github/actionlint.yaml): allow **`REDEPLOYMENT_HOOK_ID_BASE`** for actionlint.
+
+- **Postgres and publish pins**: Compose and CI use **`postgres:16.4`** only (removed **`docker-compose.ci.yml`**, **`COMPOSE_DB_IMAGE`**, and **`DB_VERSION`**). [**`publish.yml`**](.github/workflows/publish.yml) **`check-pinned-tags`** enforces **`AFP_VERSION`** only; **`set-version-db`** writes tag **`16.4`**.
 
 ### Changed
 
