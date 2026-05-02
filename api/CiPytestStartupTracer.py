@@ -50,8 +50,9 @@ class CiPytestStartupTracer:
             original_populate(installed_apps)
             print("[Django] apps.populate() finished.", flush=True)
             print(
-                "[Django] django.setup() is finishing; next output is pytest (configure → sessionstart → "
-                "collection). ROOT_URLCONF imports only on first URL resolution / test client.",
+                "[Django] django.setup() is finishing; next is usually [pytest] api/test/conftest.py "
+                "(initial conftest load), then tests/conftest.py, configure, sessionstart, collection. "
+                "ROOT_URLCONF loads only on first URL resolution / test client.",
                 flush=True,
             )
 
