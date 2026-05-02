@@ -34,6 +34,8 @@ Runs the full test suite with pytest.
 
 **Environment:** `ci_test` (uses repo vars and secrets for DB, AFP, AcousticID, etc.).
 
+**GHCR `afp` image and CI `unauthorized`:** Container images live under **GitHub Packages**, not under the source repo’s **Settings → General** page. To grant **`hear-the-music-tree-api`** workflows read access: open the org’s packages list (**[BehindTheMusicTree → Packages](https://github.com/orgs/BehindTheMusicTree/packages)**), click the **`audio-fingerprinter`** container (name may match the image), then **Package settings** → **Actions access** → **Add repository** → **`BehindTheMusicTree/hear-the-music-tree-api`** with **Read**. Alternatively, from the **`audio-fingerprinter`** code repo home page, use the **Packages** section in the right-hand sidebar (if the package is linked to the repo) to jump to the same package page. Repository visibility (**public** / private) is separate from **package** visibility; a public repo can still publish a **private** GHCR image.
+
 **Versioning:** Always uses "test" as the version (tests don't require real version numbers).
 
 ## Publish

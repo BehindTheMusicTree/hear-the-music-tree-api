@@ -143,7 +143,7 @@ cp env/dev/.env.compose.dev.example .env
 
 The `afp` service pulls **`ghcr.io/<GHCR_IMAGE_NAMESPACE>/audio-fingerprinter:<AFP_VERSION>`** (set in `.env`; default namespace matches org infra **`behindthemusictree`**).
 
-**GHCR pull errors (`unauthorized` / `denied`):** Org packages are often **private**. Docker must authenticate with a **real** GitHub token (not placeholder text from examples).
+**GHCR pull errors (`unauthorized` / `denied`):** Org packages are often **private**. Docker must authenticate with a **real** GitHub token (not placeholder text from examples). **Package settings are not** under the **`audio-fingerprinter`** repo **Settings** menu—they are on the **container package** page: org **[Packages](https://github.com/orgs/BehindTheMusicTree/packages)** → select **`audio-fingerprinter`** → **Package settings** → **Actions access** (for CI) or change **package visibility** if you want anonymous pulls.
 
 **Interactive `docker login ghcr.io`:** When prompted for **Password**, paste a **personal access token** (classic: `ghp_…`; fine-grained: `github_pat_…`) with **`read:packages`**. **Your normal GitHub sign-in password is not accepted** and yields **`Get "https://ghcr.io/v2/": denied`**. **Username** must be that same account’s **GitHub login** (e.g. `andreas-garcia`). If you already tried the wrong password, run **`docker logout ghcr.io`** then log in again with a PAT.
 

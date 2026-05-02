@@ -86,9 +86,9 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Documentation
 
-- **README**: Docker Compose quick start documents **`ghcr.io`** **`afp`** pulls (**`GHCR_IMAGE_NAMESPACE`**), **`docker login`** (PAT as password—not account password—plus **`docker logout ghcr.io`**), **`~/.docker/config.json`** vs project **`.env`**, optional **`gh auth token`**, and **SSO** for **`unauthorized`** / **`denied`**.
+- **README** / [**`docs/workflows.md`**](docs/workflows.md): Docker Compose quick start documents **`ghcr.io`** **`afp`** pulls (**`GHCR_IMAGE_NAMESPACE`**), **`docker login`** (PAT as password—not account password—plus **`docker logout ghcr.io`**), **`~/.docker/config.json`** vs project **`.env`**, optional **`gh auth token`**, and **SSO** for **`unauthorized`** / **`denied`**. **Test** / README clarify that **GHCR package** settings (**Actions access**, visibility) live under the org **Packages** listing, not the **`audio-fingerprinter`** repository **Settings → General** page.
 
-- **CONTRIBUTING** / [**`docs/workflows.md`**](docs/workflows.md): Environment setup and workflow docs describe **Compose-only** tests and CI (no host **`pytest`** + standalone DB/AFP containers). **Test** / Pytest section notes **`ghcr.io`** login for **`afp`** (lowercase **`GHCR_IMAGE_NAMESPACE`**, **`GITHUB_TOKEN`** or optional PAT secrets, package **Actions access** for **`unauthorized`**). **Static Files** section clarifies that production Django **`ENV`** (e.g. **`prod`**) is owned by **infrastructure** server env, not GitHub Variables on this repo.
+- **CONTRIBUTING** / [**`docs/workflows.md`**](docs/workflows.md): Environment setup and workflow docs describe **Compose-only** tests and CI (no host **`pytest`** + standalone DB/AFP containers). **Test** / Pytest section notes **`ghcr.io`** login for **`afp`** (lowercase **`GHCR_IMAGE_NAMESPACE`**, **`GITHUB_TOKEN`** or optional PAT secrets, package **Actions access** under org **Packages**, not repo **Settings**). **Static Files** section clarifies that production Django **`ENV`** (e.g. **`prod`**) is owned by **infrastructure** server env, not GitHub Variables on this repo.
 
 ### Removed
 
