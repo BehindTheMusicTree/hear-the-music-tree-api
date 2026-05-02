@@ -80,7 +80,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Improved
 
-- **Pytest logs**: [`api/test/tests/conftest.py`](api/test/tests/conftest.py) prints **`[pytest]`** progress after Django settings load (sessionstart ffprobe / collection_finish) so long **collection** does not look like a hang.
+- **Django / pytest startup visibility**: [`api/utils/utils.py`](api/utils/utils.py) **`print_django`** uses **`flush=True`**. [`api/settings.py`](api/settings.py) logs that **`django.setup()`** follows settings. [`api/urls.py`](api/urls.py) logs start/end of URLconf import; [`api/apps.py`](api/apps.py) **`ApiConfig.ready()`** logs when the app registry finishes the **`api`** app. [`api/test/tests/conftest.py`](api/test/tests/conftest.py) keeps **`[pytest]`** session/collection progress so long phases after settings do not look like a hang.
 
 ### Changed
 

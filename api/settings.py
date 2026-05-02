@@ -916,3 +916,9 @@ else:
             setup_afp_connection()
 
 print_django("Finished loading settings.")
+if "pytest" in sys.argv[0] or os.environ.get("ENV") == "ci_test":
+    print(
+        "[Django] Next: django.setup() loads apps/models and ROOT_URLCONF (api.urls); "
+        "this can take minutes in CI with no further [Django] lines until complete.",
+        flush=True,
+    )
