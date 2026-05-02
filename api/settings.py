@@ -915,9 +915,9 @@ print_django("Finished loading settings.")
 if "pytest" in sys.argv[0] or os.environ.get("ENV") == "ci_test":
     from api.CiPytestStartupTracer import CiPytestStartupTracer
 
-    CiPytestStartupTracer.install_appconfig_ready_tracer()
+    CiPytestStartupTracer.install_ci_startup_tracers()
     print(
-        "[Django] Next: django.setup() runs apps.populate() (models, then one AppConfig.ready() per app); "
-        "ROOT_URLCONF (api.urls) loads only after that. Long gaps: watch which ready() starts but never ends.",
+        "[Django] Next: django.setup() → apps.populate() → get_resolver() on demand imports api.urls. "
+        "Long gaps: last printed phase before silence = where it is stuck.",
         flush=True,
     )

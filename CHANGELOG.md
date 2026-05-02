@@ -84,7 +84,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Improved
 
-- **Django / pytest startup visibility**: [`api/utils/utils.py`](api/utils/utils.py) **`print_django`** uses **`flush=True`**. [`api/settings.py`](api/settings.py) logs that **`django.setup()`** follows settings and installs [`api/CiPytestStartupTracer.py`](api/CiPytestStartupTracer.py) **`CiPytestStartupTracer`** (logs every **`AppConfig.ready()`** start/end in pytest/CI so a stall after **`api.models`** points at the right installed app). [`api/models.py`](api/models.py) logs before/after the **`api`** model import chain and notes that **`ready()`** runs next. [`api/urls.py`](api/urls.py) logs start/end of URLconf import (loads after **`apps.populate()`**). [`api/test/tests/conftest.py`](api/test/tests/conftest.py) keeps **`[pytest]`** session/collection progress.
+- **Django / pytest startup visibility**: [`api/utils/utils.py`](api/utils/utils.py) **`print_django`** uses **`flush=True`**. [`api/settings.py`](api/settings.py) logs that **`django.setup()`** follows settings and installs [`api/CiPytestStartupTracer.py`](api/CiPytestStartupTracer.py) **`CiPytestStartupTracer`** (pytest/CI: **`apps.populate()`** start/end, every **`AppConfig.ready()`** start/end, and **`get_resolver()`** around ROOT_URLCONF import). [`api/models.py`](api/models.py) logs before/after the **`api`** model import chain and notes that **`ready()`** runs next. [`api/urls.py`](api/urls.py) logs start/end of URLconf import (loads after **`apps.populate()`**). [`api/test/tests/conftest.py`](api/test/tests/conftest.py) keeps **`[pytest]`** session/collection progress.
 
 ### Changed
 
