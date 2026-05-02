@@ -108,6 +108,8 @@ Collects Django static files and commits/pushes them back to the repo.
 
 **Django `ENV`:** The workflow sets **`ENV=collect_static`** on the job (see `api/settings.py`); it is **not** read from a GitHub Variable.
 
+**Runtime staging / production:** Values such as **`ENV=prod`** (or your chosen string) for containers on the VPS belong in [**BehindTheMusicTree/infrastructure**](https://github.com/BehindTheMusicTree/infrastructure)—generated or merged **`scripts/.env`**, compose templates, sync jobs—not in this app repo’s GitHub Variables. This repo only hard-codes **`ENV` for CI-only workflows** (`ci_test` in **Test**, **`collect_static`** here).
+
 ## Branch Protection
 
 **File:** `.github/workflows/branch-protection.yml`
