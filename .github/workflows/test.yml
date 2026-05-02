@@ -120,6 +120,8 @@ jobs:
     permissions:
       contents: read
       packages: read
+      checks: write
+      pull-requests: write
     environment:
       name: ci_test
     env:
@@ -195,7 +197,8 @@ jobs:
               'bash scripts/init-django-data.sh' \
               "pytest -v --tb=short -x --junitxml=test-results.xml ${pytest_target_q}"
           )
-          "${compose[@]}" run --rm -T api bash -lc "$inner_script"
+          # Mount workspace so --junitxml=test-results.xml is visible on the runner (base compose has no ./ bind mount).
+          "${compose[@]}" run --rm -T -v "${GITHUB_WORKSPACE}:/home/app" api bash -lc "$inner_script"
 
       - name: Show Compose service logs on failure
         if: failure() && steps.pytest_in_container.outcome == 'failure'
@@ -203,8 +206,12 @@ jobs:
           docker compose -f docker-compose.yml logs --no-color --tail=200 db afp || true
 
       - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2.23.0
+        # Fork PRs: GITHUB_TOKEN is read-only; this action needs Checks API (and optional PR comments).
+        if: >-
+          always() &&
+          (github.event_name != 'pull_request' ||
+           github.event.pull_request.head.repo.full_name == github.repository)
         with:
           files: test-results.xml
 
