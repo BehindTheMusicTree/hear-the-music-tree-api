@@ -8,9 +8,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from _pytest.main import Session
+from django.conf import settings
 from django.test import override_settings
-
-from api import settings
 
 E2E_REACHABILITY_TIMEOUT_SEC = 5
 
