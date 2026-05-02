@@ -169,7 +169,7 @@ cd the-music-tree-api
 
    This is the default local workflow for this repository. It runs API + DB + AFP with the same runtime env contract used by deployment.
 
-   **Compose-only tests:** With this stack, Postgres and AFP are already running as Compose services. Run the suite with **`docker compose exec api pytest`** (see [Testing](#testing)). **Do not** run step 6 in that workflow—it starts duplicate **`docker run`** containers and will **clash on names** with the Compose services. Step 5 is optional on the host when you need the same directories for scripts outside the container; the **`api`** image startup also prepares paths inside the container.
+   **Tests:** With this stack, Postgres and AFP are already Compose services. Run the suite with **`docker compose exec api pytest`** (see [Testing](#testing)); GitHub Actions runs the same stack via **`docker compose`** (see [`.github/workflows/test.yml`](.github/workflows/test.yml)). Step 5 is optional on the host when you need the same directories for scripts outside the container; the **`api`** image startup also prepares paths inside the container.
 
 5. Set up filesystem:
 
@@ -184,18 +184,6 @@ cd the-music-tree-api
    - Gunicorn logs (if app is exposed)
    - Media files and libraries
    - Temporary uploaded files
-
-6. **Alternative — DB and AFP only (host `pytest`, same pattern as CI):**
-
-   If you install the app with **`pip install -e ".[dev]"`** on the host and run **`pytest`** there (instead of inside the **`api`** container), start Postgres and AFP with:
-
-   ```bash
-   bash scripts/run-db-and-afp-containers.sh
-   ```
-
-   This script **`docker pull`**s images (via **`docker_image_ref_from_repo_tag`** in **`scripts/utils.sh`**, so **`GHCR_IMAGE_NAMESPACE`** must be set for short image repo names) and **`docker run`**s DB + AFP. GitHub Actions **`.github/workflows/test.yml`** uses the same step. For private **`ghcr.io`** images, **`docker login ghcr.io`** on the host first (see [README](README.md) Quick start).
-
-   **Note:** Docker must be running. Skip this step when you rely solely on step 4’s Compose stack.
 
 #### Environment Variables
 
@@ -257,7 +245,7 @@ Running the container requires the following environment variables:
 
 #### Database Requirement
 
-The HearTheMusicTree API requires a PostgreSQL database to function. With **Docker Compose** (step 4), the database is the Compose **`db`** service. With **host `pytest`** (step 6 / CI), the database is a container started by **`scripts/run-db-and-afp-containers.sh`**.
+The HearTheMusicTree API requires a PostgreSQL database to function. With **Docker Compose** (step 4), the database is the Compose **`db`** service; CI uses the same Compose model (see [`.github/workflows/test.yml`](.github/workflows/test.yml)).
 
 #### Database migrations
 
@@ -274,7 +262,7 @@ One-off DB or data fix scripts (e.g. table renames, one-time backfills) live in 
 
 For audio fingerprinting, the HearTheMusicTree API requires an app called Audio Fingerprinter. You can find the Audio Fingerprinter app on GitHub at the following link: [Audio Fingerprinter](https://github.com/BehindTheMusicTree/audio-fingerprinter)
 
-The AFP image creates the Flask app log from `FLASK_LOG_APP_FILENAME` (e.g. `app.log`), which must match what `settings.py` expects (`LOG_APP_FILE`). Path variables (`GUNICORN_LOG_DIR`, `FLASK_LOG_DIR_EXTERNAL`, `POOL_DIR_EXTERNAL`) are runtime-only and required when running the container; the AFP entrypoint fails fast if any is missing. For CI and local runs with `--user`, the AFP image must support non-root (writable `/app/log`). See the AFP README.
+The AFP image creates the Flask app log from `FLASK_LOG_APP_FILENAME` (e.g. `app.log`), which must match what `settings.py` expects (`LOG_APP_FILE`). Path variables (`GUNICORN_LOG_DIR`, `FLASK_LOG_DIR_EXTERNAL`, `POOL_DIR_EXTERNAL`) are runtime-only and required when running the container; the AFP entrypoint fails fast if any is missing. When running AFP as a non-root user (e.g. some local `docker run --user` setups), the image must support non-root (writable `/app/log`). See the AFP README.
 
 ### 2. Branching
 
@@ -453,7 +441,7 @@ pytest -o log_cli_level=DEBUG
 **If pytest seems stuck or extremely slow:**
 
 - **Live logging:** `pytest.ini` sets `log_cli = true`. At **DEBUG** every log line is printed and the suite can look frozen. The default level is **INFO**; use `-o log_cli=false` for minimal console noise or `-o log_cli_level=DEBUG` only when chasing a failure.
-- **Database:** Integration and most Django tests need **PostgreSQL** (and env) as in [Environment Setup](#1-environment-setup). A missing or unreachable DB often blocks on connect instead of failing immediately—start `run-db-and-afp-containers.sh` (or your CI-like stack) first.
+- **Database:** Integration and most Django tests need **PostgreSQL** (and env) as in [Environment Setup](#1-environment-setup). A missing or unreachable DB often blocks on connect instead of failing immediately—start the Compose stack (**`docker compose up`**) first, then run **`docker compose exec api pytest`**.
 - **Container context:** If `pytest` is not found on your host, run tests from the API container (`docker compose exec api pytest ...`) or install dev dependencies with `python -m pip install -e ".[dev]"` in your active Python environment so `pytest` is on your `PATH`.
 
 **Test Structure:**

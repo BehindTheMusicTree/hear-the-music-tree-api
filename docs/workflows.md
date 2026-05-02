@@ -27,11 +27,10 @@ Runs the full test suite with pytest.
 
 **Triggers:**
 
-- **Push** to `main`, `develop`, `release/*`, `hotfix/*`, `chore/*`
 - **Pull request** targeting `main` or `develop`
-- **Callable** by other workflows via `workflow_call` (optional `test_path` input)
+- **Callable** by other workflows via **`workflow_call`** (optional **`test_path`** input)
 
-**Jobs:** **pre-commit** – checkout, Python 3.14, `pip install -e ".[dev]"`, `pre-commit run --all-files` (see [docs/ci/python-project-standards.md](ci/python-project-standards.md)); **check-vars-and-secrets** (Check vars and secrets) – validates required env vars and secrets; **pytest** (Pytest) – Checkout → set up Python 3.14 → install system deps → install pip deps → setup filesystem → run DB and AFP containers → wait for DB → copy fixtures → init Django data → run pytest → publish test results (JUnit XML).
+**Jobs:** **pre-commit** – checkout, Python 3.14, `pip install -e ".[dev]"`, `pre-commit run --all-files` (see [docs/ci/python-project-standards.md](ci/python-project-standards.md)); **check-vars-and-secrets** (Check vars and secrets) – validates required env vars and secrets; **pytest** (Pytest) – checkout → login to `ghcr.io` → build **`api`** with Compose → pull **`db`** / **`afp`** (pins from org vars) → **`docker compose up --wait`** for **`db`** and **`afp`** → **`docker compose run api`** (setup filesystem, wait for Postgres and AFP, init Django data, pytest with JUnit XML on the workspace mount) → publish test results → Compose teardown.
 
 **Environment:** `ci_test` (uses repo vars and secrets for DB, AFP, AcousticID, etc.).
 

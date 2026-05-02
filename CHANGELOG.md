@@ -66,7 +66,9 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### CI
 
-- **GHCR (align with infrastructure)**: [**`build-and-push.yml`**](.github/workflows/build-and-push.yml) pushes **`ghcr.io/<GHCR_IMAGE_NAMESPACE>/<HTMT_API_IMAGE_REPO>:<tag>`** with **`docker/login-action`** + **`GITHUB_TOKEN`** (`packages: write`); removes **`DOCKERHUB_USERNAME`** / **`DOCKERHUB_ACCESS_TOKEN`**. [**`test.yml`**](.github/workflows/test.yml) requires **`GHCR_IMAGE_NAMESPACE`**, logs in to **`ghcr.io`** for pytest image pulls (`packages: read`). [**`scripts/utils.sh`**](scripts/utils.sh) **`docker_image_ref_from_repo_tag`**: repo with **`/`** → Docker Hub-style ref; short name → **`ghcr.io/<GHCR_IMAGE_NAMESPACE>/...`**.
+- **GHCR (align with infrastructure)**: [**`build-and-push.yml`**](.github/workflows/build-and-push.yml) pushes **`ghcr.io/<GHCR_IMAGE_NAMESPACE>/<HTMT_API_IMAGE_REPO>:<tag>`** with **`docker/login-action`** + **`GITHUB_TOKEN`** (`packages: write`); removes **`DOCKERHUB_USERNAME`** / **`DOCKERHUB_ACCESS_TOKEN`**. [**`test.yml`**](.github/workflows/test.yml) requires **`GHCR_IMAGE_NAMESPACE`**, logs in to **`ghcr.io`** for image pulls (`packages: read`). [**`scripts/utils.sh`**](scripts/utils.sh) **`docker_image_ref_from_repo_tag`**: repo with **`/`** → Docker Hub-style ref; short name → **`ghcr.io/<GHCR_IMAGE_NAMESPACE>/...`**.
+
+- **Pytest job (Compose-only)**: [**`test.yml`**](.github/workflows/test.yml) builds **`api`**, starts **`db`** and **`afp`** with [**`docker-compose.yml`**](docker-compose.yml) + [**`docker-compose.ci.yml`**](docker-compose.ci.yml) (org-pinned DB image via **`COMPOSE_DB_IMAGE`**), then runs **`docker compose run --rm api`** for filesystem setup, waits, **`init-django-data.sh`**, and pytest (JUnit XML on the repo mount). Optional **`workflow_call`** input **`test_path`**. Removes host **`pip`** / **`install-dependencies`** / duplicate container bootstrapping for that job.
 
 - **Publish**: **`call-redeployment-webhook`** pinned to **`@v0.2.0`**; pass required **`hook_id_base`** from **`vars.REDEPLOYMENT_HOOK_ID_BASE`** ([**BehindTheMusicTree/github-workflows**](https://github.com/BehindTheMusicTree/github-workflows/releases/tag/v0.2.0)). [**.github/actionlint.yaml**](.github/actionlint.yaml): allow **`REDEPLOYMENT_HOOK_ID_BASE`** for actionlint.
 
@@ -80,9 +82,11 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **README**: Docker Compose quick start documents **`ghcr.io`** **`afp`** pulls (**`GHCR_IMAGE_NAMESPACE`**), **`docker login`** (PAT as password—not account password—plus **`docker logout ghcr.io`**), **`~/.docker/config.json`** vs project **`.env`**, optional **`gh auth token`**, and **SSO** for **`unauthorized`** / **`denied`**.
 
-- **CONTRIBUTING**: [Environment setup](CONTRIBUTING.md) clarifies **Compose-only** dev (**skip** **`scripts/run-db-and-afp-containers.sh`** to avoid container name clashes) vs **host `pytest`** + that script (same pattern as [`.github/workflows/test.yml`](.github/workflows/test.yml)); database requirement text matches both paths.
+- **CONTRIBUTING** / [**`docs/workflows.md`**](docs/workflows.md): Environment setup and workflow docs describe **Compose-only** tests and CI (no host **`pytest`** + standalone DB/AFP containers).
 
 ### Removed
+
+- **Scripts**: Removed **`scripts/run-db-and-afp-containers.sh`**; DB and AFP for tests are started only via **Docker Compose** (local **`docker compose exec api pytest`**, CI **`test.yml`**).
 
 - **Scripts**: Removed legacy **`scripts/generate-docker-compose-parts.sh`**; server deploy compose is owned by [**BehindTheMusicTree/infrastructure**](https://github.com/BehindTheMusicTree/infrastructure) (**`generate-docker-compose.sh`** + **`docker-compose.yml.template`**), not partial compose snippets generated from this repository.
 
