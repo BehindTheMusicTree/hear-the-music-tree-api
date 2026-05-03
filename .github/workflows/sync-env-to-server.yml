@@ -1,6 +1,6 @@
 # Sync app env to server via shared workflow (BehindTheMusicTree/github-workflows).
 # Two fragments per env (same contract as the-music-deck-admin): API basename + Postgres service basename
-# (HTMT_API_APP_NAME + DB_APP_NAME_SUFFIX, default _db). Promotes to /tmp/sync-env-<app>-<env>.env then canonical scripts/sync-env/.
+# (HTMT_API_APP_NAME + DB_APP_NAME_SUFFIX; variable required, no default). Promotes to /tmp/sync-env-<app>-<env>.env then canonical scripts/sync-env/.
 name: Sync env to server
 
 on:
@@ -27,6 +27,7 @@ jobs:
           SERVER_HOST: ${{ vars.SERVER_HOST }}
           REDEPLOYMENT_ROOT: ${{ vars.REDEPLOYMENT_ROOT }}
           HTMT_API_APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
+          DB_APP_NAME_SUFFIX: ${{ vars.DB_APP_NAME_SUFFIX }}
           DEMO_EMAIL: ${{ vars.DEMO_EMAIL }}
           SUPERADMIN_EMAIL: ${{ vars.SUPERADMIN_EMAIL }}
           SPOTIFY_CLIENT_ID_STAGING: ${{ vars.SPOTIFY_CLIENT_ID_STAGING }}
@@ -69,7 +70,7 @@ jobs:
             'LIBRARIES_DIR=/app/media/libraries/' \
             'TMP_UPLOADED_FILES=/tmp/uploads' >> fragment.env
           required=(
-            SERVER_HOST REDEPLOYMENT_ROOT HTMT_API_APP_NAME
+            SERVER_HOST REDEPLOYMENT_ROOT HTMT_API_APP_NAME DB_APP_NAME_SUFFIX
             DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID
             SERVER_DEPLOY_USERNAME SERVER_DEPLOY_SSH_PRIVATE_KEY
             DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD DB_SUPERUSER_PASSWORD
@@ -125,7 +126,11 @@ jobs:
           SERVER_DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.SERVER_DEPLOY_SSH_PRIVATE_KEY }}
         run: |
           : > fragment.env
-          suffix="${DB_APP_NAME_SUFFIX:-_db}"
+          if [ -z "${DB_APP_NAME_SUFFIX:-}" ]; then
+            echo "ERROR: GitHub Variable DB_APP_NAME_SUFFIX must be set and non-empty (same value as infrastructure repo)."
+            exit 1
+          fi
+          suffix="${DB_APP_NAME_SUFFIX}"
           db_basename="${HTMT_API_APP_NAME}${suffix}"
           printf '%s\n' "POSTGRES_USER=postgres" >> fragment.env
           val="$(printf '%s' "${DB_APP_DB_NAME}" | tr -d '\n\r')"
@@ -134,7 +139,7 @@ jobs:
           printf 'POSTGRES_PASSWORD=%s\n' "${val}" >> fragment.env
           printf '%s\n' "POSTGRES_PORT=5432" >> fragment.env
           required=(
-            SERVER_HOST REDEPLOYMENT_ROOT HTMT_API_APP_NAME
+            SERVER_HOST REDEPLOYMENT_ROOT HTMT_API_APP_NAME DB_APP_NAME_SUFFIX
             SERVER_DEPLOY_USERNAME SERVER_DEPLOY_SSH_PRIVATE_KEY
             DB_APP_DB_NAME DB_SUPERUSER_PASSWORD
           )
@@ -181,7 +186,7 @@ jobs:
     with:
       sync_env: staging
       fragment_artifact: sync-env-fragment-db-staging/fragment.env
-      app_name: ${{ format('{0}{1}', vars.HTMT_API_APP_NAME, vars.DB_APP_NAME_SUFFIX || '_db') }}
+      app_name: ${{ format('{0}{1}', vars.HTMT_API_APP_NAME, vars.DB_APP_NAME_SUFFIX) }}
     secrets: inherit
 
   sync-db-prod:
@@ -191,5 +196,5 @@ jobs:
     with:
       sync_env: prod
       fragment_artifact: sync-env-fragment-db-prod/fragment.env
-      app_name: ${{ format('{0}{1}', vars.HTMT_API_APP_NAME, vars.DB_APP_NAME_SUFFIX || '_db') }}
+      app_name: ${{ format('{0}{1}', vars.HTMT_API_APP_NAME, vars.DB_APP_NAME_SUFFIX) }}
     secrets: inherit

@@ -8,7 +8,7 @@ on:
   push:
     branches: [main]
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   determine-version:
@@ -158,7 +158,15 @@ jobs:
 
   redeploy-webhook-call:
     name: Redeploy webhook
-    needs: [build-and-push, set-version-api, set-version-db, set-version-afp, check-pinned-tags, determine-version]
+    needs:
+      [
+        build-and-push,
+        set-version-api,
+        set-version-db,
+        set-version-afp,
+        check-pinned-tags,
+        determine-version,
+      ]
     uses: BehindTheMusicTree/github-workflows/.github/workflows/call-redeployment-webhook.yml@v0.1.5
     with:
       env: ${{ needs.determine-version.outputs.env }}
