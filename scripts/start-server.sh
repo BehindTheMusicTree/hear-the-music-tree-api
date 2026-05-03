@@ -4,6 +4,12 @@ log_with_script_prefixe () {
     log "[start-server] $1"
 }
 
+gunicorn_logs_to_stdout () {
+    local v
+    v=$(printf '%s' "${GUNICORN_STDOUT_LOGS:-}" | tr '[:upper:]' '[:lower:]')
+    [ "$v" = "true" ] || [ "$v" = "1" ] || [ "$v" = "yes" ]
+}
+
 check_script_vars_are_set () {
     REQUIRED_NON_BOOL_VARS=(
         PROJECT_DIR
@@ -17,10 +23,14 @@ check_script_vars_are_set () {
         DB_APP_DB_NAME
         DB_APP_USERNAME
         DB_APP_USER_PASSWORD
-        GUNICORN_LOG_DIR
-        GUNICORN_LOG_ERROR_FILENAME
-        GUNICORN_LOG_ACCESS_FILENAME
     )
+    if ! gunicorn_logs_to_stdout; then
+        REQUIRED_NON_BOOL_VARS+=(
+            GUNICORN_LOG_DIR
+            GUNICORN_LOG_ERROR_FILENAME
+            GUNICORN_LOG_ACCESS_FILENAME
+        )
+    fi
     check_required_vars_are_set "${REQUIRED_NON_BOOL_VARS[@]}" 2>&1
     if [ $? -ne 0 ]; then
         log_with_script_prefixe "ERROR: Failed to load environment variables." >&2
@@ -100,12 +110,20 @@ main (){
     fi
 
     log_with_script_prefixe "Starting Gunicorn..."
-    exec gunicorn api.wsgi:application \
-        --bind 0.0.0.0:${APP_PORT} \
-        --error-logfile=${GUNICORN_LOG_DIR}${GUNICORN_LOG_ERROR_FILENAME} \
-        --access-logfile=${GUNICORN_LOG_DIR}${GUNICORN_LOG_ACCESS_FILENAME} \
-        --log-level=info 2>&1
-    log_with_script_prefixe "Gunicorn started."
+    if gunicorn_logs_to_stdout; then
+        log_with_script_prefixe "Gunicorn access and error logs: stdout/stderr (GUNICORN_STDOUT_LOGS)."
+        exec gunicorn api.wsgi:application \
+            --bind "0.0.0.0:${APP_PORT}" \
+            --access-logfile=- \
+            --error-logfile=- \
+            --log-level=info 2>&1
+    else
+        exec gunicorn api.wsgi:application \
+            --bind "0.0.0.0:${APP_PORT}" \
+            --error-logfile="${GUNICORN_LOG_DIR}${GUNICORN_LOG_ERROR_FILENAME}" \
+            --access-logfile="${GUNICORN_LOG_DIR}${GUNICORN_LOG_ACCESS_FILENAME}" \
+            --log-level=info 2>&1
+    fi
 }
 
 main "$@" 2>&1

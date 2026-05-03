@@ -6,15 +6,36 @@ if ! command -v docker >/dev/null 2>&1; then
     exit 1
 fi
 
-container_id="$(docker compose ps -q api 2>/dev/null || true)"
-if [ -z "$container_id" ]; then
-    echo "error: api container is not available. Start it with: docker compose up -d api" >&2
-    exit 1
-fi
+container_id=""
+remaining=30
+attempt=0
+while [ "$remaining" -gt 0 ]; do
+    attempt=$((attempt + 1))
+    cid="$(docker compose ps -q api 2>/dev/null || true)"
+    if [ -n "$cid" ] && [ "$(docker inspect -f '{{.State.Running}}' "$cid" 2>/dev/null || true)" = "true" ]; then
+        container_id="$cid"
+        break
+    fi
+    if [ "$attempt" -ge 3 ]; then
+        any_api="$(docker compose ps -aq api 2>/dev/null || true)"
+        if [ -z "$any_api" ]; then
+            echo "error: no api container for this compose project. From the repo root: docker compose up -d --wait api" >&2
+            exit 1
+        fi
+    fi
+    sleep 1
+    remaining=$((remaining - 1))
+done
 
-is_running="$(docker inspect -f '{{.State.Running}}' "$container_id" 2>/dev/null || true)"
-if [ "$is_running" != "true" ]; then
-    echo "error: api container is not running. Start it with: docker compose up -d api" >&2
+if [ -z "$container_id" ]; then
+    exited_id="$(docker compose ps -aq api 2>/dev/null || true)"
+    if [ -n "$exited_id" ]; then
+        echo "error: api container is not running (it may exit right after start). Last logs:" >&2
+        docker compose logs api --tail=40 >&2 || true
+        echo "error: Inspect: docker compose ps -a api && docker inspect htmt-api --format '{{.State.Status}} {{.State.ExitCode}}'" >&2
+    else
+        echo "error: no api container for this compose project. From the repo root: docker compose up -d --wait api" >&2
+    fi
     exit 1
 fi
 

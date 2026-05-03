@@ -552,7 +552,7 @@ We follow a structured commit format inspired by [Conventional Commits](https://
 - Format: `<type>(<scope>): <summary>`
 - Run checks in container: `docker compose exec api pytest`
 
-**Pre-commit hook behavior:** This repository installs a tracked host git hook at [`.githooks/pre-commit`](.githooks/pre-commit) via [`scripts/setup-host-dev-tools.sh`](scripts/setup-host-dev-tools.sh). Docker-side tooling is set up via [`scripts/setup-docker-dev-tools.sh`](scripts/setup-docker-dev-tools.sh). The hook shells into Docker and runs `pre-commit` inside the `api` container against staged files. **Commits fail if `api` is not running**—start the stack before committing: `docker compose up -d api`.
+**Pre-commit hook behavior:** This repository installs a tracked host git hook at [`.githooks/pre-commit`](.githooks/pre-commit) via [`scripts/setup-host-dev-tools.sh`](scripts/setup-host-dev-tools.sh). Docker-side tooling is set up via [`scripts/setup-docker-dev-tools.sh`](scripts/setup-docker-dev-tools.sh). The hook shells into Docker and runs `pre-commit` inside the `api` container against staged files. **Commits fail if `api` is not running**—start the stack before committing: `docker compose up -d --wait api` (blocks until **`api`** is **healthy**; plain **`docker compose up -d api`** returns as soon as the container is created/started). See [`docker-compose.yml`](docker-compose.yml) **`api`** **`healthcheck`** (**`GET /health/`**).
 
 **Commit Types:**
 
