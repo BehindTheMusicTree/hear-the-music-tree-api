@@ -181,7 +181,7 @@ jobs:
 
   sync-db-staging:
     name: Sync Postgres env (staging)
-    needs: [build-db-fragment]
+    needs: [build-api-fragment, build-db-fragment]
     uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-server.yml@main
     with:
       sync_env: staging
@@ -191,7 +191,7 @@ jobs:
 
   sync-db-prod:
     name: Sync Postgres env (prod)
-    needs: [build-db-fragment]
+    needs: [build-api-fragment, build-db-fragment]
     uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-server.yml@main
     with:
       sync_env: prod
