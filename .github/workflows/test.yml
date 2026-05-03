@@ -88,7 +88,7 @@ jobs:
         run: pre-commit run --all-files --verbose --show-diff-on-failure
 
   check-vars-and-secrets:
-    name: Check vars and secrets
+    name: Check vars
     runs-on: ubuntu-latest
     environment:
       name: ci_test
@@ -97,7 +97,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check required vars and secrets
+      - name: Check required vars (no app DB secrets for pytest)
         env:
           API_DIR_NAME: ${{ vars.API_DIR_NAME }}
           APP_TITLE: ${{ vars.APP_TITLE }}
@@ -108,11 +108,7 @@ jobs:
           AFP_CONTAINER_NAME: ${{ vars.AFP_APP_NAME }}
           AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
           AFP_VERSION: ${{ vars.AFP_VERSION }}
-          DB_SUPERUSER_PASSWORD: ${{ secrets.DB_SUPERUSER_PASSWORD }}
-          DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
-          DB_APP_USERNAME: ${{ secrets.DB_APP_USERNAME }}
-          DB_APP_USER_PASSWORD: ${{ secrets.DB_APP_USER_PASSWORD }}
-        run: bash scripts/check-workflow-env.sh API_DIR_NAME APP_TITLE APP_NAME DB_APP_NAME_SUFFIX GHCR_IMAGE_NAMESPACE DB_CONTAINER_NAME AFP_CONTAINER_NAME AFP_IMAGE_REPO AFP_VERSION DB_SUPERUSER_PASSWORD DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD
+        run: bash scripts/check-workflow-env.sh API_DIR_NAME APP_TITLE APP_NAME DB_APP_NAME_SUFFIX GHCR_IMAGE_NAMESPACE DB_CONTAINER_NAME AFP_CONTAINER_NAME AFP_IMAGE_REPO AFP_VERSION
 
   pytest:
     name: Pytest
@@ -149,10 +145,12 @@ jobs:
       GOOGLE_REDIRECT_URI: http://test/callback
       MUSICBRAINZ_LOOKUP_ENABLED: true
       ACOUSTID_API_KEY: ci-fake-acoustid-key
-      DB_SUPERUSER_PASSWORD: ${{ secrets.DB_SUPERUSER_PASSWORD }}
-      DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
-      DB_APP_USERNAME: ${{ secrets.DB_APP_USERNAME }}
-      DB_APP_USER_PASSWORD: ${{ secrets.DB_APP_USER_PASSWORD }}
+      # Ephemeral CI DB: same defaults as docker-compose.yml (not staging/prod secrets).
+      DB_SUPERUSER_PASSWORD: postgres
+      DB_APP_DB_NAME: htmt_api
+      DB_APP_USERNAME: htmt_api_user
+      DB_APP_USER_PASSWORD: htmt_api_password
+      DJANGO_SECRET_KEY: dev-only-secret-key
       DB_URL: db
       AFP_URL: afp
 
