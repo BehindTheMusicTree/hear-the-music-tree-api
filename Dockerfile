@@ -48,7 +48,7 @@ RUN pip install --upgrade pip && \
       pip install .; \
     fi
 
-RUN chmod +x scripts/entrypoint.sh
+RUN chmod +x scripts/entrypoint.sh scripts/start-server.sh
 
-# Set the entrypoint using shell form to allow environment variable expansion
-ENTRYPOINT ["bash", "-c", "${PROJECT_DIR}scripts/entrypoint.sh"]
+ENTRYPOINT ["bash", "scripts/entrypoint.sh"]
+CMD ["bash", "scripts/start-server.sh"]

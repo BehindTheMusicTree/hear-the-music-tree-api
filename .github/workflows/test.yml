@@ -232,8 +232,9 @@ jobs:
           # CI_STARTUP_TRACE: verbose Django/pytest startup diagnostics (see docs/workflows.md).
           # PYTHONFAULTHANDLER: on hang, SIGQUIT dumps Python stacks (docker kill -s QUIT <pytest_pid>).
           # PYTEST_PLUGINS: load startup plugin when bind-mount hides image-local *.egg-info entry points.
+          # The thin entrypoint (exec "$@") passes the command straight through; CMD is overridden here with the
+          # inner_script so the container runs pytest instead of the default start-server.sh.
           "${compose[@]}" run --rm -T \
-            --entrypoint "" \
             -e CI_STARTUP_TRACE=1 \
             -e PYTHONFAULTHANDLER=1 \
             -e PYTEST_PLUGINS=api.ci_pytest_startup_plugin \
