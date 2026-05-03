@@ -2,6 +2,7 @@
   "pythonVersion": "3.14",
   "typeCheckingMode": "basic",
   "reportMissingImports": "warning",
+  "reportMissingModuleSource": false,
   "reportMissingTypeStubs": false,
   "pythonPlatform": "Darwin",
   "executionEnvironments": [

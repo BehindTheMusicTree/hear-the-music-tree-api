@@ -1,4 +1,11 @@
 import os
+import sys
+
+from api.CiStartupTraceEnabled import CiStartupTraceEnabled
+
+if CiStartupTraceEnabled.is_tracer_active():
+    print("[pytest] api/test/tests/conftest.py: import line 1 (stdlib only; next imports may block)", flush=True)
+
 import shutil
 import subprocess
 import urllib.error
@@ -8,11 +15,21 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from _pytest.main import Session
+from django.conf import settings
 from django.test import override_settings
 
-from api import settings
-
 E2E_REACHABILITY_TIMEOUT_SEC = 5
+
+
+def _pytest_startup_progress() -> bool:
+    return CiStartupTraceEnabled.is_tracer_active()
+
+
+if _pytest_startup_progress():
+    print(
+        "[pytest] api/test/tests/conftest.py: top-level imports finished (django.setup may already have run).",
+        flush=True,
+    )
 
 
 @pytest.fixture(autouse=True)
@@ -198,7 +215,15 @@ def _require_optional_services_enabled() -> None:
         )
 
 
+def _pytest_log(msg: str) -> None:
+    """Visible progress during sessionstart/collection (avoids 'hangs' after Django settings load)."""
+    if _pytest_startup_progress():
+        print(f"[pytest] {msg}", flush=True)
+
+
 def pytest_sessionstart(session: Session) -> None:
+    _pytest_log("sessionstart: begin (pytest hook order: sessionstart runs before test collection)")
+    _pytest_log("sessionstart: checking ffprobe (next: import/collect test modules — can be slow with no output)")
     ffprobe = shutil.which("ffprobe")
     if ffprobe is None:
         pytest.exit(
@@ -222,6 +247,7 @@ def pytest_sessionstart(session: Session) -> None:
         )
     wav_fixture = Path(__file__).parent.parent / "utils" / "uploaded_track" / "files" / "duration=472s.wav"
     if wav_fixture.exists():
+        _pytest_log(f"sessionstart: probing WAV fixture ({wav_fixture.name}, timeout 30s)")
         probe_result = subprocess.run(
             [ffprobe, "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", str(wav_fixture)],
             capture_output=True,
@@ -235,9 +261,11 @@ def pytest_sessionstart(session: Session) -> None:
                 f"ffprobe output: {err or probe_result.returncode}",
                 returncode=2,
             )
+    _pytest_log("sessionstart: ffprobe checks OK; collecting tests (this can take a while with no output)")
 
 
 def pytest_configure(config):
+    _pytest_log("pytest_configure: registering markers (other plugins may still run after this hook)")
     config.addinivalue_line("markers", "critical: mark test as critical to pass")
     config.addinivalue_line("markers", "slow: mark test as long-running")
     config.addinivalue_line("markers", "e2e: mark test as end-to-end (may require network or external services)")
@@ -335,7 +363,13 @@ def _check_musicbrainz_reachable() -> tuple[bool, str]:
     return _check_url_reachable("https://api.acoustid.org")
 
 
+def pytest_collectstart(collector: pytest.Collector) -> None:
+    if isinstance(collector, Session):
+        _pytest_log("collectstart: root session — importing test modules (a hang here is a slow/blocking test import)")
+
+
 def pytest_collection_finish(session: Session) -> None:
+    _pytest_log(f"collection_finish: {len(session.items)} items; checking optional services / e2e reachability")
     _require_optional_services_enabled()
     if not _run_has_e2e_tests(session):
         return

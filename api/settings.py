@@ -1,12 +1,12 @@
 # Standard library imports
 import datetime
-import importlib.util
 import os
 import sys
 from pathlib import Path
 from typing import Any
 
 # Third-party imports
+from api.CiStartupTraceEnabled import CiStartupTraceEnabled
 from api.utils.AppStaticFileStates import StaticFileStates
 from api.utils.env_var_loader import (
     load_env_vars_from_file_if_exists,
@@ -539,9 +539,6 @@ def setup_installed_apps_and_caches():
         "api",
     ]
 
-    if "pytest" in sys.argv[0] and importlib.util.find_spec("coverage") is not None:
-        INSTALLED_APPS.append("coverage")
-
     if APP_IS_EXPOSED:
         INSTALLED_APPS.append("rest_framework_simplejwt")
 
@@ -916,3 +913,12 @@ else:
             setup_afp_connection()
 
 print_django("Finished loading settings.")
+if CiStartupTraceEnabled.is_tracer_active():
+    from api.CiPytestStartupTracer import CiPytestStartupTracer
+
+    CiPytestStartupTracer.install_ci_startup_tracers()
+    print(
+        "[Django] Next: django.setup() → apps.populate() → get_resolver() on demand imports api.urls. "
+        "Long gaps: last printed phase before silence = where it is stuck.",
+        flush=True,
+    )

@@ -12,4 +12,3 @@ api/test/
 bruno/
 env/dev/
 __pycache__
-pytest.ini
