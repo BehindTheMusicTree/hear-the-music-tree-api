@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 # Third-party imports
+from api.CiStartupTraceEnabled import CiStartupTraceEnabled
 from api.utils.AppStaticFileStates import StaticFileStates
 from api.utils.env_var_loader import (
     load_env_vars_from_file_if_exists,
@@ -912,7 +913,7 @@ else:
             setup_afp_connection()
 
 print_django("Finished loading settings.")
-if "pytest" in sys.argv[0] or os.environ.get("ENV") == "ci_test":
+if CiStartupTraceEnabled.is_tracer_active():
     from api.CiPytestStartupTracer import CiPytestStartupTracer
 
     CiPytestStartupTracer.install_ci_startup_tracers()

@@ -6,6 +6,7 @@ This document describes each GitHub Actions workflow in `.github/workflows/`.
 
 - [Overview](#overview)
 - [Test](#test)
+  - [Debugging pytest hangs after django.setup()](#debugging-pytest-hangs-after-djangosetup)
 - [Publish](#publish)
 - [Build](#build)
 - [Sync env to server](#sync-env-to-server)
@@ -37,6 +38,22 @@ Runs the full test suite with pytest.
 **GHCR `afp` image and CI `unauthorized`:** Container images live under **GitHub Packages**, not under the source repo’s **Settings → General** page. To grant **`hear-the-music-tree-api`** workflows read access: open the org’s packages list (**[BehindTheMusicTree → Packages](https://github.com/orgs/BehindTheMusicTree/packages)**), click the **`audio-fingerprinter`** container (name may match the image), then **Package settings** → **Actions access** → **Add repository** → **`BehindTheMusicTree/hear-the-music-tree-api`** with **Read**. Alternatively, from the **`audio-fingerprinter`** code repo home page, use the **Packages** section in the right-hand sidebar (if the package is linked to the repo) to jump to the same package page. Repository visibility (**public** / private) is separate from **package** visibility; a public repo can still publish a **private** GHCR image.
 
 **Versioning:** Always uses "test" as the version (tests don't require real version numbers).
+
+### Debugging pytest hangs after django.setup()
+
+If the job prints Django lines ending around **`apps.populate() finished`** / **`django.setup() is finishing`** and then **no further output for many minutes**, treat it as a **real stall** in the pytest startup chain (not only a missing log line).
+
+1. **Use the full job log** (GitHub Actions: raw log or download). Search for:
+   - `ci_pytest_startup_plugin` — **`outer enter`** without **`outer leave`** means the process is stuck **inside** the rest of `pytest_load_initial_conftests` (after `django.setup()`, before that hook finishes).
+   - `api/test/conftest.py: imported` — confirms initial conftest import ran.
+2. **Probe step:** The pytest job runs **`pytest --show-ini`** and **`pytest --trace-config`** (truncated) **before** the main `pytest` invocation so you can confirm **`inifile`**, **`rootdir`**, **`addopts`**, and registered plugins.
+3. **Environment (set in `test.yml` for `docker compose run`):**
+   - **`CI_STARTUP_TRACE=1`** — enables verbose `[Django]` / `[pytest]` diagnostics in application code.
+   - **`PYTEST_PLUGINS=api.ci_pytest_startup_plugin`** — loads the hook-bracket plugin even when a bind-mount hides image-local `*.egg-info` entry points.
+   - **`PYTHONFAULTHANDLER=1`** — on hang, send **SIGQUIT** to the pytest process (e.g. from another shell: `docker kill -s QUIT <container>` or `kill -QUIT <pid>`) to dump Python stacks to stderr.
+4. **Repo / image:** `pytest.ini` is **not** listed in `.dockerignore` so the Docker build context includes it; the workflow still bind-mounts the workspace for JUnit output.
+
+For local reproduction with the same diagnostics: `CI_STARTUP_TRACE=1 PYTEST_PLUGINS=api.ci_pytest_startup_plugin PYTHONFAULTHANDLER=1 docker compose exec api pytest api/test/ …`
 
 ## Publish
 
