@@ -221,11 +221,6 @@ jobs:
               "bash scripts/wait-for-postgres-db.sh db ${DB_PORT} ${DB_CONNECTION_TEST_MAX_ATTEMPTS} ${DB_CONNECTION_TEST_SLEEP_INTERVAL}" \
               "bash scripts/wait-for-afp.sh afp ${AFP_PORT} 12 5" \
               'bash scripts/init-django-data.sh' \
-              'echo "=== pytest startup probe (pwd, pytest.ini, ini/plugins) ==="' \
-              'pwd' \
-              'ls -la pytest.ini pyproject.toml 2>/dev/null || true' \
-              'pytest --show-ini 2>&1 | head -120' \
-              'pytest --trace-config 2>&1 | head -200' \
               "pytest -v --tb=short -x --junitxml=test-results.xml ${pytest_target_q}"
           )
           # Mount workspace so --junitxml=test-results.xml is visible on the runner (base compose has no ./ bind mount).
