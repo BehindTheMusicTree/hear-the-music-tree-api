@@ -4,7 +4,7 @@ import string
 
 
 def print_django(message):
-    print(f"[Django] {message}")
+    print(f"[Django] {message}", flush=True)
 
 
 def is_django_startup_verbose() -> bool:

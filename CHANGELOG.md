@@ -66,7 +66,41 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### CI
 
-- **Publish**: **`call-redeployment-webhook`** pinned to **`@v0.2.0`**; pass required **`hook_id_base`** from **`vars.REDEPLOYMENT_HOOK_ID_BASE`** ([**BehindTheMusicTree/github-workflows**](https://github.com/BehindTheMusicTree/github-workflows/releases/tag/v0.2.0)). [**.github/actionlint.yaml**](.github/actionlint.yaml): allow **`REDEPLOYMENT_HOOK_ID_BASE`** for actionlint.
+- **Static files workflow**: [`.github/workflows/static-files.yml`](.github/workflows/static-files.yml) sets **`ENV=collect_static`** in the job environment (Django collect-static path in **`api/settings.py`**); it is no longer read from the GitHub Variable **`ENV`**.
+
+- **GHCR (align with infrastructure)**: [**`build-and-push.yml`**](.github/workflows/build-and-push.yml) pushes **`ghcr.io/<GHCR_IMAGE_NAMESPACE>/<HTMT_API_IMAGE_REPO>:<tag>`** with **`docker/login-action`** + **`GITHUB_TOKEN`** (`packages: write`); removes **`DOCKERHUB_USERNAME`** / **`DOCKERHUB_ACCESS_TOKEN`**. [**`test.yml`**](.github/workflows/test.yml) requires **`GHCR_IMAGE_NAMESPACE`**, passes step **`env.GHCR_NS`**, exports a **lowercase** value for Compose, then **`docker login ghcr.io`** with **`GITHUB_REPOSITORY_OWNER`** + **`GITHUB_TOKEN`** (**`packages: read`**) because **`afp`** on GHCR requires auth (**`unauthorized`** without login); optional **`GHCR_READ_PACKAGES_*`** PAT secrets if package **Actions access** is not configured. [**`scripts/utils.sh`**](scripts/utils.sh) **`docker_image_ref_from_repo_tag`**: repo with **`/`** → Docker Hub-style ref; short name → **`ghcr.io/<GHCR_IMAGE_NAMESPACE>/...`**.
+
+- **Pytest job (Compose-only)**: [**`test.yml`**](.github/workflows/test.yml) builds **`api`**, starts **`db`** (**`postgres:16.4`**, [`docker-compose.yml`](docker-compose.yml)) and **`afp`**, then runs **`docker compose run --rm`** with **`${GITHUB_WORKSPACE}:/home/app`** so **`--junitxml=test-results.xml`** is written on the runner (base Compose does not bind-mount the repo into **`api`**). Optional **`workflow_call`** input **`test_path`**. Removes host **`pip`** / **`install-dependencies`** / duplicate container bootstrapping for that job.
+
+- **Pytest job (hang diagnosis)**: Before the main suite, the container runs **`pytest --show-ini`** and **`pytest --trace-config`** (truncated), prints **`pwd`** and **`pytest.ini`** / **`pyproject.toml`** presence, and passes **`CI_STARTUP_TRACE=1`**, **`PYTHONFAULTHANDLER=1`**, and **`PYTEST_PLUGINS=api.ci_pytest_startup_plugin`** into **`docker compose run`** so startup diagnostics and hook-bracket logging work with a bind-mounted workspace. [**.dockerignore**](.dockerignore) no longer excludes **`pytest.ini`** from the image build context.
+
+- **Publish unit test results**: Pytest job adds **`checks: write`** and **`pull-requests: write`** for [**`EnricoMi/publish-unit-test-result-action`**](https://github.com/EnricoMi/publish-unit-test-result-action) (**`@v2.23.0`**) so the Checks API is usable; skips that step on **fork** **`pull_request`** workflows (read-only **`GITHUB_TOKEN`**).
+
+- **Publish**: **`call-redeployment-webhook`** pinned to **`@v0.3.0`**; pass required **`hook_id_base`** from **`vars.REDEPLOYMENT_HOOK_ID_BASE`** ([**BehindTheMusicTree/github-workflows**](https://github.com/BehindTheMusicTree/github-workflows/releases/tag/v0.3.0)). GitHub secrets **`BTMT_REDEPLOYMENT_WEBHOOK_SECRET_PROD`** / **`BTMT_REDEPLOYMENT_WEBHOOK_SECRET_STAGING`** (rename from **`REDEPLOYMENT_WEBHOOK_SECRET_*`**; same values). [**.github/actionlint.yaml**](.github/actionlint.yaml): allow **`REDEPLOYMENT_HOOK_ID_BASE`** for actionlint.
+
+- **Postgres and publish pins**: Compose and CI use **`postgres:16.4`** only (removed **`docker-compose.ci.yml`**, **`COMPOSE_DB_IMAGE`**, and **`DB_VERSION`**). [**`publish.yml`**](.github/workflows/publish.yml) **`check-pinned-tags`** enforces **`AFP_VERSION`** only; **`set-version-db`** writes tag **`16.4`**.
+
+### Improved
+
+- **Django / pytest startup visibility**: Verbose **`[Django]`** / **`[pytest]`** lines are gated by **`CI_STARTUP_TRACE`** (**`1`** / **`true`** / **`yes`**) via [`api/CiStartupTraceEnabled.py`](api/CiStartupTraceEnabled.py); CI sets it in **`test.yml`**. When enabled: [`api/settings.py`](api/settings.py) installs [`api/CiPytestStartupTracer.py`](api/CiPytestStartupTracer.py) (**`apps.populate()`**, **`AppConfig.ready()`**, **`get_resolver()`**); [`api/ci_pytest_startup_plugin.py`](api/ci_pytest_startup_plugin.py) brackets **`pytest_load_initial_conftests`**; [`api/models.py`](api/models.py), [`api/urls.py`](api/urls.py), [`api/apps.py`](api/apps.py), and conftest under **`api/test/`** emit progress markers. [`pytest.ini`](pytest.ini) **`addopts = -p api.ci_pytest_startup_plugin`**; **[`pyproject.toml`](pyproject.toml)** **`[tool.pytest.ini_options]`** mirrors key options when **`pytest.ini`** is absent.
+
+### Changed
+
+- **Audio Fingerprinter**: Default and dev example **`AFP_VERSION`** **`v1.4.4`** ([**Release 1.4.4**](https://github.com/BehindTheMusicTree/audio-fingerprinter/releases/tag/v1.4.4)) in [`docker-compose.yml`](docker-compose.yml) and [`env/dev/.env.compose.dev.example`](env/dev/.env.compose.dev.example) / [`env/dev/.env.dev.example`](env/dev/.env.dev.example). Set GitHub repository variable **`AFP_VERSION`** to **`v1.4.4`** (or **`1.4.4`** per existing publish convention) so CI and publish match.
+
+- **Local Compose GHCR namespace**: Default and dev examples use **`GHCR_IMAGE_NAMESPACE=behindthemusictree`** (lowercase org) in [`docker-compose.yml`](docker-compose.yml) and [`env/dev/.env.*.example`](env/dev/) so **`afp`** pulls match [**`BehindTheMusicTree/infrastructure`**](https://github.com/BehindTheMusicTree/infrastructure) rather than a personal user path that returns **`denied`** when the image is not published there.
+
+### Documentation
+
+- **README** / [**`docs/workflows.md`**](docs/workflows.md): Docker Compose quick start documents **`ghcr.io`** **`afp`** pulls (**`GHCR_IMAGE_NAMESPACE`**), **`docker login`** (PAT as password—not account password—plus **`docker logout ghcr.io`**), **`~/.docker/config.json`** vs project **`.env`**, optional **`gh auth token`**, and **SSO** for **`unauthorized`** / **`denied`**. **Test** / README clarify that **GHCR package** settings (**Actions access**, visibility) live under the org **Packages** listing, not the **`audio-fingerprinter`** repository **Settings → General** page.
+
+- **CONTRIBUTING** / [**`docs/workflows.md`**](docs/workflows.md): Environment setup and workflow docs describe **Compose-only** tests and CI (no host **`pytest`** + standalone DB/AFP containers). **Test** / Pytest section notes **`ghcr.io`** login for **`afp`** (lowercase **`GHCR_IMAGE_NAMESPACE`**, **`GITHUB_TOKEN`** or optional PAT secrets, package **Actions access** under org **Packages**, not repo **Settings**). **Static Files** section clarifies that production Django **`ENV`** (e.g. **`prod`**) is owned by **infrastructure** server env, not GitHub Variables on this repo. **`docs/workflows.md`** adds **Debugging pytest hangs after django.setup()** (**full log**, **`outer enter`/`outer leave`**, **`CI_STARTUP_TRACE`**, **`PYTEST_PLUGINS`**, **`PYTHONFAULTHANDLER`**, SIGQUIT); **CONTRIBUTING** links **`CI_STARTUP_TRACE`** for local runs.
+
+### Removed
+
+- **Scripts**: Removed **`scripts/run-db-and-afp-containers.sh`**; DB and AFP for tests are started only via **Docker Compose** (local **`docker compose exec api pytest`**, CI **`test.yml`**).
+
+- **Scripts**: Removed legacy **`scripts/generate-docker-compose-parts.sh`**; server deploy compose is owned by [**BehindTheMusicTree/infrastructure**](https://github.com/BehindTheMusicTree/infrastructure) (**`generate-docker-compose.sh`** + **`docker-compose.yml.template`**), not partial compose snippets generated from this repository.
 
 ## [v2.2.4] - 2026-04-30
 
