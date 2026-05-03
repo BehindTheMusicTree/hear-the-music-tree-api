@@ -75,7 +75,7 @@ Single publish workflow: collect static files, build Docker image, set image tag
 3. **build-and-push** – calls `build-and-push.yml` with commit hash and **environment** (TEST or PROD)
 4. **check-pinned-tags** – requires **`AFP_VERSION`** in Settings → Variables (no `latest`); DB image is **`postgres:16.4`** (fixed in [`docker-compose.yml`](../docker-compose.yml); publish sets server DB tag **`16.4`**)
 5. **set-version-api** / **set-version-db** / **set-version-afp** – shared workflows from `BehindTheMusicTree/github-workflows`
-6. **redeploy-webhook-call** – shared workflow **`call-redeployment-webhook`** (pinned **`@v1.0.1`**) with required **`hook_id_base: ${{ vars.REDEPLOYMENT_HOOK_ID_BASE }}`** and **`secrets: inherit`**
+6. **redeploy-webhook-call** – shared workflow **`call-redeployment-webhook`** (pinned **`@v1.0.4`**) with required **`hook_id_base: ${{ vars.REDEPLOYMENT_HOOK_ID_BASE }}`** and **`secrets: inherit`**
 
 **Environment:** **TEST** for main push and prerelease/dev tags (staging). **PROD** for release tags (production). DB and AFP image tags must be pinned in repo variables.
 
