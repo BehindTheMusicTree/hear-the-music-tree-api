@@ -89,6 +89,7 @@ services:
       GUNICORN_LOG_DIR: ${GUNICORN_LOG_DIR:-/var/log/gunicorn/}
       GUNICORN_LOG_ERROR_FILENAME: ${GUNICORN_LOG_ERROR_FILENAME:-error.log}
       GUNICORN_LOG_ACCESS_FILENAME: ${GUNICORN_LOG_ACCESS_FILENAME:-access.log}
+      GUNICORN_STDOUT_LOGS: ${GUNICORN_STDOUT_LOGS:-true}
       STATIC_FILES_URL: ${STATIC_FILES_URL:-/static/}
       AFP_ENABLED: ${AFP_ENABLED:-true}
       AFP_CONTAINER_NAME: ${AFP_CONTAINER_NAME:-afp}
@@ -121,6 +122,16 @@ services:
         condition: service_healthy
       afp:
         condition: service_started
+    healthcheck:
+      test:
+        - CMD
+        - python3
+        - -c
+        - import os, urllib.request; urllib.request.urlopen(f"http://127.0.0.1:{os.environ.get('APP_PORT', '8000')}/health/", timeout=5)
+      interval: 10s
+      timeout: 6s
+      retries: 5
+      start_period: 120s
     volumes:
       - api-media:${MEDIA_DIR:-/tmp/htmt-media}
       - api-uploads:${TMP_UPLOADED_FILES:-/tmp/uploaded-files/}

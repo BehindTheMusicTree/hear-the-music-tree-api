@@ -84,11 +84,21 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Sync env to server** ([`.github/workflows/sync-env-to-server.yml`](.github/workflows/sync-env-to-server.yml)): Builds **two** fragments per environment — **API** (`sync-env-<HTMT_API_APP_NAME>-<env>.env`) and **Postgres** (`sync-env-<HTMT_API_APP_NAME><DB_APP_NAME_SUFFIX>-<env>.env`; **`DB_APP_NAME_SUFFIX`** is **required**, no default) — then four reusable **`sync-env-to-server`** calls. **`build-api-fragment`** also requires **`DB_APP_NAME_SUFFIX`** so CI fails fast. Postgres keys (**`POSTGRES_*`**) moved out of the API fragment. **`test.yml`** **`check-vars-and-secrets`** includes **`DB_APP_NAME_SUFFIX`** in **`scripts/check-workflow-env.sh`**. **Deploy order:** merge and run **BehindTheMusicTree/infrastructure** Server setup (or redeploy) so **`generate-docker-compose.sh`** loads both canonical files before relying on API-only Postgres lines.
 
+### Fixed
+
+- **Local Compose `api` exits 0 immediately**: Older **`htmt-api-dev-api`** images could still embed the legacy Dockerfile **`ENTRYPOINT`** (**`bash -c "${PROJECT_DIR}scripts/entrypoint.sh"`**), which does not forward the override **`command`** the way the current exec-form entrypoint does—**`api`** then exited **0** almost instantly (**`--wait`** failed). Rebuild with **`docker compose build api`** (or **`--build`**). [README](README.md) quick start notes the check and **`docker compose logs api`**.
+
 ### Improved
+
+- **Git pre-commit hook**: [`.githooks/pre-commit`](.githooks/pre-commit) waits up to **30s** for the Compose **`api`** service to be **running** (handles **`docker compose up -d api`** vs **`git commit`** race); fails fast if **no** **`api`** container exists after a few seconds; prints **recent `docker compose logs api`** when a container exists but is not running.
 
 - **Django / pytest startup visibility**: Verbose **`[Django]`** / **`[pytest]`** lines are gated by **`CI_STARTUP_TRACE`** (**`1`** / **`true`** / **`yes`**) via [`api/CiStartupTraceEnabled.py`](api/CiStartupTraceEnabled.py); CI sets it in **`test.yml`**. When enabled: [`api/settings.py`](api/settings.py) installs [`api/CiPytestStartupTracer.py`](api/CiPytestStartupTracer.py) (**`apps.populate()`**, **`AppConfig.ready()`**, **`get_resolver()`**); [`api/ci_pytest_startup_plugin.py`](api/ci_pytest_startup_plugin.py) brackets **`pytest_load_initial_conftests`**; [`api/models.py`](api/models.py), [`api/urls.py`](api/urls.py), [`api/apps.py`](api/apps.py), and conftest under **`api/test/`** emit progress markers. [`pytest.ini`](pytest.ini) **`addopts = -p api.ci_pytest_startup_plugin`**; **[`pyproject.toml`](pyproject.toml)** **`[tool.pytest.ini_options]`** mirrors key options when **`pytest.ini`** is absent.
 
 ### Changed
+
+- **Compose `api` healthcheck**: [`docker-compose.yml`](docker-compose.yml) defines an **`api`** **`healthcheck`** that probes **`http://127.0.0.1:<APP_PORT>/health/`** via **`python3`** (no extra image packages). Use **`docker compose up -d --wait api`** (Compose **v2.17+**) to block until **`healthy`**; **`up -d`** without **`--wait`** still returns once the container is started.
+
+- **Gunicorn logging (containers)**: [`scripts/start-server.sh`](scripts/start-server.sh) supports **`GUNICORN_STDOUT_LOGS`** (`true` / `1` / `yes`): Gunicorn **`--access-logfile=-`** and **`--error-logfile=-`** so HTTP and worker errors appear in **`docker compose logs`** (12-factor / platform log aggregation). When unset or false, behavior is unchanged (paths from **`GUNICORN_LOG_DIR`** + filenames). [`docker-compose.yml`](docker-compose.yml) sets **`GUNICORN_STDOUT_LOGS`** default **`true`** for the **`api`** service; set **`GUNICORN_STDOUT_LOGS=false`** (and file log env vars) for file-based Gunicorn logs on disk.
 
 - **Audio Fingerprinter**: Default and dev example **`AFP_VERSION`** **`v1.4.4`** ([**Release 1.4.4**](https://github.com/BehindTheMusicTree/audio-fingerprinter/releases/tag/v1.4.4)) in [`docker-compose.yml`](docker-compose.yml) and [`env/dev/.env.compose.dev.example`](env/dev/.env.compose.dev.example) / [`env/dev/.env.dev.example`](env/dev/.env.dev.example). Set GitHub repository variable **`AFP_VERSION`** to **`v1.4.4`** (or **`1.4.4`** per existing publish convention) so CI and publish match.
 

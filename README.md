@@ -172,6 +172,16 @@ Then **`docker compose pull afp`** (or **`docker compose up`**) again.
 docker compose build api && docker compose up
 ```
 
+Detached startup that waits until the API process answers **`GET /health/`** (DB must be reachable for **200**):
+
+```bash
+docker compose up -d --wait api
+```
+
+Plain **`docker compose up -d api`** still returns immediately after the container starts; use **`--wait`** when you need Compose to block until **`healthy`**.
+
+If **`api`** stops right away with **exit code 0** and **`docker compose up -d --wait api`** fails, your local **`api`** image may predate the current [`Dockerfile`](Dockerfile) **`ENTRYPOINT`** (**`bash scripts/entrypoint.sh`**, which forwards Compose **`command`**). Rebuild: **`docker compose build api`** (or **`docker compose up --build api`**). Inspect with **`docker inspect htmt-api --format '{{json .Config.Entrypoint}}'`** — it should **not** be **`bash -c …entrypoint.sh`**. Logs: **`docker compose logs api`** (service name **`api`**; container name **`htmt-api`**).
+
 4. Open the API:
 
 - App: `http://localhost:8000`
