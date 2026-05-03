@@ -221,12 +221,7 @@ jobs:
         run: bash scripts/init-django-data.sh
 
       - name: Run pytest
-        run: |
-          if [ -n "${{ inputs.test_path || '' }}" ]; then
-            pytest -v --tb=short -x --junitxml=test-results.xml "${{ inputs.test_path }}"
-          else
-            pytest -v --tb=short -x --junitxml=test-results.xml ${{ env.API_DIR_NAME }}/test/
-          fi
+        run: pytest -v --tb=short -x --junitxml=test-results.xml ${{ env.API_DIR_NAME }}/test/
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
