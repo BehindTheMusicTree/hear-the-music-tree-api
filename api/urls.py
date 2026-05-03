@@ -1,3 +1,9 @@
+from api.CiStartupTraceEnabled import CiStartupTraceEnabled
+
+_URLS_STARTUP_LOG = CiStartupTraceEnabled.is_tracer_active()
+if _URLS_STARTUP_LOG:
+    print("[Django] api.urls: importing URLconf (large view/router tree)...", flush=True)
+
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
@@ -104,3 +110,6 @@ urlpatterns = [
 
 if settings.STATIC_FILES_STATE in [StaticFileStates.COLLECTING, StaticFileStates.SERVING]:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+if _URLS_STARTUP_LOG:
+    print("[Django] api.urls: URLconf import finished.", flush=True)
