@@ -64,6 +64,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Changed
+
+- **Sync env to server** (`.github/workflows/sync-env-to-server.yml`): Builds **two** fragments per environment — **API** (`sync-env-<HTMT_API_APP_NAME>-<env>.env`) and **Postgres** (`sync-env-<HTMT_API_APP_NAME><DB_APP_NAME_SUFFIX>-<env>.env`, suffix default **`_db`**) — then four reusable **`sync-env-to-server`** calls. Postgres keys (**`POSTGRES_*`**) moved out of the API fragment. **Deploy order:** merge and run **BehindTheMusicTree/infrastructure** Server setup (or redeploy) so **`generate-docker-compose.sh`** loads both canonical files before relying on API-only Postgres lines.
+
 ## [v2.2.4] - 2026-04-30
 
 ### CI
