@@ -62,9 +62,7 @@ jobs:
       - uses: actions/checkout@v5.0.1
 
       - name: Install actionlint
-        run: |
-          VERSION="1.7.11"
-          curl -sSL "https://github.com/rhysd/actionlint/releases/download/v${VERSION}/actionlint_${VERSION}_linux_amd64.tar.gz" | tar xz -C /tmp
+        run: bash scripts/install-actionlint.sh
 
       - name: Lint workflows
-        run: /tmp/actionlint -config-file .github/actionlint.yaml
+        run: actionlint -config-file .github/actionlint.yaml
