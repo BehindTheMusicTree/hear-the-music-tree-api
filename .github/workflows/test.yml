@@ -117,6 +117,9 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: ci_test
+    permissions:
+      checks: write
+      pull-requests: write
     env:
       ENV: ci_test
       API_DIR_NAME: ${{ vars.API_DIR_NAME }}
@@ -157,7 +160,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: 3.14
+          python-version: "3.14"
 
       - name: Cache apt packages
         uses: actions/cache@v4
@@ -225,6 +228,6 @@ jobs:
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository
         with:
           files: test-results.xml
