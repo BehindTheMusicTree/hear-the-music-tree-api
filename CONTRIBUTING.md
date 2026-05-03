@@ -440,7 +440,8 @@ pytest -o log_cli_level=DEBUG
 
 **If pytest seems stuck or extremely slow:**
 
-- **Live logging:** `pytest.ini` sets `log_cli = true`. At **DEBUG** every log line is printed and the suite can look frozen. The default level is **INFO**; use `-o log_cli=false` for minimal console noise or `-o log_cli_level=DEBUG` only when chasing a failure.
+- **Live logging:** `pytest.ini` sets `log_cli = false` by default. Use `-o log_cli=true` / `-o log_cli_level=DEBUG` only when chasing a failure; at **DEBUG** the suite can look frozen.
+- **Startup diagnostics:** Set **`CI_STARTUP_TRACE=1`** to enable `[Django]` / `[pytest]` startup lines (Django `populate`/`ready()`, pytest hook bracketing, conftest progress). GitHub Actions sets this for the pytest job. See [docs/workflows.md](docs/workflows.md) § _Debugging pytest hangs after django.setup()_.
 - **Database:** Integration and most Django tests need **PostgreSQL** (and env) as in [Environment Setup](#1-environment-setup). A missing or unreachable DB often blocks on connect instead of failing immediately—start the Compose stack (**`docker compose up`**) first, then run **`docker compose exec api pytest`**.
 - **Container context:** If `pytest` is not found on your host, run tests from the API container (`docker compose exec api pytest ...`) or install dev dependencies with `python -m pip install -e ".[dev]"` in your active Python environment so `pytest` is on your `PATH`.
 

@@ -1,8 +1,8 @@
-import os
-import sys
 from collections.abc import Callable, Iterable
 
 from django.apps import AppConfig
+
+from api.CiStartupTraceEnabled import CiStartupTraceEnabled
 
 _installed: bool = False
 
@@ -11,17 +11,9 @@ class CiPytestStartupTracer:
     """CI/pytest-only hooks to locate stalls after settings (populate, ready(), URLconf, resolver)."""
 
     @staticmethod
-    def is_ci_or_pytest_argv() -> bool:
-        if os.environ.get("ENV") == "ci_test":
-            return True
-        if "pytest" in (sys.argv[0] or ""):
-            return True
-        return any(a == "pytest" for a in sys.argv)
-
-    @staticmethod
     def install_ci_startup_tracers() -> None:
         global _installed
-        if _installed or not CiPytestStartupTracer.is_ci_or_pytest_argv():
+        if _installed or not CiStartupTraceEnabled.is_tracer_active():
             return
         CiPytestStartupTracer._install_appconfig_ready_tracer()
         CiPytestStartupTracer._install_apps_populate_tracer()
@@ -51,8 +43,8 @@ class CiPytestStartupTracer:
             print("[Django] apps.populate() finished.", flush=True)
             print(
                 "[Django] django.setup() is finishing (still inside pytest_load_initial_conftests). "
-                "Next: [pytest] ci_pytest_startup_plugin outer leave (if pytest.ini -p plugin loaded), then "
-                "api/test/conftest.py, … ROOT_URLCONF loads only on first URL resolution / test client.",
+                "Next: [pytest] ci_pytest_startup_plugin outer leave (if CI_STARTUP_TRACE=1 and -p / "
+                "PYTEST_PLUGINS), then api/test/conftest.py, … ROOT_URLCONF loads on first URL resolution / client.",
                 flush=True,
             )
 

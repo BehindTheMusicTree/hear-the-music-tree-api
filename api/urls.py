@@ -1,7 +1,6 @@
-import os
-import sys
+from api.CiStartupTraceEnabled import CiStartupTraceEnabled
 
-_URLS_STARTUP_LOG = "pytest" in sys.argv[0] or os.environ.get("ENV") == "ci_test"
+_URLS_STARTUP_LOG = CiStartupTraceEnabled.is_tracer_active()
 if _URLS_STARTUP_LOG:
     print("[Django] api.urls: importing URLconf (large view/router tree)...", flush=True)
 

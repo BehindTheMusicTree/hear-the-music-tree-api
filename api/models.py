@@ -1,7 +1,6 @@
-import os
-import sys
+from api.CiStartupTraceEnabled import CiStartupTraceEnabled
 
-if "pytest" in sys.argv[0] or os.environ.get("ENV") == "ci_test":
+if CiStartupTraceEnabled.is_tracer_active():
     print(
         "[Django] api.models: importing SpotifyArtist / SpotifyLibTrack / User (deep trees; can be slow)...",
         flush=True,
@@ -11,7 +10,7 @@ from api.model.spotify_resource.children.artist.SpotifyArtist import SpotifyArti
 from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
 from api.model.user.User import User
 
-if "pytest" in sys.argv[0] or os.environ.get("ENV") == "ci_test":
+if CiStartupTraceEnabled.is_tracer_active():
     print("[Django] api.models: core model imports finished.", flush=True)
     print(
         "[Django] api.models: Django will now call AppConfig.ready() on each installed app (api is last).",

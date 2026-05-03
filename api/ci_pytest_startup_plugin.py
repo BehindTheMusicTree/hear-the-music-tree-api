@@ -1,8 +1,8 @@
-"""Pytest plugin: brackets ``pytest_load_initial_conftests`` (loaded via ``pytest.ini`` ``-p
-api.ci_pytest_startup_plugin``).
+"""Pytest plugin: brackets ``pytest_load_initial_conftests`` (load via ``pytest.ini`` ``addopts`` or
+``PYTEST_PLUGINS``).
 
-Conftest files cannot implement this hook. CI bind-mounts the workspace over the image project dir, so
-setuptools ``pytest11`` entry points from the build layer are unreliable; ``-p`` imports this module by path.
+Conftest files cannot implement this hook. CI sets ``PYTEST_PLUGINS`` and ``CI_STARTUP_TRACE`` in the workflow
+so diagnostics work when the workspace is bind-mounted over the image project dir.
 """
 
 from __future__ import annotations
@@ -12,14 +12,18 @@ from collections.abc import Generator
 
 import pytest
 
+from api.CiStartupTraceEnabled import CiStartupTraceEnabled
+
 
 def _startup_line(msg: str) -> None:
+    if not CiStartupTraceEnabled.is_enabled():
+        return
     line = f"[pytest] ci_pytest_startup_plugin: {msg}"
     print(line, flush=True)
     print(line, file=sys.stderr, flush=True)
 
 
-_startup_line("module loaded (-p api.ci_pytest_startup_plugin from pytest.ini)")
+_startup_line("module loaded (-p / PYTEST_PLUGINS; CI_STARTUP_TRACE=1 enables these lines)")
 
 
 @pytest.hookimpl(wrapper=True, tryfirst=True)

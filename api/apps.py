@@ -1,14 +1,13 @@
-import os
-import sys
-
 from django.apps import AppConfig
+
+from api.CiStartupTraceEnabled import CiStartupTraceEnabled
 
 
 class ApiConfig(AppConfig):
     name = "api"
 
     def ready(self) -> None:
-        if "pytest" in sys.argv[0] or os.environ.get("ENV") == "ci_test":
+        if CiStartupTraceEnabled.is_tracer_active():
             print(
                 "[Django] ApiConfig.ready() - django.setup() finished loading the api app.",
                 flush=True,

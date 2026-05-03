@@ -10,19 +10,15 @@ implementation or conftest discovery).
 
 from __future__ import annotations
 
-import os
 import sys
+
+from api.CiStartupTraceEnabled import CiStartupTraceEnabled
 
 
 def _pytest_parent_progress(msg: str) -> None:
-    if os.environ.get("ENV") == "ci_test":
-        print(f"[pytest] {msg}", flush=True)
+    if not CiStartupTraceEnabled.is_tracer_active():
         return
-    if "pytest" in (sys.argv[0] or ""):
-        print(f"[pytest] {msg}", flush=True)
-        return
-    if any(a == "pytest" for a in sys.argv):
-        print(f"[pytest] {msg}", flush=True)
+    print(f"[pytest] {msg}", flush=True)
 
 
 _pytest_parent_progress(

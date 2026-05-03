@@ -1,7 +1,9 @@
 import os
 import sys
 
-if os.environ.get("ENV") == "ci_test" or "pytest" in (sys.argv[0] or "") or any(a == "pytest" for a in sys.argv):
+from api.CiStartupTraceEnabled import CiStartupTraceEnabled
+
+if CiStartupTraceEnabled.is_tracer_active():
     print("[pytest] api/test/tests/conftest.py: import line 1 (stdlib only; next imports may block)", flush=True)
 
 import shutil
@@ -20,11 +22,7 @@ E2E_REACHABILITY_TIMEOUT_SEC = 5
 
 
 def _pytest_startup_progress() -> bool:
-    if os.environ.get("ENV") == "ci_test":
-        return True
-    if "pytest" in (sys.argv[0] or ""):
-        return True
-    return any(a == "pytest" for a in sys.argv)
+    return CiStartupTraceEnabled.is_tracer_active()
 
 
 if _pytest_startup_progress():
