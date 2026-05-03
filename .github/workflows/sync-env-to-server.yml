@@ -1,9 +1,6 @@
 # Sync app env to server via shared workflow (BehindTheMusicTree/github-workflows).
-# Builds fragment per env (STAGING/PROD), uploads artifact, then calls reusable sync-env-to-server.
-# Writes /tmp/sync-env-<app>-<env>.env (required by infra redeploy) and merges into scripts/.env.
-# All compose-required API booleans and runtime paths are hardcoded in the fragment (no GitHub Variables):
-# FILE_UPLOAD_ENABLED, SPOTIFY_ENABLED, GOOGLE_OAUTH_ENABLED, MUSICBRAINZ_LOOKUP_ENABLED, HTMT_API_AFP_ENABLED,
-# MEDIA_DIR, LIBRARIES_DIR, TMP_UPLOADED_FILES.
+# Two fragments per env (same contract as the-music-deck-admin): API basename + Postgres service basename
+# (HTMT_API_APP_NAME + DB_APP_NAME_SUFFIX; variable required, no default). Promotes to /tmp/sync-env-<app>-<env>.env then canonical scripts/sync-env/.
 name: Sync env to server
 
 on:
@@ -13,8 +10,8 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  build-fragment:
-    name: Build env fragment (${{ matrix.environment }})
+  build-api-fragment:
+    name: Build API env fragment (${{ matrix.environment }})
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -25,11 +22,12 @@ jobs:
             sync_env: prod
     environment: ${{ matrix.environment }}
     steps:
-      - name: Validate vars and build env fragment
+      - name: Validate vars and build API env fragment
         env:
           SERVER_HOST: ${{ vars.SERVER_HOST }}
           REDEPLOYMENT_ROOT: ${{ vars.REDEPLOYMENT_ROOT }}
           HTMT_API_APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
+          DB_APP_NAME_SUFFIX: ${{ vars.DB_APP_NAME_SUFFIX }}
           DEMO_EMAIL: ${{ vars.DEMO_EMAIL }}
           SUPERADMIN_EMAIL: ${{ vars.SUPERADMIN_EMAIL }}
           SPOTIFY_CLIENT_ID_STAGING: ${{ vars.SPOTIFY_CLIENT_ID_STAGING }}
@@ -61,7 +59,6 @@ jobs:
             export GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID_PROD}"
           fi
           export SPOTIFY_SCOPES
-          # Integration services: always on in deployed envs (compose + Django expect explicit booleans).
           : > fragment.env
           printf '%s\n' \
             'FILE_UPLOAD_ENABLED=true' \
@@ -73,7 +70,7 @@ jobs:
             'LIBRARIES_DIR=/app/media/libraries/' \
             'TMP_UPLOADED_FILES=/tmp/uploads' >> fragment.env
           required=(
-            SERVER_HOST REDEPLOYMENT_ROOT HTMT_API_APP_NAME
+            SERVER_HOST REDEPLOYMENT_ROOT HTMT_API_APP_NAME DB_APP_NAME_SUFFIX
             DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID
             SERVER_DEPLOY_USERNAME SERVER_DEPLOY_SSH_PRIVATE_KEY
             DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD DB_SUPERUSER_PASSWORD
@@ -98,30 +95,106 @@ jobs:
             val=$(printf '%s' "$val" | tr -d '\n\r')
             [ -n "${val}" ] && printf '%s=%s\n' "$key" "$val" >> fragment.env
           done
-          [ -n "${DB_SUPERUSER_PASSWORD}" ] && printf 'POSTGRES_PASSWORD=%s\n' "$(printf '%s' "$DB_SUPERUSER_PASSWORD" | tr -d '\n\r')" >> fragment.env
 
-      - name: Upload fragment artifact
+      - name: Upload API fragment artifact
         uses: actions/upload-artifact@v5.0.0
         with:
-          name: sync-env-fragment-${{ matrix.sync_env }}
+          name: sync-env-fragment-api-${{ matrix.sync_env }}
           path: fragment.env
 
-  sync-staging:
-    name: Sync env (staging)
-    needs: [build-fragment]
+  build-db-fragment:
+    name: Build Postgres env fragment (${{ matrix.environment }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - environment: STAGING
+            sync_env: staging
+          - environment: PROD
+            sync_env: prod
+    environment: ${{ matrix.environment }}
+    steps:
+      - name: Validate vars and build DB env fragment
+        env:
+          SERVER_HOST: ${{ vars.SERVER_HOST }}
+          REDEPLOYMENT_ROOT: ${{ vars.REDEPLOYMENT_ROOT }}
+          HTMT_API_APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
+          DB_APP_NAME_SUFFIX: ${{ vars.DB_APP_NAME_SUFFIX }}
+          DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
+          DB_SUPERUSER_PASSWORD: ${{ secrets.DB_SUPERUSER_PASSWORD }}
+          SERVER_DEPLOY_USERNAME: ${{ secrets.SERVER_DEPLOY_USERNAME }}
+          SERVER_DEPLOY_SSH_PRIVATE_KEY: ${{ secrets.SERVER_DEPLOY_SSH_PRIVATE_KEY }}
+        run: |
+          : > fragment.env
+          if [ -z "${DB_APP_NAME_SUFFIX:-}" ]; then
+            echo "ERROR: GitHub Variable DB_APP_NAME_SUFFIX must be set and non-empty (same value as infrastructure repo)."
+            exit 1
+          fi
+          suffix="${DB_APP_NAME_SUFFIX}"
+          db_basename="${HTMT_API_APP_NAME}${suffix}"
+          printf '%s\n' "POSTGRES_USER=postgres" >> fragment.env
+          val="$(printf '%s' "${DB_APP_DB_NAME}" | tr -d '\n\r')"
+          printf 'POSTGRES_DB=%s\n' "${val}" >> fragment.env
+          val="$(printf '%s' "${DB_SUPERUSER_PASSWORD}" | tr -d '\n\r')"
+          printf 'POSTGRES_PASSWORD=%s\n' "${val}" >> fragment.env
+          printf '%s\n' "POSTGRES_PORT=5432" >> fragment.env
+          required=(
+            SERVER_HOST REDEPLOYMENT_ROOT HTMT_API_APP_NAME DB_APP_NAME_SUFFIX
+            SERVER_DEPLOY_USERNAME SERVER_DEPLOY_SSH_PRIVATE_KEY
+            DB_APP_DB_NAME DB_SUPERUSER_PASSWORD
+          )
+          missing=()
+          for v in "${required[@]}"; do
+            [ -z "${!v}" ] && missing+=("$v")
+          done
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "ERROR: Missing required vars or secrets: ${missing[*]}"
+            exit 1
+          fi
+          echo "DB fragment ready for ${{ matrix.sync_env }} (sync basename ${db_basename})."
+
+      - name: Upload DB fragment artifact
+        uses: actions/upload-artifact@v5.0.0
+        with:
+          name: sync-env-fragment-db-${{ matrix.sync_env }}
+          path: fragment.env
+
+  sync-api-staging:
+    name: Sync API env (staging)
+    needs: [build-api-fragment]
     uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-server.yml@main
     with:
       sync_env: staging
-      fragment_artifact: sync-env-fragment-staging/fragment.env
+      fragment_artifact: sync-env-fragment-api-staging/fragment.env
       app_name: ${{ vars.HTMT_API_APP_NAME }}
     secrets: inherit
 
-  sync-prod:
-    name: Sync env (prod)
-    needs: [build-fragment]
+  sync-api-prod:
+    name: Sync API env (prod)
+    needs: [build-api-fragment]
     uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-server.yml@main
     with:
       sync_env: prod
-      fragment_artifact: sync-env-fragment-prod/fragment.env
+      fragment_artifact: sync-env-fragment-api-prod/fragment.env
       app_name: ${{ vars.HTMT_API_APP_NAME }}
+    secrets: inherit
+
+  sync-db-staging:
+    name: Sync Postgres env (staging)
+    needs: [build-api-fragment, build-db-fragment]
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-server.yml@main
+    with:
+      sync_env: staging
+      fragment_artifact: sync-env-fragment-db-staging/fragment.env
+      app_name: ${{ format('{0}{1}', vars.HTMT_API_APP_NAME, vars.DB_APP_NAME_SUFFIX) }}
+    secrets: inherit
+
+  sync-db-prod:
+    name: Sync Postgres env (prod)
+    needs: [build-api-fragment, build-db-fragment]
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-server.yml@main
+    with:
+      sync_env: prod
+      fragment_artifact: sync-env-fragment-db-prod/fragment.env
+      app_name: ${{ format('{0}{1}', vars.HTMT_API_APP_NAME, vars.DB_APP_NAME_SUFFIX) }}
     secrets: inherit
