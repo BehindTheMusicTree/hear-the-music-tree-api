@@ -157,7 +157,7 @@ jobs:
       DB_URL: db
       AFP_URL: afp
 
-    steps:
+          python-version: "3.14"
       - name: Checkout code
         uses: actions/checkout@v5.0.1
 
