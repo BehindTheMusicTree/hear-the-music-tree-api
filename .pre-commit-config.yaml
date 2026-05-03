@@ -34,6 +34,12 @@ repos:
       - id: debug-statements
       - id: trailing-whitespace
 
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.12
+    hooks:
+      - id: actionlint-system
+        args: [-config-file, .github/actionlint.yaml]
+
   - repo: local
     hooks:
       - id: shellcheck
