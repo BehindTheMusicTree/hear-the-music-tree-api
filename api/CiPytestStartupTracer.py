@@ -51,8 +51,8 @@ class CiPytestStartupTracer:
             print("[Django] apps.populate() finished.", flush=True)
             print(
                 "[Django] django.setup() is finishing (still inside pytest_load_initial_conftests). "
-                "Next lines may be [pytest] ci_pytest_startup_plugin outer leave, then api/test/conftest.py, … "
-                "ROOT_URLCONF loads only on first URL resolution / test client.",
+                "Next: [pytest] ci_pytest_startup_plugin outer leave (if pytest.ini -p plugin loaded), then "
+                "api/test/conftest.py, … ROOT_URLCONF loads only on first URL resolution / test client.",
                 flush=True,
             )
 
