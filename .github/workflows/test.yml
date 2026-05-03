@@ -3,6 +3,13 @@ name: Test
 on:
   pull_request:
     branches: [main, develop]
+  workflow_call:
+    inputs:
+      test_path:
+        description: Optional path passed to pytest (file, directory, or expression).
+        required: false
+        type: string
+        default: ""
 
 env:
   CONTAINER_ROOT_DIR: /home/app/
@@ -18,12 +25,10 @@ env:
   LIBRARIES_DIR: /tmp/ci-media/libraries/
 
   DB_IS_NEEDED: true
-  DB_URL: localhost
   DB_DATA_DIR: /var/lib/postgresql/data
   DB_SUPERUSER_NAME: postgres
   DB_PORT: '5432'
 
-  AFP_URL: localhost
   AFP_PORT: '3002'
   AFP_POOL_DIR_EXTERNAL: /tmp/pool/
   AFP_POST_ENDPOINT: fingerprint-audio
@@ -97,9 +102,7 @@ jobs:
           API_DIR_NAME: ${{ vars.API_DIR_NAME }}
           APP_TITLE: ${{ vars.APP_TITLE }}
           APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
-          DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
-          DB_IMAGE_REPO: ${{ vars.DB_IMAGE_REPO }}
-          DB_VERSION: ${{ vars.DB_VERSION }}
+          GHCR_IMAGE_NAMESPACE: ${{ vars.GHCR_IMAGE_NAMESPACE }}
           DB_CONTAINER_NAME: ${{ format('{0}{1}', vars.HTMT_API_APP_NAME, vars.DB_APP_NAME_SUFFIX) }}
           AFP_CONTAINER_NAME: ${{ vars.AFP_APP_NAME }}
           AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
@@ -108,12 +111,17 @@ jobs:
           DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
           DB_APP_USERNAME: ${{ secrets.DB_APP_USERNAME }}
           DB_APP_USER_PASSWORD: ${{ secrets.DB_APP_USER_PASSWORD }}
-        run: bash scripts/check-workflow-env.sh API_DIR_NAME APP_TITLE APP_NAME DOCKERHUB_USERNAME DB_IMAGE_REPO DB_VERSION DB_CONTAINER_NAME AFP_CONTAINER_NAME AFP_IMAGE_REPO AFP_VERSION DB_SUPERUSER_PASSWORD DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD
+        run: bash scripts/check-workflow-env.sh API_DIR_NAME APP_TITLE APP_NAME GHCR_IMAGE_NAMESPACE DB_CONTAINER_NAME AFP_CONTAINER_NAME AFP_IMAGE_REPO AFP_VERSION DB_SUPERUSER_PASSWORD DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD
 
   pytest:
     name: Pytest
     needs: [check-vars-and-secrets]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      checks: write
+      pull-requests: write
     environment:
       name: ci_test
     env:
@@ -121,11 +129,8 @@ jobs:
       API_DIR_NAME: ${{ vars.API_DIR_NAME }}
       APP_TITLE: ${{ vars.APP_TITLE }}
       APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
-      DOCKERHUB_USERNAME: ${{ vars.DOCKERHUB_USERNAME }}
-      DB_IMAGE_REPO: ${{ vars.DB_IMAGE_REPO }}
-      DB_VERSION: ${{ vars.DB_VERSION }}
-      DB_CONTAINER_NAME: ${{ format('{0}{1}', vars.HTMT_API_APP_NAME, vars.DB_APP_NAME_SUFFIX) }}
-      AFP_CONTAINER_NAME: ${{ vars.AFP_APP_NAME }}
+      DB_CONTAINER_NAME: db
+      AFP_CONTAINER_NAME: afp
       AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
       AFP_VERSION: ${{ vars.AFP_VERSION }}
       DEBUG: true
@@ -147,87 +152,104 @@ jobs:
       DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
       DB_APP_USERNAME: ${{ secrets.DB_APP_USERNAME }}
       DB_APP_USER_PASSWORD: ${{ secrets.DB_APP_USER_PASSWORD }}
+      DB_URL: db
+      AFP_URL: afp
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v5.0.1
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.14
-
-      - name: Cache apt packages
-        uses: actions/cache@v4
-        with:
-          path: /var/cache/apt
-          key: ${{ runner.os }}-apt-${{ hashFiles('scripts/install-dependencies.sh') }}
-          restore-keys: |
-            ${{ runner.os }}-apt-
-
-      - name: Cache pip
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/pyproject.toml') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
-      - name: Install dependencies
-        run: sudo -E bash scripts/install-dependencies.sh
-
-      - name: Add fpcalc to PATH
-        run: echo "bin/fpcalc" >> "$GITHUB_PATH"
-
-      - name: Install requirements
-        run: PIP_NO_CACHE_DIR=off pip install -e ".[dev]"
-
-      - name: Set up filesystem
-        run: bash scripts/setup-filesystem.sh
-
-      - name: Run database and Audio Fingerprint containers
+      - name: GHCR image namespace for Compose (lowercase)
+        shell: bash
         env:
-          DB_DATA_MUST_PERSIST: false
-          RUN_AFP_AS_HOST_USER: true
-        run: bash scripts/run-db-and-afp-containers.sh
-
-      - name: Wait for database service to start
-        run: bash scripts/wait-for-postgres-db.sh ${{ env.DB_URL }} ${{ env.DB_PORT }} ${{ env.DB_CONNECTION_TEST_MAX_ATTEMPTS }} ${{ env.DB_CONNECTION_TEST_SLEEP_INTERVAL }}
-
-      - name: Wait for AFP service to start
-        id: wait_afp
-        run: bash scripts/wait-for-afp.sh ${{ env.AFP_URL }} ${{ env.AFP_PORT }} 12 5
-
-      - name: Show AFP container logs on failure
-        if: failure() && steps.wait_afp.outcome == 'failure'
+          GHCR_NS: ${{ vars.GHCR_IMAGE_NAMESPACE }}
         run: |
-          echo "=== AFP container status ==="
-          docker ps -a --filter "name=${{ env.AFP_CONTAINER_NAME }}" --format "table {{.ID}}\t{{.Status}}\t{{.Names}}"
-          echo ""
-          echo "=== AFP container logs ==="
-          docker logs "${{ env.AFP_CONTAINER_NAME }}" 2>&1 || true
-          echo ""
-          echo "=== Diagnostic: run setup in same image as non-root and list /app/log/flask/ ==="
-          docker run --rm --user "$(id -u):$(id -g)" \
-            -e ENV=ci_test -e DEBUG=true -e APP_PORT=${{ env.AFP_PORT }} -e POOL_DIR_EXTERNAL=/tmp/pool/ \
-            -e GUNICORN_LOG_DIR=/app/log/gunicorn/ -e FLASK_LOG_DIR_EXTERNAL=/app/log/flask/ \
-            -v /tmp/ci-uploaded:/tmp/pool \
-            ${{ env.DOCKERHUB_USERNAME }}/${{ env.AFP_IMAGE_REPO }}:${{ env.AFP_VERSION }} \
-            bash -c 'echo "FLASK_LOG_APP_FILENAME=${FLASK_LOG_APP_FILENAME:-not set}"; bash scripts/setup-filesystem.sh 2>&1; echo "---"; ls -la /app/log/flask/ 2>&1'
-
-      - name: Init django data
-        run: bash scripts/init-django-data.sh
-
-      - name: Run pytest
-        run: |
-          if [ -n "${{ inputs.test_path || '' }}" ]; then
-            pytest -v --tb=short -x --junitxml=test-results.xml "${{ inputs.test_path }}"
-          else
-            pytest -v --tb=short -x --junitxml=test-results.xml ${{ env.API_DIR_NAME }}/test/
+          set -euo pipefail
+          ns_lc="${GHCR_NS,,}"
+          if [ -z "$ns_lc" ]; then
+            echo "ERROR: GHCR_IMAGE_NAMESPACE GitHub Variable is empty."
+            exit 1
           fi
+          echo "GHCR_IMAGE_NAMESPACE=${ns_lc}" >> "${GITHUB_ENV}"
+
+      - name: Log in to ghcr.io for afp pull
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker logout ghcr.io 2>/dev/null || true
+          owner_lc="${GITHUB_REPOSITORY_OWNER,,}"
+          if [ -n "${GHCR_READ_PACKAGES_TOKEN:-}" ]; then
+            if [ -z "${GHCR_READ_PACKAGES_USERNAME:-}" ]; then
+              echo "ERROR: GHCR_READ_PACKAGES_TOKEN is set but GHCR_READ_PACKAGES_USERNAME is empty."
+              exit 1
+            fi
+            echo "${GHCR_READ_PACKAGES_TOKEN}" | docker login ghcr.io -u "${GHCR_READ_PACKAGES_USERNAME}" --password-stdin
+          else
+            echo "${GITHUB_TOKEN}" | docker login ghcr.io -u "${owner_lc}" --password-stdin
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHCR_READ_PACKAGES_TOKEN: ${{ secrets.GHCR_READ_PACKAGES_TOKEN }}
+          GHCR_READ_PACKAGES_USERNAME: ${{ secrets.GHCR_READ_PACKAGES_USERNAME }}
+
+      - name: Build api image and start db and afp
+        run: |
+          set -euo pipefail
+          compose=(docker compose -f docker-compose.yml)
+          "${compose[@]}" build api
+          "${compose[@]}" pull db
+          "${compose[@]}" pull afp
+          "${compose[@]}" up -d --wait db afp
+
+      - name: Run pytest in api container
+        id: pytest_in_container
+        env:
+          PYTEST_PATH_INPUT: ${{ inputs.test_path }}
+        run: |
+          set -euo pipefail
+          compose=(docker compose -f docker-compose.yml)
+          if [ -n "${PYTEST_PATH_INPUT:-}" ]; then
+            pytest_target=${PYTEST_PATH_INPUT}
+          else
+            pytest_target="${API_DIR_NAME}/test/"
+          fi
+          pytest_target_q=$(printf '%q' "$pytest_target")
+          inner_script=$(
+            printf '%s\n' \
+              'set -euo pipefail' \
+              'bash scripts/setup-filesystem.sh' \
+              "bash scripts/wait-for-postgres-db.sh db ${DB_PORT} ${DB_CONNECTION_TEST_MAX_ATTEMPTS} ${DB_CONNECTION_TEST_SLEEP_INTERVAL}" \
+              "bash scripts/wait-for-afp.sh afp ${AFP_PORT} 12 5" \
+              'bash scripts/init-django-data.sh' \
+              "pytest -v --tb=short -x --junitxml=test-results.xml ${pytest_target_q}"
+          )
+          # Mount workspace so --junitxml=test-results.xml is visible on the runner (base compose has no ./ bind mount).
+          # CI_STARTUP_TRACE: verbose Django/pytest startup diagnostics (see docs/workflows.md).
+          # PYTHONFAULTHANDLER: on hang, SIGQUIT dumps Python stacks (docker kill -s QUIT <pytest_pid>).
+          # PYTEST_PLUGINS: load startup plugin when bind-mount hides image-local *.egg-info entry points.
+          # The thin entrypoint (exec "$@") passes the command straight through; CMD is overridden here with the
+          # inner_script so the container runs pytest instead of the default start-server.sh.
+          "${compose[@]}" run --rm -T \
+            -e CI_STARTUP_TRACE=1 \
+            -e PYTHONFAULTHANDLER=1 \
+            -e PYTEST_PLUGINS=api.ci_pytest_startup_plugin \
+            -v "${GITHUB_WORKSPACE}:/home/app" api bash -lc "$inner_script"
+
+      - name: Show Compose service logs on failure
+        if: failure() && steps.pytest_in_container.outcome == 'failure'
+        run: |
+          docker compose -f docker-compose.yml logs --no-color --tail=200 db afp || true
 
       - name: Publish Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v2
-        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2.23.0
+        # Fork PRs: GITHUB_TOKEN is read-only; this action needs Checks API (and optional PR comments).
+        if: >-
+          always() &&
+          (github.event_name != 'pull_request' ||
+           github.event.pull_request.head.repo.full_name == github.repository)
         with:
           files: test-results.xml
+
+      - name: Tear down Compose
+        if: always()
+        run: docker compose -f docker-compose.yml down -v || true
