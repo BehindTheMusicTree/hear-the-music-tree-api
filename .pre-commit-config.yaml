@@ -34,11 +34,14 @@ repos:
       - id: debug-statements
       - id: trailing-whitespace
 
-  - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.12
+  - repo: local
     hooks:
-      - id: actionlint-system
-        args: [-config-file, .github/actionlint.yaml]
+      - id: actionlint
+        name: Lint GitHub Actions workflow files
+        entry: bash -c '.pre-commit-hooks/actionlint-wrapper.sh "$@"' --
+        language: system
+        files: ^\.github/workflows/.*\.yml$
+        pass_filenames: true
 
   - repo: local
     hooks:
