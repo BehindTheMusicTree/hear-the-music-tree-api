@@ -64,6 +64,66 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v2.2.4] - 2026-05-04
+
+### CI
+
+- **Pre-commit actionlint**: [`.pre-commit-config.yaml`](.pre-commit-config.yaml) adds a **local** hook that runs [`.pre-commit-hooks/actionlint-wrapper.sh`](.pre-commit-hooks/actionlint-wrapper.sh): if **`actionlint`** is missing on **`PATH`** (e.g. **`api`** image built before the install script), it runs [**`scripts/install-actionlint.sh`**](scripts/install-actionlint.sh) on **Linux** then **`actionlint -config-file .github/actionlint.yaml`** on **`.github/workflows/*.yml`**. [**`scripts/install-dependencies.sh`**](scripts/install-dependencies.sh) still installs pinned **1.7.12** when building the **`api`** image. [**`.github/workflows/test.yml`**](.github/workflows/test.yml) **pre-commit** job and [**`branch-protection.yml`**](.github/workflows/branch-protection.yml) **actionlint** job run **`bash scripts/install-actionlint.sh`**. [**`scripts/setup-docker-dev-tools.sh`**](scripts/setup-docker-dev-tools.sh) verifies **`actionlint -version`** in the container.
+
+- **Static files workflow**: [`.github/workflows/static-files.yml`](.github/workflows/static-files.yml) sets **`ENV=collect_static`** in the job environment (Django collect-static path in **`api/settings.py`**); it is no longer read from the GitHub Variable **`ENV`**.
+
+- **GHCR (align with infrastructure)**: [**`build-and-push.yml`**](.github/workflows/build-and-push.yml) pushes **`ghcr.io/<GHCR_IMAGE_NAMESPACE>/<HTMT_API_IMAGE_REPO>:<tag>`** with **`docker/login-action`** + **`GITHUB_TOKEN`** (`packages: write`); removes **`DOCKERHUB_USERNAME`** / **`DOCKERHUB_ACCESS_TOKEN`**. [**`test.yml`**](.github/workflows/test.yml) requires **`GHCR_IMAGE_NAMESPACE`**, passes step **`env.GHCR_NS`**, exports a **lowercase** value for Compose, then **`docker login ghcr.io`** with **`GITHUB_REPOSITORY_OWNER`** + **`GITHUB_TOKEN`** (**`packages: read`**) because **`afp`** on GHCR requires auth (**`unauthorized`** without login); optional **`GHCR_READ_PACKAGES_*`** PAT secrets if package **Actions access** is not configured. [**`scripts/utils.sh`**](scripts/utils.sh) **`docker_image_ref_from_repo_tag`**: repo with **`/`** → Docker Hub-style ref; short name → **`ghcr.io/<GHCR_IMAGE_NAMESPACE>/...`**.
+
+- **Pytest job (Compose-only)**: [**`test.yml`**](.github/workflows/test.yml) builds **`api`**, starts **`db`** (**`postgres:16.4`**, [`docker-compose.yml`](docker-compose.yml)) and **`afp`**, then runs **`docker compose run --rm`** with **`${GITHUB_WORKSPACE}:/home/app`** so **`--junitxml=test-results.xml`** is written on the runner (base Compose does not bind-mount the repo into **`api`**). Optional **`workflow_call`** input **`test_path`**. Removes host **`pip`** / **`install-dependencies`** / duplicate container bootstrapping for that job.
+
+- **Pytest job (credentials)**: **`check-vars-and-secrets`** only validates **Variables** via **`scripts/check-workflow-env.sh`** (no **`DB_APP_DB_NAME`**, **`DB_APP_USERNAME`**, **`DB_APP_USER_PASSWORD`**, **`DB_SUPERUSER_PASSWORD`** from **`ci_test`**). The **pytest** job exports fixed disposable DB/Django values aligned with [`docker-compose.yml`](docker-compose.yml) defaults (**`htmt_api`**, **`htmt_api_user`** / **`htmt_api_password`**, **`postgres`** superuser, **`DJANGO_SECRET_KEY=dev-only-secret-key`**); **`TMTA_USERNAME`** stays the workflow default **`tmta`**.
+
+- **Pytest job (hang diagnosis)**: Before the main suite, the container runs **`pytest --show-ini`** and **`pytest --trace-config`** (truncated), prints **`pwd`** and **`pytest.ini`** / **`pyproject.toml`** presence, and passes **`CI_STARTUP_TRACE=1`**, **`PYTHONFAULTHANDLER=1`**, and **`PYTEST_PLUGINS=api.ci_pytest_startup_plugin`** into **`docker compose run`** so startup diagnostics and hook-bracket logging work with a bind-mounted workspace. [**.dockerignore**](.dockerignore) no longer excludes **`pytest.ini`** from the image build context.
+
+- **Publish unit test results**: Pytest job adds **`checks: write`** and **`pull-requests: write`** for [**`EnricoMi/publish-unit-test-result-action`**](https://github.com/EnricoMi/publish-unit-test-result-action) (**`@v2.23.0`**) so the Checks API is usable; skips that step on **fork** **`pull_request`** workflows (read-only **`GITHUB_TOKEN`**).
+
+- **Publish**: **`call-redeployment-webhook`** pinned to **`@v1.0.4`**; pass required **`hook_id_base`** from **`vars.REDEPLOYMENT_HOOK_ID_BASE`** ([**BehindTheMusicTree/github-workflows** `v1.0.4`](https://github.com/BehindTheMusicTree/github-workflows/releases/tag/v1.0.4)). GitHub secrets **`BTMT_REDEPLOYMENT_WEBHOOK_SECRET_PROD`** / **`BTMT_REDEPLOYMENT_WEBHOOK_SECRET_STAGING`** (rename from **`REDEPLOYMENT_WEBHOOK_SECRET_*`**; same values).
+
+- **Postgres and publish pins**: Compose and CI use **`postgres:16.4`** only (removed **`docker-compose.ci.yml`**, **`COMPOSE_DB_IMAGE`**, and **`DB_VERSION`**). [**`publish.yml`**](.github/workflows/publish.yml) **`check-pinned-tags`** enforces **`AFP_VERSION`** only; **`set-version-db`** writes tag **`16.4`**.
+
+- **Sync env to server** ([`.github/workflows/sync-env-to-server.yml`](.github/workflows/sync-env-to-server.yml)): Builds **two** fragments per environment — **API** (`sync-env-<HTMT_API_APP_NAME>-<env>.env`) and **Postgres** (`sync-env-<HTMT_API_APP_NAME><DB_APP_NAME_SUFFIX>-<env>.env`; **`DB_APP_NAME_SUFFIX`** is **required**, no default) — then four reusable **`sync-env-to-server`** calls. **`build-api-fragment`** also requires **`DB_APP_NAME_SUFFIX`** so CI fails fast. Postgres keys (**`POSTGRES_*`**) moved out of the API fragment. **`test.yml`** **`check-vars-and-secrets`** includes **`DB_APP_NAME_SUFFIX`** in **`scripts/check-workflow-env.sh`**. **Deploy order:** merge and run **BehindTheMusicTree/infrastructure** Server setup (or redeploy) so **`generate-docker-compose.sh`** loads both canonical files before relying on API-only Postgres lines.
+
+### Fixed
+
+- **actionlint `config-variables`**: [`.github/actionlint.yaml`](.github/actionlint.yaml) again lists **`GHCR_IMAGE_NAMESPACE`** and **`REDEPLOYMENT_HOOK_ID_BASE`** (used in **`build-and-push.yml`** / **`publish.yml`**), fixing **`undefined configuration variable`** in CI; removed duplicate **`AFP_VERSION`** entry.
+
+- **Local Compose `api` exits 0 immediately**: Older **`htmt-api-dev-api`** images could still embed the legacy Dockerfile **`ENTRYPOINT`** (**`bash -c "${PROJECT_DIR}scripts/entrypoint.sh"`**), which does not forward the override **`command`** the way the current exec-form entrypoint does—**`api`** then exited **0** almost instantly (**`--wait`** failed). Rebuild with **`docker compose build api`** (or **`--build`**). [README](README.md) quick start notes the check and **`docker compose logs api`**.
+
+### Improved
+
+- **Git pre-commit hook**: [`.githooks/pre-commit`](.githooks/pre-commit) waits up to **30s** for the Compose **`api`** service to be **running** (handles **`docker compose up -d api`** vs **`git commit`** race); fails fast if **no** **`api`** container exists after a few seconds; prints **recent `docker compose logs api`** when a container exists but is not running.
+
+- **Django / pytest startup visibility**: Verbose **`[Django]`** / **`[pytest]`** lines are gated by **`CI_STARTUP_TRACE`** (**`1`** / **`true`** / **`yes`**) via [`api/CiStartupTraceEnabled.py`](api/CiStartupTraceEnabled.py); CI sets it in **`test.yml`**. When enabled: [`api/settings.py`](api/settings.py) installs [`api/CiPytestStartupTracer.py`](api/CiPytestStartupTracer.py) (**`apps.populate()`**, **`AppConfig.ready()`**, **`get_resolver()`**); [`api/ci_pytest_startup_plugin.py`](api/ci_pytest_startup_plugin.py) brackets **`pytest_load_initial_conftests`**; [`api/models.py`](api/models.py), [`api/urls.py`](api/urls.py), [`api/apps.py`](api/apps.py), and conftest under **`api/test/`** emit progress markers. [`pytest.ini`](pytest.ini) **`addopts = -p api.ci_pytest_startup_plugin`**; **[`pyproject.toml`](pyproject.toml)** **`[tool.pytest.ini_options]`** mirrors key options when **`pytest.ini`** is absent.
+
+### Changed
+
+- **Compose `api` healthcheck**: [`docker-compose.yml`](docker-compose.yml) defines an **`api`** **`healthcheck`** that probes **`http://127.0.0.1:<APP_PORT>/health/`** via **`python3`** (no extra image packages). Use **`docker compose up -d --wait api`** (Compose **v2.17+**) to block until **`healthy`**; **`up -d`** without **`--wait`** still returns once the container is started.
+
+- **Gunicorn logging (containers)**: [`scripts/start-server.sh`](scripts/start-server.sh) supports **`GUNICORN_STDOUT_LOGS`** (`true` / `1` / `yes`): Gunicorn **`--access-logfile=-`** and **`--error-logfile=-`** so HTTP and worker errors appear in **`docker compose logs`** (12-factor / platform log aggregation). When unset or false, behavior is unchanged (paths from **`GUNICORN_LOG_DIR`** + filenames). [`docker-compose.yml`](docker-compose.yml) sets **`GUNICORN_STDOUT_LOGS`** default **`true`** for the **`api`** service; set **`GUNICORN_STDOUT_LOGS=false`** (and file log env vars) for file-based Gunicorn logs on disk.
+
+- **Audio Fingerprinter**: Default and dev example **`AFP_VERSION`** **`v1.4.4`** ([**Release 1.4.4**](https://github.com/BehindTheMusicTree/audio-fingerprinter/releases/tag/v1.4.4)) in [`docker-compose.yml`](docker-compose.yml) and [`env/dev/.env.compose.dev.example`](env/dev/.env.compose.dev.example) / [`env/dev/.env.dev.example`](env/dev/.env.dev.example). Set GitHub repository variable **`AFP_VERSION`** to **`v1.4.4`** (or **`1.4.4`** per existing publish convention) so CI and publish match.
+
+- **Local Compose GHCR namespace**: Default and dev examples use **`GHCR_IMAGE_NAMESPACE=behindthemusictree`** (lowercase org) in [`docker-compose.yml`](docker-compose.yml) and [`env/dev/.env.*.example`](env/dev/) so **`afp`** pulls match [**`BehindTheMusicTree/infrastructure`**](https://github.com/BehindTheMusicTree/infrastructure) rather than a personal user path that returns **`denied`** when the image is not published there.
+
+### Documentation
+
+- **README** / [**`docs/workflows.md`**](docs/workflows.md): Docker Compose quick start documents **`ghcr.io`** **`afp`** pulls (**`GHCR_IMAGE_NAMESPACE`**), **`docker login`** (PAT as password—not account password—plus **`docker logout ghcr.io`**), **`~/.docker/config.json`** vs project **`.env`**, optional **`gh auth token`**, and **SSO** for **`unauthorized`** / **`denied`**. **Test** / README clarify that **GHCR package** settings (**Actions access**, visibility) live under the org **Packages** listing, not the **`audio-fingerprinter`** repository **Settings → General** page.
+
+- **CONTRIBUTING** / [**`docs/workflows.md`**](docs/workflows.md): Environment setup and workflow docs describe **Compose-only** tests and CI (no host **`pytest`** + standalone DB/AFP containers). **Test** / Pytest section notes **`ghcr.io`** login for **`afp`** (lowercase **`GHCR_IMAGE_NAMESPACE`**, **`GITHUB_TOKEN`** or optional PAT secrets, package **Actions access** under org **Packages**, not repo **Settings**). **Static Files** section clarifies that production Django **`ENV`** (e.g. **`prod`**) is owned by **infrastructure** server env, not GitHub Variables on this repo. **`docs/workflows.md`** adds **Debugging pytest hangs after django.setup()** (**full log**, **`outer enter`/`outer leave`**, **`CI_STARTUP_TRACE`**, **`PYTEST_PLUGINS`**, **`PYTHONFAULTHANDLER`**, SIGQUIT); **CONTRIBUTING** links **`CI_STARTUP_TRACE`** for local runs.
+
+- **`docs/workflows.md`**: **Test** / **Overview** — pytest uses fixed **`docker-compose.yml`** defaults for disposable DB and **`DJANGO_SECRET_KEY`** (no **`ci_test`** secrets for **`DB_APP_*`**, **`DB_SUPERUSER_PASSWORD`**, **`DJANGO_SECRET_KEY`**; **`TMTA_USERNAME`** stays workflow **`tmta`**).
+
+### Removed
+
+- **Scripts**: Removed **`scripts/run-db-and-afp-containers.sh`**; DB and AFP for tests are started only via **Docker Compose** (local **`docker compose exec api pytest`**, CI **`test.yml`**).
+
+- **Scripts**: Removed legacy **`scripts/generate-docker-compose-parts.sh`**; server deploy compose is owned by [**BehindTheMusicTree/infrastructure**](https://github.com/BehindTheMusicTree/infrastructure) (**`generate-docker-compose.sh`** + **`docker-compose.yml.template`**), not partial compose snippets generated from this repository.
+
 ## [v2.2.4] - 2026-04-30
 
 ### CI

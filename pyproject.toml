@@ -75,6 +75,14 @@ dev = [
     "ruff==0.15.9",
 ]
 
+# Fallback when pytest.ini is absent (e.g. partial checkout); primary config remains pytest.ini at repo root.
+[tool.pytest.ini_options]
+addopts = "-p api.ci_pytest_startup_plugin"
+DJANGO_SETTINGS_MODULE = "api.settings"
+log_cli = false
+log_cli_level = "INFO"
+filterwarnings = ["ignore:unclosed file:ResourceWarning"]
+
 [tool.setuptools.packages.find]
 include = ["api*"]
 
