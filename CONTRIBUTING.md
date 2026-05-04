@@ -785,7 +785,7 @@ The project uses focused, reusable GitHub Actions workflows for CI/CD. For a ful
 
 **Publish Workflow** (`.github/workflows/publish.yml`):
 
-- Runs on **push to `main`** (staging, TEST env) or **push of version tags** (e.g. `v0.2.1`; prerelease tags → staging/TEST, release tags → production/PROD)
+- Runs on **push of version tags** (e.g. `v0.2.1`; prerelease tags → staging/TEST, release tags → production/PROD), **`workflow_dispatch`**, or **`workflow_call`**. To deploy staging from `main` without a tag, run **Publish** manually from the `main` branch in Actions.
 - Orchestrates the release process: collects/commits static files, builds and pushes Docker image, deploys to staging or production
 
 **Other Workflows**:
