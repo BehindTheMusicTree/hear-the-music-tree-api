@@ -22,6 +22,7 @@ docker compose up -d api
 echo "Verifying toolchain in api container..."
 docker compose exec -T api pre-commit --version >/dev/null
 docker compose exec -T api shellcheck --version >/dev/null
+docker compose exec -T api actionlint -version >/dev/null
 docker compose exec -T api ruff --version >/dev/null
 
 echo "✓ Docker dev tools setup complete"

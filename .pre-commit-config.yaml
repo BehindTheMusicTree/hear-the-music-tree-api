@@ -36,6 +36,15 @@ repos:
 
   - repo: local
     hooks:
+      - id: actionlint
+        name: Lint GitHub Actions workflow files
+        entry: bash -c '.pre-commit-hooks/actionlint-wrapper.sh "$@"' --
+        language: system
+        files: ^\.github/workflows/.*\.yml$
+        pass_filenames: true
+
+  - repo: local
+    hooks:
       - id: shellcheck
         name: ShellCheck
         entry: bash -c '.pre-commit-hooks/shellcheck-wrapper.sh "$@"' --
