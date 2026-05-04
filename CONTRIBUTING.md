@@ -128,8 +128,7 @@ cd the-music-tree-api
 
 #### Prerequisites
 
-- **Python 3.14**
-- **Docker** and **Docker Compose** - Required for running the PostgreSQL database and Audio Fingerprinter containers
+- **Docker** and **Docker Compose** — required for the development stack (**`api`**, PostgreSQL, Audio Fingerprinter). **pytest**, **`bump-my-version`**, and other dev dependencies run inside the **`api`** image (`INSTALL_DEV=true` in Compose). A **local Python virtualenv** or **`pip install -e ".[dev]"` on the host** is legacy and not a supported workflow for this repository.
 
 #### Installation
 
@@ -410,6 +409,8 @@ We use pytest for all automated testing with Django.
 
 #### Quick Reference
 
+With **`docker compose up`** running, from the repository root, run **`pytest`** inside the **`api`** service (dev image). Either use **`docker compose exec api bash`** and then the commands below, or prefix each line with **`docker compose exec api`**.
+
 ```bash
 # Run all tests
 pytest
@@ -443,7 +444,7 @@ pytest -o log_cli_level=DEBUG
 - **Live logging:** `pytest.ini` sets `log_cli = false` by default. Use `-o log_cli=true` / `-o log_cli_level=DEBUG` only when chasing a failure; at **DEBUG** the suite can look frozen.
 - **Startup diagnostics:** Set **`CI_STARTUP_TRACE=1`** to enable `[Django]` / `[pytest]` startup lines (Django `populate`/`ready()`, pytest hook bracketing, conftest progress). GitHub Actions sets this for the pytest job. See [docs/workflows.md](docs/workflows.md) § _Debugging pytest hangs after django.setup()_.
 - **Database:** Integration and most Django tests need **PostgreSQL** (and env) as in [Environment Setup](#1-environment-setup). A missing or unreachable DB often blocks on connect instead of failing immediately—start the Compose stack (**`docker compose up`**) first, then run **`docker compose exec api pytest`**.
-- **Container context:** If `pytest` is not found on your host, run tests from the API container (`docker compose exec api pytest ...`) or install dev dependencies with `python -m pip install -e ".[dev]"` in your active Python environment so `pytest` is on your `PATH`.
+- **Container context:** Run tests only via the **`api`** container — for example **`docker compose exec api pytest`** (see the quick reference above). Host **`pytest`** without the Compose dev stack is not supported.
 
 **Test Structure:**
 
@@ -598,7 +599,7 @@ Before submitting a Pull Request, ensure the following checks are completed:
 
 **2. Tests**
 
-- ✅ All tests pass: `docker compose exec api pytest` (or `pytest` after `python -m pip install -e ".[dev]"` locally)
+- ✅ All tests pass: `docker compose exec api pytest` (with the Compose stack running)
 - ✅ New features have corresponding tests
 - ✅ Bug fixes include regression tests
 - ✅ Tests follow the naming convention: `test_{scenario}_then_{expected_result}`
@@ -824,11 +825,13 @@ Quick release process:
 
 3. **On the release branch, prepare the release:**
 
-   - **Automated (recommended):** from the repo root, with `bump-my-version` on `PATH` (same pin as dev deps in [`pyproject.toml`](pyproject.toml), currently `bump-my-version==1.3.0` — e.g. `pipx install bump-my-version==1.3.0`, a pyenv (or other) Python where `pip install -e ".[dev]"` is allowed, or run bump steps inside the Compose `api` dev image where dev extras are installed). No project `.venv` is required.
+   - **Automated (recommended):** from the repository root with the Compose stack running, run the script **inside** the **`api`** dev image (that image installs **`bump-my-version`** at the same pin as [`pyproject.toml`](pyproject.toml) dev dependencies, currently **`bump-my-version==1.3.0`**):
 
      ```bash
-     python3 scripts/prepare_release_bump.py patch   # or: minor | major
+     docker compose exec api python3 scripts/prepare_release_bump.py patch   # or: minor | major
      ```
+
+     Local Compose merges [`docker-compose.override.yml`](docker-compose.override.yml), which bind-mounts this repository at **`/home/app`**, so file changes from the script apply to your working tree on disk.
 
      This sets the live `## [Unreleased]  <!-- release -->` marker (only the heading **after** the maintainer Note—not the fenced example), runs [bump-my-version](https://github.com/callowayproject/bump-my-version), runs `python scripts/fix_changelog_after_bump.py`, and adds an empty `## [Unreleased]` above the new version section. By default it passes `--allow-dirty` so you can commit once at the end; use `--no-allow-dirty` if you need a clean tree.
 
@@ -840,7 +843,7 @@ Quick release process:
      - Review and consolidate entries if needed
 
    - Make any final bug fixes or adjustments on the release branch
-   - Ensure all tests pass: `pytest`
+   - Ensure all tests pass: `docker compose exec api pytest`
 
 4. **Merge release branch into `main`** (via PR from `release/*` to `main`, or locally if your process allows):
 
