@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: hear-the-music-tree-api
-Version: 2.2.4
+Version: 2.2.6
 Summary: Django REST API for Hear The Music Tree
 Requires-Python: >=3.14
 License-File: LICENSE
