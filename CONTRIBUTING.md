@@ -169,6 +169,8 @@ cd the-music-tree-api
 
    This is the default local workflow for this repository. It runs API + DB + AFP with the same runtime env contract used by deployment.
 
+   **Tests:** With this stack, Postgres and AFP are already Compose services. Run the suite with **`docker compose exec api pytest`** (see [Testing](#testing)); GitHub Actions runs the same stack via **`docker compose`** (see [`.github/workflows/test.yml`](.github/workflows/test.yml)). Step 5 is optional on the host when you need the same directories for scripts outside the container; the **`api`** image startup also prepares paths inside the container.
+
 5. Set up filesystem:
 
    ```bash
@@ -182,19 +184,6 @@ cd the-music-tree-api
    - Gunicorn logs (if app is exposed)
    - Media files and libraries
    - Temporary uploaded files
-
-6. Run database and Audio Fingerprinter containers:
-
-   ```bash
-   bash scripts/run-db-and-afp-containers.sh
-   ```
-
-   This starts the required Docker containers:
-
-   - PostgreSQL database container
-   - Audio Fingerprinter (AFP) container
-
-   **Note:** Make sure Docker is running before running this script.
 
 #### Environment Variables
 
@@ -256,7 +245,7 @@ Running the container requires the following environment variables:
 
 #### Database Requirement
 
-The HearTheMusicTree API requires a PostgreSQL database to function. The database runs in a Docker container, which is started by the `run-db-and-afp-containers.sh` script. This ensures a consistent development environment across all contributors.
+The HearTheMusicTree API requires a PostgreSQL database to function. With **Docker Compose** (step 4), the database is the Compose **`db`** service; CI uses the same Compose model (see [`.github/workflows/test.yml`](.github/workflows/test.yml)).
 
 #### Database migrations
 
@@ -273,7 +262,7 @@ One-off DB or data fix scripts (e.g. table renames, one-time backfills) live in 
 
 For audio fingerprinting, the HearTheMusicTree API requires an app called Audio Fingerprinter. You can find the Audio Fingerprinter app on GitHub at the following link: [Audio Fingerprinter](https://github.com/BehindTheMusicTree/audio-fingerprinter)
 
-The AFP image creates the Flask app log from `FLASK_LOG_APP_FILENAME` (e.g. `app.log`), which must match what `settings.py` expects (`LOG_APP_FILE`). Path variables (`GUNICORN_LOG_DIR`, `FLASK_LOG_DIR_EXTERNAL`, `POOL_DIR_EXTERNAL`) are runtime-only and required when running the container; the AFP entrypoint fails fast if any is missing. For CI and local runs with `--user`, the AFP image must support non-root (writable `/app/log`). See the AFP README.
+The AFP image creates the Flask app log from `FLASK_LOG_APP_FILENAME` (e.g. `app.log`), which must match what `settings.py` expects (`LOG_APP_FILE`). Path variables (`GUNICORN_LOG_DIR`, `FLASK_LOG_DIR_EXTERNAL`, `POOL_DIR_EXTERNAL`) are runtime-only and required when running the container; the AFP entrypoint fails fast if any is missing. When running AFP as a non-root user (e.g. some local `docker run --user` setups), the image must support non-root (writable `/app/log`). See the AFP README.
 
 ### 2. Branching
 
@@ -451,8 +440,9 @@ pytest -o log_cli_level=DEBUG
 
 **If pytest seems stuck or extremely slow:**
 
-- **Live logging:** `pytest.ini` sets `log_cli = true`. At **DEBUG** every log line is printed and the suite can look frozen. The default level is **INFO**; use `-o log_cli=false` for minimal console noise or `-o log_cli_level=DEBUG` only when chasing a failure.
-- **Database:** Integration and most Django tests need **PostgreSQL** (and env) as in [Environment Setup](#1-environment-setup). A missing or unreachable DB often blocks on connect instead of failing immediately—start `run-db-and-afp-containers.sh` (or your CI-like stack) first.
+- **Live logging:** `pytest.ini` sets `log_cli = false` by default. Use `-o log_cli=true` / `-o log_cli_level=DEBUG` only when chasing a failure; at **DEBUG** the suite can look frozen.
+- **Startup diagnostics:** Set **`CI_STARTUP_TRACE=1`** to enable `[Django]` / `[pytest]` startup lines (Django `populate`/`ready()`, pytest hook bracketing, conftest progress). GitHub Actions sets this for the pytest job. See [docs/workflows.md](docs/workflows.md) § _Debugging pytest hangs after django.setup()_.
+- **Database:** Integration and most Django tests need **PostgreSQL** (and env) as in [Environment Setup](#1-environment-setup). A missing or unreachable DB often blocks on connect instead of failing immediately—start the Compose stack (**`docker compose up`**) first, then run **`docker compose exec api pytest`**.
 - **Container context:** If `pytest` is not found on your host, run tests from the API container (`docker compose exec api pytest ...`) or install dev dependencies with `python -m pip install -e ".[dev]"` in your active Python environment so `pytest` is on your `PATH`.
 
 **Test Structure:**
@@ -562,7 +552,9 @@ We follow a structured commit format inspired by [Conventional Commits](https://
 - Format: `<type>(<scope>): <summary>`
 - Run checks in container: `docker compose exec api pytest`
 
-**Pre-commit hook behavior:** This repository installs a tracked host git hook at [`.githooks/pre-commit`](.githooks/pre-commit) via [`scripts/setup-host-dev-tools.sh`](scripts/setup-host-dev-tools.sh). Docker-side tooling is set up via [`scripts/setup-docker-dev-tools.sh`](scripts/setup-docker-dev-tools.sh). The hook shells into Docker and runs `pre-commit` inside the `api` container against staged files. **Commits fail if `api` is not running**—start the stack before committing: `docker compose up -d api`.
+**Pre-commit hook behavior:** This repository installs a tracked host git hook at [`.githooks/pre-commit`](.githooks/pre-commit) via [`scripts/setup-host-dev-tools.sh`](scripts/setup-host-dev-tools.sh). Docker-side tooling is set up via [`scripts/setup-docker-dev-tools.sh`](scripts/setup-docker-dev-tools.sh). The hook shells into Docker and runs `pre-commit` inside the `api` container against staged files. **Commits fail if `api` is not running**—start the stack before committing: `docker compose up -d --wait api` (blocks until **`api`** is **healthy**; plain **`docker compose up -d api`** returns as soon as the container is created/started). See [`docker-compose.yml`](docker-compose.yml) **`api`** **`healthcheck`** (**`GET /health/`**).
+
+**actionlint:** [`.pre-commit-config.yaml`](.pre-commit-config.yaml) runs [`.pre-commit-hooks/actionlint-wrapper.sh`](.pre-commit-hooks/actionlint-wrapper.sh), which installs [**`scripts/install-actionlint.sh`**](scripts/install-actionlint.sh) on **Linux** if **`actionlint`** is missing (so commits work without rebuilding **`api`** immediately after the hook was added). Same **`-config-file .github/actionlint.yaml`** as the **`actionlint`** job in [**`branch-protection.yml`**](.github/workflows/branch-protection.yml) and the **Test** **pre-commit** step. The **`api`** image still installs the pinned binary via **`install-dependencies.sh`**. On **macOS** hosts without **`actionlint`**, install it (**Homebrew**, etc.) or run hooks in Docker.
 
 **Commit Types:**
 
@@ -901,7 +893,7 @@ Quick release process:
    When you push the version tag (step 5), the `publish.yml` workflow will automatically:
 
    - Collect and commit static files
-   - Build and push Docker image to Docker Hub
+   - Build and push Docker image to GHCR (`ghcr.io`)
    - Deploy to the test server
 
    See the [GitHub Actions Workflows](#github-actions-workflows) section above for details on the workflow structure.

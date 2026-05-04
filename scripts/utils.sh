@@ -115,6 +115,24 @@ load_app_env_file_if_exists() {
     done < "$ENV_FILE"
 }
 
+# If repo contains '/', treat as registry path on Docker Hub (e.g. library/postgres). Otherwise ghcr.io/GHCR_IMAGE_NAMESPACE/repo:tag.
+docker_image_ref_from_repo_tag() {
+    local repo="$1"
+    local tag="$2"
+    case "$repo" in
+    */*)
+        printf '%s:%s\n' "$repo" "$tag"
+        ;;
+    *)
+        if [ -z "$GHCR_IMAGE_NAMESPACE" ]; then
+            log_with_utils_prefixe "ERROR: GHCR_IMAGE_NAMESPACE must be set when image repo has no slash (repo=$repo)." >&2
+            exit 1
+        fi
+        printf 'ghcr.io/%s/%s:%s\n' "$GHCR_IMAGE_NAMESPACE" "$repo" "$tag"
+        ;;
+    esac
+}
+
 determine_db_host_if_not_set () {
     if [ -z "$DB_HOST" ]; then
         log_with_utils_prefixe "DB_HOST is not set. Determining the host..."
