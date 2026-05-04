@@ -8,14 +8,14 @@
 4. Inserts an empty ``## [Unreleased]`` above the new ``## [vX.Y.Z] - …`` heading.
 
 Requires the ``bump-my-version`` CLI on ``PATH`` (same pin as dev deps in ``pyproject.toml``,
-currently ``bump-my-version==1.3.0``). No project ``venv`` is required: use **pipx**,
-a **pyenv** (or other) Python where ``pip install`` is allowed, the Compose ``api`` dev
-image (``INSTALL_DEV=true``), or any environment with dev extras installed.
+currently ``bump-my-version==1.3.0``). Supported workflow: run inside the Compose ``api`` dev
+image (``INSTALL_DEV=true``; local override bind-mounts the repo to ``/home/app``). To run the
+script on the host instead, install that CLI pin (e.g. **pipx**).
 
-From repo root::
+From repository root with the stack running::
 
-    python3 scripts/prepare_release_bump.py patch
-    python3 scripts/prepare_release_bump.py minor --no-allow-dirty
+    docker compose exec api python3 scripts/prepare_release_bump.py patch
+    docker compose exec api python3 scripts/prepare_release_bump.py minor --no-allow-dirty
 
 ``--no-allow-dirty``: do not pass ``--allow-dirty`` to bump-my-version (default is to
 allow a dirty tree so step 1 can change CHANGELOG.md without a prior commit).
@@ -111,12 +111,14 @@ def ensure_empty_unreleased_section(text: str) -> tuple[str, bool]:
 def _run_bump_my_version(kind: str, allow_dirty: bool) -> None:
     if not shutil.which("bump-my-version"):
         _fail(
-            "bump-my-version not found on PATH. Install the dev-extra pin (bump-my-version==1.3.0), e.g.\n"
-            "  pipx install bump-my-version==1.3.0\n"
-            'Or use a pyenv/other Python where `pip install -e ".[dev]"` is allowed.\n'
-            "With Docker Compose dev (`INSTALL_DEV=true`), from repo root:\n"
-            "  docker compose exec -w /home/app api bump-my-version bump patch --allow-dirty\n"
-            "(adjust patch|minor|major as needed)."
+            "bump-my-version not found on PATH.\n"
+            "This means the api image was not built with dev extras (INSTALL_DEV=true).\n"
+            "Rebuild and start the api service, then re-run:\n"
+            "  bash scripts/setup-docker-dev-tools.sh\n"
+            "  docker compose exec api python3 scripts/prepare_release_bump.py patch\n"
+            "(use minor|major instead of patch as needed).\n"
+            "If you intentionally run this script on the host, install the CLI at the "
+            "pyproject.toml dev pin (e.g. pipx install bump-my-version==1.3.0)."
         )
     cmd = ["bump-my-version", "bump", kind]
     if allow_dirty:

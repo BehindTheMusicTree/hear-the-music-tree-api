@@ -64,6 +64,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Documentation
+
+- **Contributing**: Document full **Docker Compose `api`** dev workflow; local host **venv** / **`pip install -e ".[dev]"`** for running tests or release bumps is described as unsupported. Notes **`docker-compose.override.yml`** bind-mount for release bump edits on disk. Aligned [`.cursor/rules/pre-pr-checklist.mdc`](.cursor/rules/pre-pr-checklist.mdc), [`scripts/prepare_release_bump.py`](scripts/prepare_release_bump.py) bump CLI hint and module docstring, [`.pre-commit-hooks/`](.pre-commit-hooks/) messages, [`pyproject.toml`](pyproject.toml) header comment, and [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md).
+
 ### CI
 
 - **Pre-commit actionlint**: [`.pre-commit-config.yaml`](.pre-commit-config.yaml) adds a **local** hook that runs [`.pre-commit-hooks/actionlint-wrapper.sh`](.pre-commit-hooks/actionlint-wrapper.sh): if **`actionlint`** is missing on **`PATH`** (e.g. **`api`** image built before the install script), it runs [**`scripts/install-actionlint.sh`**](scripts/install-actionlint.sh) on **Linux** then **`actionlint -config-file .github/actionlint.yaml`** on **`.github/workflows/*.yml`**. [**`scripts/install-dependencies.sh`**](scripts/install-dependencies.sh) still installs pinned **1.7.12** when building the **`api`** image. [**`.github/workflows/test.yml`**](.github/workflows/test.yml) **pre-commit** job and [**`branch-protection.yml`**](.github/workflows/branch-protection.yml) **actionlint** job run **`bash scripts/install-actionlint.sh`**. [**`scripts/setup-docker-dev-tools.sh`**](scripts/setup-docker-dev-tools.sh) verifies **`actionlint -version`** in the container.
