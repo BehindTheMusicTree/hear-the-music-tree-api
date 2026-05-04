@@ -58,8 +58,9 @@ main() {
         echo ""
         echo -e "${RED}ERROR: Tool version mismatch detected!${NC}"
         echo ""
-        echo "Install pinned dev tools into your active Python environment:"
-        echo "  python -m pip install -e \".[dev]\""
+        echo "Pinned dev tools are expected from the Compose api dev image. Rebuild if needed:"
+        echo "  docker compose build api"
+        echo "Or run hooks/tests via: docker compose exec api …"
         exit 1
     fi
 

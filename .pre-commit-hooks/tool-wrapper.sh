@@ -8,8 +8,9 @@ TOOL_NAME="$1"
 shift
 
 if ! command -v "$TOOL_NAME" >/dev/null 2>&1; then
-    echo "ERROR: \"$TOOL_NAME\" not found on PATH. Install dev dependencies (same pins as CI):" >&2
-    echo "  python -m pip install -e \".[dev]\"" >&2
+    echo "ERROR: \"$TOOL_NAME\" not found on PATH. Default workflow: Compose api dev image (same pins as CI)." >&2
+    echo "  docker compose build api" >&2
+    echo "  docker compose exec api <command>" >&2
     exit 1
 fi
 
