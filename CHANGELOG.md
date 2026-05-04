@@ -64,6 +64,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v2.2.6] - 2026-05-04
+
 ### CI
 
 - **Publish** ([`.github/workflows/publish.yml`](.github/workflows/publish.yml)): Removed **`push`** to **`main`** as a trigger (runs on **`v*`** tags, **`workflow_dispatch`**, **`workflow_call`** only); staging from **`main`** without a tag uses manual **Actions → Publish** on **`main`**. **`BTMT_REDEPLOYMENT_HOOK_ID_BASE`** is validated in **`check-pinned-tags`** with other deploy variables and passed to **`redeploy-webhook-call`** as output **`redeployment_hook_id_base`** so **`hook_id_base`** is set when variables are scoped to GitHub **Environment** **`STAGING`** / **`PROD`**. **`redeploy-webhook-call`** does not declare **`environment`** (invalid on jobs that only **`uses:`** a reusable workflow); **`BTMT_REDEPLOYMENT_WEBHOOK_SECRET_*`** must be visible to **`secrets: inherit`** at **repository** / **organization** scope unless **`call-redeployment-webhook`** sets **`environment`** internally ([`docs/workflows.md`](docs/workflows.md#publish)).
