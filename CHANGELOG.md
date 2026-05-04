@@ -64,6 +64,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v2.2.4] - 2026-05-04
+
 ### CI
 
 - **Pre-commit actionlint**: [`.pre-commit-config.yaml`](.pre-commit-config.yaml) adds a **local** hook that runs [`.pre-commit-hooks/actionlint-wrapper.sh`](.pre-commit-hooks/actionlint-wrapper.sh): if **`actionlint`** is missing on **`PATH`** (e.g. **`api`** image built before the install script), it runs [**`scripts/install-actionlint.sh`**](scripts/install-actionlint.sh) on **Linux** then **`actionlint -config-file .github/actionlint.yaml`** on **`.github/workflows/*.yml`**. [**`scripts/install-dependencies.sh`**](scripts/install-dependencies.sh) still installs pinned **1.7.12** when building the **`api`** image. [**`.github/workflows/test.yml`**](.github/workflows/test.yml) **pre-commit** job and [**`branch-protection.yml`**](.github/workflows/branch-protection.yml) **actionlint** job run **`bash scripts/install-actionlint.sh`**. [**`scripts/setup-docker-dev-tools.sh`**](scripts/setup-docker-dev-tools.sh) verifies **`actionlint -version`** in the container.
