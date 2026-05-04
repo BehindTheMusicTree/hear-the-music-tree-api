@@ -94,7 +94,7 @@ jobs:
     env:
       AFP_VERSION: ${{ vars.AFP_VERSION }}
       REDEPLOYMENT_ROOT: ${{ vars.REDEPLOYMENT_ROOT }}
-      REDEPLOYMENT_HOOK_ID_BASE: ${{ vars.REDEPLOYMENT_HOOK_ID_BASE }}
+      BTMT_REDEPLOYMENT_HOOK_ID_BASE: ${{ vars.BTMT_REDEPLOYMENT_HOOK_ID_BASE }}
       HTMT_API_APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
       DB_APP_NAME_SUFFIX: ${{ vars.DB_APP_NAME_SUFFIX }}
       AFP_APP_NAME: ${{ vars.AFP_APP_NAME }}
@@ -106,13 +106,13 @@ jobs:
         run: |
           missing=""
           [ -z "${REDEPLOYMENT_ROOT}" ] && missing="${missing} REDEPLOYMENT_ROOT"
-          [ -z "${REDEPLOYMENT_HOOK_ID_BASE}" ] && missing="${missing} REDEPLOYMENT_HOOK_ID_BASE"
+          [ -z "${BTMT_REDEPLOYMENT_HOOK_ID_BASE}" ] && missing="${missing} BTMT_REDEPLOYMENT_HOOK_ID_BASE"
           [ -z "${HTMT_API_APP_NAME}" ] && missing="${missing} HTMT_API_APP_NAME"
           [ -z "${DB_APP_NAME_SUFFIX}" ] && missing="${missing} DB_APP_NAME_SUFFIX"
           [ -z "${AFP_APP_NAME}" ] && missing="${missing} AFP_APP_NAME"
           if [ -n "$missing" ]; then
             echo "ERROR: Set Variables on this job's GitHub Environment (STAGING or PROD) or at repository/org level:$missing"
-            echo "Example: REDEPLOYMENT_ROOT=/var/webhook/redeployment, REDEPLOYMENT_HOOK_ID_BASE=..., HTMT_API_APP_NAME=htmt-api, DB_APP_NAME_SUFFIX=-db, AFP_APP_NAME=afp (must match infrastructure)"
+            echo "Example: REDEPLOYMENT_ROOT=/var/webhook/redeployment, BTMT_REDEPLOYMENT_HOOK_ID_BASE=..., HTMT_API_APP_NAME=htmt-api, DB_APP_NAME_SUFFIX=-db, AFP_APP_NAME=afp (must match infrastructure)"
             exit 1
           fi
       - name: Require pinned AFP image tag
@@ -127,7 +127,7 @@ jobs:
           fi
           echo "AFP_VERSION=$AFP_VERSION (DB image is fixed to postgres:16.4 in docker-compose.yml)"
           echo "afp_version=$AFP_VERSION" >> "$GITHUB_OUTPUT"
-          echo "redeployment_hook_id_base=${REDEPLOYMENT_HOOK_ID_BASE}" >> "$GITHUB_OUTPUT"
+          echo "redeployment_hook_id_base=${BTMT_REDEPLOYMENT_HOOK_ID_BASE}" >> "$GITHUB_OUTPUT"
 
   set-version-api:
     name: Set API version on server
