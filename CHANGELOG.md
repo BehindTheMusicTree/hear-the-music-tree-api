@@ -68,6 +68,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Contributing**: Document full **Docker Compose `api`** dev workflow; local host **venv** / **`pip install -e ".[dev]"`** for running tests or release bumps is described as unsupported. Notes **`docker-compose.override.yml`** bind-mount for release bump edits on disk. Aligned [`.cursor/rules/pre-pr-checklist.mdc`](.cursor/rules/pre-pr-checklist.mdc), [`scripts/prepare_release_bump.py`](scripts/prepare_release_bump.py) bump CLI hint and module docstring, [`.pre-commit-hooks/`](.pre-commit-hooks/) messages, [`pyproject.toml`](pyproject.toml) header comment, and [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md).
 
+## [v2.2.4] - 2026-05-04
+
 ### CI
 
 - **Publish** ([`.github/workflows/publish.yml`](.github/workflows/publish.yml)): Removed **`push`** to **`main`** as a trigger; publish runs on **`v*`** tag push, **`workflow_dispatch`**, and **`workflow_call`** only. Staging from **`main`** remains available via manual **Actions → Publish** on the **`main`** branch ([`docs/workflows.md`](docs/workflows.md), [`docs/versioning.md`](docs/versioning.md), [CONTRIBUTING.md](CONTRIBUTING.md)). **`BTMT_REDEPLOYMENT_HOOK_ID_BASE`** is read in **`check-pinned-tags`** (GitHub **Environment** **`STAGING`** / **`PROD`**) and passed to **`redeploy-webhook-call`** via job outputs so **`hook_id_base`** is never empty when that variable is environment-scoped. **`redeploy-webhook-call`** does not set **`environment`** (not valid on jobs that only **`uses:`** a reusable workflow); webhook **secrets** must be visible to **`secrets: inherit`** (repo/org), per [docs/workflows.md](docs/workflows.md#publish).
