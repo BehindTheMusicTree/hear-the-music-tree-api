@@ -112,8 +112,9 @@ def _run_bump_my_version(kind: str, allow_dirty: bool) -> None:
     if not shutil.which("bump-my-version"):
         _fail(
             "bump-my-version not found on PATH.\n"
-            "This means the api image was not built with dev extras (INSTALL_DEV=true).\n"
-            "Rebuild and start the api service, then re-run:\n"
+            "Supported workflow: Docker Compose dev (`INSTALL_DEV=true`), from repository root "
+            "with the stack up. If the api image was not built with dev extras, rebuild and start "
+            "the api service, then re-run:\n"
             "  bash scripts/setup-docker-dev-tools.sh\n"
             "  docker compose exec api python3 scripts/prepare_release_bump.py patch\n"
             "(use minor|major instead of patch as needed).\n"
