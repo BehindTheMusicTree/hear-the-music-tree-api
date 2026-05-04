@@ -1,12 +1,11 @@
 # yaml-language-server: $schema=https://gist.githubusercontent.com/sargunv/c2ca41a08391cd06feaad97aece309e4/raw/empty-json-schema.json
-# Single publish: main push or prerelease/dev tag → TEST + staging; release tag → PROD + production.
+# Single publish: version tag (prerelease → TEST + staging; release → PROD + production). Manual dispatch from main still uses VERSION + staging.
 name: Publish
 
 on:
   workflow_call:
   workflow_dispatch:
   push:
-    branches: [main]
     tags:
       - "v*"
 
@@ -95,22 +94,25 @@ jobs:
     env:
       AFP_VERSION: ${{ vars.AFP_VERSION }}
       REDEPLOYMENT_ROOT: ${{ vars.REDEPLOYMENT_ROOT }}
+      REDEPLOYMENT_HOOK_ID_BASE: ${{ vars.REDEPLOYMENT_HOOK_ID_BASE }}
       HTMT_API_APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
       DB_APP_NAME_SUFFIX: ${{ vars.DB_APP_NAME_SUFFIX }}
       AFP_APP_NAME: ${{ vars.AFP_APP_NAME }}
     outputs:
       afp_version: ${{ steps.pinned.outputs.afp_version }}
+      redeployment_hook_id_base: ${{ steps.pinned.outputs.redeployment_hook_id_base }}
     steps:
       - name: Require deploy and app-name vars (set-image-tag-on-server)
         run: |
           missing=""
           [ -z "${REDEPLOYMENT_ROOT}" ] && missing="${missing} REDEPLOYMENT_ROOT"
+          [ -z "${REDEPLOYMENT_HOOK_ID_BASE}" ] && missing="${missing} REDEPLOYMENT_HOOK_ID_BASE"
           [ -z "${HTMT_API_APP_NAME}" ] && missing="${missing} HTMT_API_APP_NAME"
           [ -z "${DB_APP_NAME_SUFFIX}" ] && missing="${missing} DB_APP_NAME_SUFFIX"
           [ -z "${AFP_APP_NAME}" ] && missing="${missing} AFP_APP_NAME"
           if [ -n "$missing" ]; then
-            echo "ERROR: Set org-level (or this repo) Variables:$missing"
-            echo "Example: REDEPLOYMENT_ROOT=/var/webhook/redeployment, HTMT_API_APP_NAME=htmt-api, DB_APP_NAME_SUFFIX=-db, AFP_APP_NAME=afp (must match infrastructure)"
+            echo "ERROR: Set Variables on this job's GitHub Environment (STAGING or PROD) or at repository/org level:$missing"
+            echo "Example: REDEPLOYMENT_ROOT=/var/webhook/redeployment, REDEPLOYMENT_HOOK_ID_BASE=..., HTMT_API_APP_NAME=htmt-api, DB_APP_NAME_SUFFIX=-db, AFP_APP_NAME=afp (must match infrastructure)"
             exit 1
           fi
       - name: Require pinned AFP image tag
@@ -125,6 +127,7 @@ jobs:
           fi
           echo "AFP_VERSION=$AFP_VERSION (DB image is fixed to postgres:16.4 in docker-compose.yml)"
           echo "afp_version=$AFP_VERSION" >> "$GITHUB_OUTPUT"
+          echo "redeployment_hook_id_base=${REDEPLOYMENT_HOOK_ID_BASE}" >> "$GITHUB_OUTPUT"
 
   set-version-api:
     name: Set API version on server
@@ -159,8 +162,9 @@ jobs:
   redeploy-webhook-call:
     name: Redeploy webhook
     needs: [build-and-push, set-version-api, set-version-db, set-version-afp, check-pinned-tags, determine-version]
+    environment: ${{ needs.determine-version.outputs.deployment_environment }}
     uses: BehindTheMusicTree/github-workflows/.github/workflows/call-redeployment-webhook.yml@v1.0.4
     with:
       env: ${{ needs.determine-version.outputs.env }}
-      hook_id_base: ${{ vars.REDEPLOYMENT_HOOK_ID_BASE }}
+      hook_id_base: ${{ needs.check-pinned-tags.outputs.redeployment_hook_id_base }}
     secrets: inherit

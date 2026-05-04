@@ -138,8 +138,8 @@ All pre-release version tags (dev, rc, beta, alpha) should be deleted during the
 
 Single publish workflow, triggered by:
 
-- **Push to `main`**: Uses `VERSION` file, image tag `staging`, deploys to staging (TEST env).
 - **Push of version tag** (e.g. `git push origin v0.2.0`): Extracts version from the tag; prerelease (tag contains `-`) → TEST/staging; release → PROD/production.
+- **`workflow_dispatch` from `main`**: Uses `VERSION` file, image tag `staging`, deploys to staging (TEST env). Ordinary pushes to `main` do not trigger publish.
 
 The workflow extracts the version from the ref, uses it for the Docker image tag and server image tag, then triggers the redeployment webhook.
 
