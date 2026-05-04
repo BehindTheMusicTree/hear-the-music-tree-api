@@ -64,6 +64,18 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### CI
+
+- **Publish** ([`.github/workflows/publish.yml`](.github/workflows/publish.yml)): Removed **`push`** to **`main`** as a trigger (runs on **`v*`** tags, **`workflow_dispatch`**, **`workflow_call`** only); staging from **`main`** without a tag uses manual **Actions → Publish** on **`main`**. **`BTMT_REDEPLOYMENT_HOOK_ID_BASE`** is validated in **`check-pinned-tags`** with other deploy variables and passed to **`redeploy-webhook-call`** as output **`redeployment_hook_id_base`** so **`hook_id_base`** is set when variables are scoped to GitHub **Environment** **`STAGING`** / **`PROD`**. **`redeploy-webhook-call`** does not declare **`environment`** (invalid on jobs that only **`uses:`** a reusable workflow); **`BTMT_REDEPLOYMENT_WEBHOOK_SECRET_*`** must be visible to **`secrets: inherit`** at **repository** / **organization** scope unless **`call-redeployment-webhook`** sets **`environment`** internally ([`docs/workflows.md`](docs/workflows.md#publish)).
+
+### Changed
+
+- **GitHub Variables / actionlint**: Renamed **`REDEPLOYMENT_HOOK_ID_BASE`** to **`BTMT_REDEPLOYMENT_HOOK_ID_BASE`** in **`publish.yml`** and [`.github/actionlint.yaml`](.github/actionlint.yaml) **`config-variables`**.
+
+### Documentation
+
+- **Publish**: [CONTRIBUTING.md](CONTRIBUTING.md), [docs/workflows.md](docs/workflows.md), and [docs/versioning.md](docs/versioning.md) updated for triggers, **`BTMT_REDEPLOYMENT_HOOK_ID_BASE`**, and redeploy webhook **secrets** scope.
+
 ## [v2.2.5] - 2026-05-04
 
 ### Documentation
@@ -73,8 +85,6 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ## [v2.2.4] - 2026-05-04
 
 ### CI
-
-- **Publish** ([`.github/workflows/publish.yml`](.github/workflows/publish.yml)): Removed **`push`** to **`main`** as a trigger; publish runs on **`v*`** tag push, **`workflow_dispatch`**, and **`workflow_call`** only. Staging from **`main`** remains available via manual **Actions → Publish** on the **`main`** branch ([`docs/workflows.md`](docs/workflows.md), [`docs/versioning.md`](docs/versioning.md), [CONTRIBUTING.md](CONTRIBUTING.md)). **`BTMT_REDEPLOYMENT_HOOK_ID_BASE`** is read in **`check-pinned-tags`** (GitHub **Environment** **`STAGING`** / **`PROD`**) and passed to **`redeploy-webhook-call`** via job outputs so **`hook_id_base`** is never empty when that variable is environment-scoped. **`redeploy-webhook-call`** does not set **`environment`** (not valid on jobs that only **`uses:`** a reusable workflow); webhook **secrets** must be visible to **`secrets: inherit`** (repo/org), per [docs/workflows.md](docs/workflows.md#publish).
 
 - **Pre-commit actionlint**: [`.pre-commit-config.yaml`](.pre-commit-config.yaml) adds a **local** hook that runs [`.pre-commit-hooks/actionlint-wrapper.sh`](.pre-commit-hooks/actionlint-wrapper.sh): if **`actionlint`** is missing on **`PATH`** (e.g. **`api`** image built before the install script), it runs [**`scripts/install-actionlint.sh`**](scripts/install-actionlint.sh) on **Linux** then **`actionlint -config-file .github/actionlint.yaml`** on **`.github/workflows/*.yml`**. [**`scripts/install-dependencies.sh`**](scripts/install-dependencies.sh) still installs pinned **1.7.12** when building the **`api`** image. [**`.github/workflows/test.yml`**](.github/workflows/test.yml) **pre-commit** job and [**`branch-protection.yml`**](.github/workflows/branch-protection.yml) **actionlint** job run **`bash scripts/install-actionlint.sh`**. [**`scripts/setup-docker-dev-tools.sh`**](scripts/setup-docker-dev-tools.sh) verifies **`actionlint -version`** in the container.
 
@@ -90,7 +100,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Publish unit test results**: Pytest job adds **`checks: write`** and **`pull-requests: write`** for [**`EnricoMi/publish-unit-test-result-action`**](https://github.com/EnricoMi/publish-unit-test-result-action) (**`@v2.23.0`**) so the Checks API is usable; skips that step on **fork** **`pull_request`** workflows (read-only **`GITHUB_TOKEN`**).
 
-- **Publish**: **`call-redeployment-webhook`** pinned to **`@v1.0.4`**; pass required **`hook_id_base`** from **`vars.BTMT_REDEPLOYMENT_HOOK_ID_BASE`** ([**BehindTheMusicTree/github-workflows** `v1.0.4`](https://github.com/BehindTheMusicTree/github-workflows/releases/tag/v1.0.4)). GitHub secrets **`BTMT_REDEPLOYMENT_WEBHOOK_SECRET_PROD`** / **`BTMT_REDEPLOYMENT_WEBHOOK_SECRET_STAGING`** (rename from **`REDEPLOYMENT_WEBHOOK_SECRET_*`**; same values).
+- **Publish**: **`call-redeployment-webhook`** pinned to **`@v1.0.4`**; pass **`hook_id_base`** from **`vars.REDEPLOYMENT_HOOK_ID_BASE`** ([**BehindTheMusicTree/github-workflows** `v1.0.4`](https://github.com/BehindTheMusicTree/github-workflows/releases/tag/v1.0.4)). GitHub secrets **`BTMT_REDEPLOYMENT_WEBHOOK_SECRET_PROD`** / **`BTMT_REDEPLOYMENT_WEBHOOK_SECRET_STAGING`** (rename from **`REDEPLOYMENT_WEBHOOK_SECRET_*`**; same values).
 
 - **Postgres and publish pins**: Compose and CI use **`postgres:16.4`** only (removed **`docker-compose.ci.yml`**, **`COMPOSE_DB_IMAGE`**, and **`DB_VERSION`**). [**`publish.yml`**](.github/workflows/publish.yml) **`check-pinned-tags`** enforces **`AFP_VERSION`** only; **`set-version-db`** writes tag **`16.4`**.
 
@@ -98,7 +108,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Fixed
 
-- **actionlint `config-variables`**: [`.github/actionlint.yaml`](.github/actionlint.yaml) again lists **`GHCR_IMAGE_NAMESPACE`** and **`BTMT_REDEPLOYMENT_HOOK_ID_BASE`** (used in **`build-and-push.yml`** / **`publish.yml`**), fixing **`undefined configuration variable`** in CI; removed duplicate **`AFP_VERSION`** entry.
+- **actionlint `config-variables`**: [`.github/actionlint.yaml`](.github/actionlint.yaml) again lists **`GHCR_IMAGE_NAMESPACE`** and **`REDEPLOYMENT_HOOK_ID_BASE`** (used in **`build-and-push.yml`** / **`publish.yml`**), fixing **`undefined configuration variable`** in CI; removed duplicate **`AFP_VERSION`** entry.
 
 - **Local Compose `api` exits 0 immediately**: Older **`htmt-api-dev-api`** images could still embed the legacy Dockerfile **`ENTRYPOINT`** (**`bash -c "${PROJECT_DIR}scripts/entrypoint.sh"`**), which does not forward the override **`command`** the way the current exec-form entrypoint does—**`api`** then exited **0** almost instantly (**`--wait`** failed). Rebuild with **`docker compose build api`** (or **`--build`**). [README](README.md) quick start notes the check and **`docker compose logs api`**.
 
@@ -109,8 +119,6 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **Django / pytest startup visibility**: Verbose **`[Django]`** / **`[pytest]`** lines are gated by **`CI_STARTUP_TRACE`** (**`1`** / **`true`** / **`yes`**) via [`api/CiStartupTraceEnabled.py`](api/CiStartupTraceEnabled.py); CI sets it in **`test.yml`**. When enabled: [`api/settings.py`](api/settings.py) installs [`api/CiPytestStartupTracer.py`](api/CiPytestStartupTracer.py) (**`apps.populate()`**, **`AppConfig.ready()`**, **`get_resolver()`**); [`api/ci_pytest_startup_plugin.py`](api/ci_pytest_startup_plugin.py) brackets **`pytest_load_initial_conftests`**; [`api/models.py`](api/models.py), [`api/urls.py`](api/urls.py), [`api/apps.py`](api/apps.py), and conftest under **`api/test/`** emit progress markers. [`pytest.ini`](pytest.ini) **`addopts = -p api.ci_pytest_startup_plugin`**; **[`pyproject.toml`](pyproject.toml)** **`[tool.pytest.ini_options]`** mirrors key options when **`pytest.ini`** is absent.
 
 ### Changed
-
-- **Publish (GitHub Variable)**: **`REDEPLOYMENT_HOOK_ID_BASE`** renamed to **`BTMT_REDEPLOYMENT_HOOK_ID_BASE`** (aligned with **`BTMT_REDEPLOYMENT_WEBHOOK_SECRET_*`**) in [`.github/workflows/publish.yml`](.github/workflows/publish.yml) and [`.github/actionlint.yaml`](.github/actionlint.yaml). Update **Settings → Environments** (**`STAGING`** / **`PROD`**) or repository **Variables** accordingly.
 
 - **Compose `api` healthcheck**: [`docker-compose.yml`](docker-compose.yml) defines an **`api`** **`healthcheck`** that probes **`http://127.0.0.1:<APP_PORT>/health/`** via **`python3`** (no extra image packages). Use **`docker compose up -d --wait api`** (Compose **v2.17+**) to block until **`healthy`**; **`up -d`** without **`--wait`** still returns once the container is started.
 
