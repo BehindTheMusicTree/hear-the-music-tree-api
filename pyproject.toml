@@ -1,5 +1,5 @@
 # Linters, type-checker, and dependency pins (audiometa-python-style PEP 621 project).
-# Dev install: pip install -e ".[dev]". Production image / minimal env: pip install .
+# Dev deps: Compose api image uses pip install -e ".[dev]" (INSTALL_DEV=true). CI pre-commit uses the same. Production/minimal: pip install .
 
 [build-system]
 requires = ["setuptools==75.2.0", "wheel==0.45.1"]

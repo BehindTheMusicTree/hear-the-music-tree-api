@@ -64,7 +64,11 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
-## [v2.2.4] - 2026-05-04
+## [v2.2.5] - 2026-05-04
+
+### Documentation
+
+- **Contributing**: Document full **Docker Compose `api`** dev workflow; local host **venv** / **`pip install -e ".[dev]"`** for running tests or release bumps is described as unsupported. Notes **`docker-compose.override.yml`** bind-mount for release bump edits on disk. Aligned [`.cursor/rules/pre-pr-checklist.mdc`](.cursor/rules/pre-pr-checklist.mdc), [`scripts/prepare_release_bump.py`](scripts/prepare_release_bump.py) bump CLI hint and module docstring, [`.pre-commit-hooks/`](.pre-commit-hooks/) messages, [`pyproject.toml`](pyproject.toml) header comment, and [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md).
 
 ### CI
 
