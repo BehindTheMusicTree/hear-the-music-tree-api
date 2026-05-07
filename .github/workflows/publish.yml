@@ -93,26 +93,20 @@ jobs:
     environment: ${{ needs.determine-version.outputs.deployment_environment }}
     env:
       AFP_VERSION: ${{ vars.AFP_VERSION }}
-      REDEPLOYMENT_ROOT: ${{ vars.REDEPLOYMENT_ROOT }}
+      IMAGE_TAGS_POOL_DIR: ${{ vars.IMAGE_TAGS_POOL_DIR }}
       BTMT_REDEPLOYMENT_HOOK_ID_BASE: ${{ vars.BTMT_REDEPLOYMENT_HOOK_ID_BASE }}
-      HTMT_API_APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
-      DB_APP_NAME_SUFFIX: ${{ vars.DB_APP_NAME_SUFFIX }}
-      AFP_APP_NAME: ${{ vars.AFP_APP_NAME }}
     outputs:
       afp_version: ${{ steps.pinned.outputs.afp_version }}
       redeployment_hook_id_base: ${{ steps.pinned.outputs.redeployment_hook_id_base }}
     steps:
-      - name: Require deploy and app-name vars (set-image-tag-on-server)
+      - name: Require deploy vars (set-image-tags-on-server)
         run: |
           missing=""
-          [ -z "${REDEPLOYMENT_ROOT}" ] && missing="${missing} REDEPLOYMENT_ROOT"
+          [ -z "${IMAGE_TAGS_POOL_DIR}" ] && missing="${missing} IMAGE_TAGS_POOL_DIR"
           [ -z "${BTMT_REDEPLOYMENT_HOOK_ID_BASE}" ] && missing="${missing} BTMT_REDEPLOYMENT_HOOK_ID_BASE"
-          [ -z "${HTMT_API_APP_NAME}" ] && missing="${missing} HTMT_API_APP_NAME"
-          [ -z "${DB_APP_NAME_SUFFIX}" ] && missing="${missing} DB_APP_NAME_SUFFIX"
-          [ -z "${AFP_APP_NAME}" ] && missing="${missing} AFP_APP_NAME"
           if [ -n "$missing" ]; then
             echo "ERROR: Set Variables on this job's GitHub Environment (STAGING or PROD) or at repository/org level:$missing"
-            echo "Example: REDEPLOYMENT_ROOT=/var/webhook/redeployment, BTMT_REDEPLOYMENT_HOOK_ID_BASE=..., HTMT_API_APP_NAME=htmt-api, DB_APP_NAME_SUFFIX=-db, AFP_APP_NAME=afp (must match infrastructure)"
+            echo "Example: IMAGE_TAGS_POOL_DIR=/srv/btmt/image-tags, BTMT_REDEPLOYMENT_HOOK_ID_BASE=... (must match infrastructure)"
             exit 1
           fi
       - name: Require pinned AFP image tag
@@ -129,40 +123,25 @@ jobs:
           echo "afp_version=$AFP_VERSION" >> "$GITHUB_OUTPUT"
           echo "redeployment_hook_id_base=${BTMT_REDEPLOYMENT_HOOK_ID_BASE}" >> "$GITHUB_OUTPUT"
 
-  set-version-api:
-    name: Set API version on server
+  set-image-tags:
+    name: Set image tags on server
     needs: [build-and-push, determine-version, check-pinned-tags]
-    uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tags-on-server.yml@v2.0.0
     with:
       env: ${{ needs.determine-version.outputs.env }}
-      tag: ${{ needs.determine-version.outputs.image_tag }}
-      app_name: ${{ vars.HTMT_API_APP_NAME }}
-    secrets: inherit
-
-  set-version-db:
-    name: Set DB version on server
-    needs: [determine-version, check-pinned-tags]
-    uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
-    with:
-      env: ${{ needs.determine-version.outputs.env }}
-      tag: '16.4'
-      app_name: ${{ format('{0}{1}', vars.HTMT_API_APP_NAME, vars.DB_APP_NAME_SUFFIX) }}
-    secrets: inherit
-
-  set-version-afp:
-    name: Set AFP version on server
-    needs: [determine-version, check-pinned-tags]
-    uses: BehindTheMusicTree/github-workflows/.github/workflows/set-image-tag-on-server.yml@main
-    with:
-      env: ${{ needs.determine-version.outputs.env }}
-      tag: ${{ needs.check-pinned-tags.outputs.afp_version }}
-      app_name: ${{ vars.AFP_APP_NAME }}
+      stack: btmt
+      tags: |
+        HTMT_API_TAG=${{ needs.determine-version.outputs.image_tag }}
+        DB_TAG=16.4
+        AFP_TAG=${{ needs.check-pinned-tags.outputs.afp_version }}
+      release_id: ${{ needs.determine-version.outputs.image_tag }}
+      release_sha: ${{ github.sha }}
     secrets: inherit
 
   redeploy-webhook-call:
     name: Redeploy webhook
-    needs: [build-and-push, set-version-api, set-version-db, set-version-afp, check-pinned-tags, determine-version]
-    uses: BehindTheMusicTree/github-workflows/.github/workflows/call-redeployment-webhook.yml@v1.0.4
+    needs: [build-and-push, set-image-tags, check-pinned-tags, determine-version]
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/call-redeployment-webhook.yml@v2.0.0
     with:
       env: ${{ needs.determine-version.outputs.env }}
       hook_id_base: ${{ needs.check-pinned-tags.outputs.redeployment_hook_id_base }}
