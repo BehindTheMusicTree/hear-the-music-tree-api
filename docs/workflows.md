@@ -72,11 +72,11 @@ Single publish workflow: collect static files, build Docker image, set image tag
 1. **determine-version** – from ref: tag with `-` → TEST; tag without `-` → PROD; `main` (e.g. manual dispatch) → staging + TEST
 2. **static** – calls `static-files.yml`, commits and pushes collected static files
 3. **build-and-push** – calls `build-and-push.yml` with commit hash and **environment** (TEST or PROD)
-4. **check-pinned-tags** – requires **`AFP_VERSION`** in Settings → Variables (no `latest`); DB image is **`postgres:16.4`** (fixed in [`docker-compose.yml`](../docker-compose.yml); publish sets server DB tag **`16.4`**)
-5. **set-version-api** / **set-version-db** / **set-version-afp** – shared workflows from `BehindTheMusicTree/github-workflows`
-6. **redeploy-webhook-call** – **`hook_id_base`** from **`check-pinned-tags`** (**`BTMT_REDEPLOYMENT_HOOK_ID_BASE`** validated under **Environment** **`STAGING`** / **`PROD`** there). Caller job is **`uses:`** only—**`environment`** is not allowed on that job shape in the Actions schema, so **`secrets: inherit`** supplies **repo/org** secrets (e.g. **`BTMT_REDEPLOYMENT_WEBHOOK_SECRET_*`**). Environment-only webhook secrets need a repo/org copy or support inside **`call-redeployment-webhook`**. Pinned **`@v1.0.4`**.
+4. **check-pinned-tags** – requires **`AFP_VERSION`** in Settings → Variables (no `latest`) and **`IMAGE_TAGS_POOL_DIR`** / **`BTMT_REDEPLOYMENT_HOOK_ID_BASE`** in the selected GitHub Environment (**STAGING**/**PROD**) or repo/org Variables; DB image is **`postgres:16.4`** (fixed in [`docker-compose.yml`](../docker-compose.yml); publish sets server DB tag **`16.4`**)
+5. **set-image-tags** – calls `BehindTheMusicTree/github-workflows/.github/workflows/set-image-tags-on-server.yml@v2.0.0` once with `stack: btmt` and tags for API, DB, and AFP (`HTMT_API_TAG`, `DB_TAG=16.4`, `AFP_TAG`)
+6. **redeploy-webhook-call** – calls `BehindTheMusicTree/github-workflows/.github/workflows/call-redeployment-webhook.yml@v2.0.0` with **`hook_id_base`** from **`check-pinned-tags`** (**`BTMT_REDEPLOYMENT_HOOK_ID_BASE`**). Caller job is **`uses:`** only—**`environment`** is not allowed on that job shape in the Actions schema, so **`secrets: inherit`** supplies **repo/org** secrets (e.g. **`BTMT_REDEPLOYMENT_WEBHOOK_SECRET_*`**). Environment-only webhook secrets need a repo/org copy or support inside **`call-redeployment-webhook`**.
 
-**Environment:** **TEST** for prerelease/dev tags and for manual runs from `main` (staging). **PROD** for release tags (production). DB and AFP image tags must be pinned in repo variables.
+**Environment:** **TEST** for prerelease/dev tags and for manual runs from `main` (staging). **PROD** for release tags (production). DB and AFP image tags must be pinned in repo variables, and **`IMAGE_TAGS_POOL_DIR`** must be set for **STAGING** and **PROD** (for `set-image-tags-on-server`).
 
 **Versioning:** Manual dispatch from `main` uses `VERSION` file and image tag `staging`. Tag push uses tag version; `workflow_call` without a tag uses latest git tag.
 
