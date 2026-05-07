@@ -78,8 +78,6 @@ Single publish workflow: collect static files, build Docker image, set image tag
 
 **Environment:** **TEST** for prerelease/dev tags and for manual runs from `main` (staging). **PROD** for release tags (production). DB and AFP image tags must be pinned in repo variables.
 
-**Variables (org-level pool, same as Sync env):** `REDEPLOYMENT_ROOT` (e.g. `/var/webhook/redeployment`). Set once at the **organization** (Settings → Variables) so the infrastructure repo and all app repos that call set-image-tag-on-server use the same path. If unset, the tag file path is wrong and the step fails.
-
 **Versioning:** Manual dispatch from `main` uses `VERSION` file and image tag `staging`. Tag push uses tag version; `workflow_call` without a tag uses latest git tag.
 
 **Migrations:** Not run by the workflow. The API container entrypoint runs `migrate` after the database is ready.
@@ -108,7 +106,7 @@ Manually sync app env vars and secrets for **both STAGING and PROD** in one run.
 
 **Secrets (this repo, per environment):** `DB_APP_DB_NAME`, `DB_APP_USERNAME`, `DB_APP_USER_PASSWORD`, `DB_SUPERUSER_PASSWORD`, `DEMO_PASSWORD`, `DEMO_USERNAME`, `DJANGO_SECRET_KEY`, `GOOGLE_CLIENT_SECRET`, `SPOTIFY_CLIENT_SECRET`, `SUPERADMIN_PASSWORD`, `SUPERADMIN_USERNAME`, `TMTA_USERNAME`, plus deploy secrets `SERVER_DEPLOY_USERNAME`, `SERVER_DEPLOY_SSH_PRIVATE_KEY`.
 
-**Variables (this repo or org, per GitHub Environment):** `SERVER_HOST`, `REDEPLOYMENT_ROOT`, `SYNC_ENV_REMOTE_FILENAME_PREFIX_BASE`, `HTMT_API_APP_NAME`, **`DB_APP_NAME_SUFFIX`** (required, non-empty; must match **BehindTheMusicTree/infrastructure**, e.g. `_db`), `DEMO_EMAIL`, `SUPERADMIN_EMAIL`, `SPOTIFY_CLIENT_ID_STAGING`, `SPOTIFY_CLIENT_ID_PROD`, `GOOGLE_CLIENT_ID_STAGING`, `GOOGLE_CLIENT_ID_PROD`, **`SPOTIFY_SCOPES`** (see `env/dev/.env.dev.example`). The compose-required API booleans above are **not** Variables—they are written as **`true`** in the workflow. Locally and in CI you still set **`FILE_UPLOAD_ENABLED`** in `.env` as needed (see `api/settings.py` / `TMP_UPLOADED_FILES`).
+**Variables (this repo or org, per GitHub Environment):** `SERVER_HOST`, `SYNC_ENV_REMOTE_FILENAME_PREFIX_BASE`, `HTMT_API_APP_NAME`, **`DB_APP_NAME_SUFFIX`** (required, non-empty; must match **BehindTheMusicTree/infrastructure**, e.g. `_db`), `DEMO_EMAIL`, `SUPERADMIN_EMAIL`, `SPOTIFY_CLIENT_ID_STAGING`, `SPOTIFY_CLIENT_ID_PROD`, `GOOGLE_CLIENT_ID_STAGING`, `GOOGLE_CLIENT_ID_PROD`, **`SPOTIFY_SCOPES`** (see `env/dev/.env.dev.example`). The compose-required API booleans above are **not** Variables—they are written as **`true`** in the workflow. Locally and in CI you still set **`FILE_UPLOAD_ENABLED`** in `.env` as needed (see `api/settings.py` / `TMP_UPLOADED_FILES`).
 
 ## Static Files
 

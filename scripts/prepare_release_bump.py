@@ -136,6 +136,13 @@ def _run_fix_changelog() -> None:
         sys.exit(proc.returncode)
 
 
+def _run_remove_prerelease_tags() -> None:
+    script = REPO_ROOT / "scripts" / "remove_prerelease_tags.sh"
+    proc = subprocess.run(["bash", str(script)], cwd=REPO_ROOT, check=False)
+    if proc.returncode != 0:
+        sys.exit(proc.returncode)
+
+
 def _warn_branch() -> None:
     proc = subprocess.run(
         ["git", "branch", "--show-current"],
@@ -182,6 +189,8 @@ def main() -> None:
     updated, changed = ensure_empty_unreleased_section(raw)
     if changed:
         CHANGELOG_PATH.write_text(updated)
+
+    _run_remove_prerelease_tags()
 
     print(
         "prepare_release_bump: done. Review git diff and CHANGELOG.md, then commit "
