@@ -25,7 +25,6 @@ jobs:
       - name: Validate vars and build API env fragment
         env:
           SERVER_HOST: ${{ vars.SERVER_HOST }}
-          REDEPLOYMENT_ROOT: ${{ vars.REDEPLOYMENT_ROOT }}
           HTMT_API_APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
           DB_APP_NAME_SUFFIX: ${{ vars.DB_APP_NAME_SUFFIX }}
           DEMO_EMAIL: ${{ vars.DEMO_EMAIL }}
@@ -70,7 +69,7 @@ jobs:
             'LIBRARIES_DIR=/app/media/libraries/' \
             'TMP_UPLOADED_FILES=/tmp/uploads' >> fragment.env
           required=(
-            SERVER_HOST REDEPLOYMENT_ROOT HTMT_API_APP_NAME DB_APP_NAME_SUFFIX
+            SERVER_HOST HTMT_API_APP_NAME DB_APP_NAME_SUFFIX
             DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID
             SERVER_DEPLOY_USERNAME SERVER_DEPLOY_SSH_PRIVATE_KEY
             DB_APP_DB_NAME DB_APP_USERNAME DB_APP_USER_PASSWORD DB_SUPERUSER_PASSWORD
@@ -117,7 +116,6 @@ jobs:
       - name: Validate vars and build DB env fragment
         env:
           SERVER_HOST: ${{ vars.SERVER_HOST }}
-          REDEPLOYMENT_ROOT: ${{ vars.REDEPLOYMENT_ROOT }}
           HTMT_API_APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
           DB_APP_NAME_SUFFIX: ${{ vars.DB_APP_NAME_SUFFIX }}
           DB_APP_DB_NAME: ${{ secrets.DB_APP_DB_NAME }}
@@ -139,7 +137,7 @@ jobs:
           printf 'POSTGRES_PASSWORD=%s\n' "${val}" >> fragment.env
           printf '%s\n' "POSTGRES_PORT=5432" >> fragment.env
           required=(
-            SERVER_HOST REDEPLOYMENT_ROOT HTMT_API_APP_NAME DB_APP_NAME_SUFFIX
+            SERVER_HOST HTMT_API_APP_NAME DB_APP_NAME_SUFFIX
             SERVER_DEPLOY_USERNAME SERVER_DEPLOY_SSH_PRIVATE_KEY
             DB_APP_DB_NAME DB_SUPERUSER_PASSWORD
           )
@@ -162,7 +160,7 @@ jobs:
   sync-api-staging:
     name: Sync API env (staging)
     needs: [build-api-fragment]
-    uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-server.yml@main
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-server.yml@v2.0.0
     with:
       sync_env: staging
       fragment_artifact: sync-env-fragment-api-staging/fragment.env
@@ -172,7 +170,7 @@ jobs:
   sync-api-prod:
     name: Sync API env (prod)
     needs: [build-api-fragment]
-    uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-server.yml@main
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-server.yml@v2.0.0
     with:
       sync_env: prod
       fragment_artifact: sync-env-fragment-api-prod/fragment.env
@@ -182,7 +180,7 @@ jobs:
   sync-db-staging:
     name: Sync Postgres env (staging)
     needs: [build-db-fragment]
-    uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-server.yml@main
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-server.yml@v2.0.0
     with:
       sync_env: staging
       fragment_artifact: sync-env-fragment-db-staging/fragment.env
@@ -192,7 +190,7 @@ jobs:
   sync-db-prod:
     name: Sync Postgres env (prod)
     needs: [build-db-fragment]
-    uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-server.yml@main
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-server.yml@v2.0.0
     with:
       sync_env: prod
       fragment_artifact: sync-env-fragment-db-prod/fragment.env
