@@ -66,6 +66,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [v2.2.7] - 2026-05-07
 
+## [v2.2.7] - 2026-05-07
+
 ### CI
 
 - **github-workflows v2.0.0** ([`.github/workflows/publish.yml`](.github/workflows/publish.yml), [`.github/workflows/sync-env-to-server.yml`](.github/workflows/sync-env-to-server.yml)): Upgraded to **`BehindTheMusicTree/github-workflows@v2.0.0`**. **`publish.yml`**: replaced three separate **`set-image-tag-on-server`** calls (API, DB, AFP) with a single **`set-image-tags-on-server.yml@v2.0.0`** call using **`stack: btmt`** and a multiline **`tags`** block (**`HTMT_API_TAG`**, **`DB_TAG=16.4`**, **`AFP_TAG`**); **`check-pinned-tags`** now requires **`IMAGE_TAGS_POOL_DIR`** instead of **`REDEPLOYMENT_ROOT`**; **`redeploy-webhook-call`** pinned to **`@v2.0.0`**. **`sync-env-to-server.yml`**: removed **`REDEPLOYMENT_ROOT`** from fragment-building env and required-vars checks (no longer a workflow input); all four shared workflow calls pinned to **`@v2.0.0`**.
