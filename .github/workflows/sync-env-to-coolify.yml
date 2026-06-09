@@ -1,0 +1,116 @@
+# Sync htmt-api env vars to Coolify via API (replaces sync-env-to-server.yml).
+# Builds one env fragment per environment (static flags + GitHub vars/secrets),
+# then calls the reusable sync-env-to-coolify workflow to POST/PATCH them on the Coolify app.
+# DB vars (DB_APP_*) are not included — DATABASE_URL is set by Ansible infrastructure.
+# Requires org-level var COOLIFY_API_URL and org-level secret COOLIFY_API_TOKEN.
+name: Sync env to Coolify
+
+on:
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build-api-fragment:
+    name: Build API env fragment (${{ matrix.environment }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - environment: STAGING
+            coolify_environment: staging
+          - environment: PROD
+            coolify_environment: production
+    environment: ${{ matrix.environment }}
+    steps:
+      - name: Validate vars and build API env fragment
+        env:
+          DEMO_EMAIL: ${{ vars.DEMO_EMAIL }}
+          SUPERADMIN_EMAIL: ${{ vars.SUPERADMIN_EMAIL }}
+          SPOTIFY_CLIENT_ID_STAGING: ${{ vars.SPOTIFY_CLIENT_ID_STAGING }}
+          SPOTIFY_CLIENT_ID_PROD: ${{ vars.SPOTIFY_CLIENT_ID_PROD }}
+          SPOTIFY_SCOPES: ${{ vars.SPOTIFY_SCOPES }}
+          GOOGLE_CLIENT_ID_STAGING: ${{ vars.GOOGLE_CLIENT_ID_STAGING }}
+          GOOGLE_CLIENT_ID_PROD: ${{ vars.GOOGLE_CLIENT_ID_PROD }}
+          DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
+          DEMO_USERNAME: ${{ secrets.DEMO_USERNAME }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          ACOUSTID_API_KEY: ${{ secrets.ACOUSTID_API_KEY }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SUPERADMIN_PASSWORD: ${{ secrets.SUPERADMIN_PASSWORD }}
+          SUPERADMIN_USERNAME: ${{ secrets.SUPERADMIN_USERNAME }}
+          TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
+        run: |
+          if [ "${{ matrix.environment }}" = "STAGING" ]; then
+            export SPOTIFY_CLIENT_ID="${SPOTIFY_CLIENT_ID_STAGING}"
+            export GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID_STAGING}"
+          else
+            export SPOTIFY_CLIENT_ID="${SPOTIFY_CLIENT_ID_PROD}"
+            export GOOGLE_CLIENT_ID="${GOOGLE_CLIENT_ID_PROD}"
+          fi
+          export SPOTIFY_SCOPES
+          : > fragment.env
+          printf '%s\n' \
+            'FILE_UPLOAD_ENABLED=true' \
+            'SPOTIFY_ENABLED=true' \
+            'GOOGLE_OAUTH_ENABLED=true' \
+            'MUSICBRAINZ_LOOKUP_ENABLED=true' \
+            'HTMT_API_AFP_ENABLED=true' \
+            'MEDIA_DIR=/app/media' \
+            'LIBRARIES_DIR=/app/media/libraries/' \
+            'TMP_UPLOADED_FILES=/tmp/uploads' >> fragment.env
+          required=(
+            DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID
+            DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY ACOUSTID_API_KEY
+            GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET
+            SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME
+          )
+          missing=()
+          for v in "${required[@]}"; do
+            [ -z "${!v}" ] && missing+=("$v")
+          done
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "ERROR: Missing required vars or secrets: ${missing[*]}"
+            exit 1
+          fi
+          echo "All required vars and secrets are set."
+          for key in DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY ACOUSTID_API_KEY \
+            GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET \
+            SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME \
+            DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID; do
+            val="${!key}"
+            val=$(printf '%s' "$val" | tr -d '\n\r')
+            [ -n "${val}" ] && printf '%s=%s\n' "$key" "$val" >> fragment.env
+          done
+
+      - name: Upload API fragment artifact
+        uses: actions/upload-artifact@v5.0.0
+        with:
+          name: sync-env-fragment-api-${{ matrix.coolify_environment }}
+          path: fragment.env
+
+  sync-api-staging:
+    name: Sync API env (staging)
+    needs: [build-api-fragment]
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-coolify.yml@main
+    with:
+      app_name: htmt-api
+      coolify_environment: staging
+      fragment_artifact: sync-env-fragment-api-staging/fragment.env
+      coolify_api_url: ${{ vars.COOLIFY_API_URL }}
+    secrets:
+      coolify_api_token: ${{ secrets.COOLIFY_API_TOKEN }}
+
+  sync-api-prod:
+    name: Sync API env (prod)
+    needs: [build-api-fragment]
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/sync-env-to-coolify.yml@main
+    with:
+      app_name: htmt-api
+      coolify_environment: production
+      fragment_artifact: sync-env-fragment-api-production/fragment.env
+      coolify_api_url: ${{ vars.COOLIFY_API_URL }}
+    secrets:
+      coolify_api_token: ${{ secrets.COOLIFY_API_TOKEN }}
