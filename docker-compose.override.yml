@@ -4,7 +4,6 @@ services:
       - ./:/home/app/
     command: >-
       bash -lc "bash scripts/setup-filesystem.sh &&
-      bash scripts/wait-for-postgres-db.sh ${DB_URL:-db} ${DB_PORT:-5432}
-      ${DB_CONNECTION_TEST_MAX_ATTEMPTS:-20} ${DB_CONNECTION_TEST_SLEEP_INTERVAL:-2} &&
+      bash scripts/wait-for-postgres-db.sh db 5432 20 2 &&
       python3 manage.py migrate &&
       python3 manage.py runserver 0.0.0.0:${APP_PORT:-8000}"
