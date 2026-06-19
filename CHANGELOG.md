@@ -76,8 +76,6 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Env sync to Coolify** ([`.github/workflows/sync-env-to-coolify.yml`](.github/workflows/sync-env-to-coolify.yml)): Replaced the SSH-based **`sync-env-to-server.yml`** with an API-driven workflow that builds a per-environment (staging/prod) env fragment and pushes it straight to Coolify via the **`sync-env-to-coolify`** composite action from `github-workflows`, so the fragment never leaves the runner or gets persisted as an artifact. DB vars (**`DB_APP_*`**) are no longer synced — **`DATABASE_URL`** is now set by Ansible infrastructure. **`SERVER_HOST`** removed from actionlint config-variables; **`COOLIFY_API_URL`**, **`COOLIFY_SUBDOMAIN`**, **`DOMAIN_NAME`** added.
 
-## [v2.2.7] - 2026-05-07
-
 ### CI
 
 - **github-workflows v2.0.0** ([`.github/workflows/publish.yml`](.github/workflows/publish.yml), [`.github/workflows/sync-env-to-server.yml`](.github/workflows/sync-env-to-server.yml)): Upgraded to **`BehindTheMusicTree/github-workflows@v2.0.0`**. **`publish.yml`**: replaced three separate **`set-image-tag-on-server`** calls (API, DB, AFP) with a single **`set-image-tags-on-server.yml@v2.0.0`** call using **`stack: btmt`** and a multiline **`tags`** block (**`HTMT_API_TAG`**, **`DB_TAG=16.4`**, **`AFP_TAG`**); **`check-pinned-tags`** now requires **`IMAGE_TAGS_POOL_DIR`** instead of **`REDEPLOYMENT_ROOT`**; **`redeploy-webhook-call`** pinned to **`@v2.0.0`**. **`sync-env-to-server.yml`**: removed **`REDEPLOYMENT_ROOT`** from fragment-building env and required-vars checks (no longer a workflow input); all four shared workflow calls pinned to **`@v2.0.0`**.
