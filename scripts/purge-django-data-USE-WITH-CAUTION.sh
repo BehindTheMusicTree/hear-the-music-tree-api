@@ -19,23 +19,9 @@ handle_db_timeout() {
 
 check_script_vars_are_set() {
 	load_app_env_file_if_exists
-
-	REQUIRED_NON_BOOL_VARS=(
-    	PROJECT_DIR
-		LIBRARIES_DIR
-		DB_PORT
-		DB_APP_DB_NAME
-		DB_SUPERUSER_NAME
-		DB_SUPERUSER_PASSWORD
-		DB_APP_USERNAME
-	)
-	for VAR in "${REQUIRED_NON_BOOL_VARS[@]}"; do
-		check_required_vars_are_set "$VAR"
-	done
+	check_required_vars_are_set PROJECT_DIR LIBRARIES_DIR DATABASE_URL
 	check_bool_vars_are_set APP_IS_EXPOSED
-
-	export_value_removing_potential_surrounding_quotes DB_SUPERUSER_PASSWORD
-	export PGPASSWORD=$DB_SUPERUSER_PASSWORD
+	parse_database_url
 }
 
 empty_libraries() {
@@ -61,7 +47,7 @@ force_close_db_connections_if_exist() {
 	fi
 
 	log_with_script_prefixe "Check if database is being accessed by other users..."
-	output=$(timeout ${DB_TIMEOUT_SECONDS}s psql -h $DB_HOST -p $DB_PORT -U $DB_SUPERUSER_NAME -tAc \
+	output=$(timeout ${DB_TIMEOUT_SECONDS}s psql -h $DB_HOST -p $DB_PORT -U $DB_USER -tAc \
 	"SELECT COUNT(*) FROM pg_stat_activity WHERE datname='$db_name'" 2>&1)
 	exit_code=$?
 	handle_db_timeout $exit_code
@@ -71,7 +57,7 @@ force_close_db_connections_if_exist() {
 	fi
 	if [ "$output" -gt 0 ]; then
 		log_with_script_prefixe "Database $db_name is being accessed by other users. Closing connections..."
-		output=$(timeout ${DB_TIMEOUT_SECONDS}s psql -h $DB_HOST -p $DB_PORT -U $DB_SUPERUSER_NAME -tAc \
+		output=$(timeout ${DB_TIMEOUT_SECONDS}s psql -h $DB_HOST -p $DB_PORT -U $DB_USER -tAc \
 			"SELECT pg_terminate_backend(pg_stat_activity.pid) \
 			FROM pg_stat_activity \
 			WHERE pg_stat_activity.datname = '$db_name' AND pid <> pg_backend_pid();" 2>&1)
@@ -89,20 +75,20 @@ force_close_db_connections_if_exist() {
 
 empty_db() {
 
-	databases=("$DB_APP_DB_NAME" "test_$DB_APP_DB_NAME")
+	databases=("$DB_NAME" "test_$DB_NAME")
 
 	for db_name in "${databases[@]}"; do
 		force_close_db_connections_if_exist $db_name
 
 		log_with_script_prefixe "Checking if database $db_name exists..."
-		output=$(timeout ${DB_TIMEOUT_SECONDS}s psql -h $DB_HOST -p $DB_PORT -U $DB_SUPERUSER_NAME -tAc \
+		output=$(timeout ${DB_TIMEOUT_SECONDS}s psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -tAc \
 		"SELECT 1 FROM pg_database WHERE datname='${db_name}'" 2>&1)
 		exit_code=$?
 		handle_db_timeout $exit_code
 		log_with_script_prefixe "$output"
 		if [ "$output" = "1" ]; then
 			log_with_script_prefixe "Database $db_name exists. Dropping database..."
-			output=$(timeout ${DB_TIMEOUT_SECONDS}s psql -h $DB_HOST -p $DB_PORT -U $DB_SUPERUSER_NAME -tAc "DROP DATABASE ${db_name};" 2>&1)
+			output=$(timeout ${DB_TIMEOUT_SECONDS}s psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -tAc "DROP DATABASE ${db_name};" 2>&1)
 			exit_code=$?
 			handle_db_timeout $exit_code
 			if [ $? -ne 0 ] || echo "$output" | grep -i "error" > /dev/null; then
@@ -114,28 +100,6 @@ empty_db() {
 			log_with_script_prefixe "Database $db_name does not exist."
 		fi
 	done
-
-	log_with_script_prefixe "Dropping user $DB_APP_USERNAME if exists..."
-	output=$(timeout ${DB_TIMEOUT_SECONDS}s psql -h $DB_HOST -p $DB_PORT -U $DB_SUPERUSER_NAME -tAc \
-		"SELECT 1 FROM pg_roles WHERE rolname='${DB_APP_USERNAME}'" 2>&1)
-	exit_code=$?
-	handle_db_timeout $exit_code
-	if [ $? -ne 0 ] || echo "$output" | grep -i "error" > /dev/null; then
-	log_with_script_prefixe "ERROR: Failed to check if the user exists: $output" >&2
-	exit 1
-	fi
-	if [ "$output" = "1" ]; then
-		log_with_script_prefixe "User exists. Dropping user"
-		output=$(timeout ${DB_TIMEOUT_SECONDS}s psql -h $DB_HOST -p $DB_PORT -U $DB_SUPERUSER_NAME -tAc "DROP USER $DB_APP_USERNAME;" 2>&1)
-		exit_code=$?
-		handle_db_timeout $exit_code
-		if [ $? -ne 0 ]; then
-		log_with_script_prefixe "ERROR: Failed to drop the user: $output" >&2
-		exit 1
-		fi
-	else
-		log_with_script_prefixe "User $DB_SUPERUSER_NAME does not exist."
-	fi
 }
 
 main () {

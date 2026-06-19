@@ -7,18 +7,7 @@ log_with_script_prefixe () {
 check_script_vars_are_set() {
   log_with_script_prefixe "Loading environment variables..."
   load_app_env_file_if_exists
-  local REQUIRED_NON_BOOL_VARS=(
-    API_DIR_NAME
-    DB_SUPERUSER_NAME
-    DB_SUPERUSER_PASSWORD
-    DB_APP_DB_NAME
-    DB_APP_USERNAME
-    DB_APP_USER_PASSWORD
-  )
-  check_required_vars_are_set "${REQUIRED_NON_BOOL_VARS[@]}"
-  check_bool_vars_are_set APP_IS_EXPOSED
-  export_value_removing_potential_surrounding_quotes DB_SUPERUSER_PASSWORD
-  export_value_removing_potential_surrounding_quotes "DB_APP_USER_PASSWORD"
+  check_required_vars_are_set API_DIR_NAME DATABASE_URL
   log_with_script_prefixe "Environment variables loaded successfully."
 }
 

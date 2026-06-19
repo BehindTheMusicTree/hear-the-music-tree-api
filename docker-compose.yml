@@ -5,15 +5,15 @@ services:
     image: postgres:16.4
     container_name: htmt-api-db
     environment:
-      POSTGRES_DB: ${DB_APP_DB_NAME:-htmt_api}
-      POSTGRES_USER: ${DB_SUPERUSER_NAME:-postgres}
-      POSTGRES_PASSWORD: ${DB_SUPERUSER_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-htmt_api}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     ports:
-      - "${DB_PORT:-5432}:5432"
+      - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_SUPERUSER_NAME:-postgres} -d ${DB_APP_DB_NAME:-htmt_api}"]
+      test: ["CMD-SHELL", "pg_isready"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -62,17 +62,7 @@ services:
       DEBUG: ${DEBUG:-true}
       APP_IS_EXPOSED: ${APP_IS_EXPOSED:-false}
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:-dev-only-secret-key}
-      DB_IS_NEEDED: ${DB_IS_NEEDED:-true}
-      DB_CONTAINER_NAME: ${DB_CONTAINER_NAME:-db}
-      DB_URL: ${DB_URL:-db}
-      DB_PORT: ${DB_PORT:-5432}
-      DB_CONNECTION_TEST_MAX_ATTEMPTS: ${DB_CONNECTION_TEST_MAX_ATTEMPTS:-20}
-      DB_CONNECTION_TEST_SLEEP_INTERVAL: ${DB_CONNECTION_TEST_SLEEP_INTERVAL:-2}
-      DB_APP_DB_NAME: ${DB_APP_DB_NAME:-htmt_api}
-      DB_APP_USERNAME: ${DB_APP_USERNAME:-htmt_api_user}
-      DB_APP_USER_PASSWORD: ${DB_APP_USER_PASSWORD:-htmt_api_password}
-      DB_SUPERUSER_NAME: ${DB_SUPERUSER_NAME:-postgres}
-      DB_SUPERUSER_PASSWORD: ${DB_SUPERUSER_PASSWORD:-postgres}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://postgres:postgres@db:5432/htmt_api}
       FILE_UPLOAD_ENABLED: ${FILE_UPLOAD_ENABLED:-true}
       TMP_UPLOADED_FILES: ${TMP_UPLOADED_FILES:-/tmp/uploaded-files/}
       METADATA_SESSION_DIR: ${METADATA_SESSION_DIR:-/tmp/metadata-sessions/}
@@ -92,7 +82,6 @@ services:
       GUNICORN_STDOUT_LOGS: ${GUNICORN_STDOUT_LOGS:-true}
       STATIC_FILES_URL: ${STATIC_FILES_URL:-/static/}
       AFP_ENABLED: ${AFP_ENABLED:-true}
-      AFP_CONTAINER_NAME: ${AFP_CONTAINER_NAME:-afp}
       AFP_URL: ${AFP_URL:-afp}
       AFP_PORT: ${AFP_PORT:-7015}
       AFP_POST_ENDPOINT: ${AFP_POST_ENDPOINT:-fingerprint-audio}

@@ -31,7 +31,6 @@ jobs:
       APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
       APP_TITLE: ${{ vars.APP_TITLE }}
       DEBUG: false
-      DB_IS_NEEDED: false
       APP_IS_EXPOSED: false
       STATIC_FILES: ${{ vars.STATIC_FILES }}
       AFP_ENABLED: "false"
