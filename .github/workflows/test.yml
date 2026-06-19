@@ -97,12 +97,10 @@ jobs:
           API_DIR_NAME: ${{ vars.API_DIR_NAME }}
           APP_TITLE: ${{ vars.APP_TITLE }}
           APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
-          DB_APP_NAME_SUFFIX: ${{ vars.DB_APP_NAME_SUFFIX }}
           GHCR_IMAGE_NAMESPACE: ${{ vars.GHCR_IMAGE_NAMESPACE }}
-          DB_CONTAINER_NAME: ${{ format('{0}{1}', vars.HTMT_API_APP_NAME, vars.DB_APP_NAME_SUFFIX) }}
           AFP_IMAGE_REPO: ${{ vars.AFP_IMAGE_REPO }}
           AFP_VERSION: ${{ vars.AFP_VERSION }}
-        run: bash scripts/check-workflow-env.sh API_DIR_NAME APP_TITLE APP_NAME DB_APP_NAME_SUFFIX GHCR_IMAGE_NAMESPACE DB_CONTAINER_NAME AFP_IMAGE_REPO AFP_VERSION
+        run: bash scripts/check-workflow-env.sh API_DIR_NAME APP_TITLE APP_NAME GHCR_IMAGE_NAMESPACE AFP_IMAGE_REPO AFP_VERSION
 
   pytest:
     name: Pytest
