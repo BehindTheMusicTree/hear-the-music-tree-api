@@ -64,6 +64,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v2.2.8] - 2026-06-19
+
 ### Changed
 
 - **AFP connection** ([`api/settings.py`](api/settings.py), [`api/utils/audio_fingerprinter/utils.py`](api/utils/audio_fingerprinter/utils.py)): AFP now moves to its own Coolify project, so it's no longer reachable by a stable Docker container name on the same network. When `APP_IS_EXPOSED=true`, AFP is now reached via its public **`AFP_URL`** over HTTPS through Traefik (no port suffix) instead of **`AFP_CONTAINER_NAME`**. `AFP_PORT` is now only read when `APP_IS_EXPOSED=false` (local/dev, bare host + port over HTTP). **`AFP_CONTAINER_NAME`** is removed from settings, `docker-compose.yml`, env examples, and CI workflows.
