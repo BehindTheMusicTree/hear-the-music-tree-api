@@ -21,6 +21,8 @@ config-variables:
   - GOOGLE_CLIENT_ID_STAGING
   - GOOGLE_CLIENT_ID_PROD
   - COOLIFY_API_URL
+  - COOLIFY_SUBDOMAIN
+  - DOMAIN_NAME
 
 paths:
   "**/*":

@@ -335,10 +335,9 @@ def _check_url_reachable(url: str) -> tuple[bool, str]:
 
 def _check_afp_reachable() -> tuple[bool, str]:
     base = getattr(settings, "AFP_BASE_URL", None)
-    port = getattr(settings, "AFP_PORT", None)
-    if not base or not port:
-        return False, "AFP_BASE_URL/AFP_PORT not set (AFP disabled or not configured)"
-    health_url = f"http://{base}:{port}/health/"
+    if not base:
+        return False, "AFP_BASE_URL not set (AFP disabled or not configured)"
+    health_url = f"{base}/health/"
     try:
         req = urllib.request.Request(health_url, method="GET")
         with urllib.request.urlopen(req, timeout=E2E_REACHABILITY_TIMEOUT_SEC) as resp:

@@ -3,7 +3,7 @@
 # in the same job, via the sync-env-to-coolify composite action — the fragment never
 # leaves the runner or gets persisted as an artifact.
 # DB vars (DB_APP_*) are not included — DATABASE_URL is set by Ansible infrastructure.
-# Requires org-level var COOLIFY_API_URL and org-level secret COOLIFY_API_TOKEN.
+# Requires org-level vars COOLIFY_SUBDOMAIN, DOMAIN_NAME and org-level secret COOLIFY_API_TOKEN.
 name: Sync env to Coolify
 
 on:
@@ -41,7 +41,7 @@ jobs:
             'SPOTIFY_ENABLED=true' \
             'GOOGLE_OAUTH_ENABLED=true' \
             'MUSICBRAINZ_LOOKUP_ENABLED=true' \
-            'HTMT_API_AFP_ENABLED=true' \
+            'AFP_ENABLED=true' \
             'MEDIA_DIR=/app/media' \
             'LIBRARIES_DIR=/app/media/libraries/' \
             'TMP_UPLOADED_FILES=/tmp/uploads' >> fragment.env
@@ -75,7 +75,8 @@ jobs:
           app_name: htmt-api
           coolify_environment: staging
           fragment_path: fragment.env
-          coolify_api_url: ${{ vars.COOLIFY_API_URL }}
+          coolify_subdomain: ${{ vars.COOLIFY_SUBDOMAIN }}
+          domain: ${{ vars.DOMAIN_NAME }}
           coolify_api_token: ${{ secrets.COOLIFY_API_TOKEN }}
 
   sync-prod:
@@ -106,7 +107,7 @@ jobs:
             'SPOTIFY_ENABLED=true' \
             'GOOGLE_OAUTH_ENABLED=true' \
             'MUSICBRAINZ_LOOKUP_ENABLED=true' \
-            'HTMT_API_AFP_ENABLED=true' \
+            'AFP_ENABLED=true' \
             'MEDIA_DIR=/app/media' \
             'LIBRARIES_DIR=/app/media/libraries/' \
             'TMP_UPLOADED_FILES=/tmp/uploads' >> fragment.env
@@ -140,5 +141,6 @@ jobs:
           app_name: htmt-api
           coolify_environment: production
           fragment_path: fragment.env
-          coolify_api_url: ${{ vars.COOLIFY_API_URL }}
+          coolify_subdomain: ${{ vars.COOLIFY_SUBDOMAIN }}
+          domain: ${{ vars.DOMAIN_NAME }}
           coolify_api_token: ${{ secrets.COOLIFY_API_TOKEN }}
