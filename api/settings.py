@@ -68,7 +68,6 @@ CRITERIA_TREE_IMPORT_MAX_ROOT_COUNT: int
 CRITERIA_TREE_IMPORT_MAX_TOTAL_COUNT: int
 
 # AFP Connection
-AFP_PORT: str
 AFP_BASE_URL: str
 AFP_POST_ENDPOINT: str
 
@@ -484,19 +483,17 @@ def setup_app_constants():
 
 def setup_afp_connection():
     global AFP_BASE_URL
-    global AFP_PORT
     global AFP_POST_ENDPOINT
     if APP_IS_EXPOSED:
-        print_django("The app is exposed. The AFP host is the AFP container name.")
-        AFP_BASE_URL = AFP_CONTAINER_NAME
-    else:
-        print_django("The app is not exposed. The AFP host is the AFP url.")
+        print_django("The app is exposed. AFP is reached at its public URL over HTTPS.")
         AFP_BASE_URL = load_required_str_env_var("AFP_URL")
+    else:
+        print_django("The app is not exposed. AFP is reached at its url and port over HTTP.")
+        AFP_BASE_URL = f"http://{load_required_str_env_var('AFP_URL')}:{load_required_str_env_var('AFP_PORT')}"
 
-    AFP_PORT = load_required_str_env_var("AFP_PORT")
     AFP_POST_ENDPOINT = load_required_str_env_var("AFP_POST_ENDPOINT")
 
-    print_django(f"AFP: http://{AFP_BASE_URL}:{AFP_PORT}/{AFP_POST_ENDPOINT}")
+    print_django(f"AFP: {AFP_BASE_URL}/{AFP_POST_ENDPOINT}")
 
 
 def setup_data_dir():
@@ -874,7 +871,7 @@ else:
             raise OSError("The AFP_ENABLED env variable cannot be true when FILE_UPLOAD_ENABLED is false.")
         for var_name in [
             "AFP_PORT",
-            "AFP_CONTAINER_NAME",
+            "AFP_URL",
             "AFP_POST_ENDPOINT",
             "ACOUSTID_API_KEY",
             "MEDIA_DIR",
@@ -890,7 +887,6 @@ else:
         METADATA_SESSION_DIR = Path(load_required_str_env_var("METADATA_SESSION_DIR")).resolve()
         setup_media_dirs()
         if AFP_ENABLED:  # pyright: ignore[reportUnboundVariable]
-            AFP_CONTAINER_NAME = load_required_str_env_var("AFP_CONTAINER_NAME")
             setup_afp_connection()
 
 print_django("Finished loading settings.")

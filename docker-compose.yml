@@ -82,7 +82,6 @@ services:
       GUNICORN_STDOUT_LOGS: ${GUNICORN_STDOUT_LOGS:-true}
       STATIC_FILES_URL: ${STATIC_FILES_URL:-/static/}
       AFP_ENABLED: ${AFP_ENABLED:-true}
-      AFP_CONTAINER_NAME: ${AFP_CONTAINER_NAME:-afp}
       AFP_URL: ${AFP_URL:-afp}
       AFP_PORT: ${AFP_PORT:-7015}
       AFP_POST_ENDPOINT: ${AFP_POST_ENDPOINT:-fingerprint-audio}

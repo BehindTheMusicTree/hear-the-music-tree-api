@@ -64,6 +64,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Changed
+
+- **AFP connection** ([`api/settings.py`](api/settings.py), [`api/utils/audio_fingerprinter/utils.py`](api/utils/audio_fingerprinter/utils.py)): AFP now moves to its own Coolify project, so it's no longer reachable by a stable Docker container name on the same network. When `APP_IS_EXPOSED=true`, AFP is now reached via its public **`AFP_URL`** over HTTPS through Traefik (no port suffix) instead of **`AFP_CONTAINER_NAME`**. `AFP_PORT` is now only read when `APP_IS_EXPOSED=false` (local/dev, bare host + port over HTTP). **`AFP_CONTAINER_NAME`** is removed from settings, `docker-compose.yml`, env examples, and CI workflows.
+
 ### CI
 
 - **github-workflows v2.0.0** ([`.github/workflows/publish.yml`](.github/workflows/publish.yml), [`.github/workflows/sync-env-to-server.yml`](.github/workflows/sync-env-to-server.yml)): Upgraded to **`BehindTheMusicTree/github-workflows@v2.0.0`**. **`publish.yml`**: replaced three separate **`set-image-tag-on-server`** calls (API, DB, AFP) with a single **`set-image-tags-on-server.yml@v2.0.0`** call using **`stack: btmt`** and a multiline **`tags`** block (**`HTMT_API_TAG`**, **`DB_TAG=16.4`**, **`AFP_TAG`**); **`check-pinned-tags`** now requires **`IMAGE_TAGS_POOL_DIR`** instead of **`REDEPLOYMENT_ROOT`**; **`redeploy-webhook-call`** pinned to **`@v2.0.0`**. **`sync-env-to-server.yml`**: removed **`REDEPLOYMENT_ROOT`** from fragment-building env and required-vars checks (no longer a workflow input); all four shared workflow calls pinned to **`@v2.0.0`**.

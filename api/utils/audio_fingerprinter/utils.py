@@ -43,7 +43,7 @@ def post_fingerprint_audio(filename: str, title: str, user_id: str) -> tuple[byt
     try:
         json_data = {PostFields.FILENAME: filename, PostFields.TITLE: title, PostFields.USER_ID: user_id}
         headers = {"Content-Type": "application/json"}
-        url = f"http://{settings.AFP_BASE_URL}:{settings.AFP_PORT}/{settings.AFP_POST_ENDPOINT}"
+        url = f"{settings.AFP_BASE_URL}/{settings.AFP_POST_ENDPOINT}"
         response = requests.post(url, json=json_data, headers=headers)
 
         response_json = response.json()
