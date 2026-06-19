@@ -1,0 +1,146 @@
+# Sync htmt-api env vars to Coolify via API (replaces sync-env-to-server.yml).
+# Builds the env fragment (static flags + GitHub vars/secrets) and pushes it to Coolify
+# in the same job, via the sync-env-to-coolify composite action — the fragment never
+# leaves the runner or gets persisted as an artifact.
+# DB vars (DB_APP_*) are not included — DATABASE_URL is set by Ansible infrastructure.
+# Requires org-level vars COOLIFY_SUBDOMAIN, DOMAIN_NAME and org-level secret COOLIFY_API_TOKEN.
+name: Sync env to Coolify
+
+on:
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  sync-staging:
+    name: Sync API env (staging)
+    runs-on: ubuntu-latest
+    environment: STAGING
+    steps:
+      - name: Validate vars and build API env fragment
+        env:
+          DEMO_EMAIL: ${{ vars.DEMO_EMAIL }}
+          SUPERADMIN_EMAIL: ${{ vars.SUPERADMIN_EMAIL }}
+          SPOTIFY_CLIENT_ID: ${{ vars.SPOTIFY_CLIENT_ID_STAGING }}
+          SPOTIFY_SCOPES: ${{ vars.SPOTIFY_SCOPES }}
+          GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID_STAGING }}
+          DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
+          DEMO_USERNAME: ${{ secrets.DEMO_USERNAME }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          ACOUSTID_API_KEY: ${{ secrets.ACOUSTID_API_KEY }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SUPERADMIN_PASSWORD: ${{ secrets.SUPERADMIN_PASSWORD }}
+          SUPERADMIN_USERNAME: ${{ secrets.SUPERADMIN_USERNAME }}
+          TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
+        run: |
+          : > fragment.env
+          printf '%s\n' \
+            'FILE_UPLOAD_ENABLED=true' \
+            'SPOTIFY_ENABLED=true' \
+            'GOOGLE_OAUTH_ENABLED=true' \
+            'MUSICBRAINZ_LOOKUP_ENABLED=true' \
+            'AFP_ENABLED=true' \
+            'MEDIA_DIR=/app/media' \
+            'LIBRARIES_DIR=/app/media/libraries/' \
+            'TMP_UPLOADED_FILES=/tmp/uploads' >> fragment.env
+          required=(
+            DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID
+            DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY ACOUSTID_API_KEY
+            GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET
+            SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME
+          )
+          missing=()
+          for v in "${required[@]}"; do
+            [ -z "${!v}" ] && missing+=("$v")
+          done
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "ERROR: Missing required vars or secrets: ${missing[*]}"
+            exit 1
+          fi
+          echo "All required vars and secrets are set."
+          for key in DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY ACOUSTID_API_KEY \
+            GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET \
+            SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME \
+            DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID; do
+            val="${!key}"
+            val=$(printf '%s' "$val" | tr -d '\n\r')
+            [ -n "${val}" ] && printf '%s=%s\n' "$key" "$val" >> fragment.env
+          done
+
+      - name: Sync env vars to Coolify
+        uses: BehindTheMusicTree/github-workflows/.github/actions/sync-env-to-coolify@main
+        with:
+          app_name: htmt-api
+          coolify_environment: staging
+          fragment_path: fragment.env
+          coolify_subdomain: ${{ vars.COOLIFY_SUBDOMAIN }}
+          domain: ${{ vars.DOMAIN_NAME }}
+          coolify_api_token: ${{ secrets.COOLIFY_API_TOKEN }}
+
+  sync-prod:
+    name: Sync API env (prod)
+    runs-on: ubuntu-latest
+    environment: PROD
+    steps:
+      - name: Validate vars and build API env fragment
+        env:
+          DEMO_EMAIL: ${{ vars.DEMO_EMAIL }}
+          SUPERADMIN_EMAIL: ${{ vars.SUPERADMIN_EMAIL }}
+          SPOTIFY_CLIENT_ID: ${{ vars.SPOTIFY_CLIENT_ID_PROD }}
+          SPOTIFY_SCOPES: ${{ vars.SPOTIFY_SCOPES }}
+          GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID_PROD }}
+          DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
+          DEMO_USERNAME: ${{ secrets.DEMO_USERNAME }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          ACOUSTID_API_KEY: ${{ secrets.ACOUSTID_API_KEY }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SUPERADMIN_PASSWORD: ${{ secrets.SUPERADMIN_PASSWORD }}
+          SUPERADMIN_USERNAME: ${{ secrets.SUPERADMIN_USERNAME }}
+          TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
+        run: |
+          : > fragment.env
+          printf '%s\n' \
+            'FILE_UPLOAD_ENABLED=true' \
+            'SPOTIFY_ENABLED=true' \
+            'GOOGLE_OAUTH_ENABLED=true' \
+            'MUSICBRAINZ_LOOKUP_ENABLED=true' \
+            'AFP_ENABLED=true' \
+            'MEDIA_DIR=/app/media' \
+            'LIBRARIES_DIR=/app/media/libraries/' \
+            'TMP_UPLOADED_FILES=/tmp/uploads' >> fragment.env
+          required=(
+            DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID
+            DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY ACOUSTID_API_KEY
+            GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET
+            SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME
+          )
+          missing=()
+          for v in "${required[@]}"; do
+            [ -z "${!v}" ] && missing+=("$v")
+          done
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "ERROR: Missing required vars or secrets: ${missing[*]}"
+            exit 1
+          fi
+          echo "All required vars and secrets are set."
+          for key in DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY ACOUSTID_API_KEY \
+            GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET \
+            SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME \
+            DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID; do
+            val="${!key}"
+            val=$(printf '%s' "$val" | tr -d '\n\r')
+            [ -n "${val}" ] && printf '%s=%s\n' "$key" "$val" >> fragment.env
+          done
+
+      - name: Sync env vars to Coolify
+        uses: BehindTheMusicTree/github-workflows/.github/actions/sync-env-to-coolify@main
+        with:
+          app_name: htmt-api
+          coolify_environment: production
+          fragment_path: fragment.env
+          coolify_subdomain: ${{ vars.COOLIFY_SUBDOMAIN }}
+          domain: ${{ vars.DOMAIN_NAME }}
+          coolify_api_token: ${{ secrets.COOLIFY_API_TOKEN }}

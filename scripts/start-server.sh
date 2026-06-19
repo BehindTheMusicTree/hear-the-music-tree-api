@@ -14,15 +14,7 @@ check_script_vars_are_set () {
     REQUIRED_NON_BOOL_VARS=(
         PROJECT_DIR
         APP_PORT
-        DB_CONTAINER_NAME
-        DB_PORT
-        DB_CONNECTION_TEST_MAX_ATTEMPTS
-        DB_CONNECTION_TEST_SLEEP_INTERVAL
-        DB_SUPERUSER_NAME
-        DB_SUPERUSER_PASSWORD
-        DB_APP_DB_NAME
-        DB_APP_USERNAME
-        DB_APP_USER_PASSWORD
+        DATABASE_URL
     )
     if ! gunicorn_logs_to_stdout; then
         REQUIRED_NON_BOOL_VARS+=(
@@ -36,9 +28,6 @@ check_script_vars_are_set () {
         log_with_script_prefixe "ERROR: Failed to load environment variables." >&2
         exit 1
     fi
-
-    export_value_removing_potential_surrounding_quotes DB_SUPERUSER_PASSWORD 2>&1
-    export_value_removing_potential_surrounding_quotes "DB_APP_USER_PASSWORD" 2>&1
 
     check_bool_vars_are_set DEBUG APP_IS_EXPOSED 2>&1
     if [ $? -ne 0 ]; then
@@ -63,7 +52,8 @@ main (){
     fi
 
     log_with_script_prefixe "Running ${SCRIPTS_DIR}wait-for-postgres-db.sh to wait for the database..."
-    bash ${SCRIPTS_DIR}wait-for-postgres-db.sh $DB_CONTAINER_NAME $DB_PORT $DB_CONNECTION_TEST_MAX_ATTEMPTS $DB_CONNECTION_TEST_SLEEP_INTERVAL
+    parse_database_url
+    bash ${SCRIPTS_DIR}wait-for-postgres-db.sh "$DB_HOST" "$DB_PORT" 20 2
     if [ $? -ne 0 ]; then
         log_with_script_prefixe "ERROR: Failed to wait for the database." >&2
         exit 1

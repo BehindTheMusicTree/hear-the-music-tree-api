@@ -133,18 +133,20 @@ docker_image_ref_from_repo_tag() {
     esac
 }
 
-determine_db_host_if_not_set () {
-    if [ -z "$DB_HOST" ]; then
-        log_with_utils_prefixe "DB_HOST is not set. Determining the host..."
-        check_bool_vars_are_set APP_IS_EXPOSED
-        if [ "$APP_IS_EXPOSED" = "true" ]; then
-            check_required_vars_are_set DB_CONTAINER_NAME
-            DB_HOST=$DB_CONTAINER_NAME
-        else
-            check_required_vars_are_set "DB_URL"
-            DB_HOST=$DB_URL
-        fi
-        log_with_utils_prefixe "DB_HOST: $DB_HOST"
-        export DB_HOST
-    fi
+parse_database_url() {
+    check_required_vars_are_set DATABASE_URL
+    local parsed
+    parsed=$(python3 -c "
+from urllib.parse import urlparse
+u = urlparse('${DATABASE_URL}')
+print(u.hostname or '')
+print(u.port or 5432)
+print(u.username or '')
+print(u.password or '')
+print(u.path.lstrip('/'))
+")
+    { read -r DB_HOST; read -r DB_PORT; read -r DB_USER; read -r DB_PASSWORD; read -r DB_NAME; } <<< "$parsed"
+    export DB_HOST DB_PORT DB_USER DB_PASSWORD DB_NAME
+    export PGPASSWORD=$DB_PASSWORD
+    log_with_utils_prefixe "DB_HOST=$DB_HOST DB_PORT=$DB_PORT DB_NAME=$DB_NAME"
 }

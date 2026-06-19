@@ -236,8 +236,8 @@ Running the container requires the following environment variables:
 - `DB_APP_DB_NAME`
 - `DB_APP_USERNAME`
 - `DB_APP_USER_PASSWORD`
-- `AFP_CONTAINER_NAME` (AFP meaning Audio FingerPrinter)
-- `AFP_PORT`
+- `AFP_URL` (AFP meaning Audio FingerPrinter; full `https://` URL when `APP_IS_EXPOSED=true`, bare host otherwise)
+- `AFP_PORT` (only when `APP_IS_EXPOSED=false`)
 - `AFP_POST_ENDPOINT`
 
 **Note:** Application data files (like the reference genre tree) are stored in the `data/` directory relative to the project root and are deployed with the codebase. They do not require environment variable configuration.
