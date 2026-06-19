@@ -27,8 +27,10 @@ jobs:
           SPOTIFY_CLIENT_ID: ${{ vars.SPOTIFY_CLIENT_ID_STAGING }}
           SPOTIFY_SCOPES: ${{ vars.SPOTIFY_SCOPES }}
           GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID_STAGING }}
-          SPOTIFY_REDIRECT_URI: "https://staging.${{ vars.HTMT_FRONT_SUBDOMAIN }}.${{ vars.DOMAIN_NAME }}/${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}"
-          GOOGLE_REDIRECT_URI: "https://staging.${{ vars.HTMT_FRONT_SUBDOMAIN }}.${{ vars.DOMAIN_NAME }}/${{ vars.GOOGLE_REDIRECT_RELATIVE_URI }}"
+          SPOTIFY_REDIRECT_URI: "https://${{ vars.HTMT_FRONT_SUBDOMAIN }}-staging.${{ vars.DOMAIN_NAME }}/${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}"
+          GOOGLE_REDIRECT_URI: "https://${{ vars.HTMT_FRONT_SUBDOMAIN }}-staging.${{ vars.DOMAIN_NAME }}/${{ vars.GOOGLE_REDIRECT_RELATIVE_URI }}"
+          ALLOWED_HOSTS: "${{ vars.HTMT_API_SUBDOMAIN }}-staging.${{ vars.DOMAIN_NAME }}"
+          CSRF_TRUSTED_ORIGINS: "https://${{ vars.HTMT_API_SUBDOMAIN }}-staging.${{ vars.DOMAIN_NAME }},https://${{ vars.HTMT_FRONT_SUBDOMAIN }}-staging.${{ vars.DOMAIN_NAME }},https://${{ vars.GTMT_FRONT_SUBDOMAIN }}-staging.${{ vars.DOMAIN_NAME }},https://${{ vars.AUDIOMETA_FRONT_SUBDOMAIN }}-staging.${{ vars.DOMAIN_NAME }}"
           DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
           DEMO_USERNAME: ${{ secrets.DEMO_USERNAME }}
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
@@ -42,7 +44,7 @@ jobs:
           : > fragment.env
           required=(
             DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID
-            SPOTIFY_REDIRECT_URI GOOGLE_REDIRECT_URI
+            SPOTIFY_REDIRECT_URI GOOGLE_REDIRECT_URI ALLOWED_HOSTS CSRF_TRUSTED_ORIGINS
             DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY ACOUSTID_API_KEY
             GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET
             SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME
@@ -60,7 +62,7 @@ jobs:
             GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET \
             SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME \
             DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID \
-            SPOTIFY_REDIRECT_URI GOOGLE_REDIRECT_URI; do
+            SPOTIFY_REDIRECT_URI GOOGLE_REDIRECT_URI ALLOWED_HOSTS CSRF_TRUSTED_ORIGINS; do
             val="${!key}"
             val=$(printf '%s' "$val" | tr -d '\n\r')
             [ -n "${val}" ] && printf '%s=%s\n' "$key" "$val" >> fragment.env
@@ -90,6 +92,8 @@ jobs:
           GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID_PROD }}
           SPOTIFY_REDIRECT_URI: "https://${{ vars.HTMT_FRONT_SUBDOMAIN }}.${{ vars.DOMAIN_NAME }}/${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}"
           GOOGLE_REDIRECT_URI: "https://${{ vars.HTMT_FRONT_SUBDOMAIN }}.${{ vars.DOMAIN_NAME }}/${{ vars.GOOGLE_REDIRECT_RELATIVE_URI }}"
+          ALLOWED_HOSTS: "${{ vars.HTMT_API_SUBDOMAIN }}.${{ vars.DOMAIN_NAME }}"
+          CSRF_TRUSTED_ORIGINS: "https://${{ vars.HTMT_API_SUBDOMAIN }}.${{ vars.DOMAIN_NAME }},https://${{ vars.HTMT_FRONT_SUBDOMAIN }}.${{ vars.DOMAIN_NAME }},https://${{ vars.GTMT_FRONT_SUBDOMAIN }}.${{ vars.DOMAIN_NAME }},https://${{ vars.AUDIOMETA_FRONT_SUBDOMAIN }}.${{ vars.DOMAIN_NAME }}"
           DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
           DEMO_USERNAME: ${{ secrets.DEMO_USERNAME }}
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
@@ -103,7 +107,7 @@ jobs:
           : > fragment.env
           required=(
             DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID
-            SPOTIFY_REDIRECT_URI GOOGLE_REDIRECT_URI
+            SPOTIFY_REDIRECT_URI GOOGLE_REDIRECT_URI ALLOWED_HOSTS CSRF_TRUSTED_ORIGINS
             DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY ACOUSTID_API_KEY
             GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET
             SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME
@@ -121,7 +125,7 @@ jobs:
             GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET \
             SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME \
             DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID \
-            SPOTIFY_REDIRECT_URI GOOGLE_REDIRECT_URI; do
+            SPOTIFY_REDIRECT_URI GOOGLE_REDIRECT_URI ALLOWED_HOSTS CSRF_TRUSTED_ORIGINS; do
             val="${!key}"
             val=$(printf '%s' "$val" | tr -d '\n\r')
             [ -n "${val}" ] && printf '%s=%s\n' "$key" "$val" >> fragment.env
