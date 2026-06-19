@@ -1,8 +1,10 @@
 # Sync htmt-api env vars to Coolify via API (replaces sync-env-to-server.yml).
-# Builds the env fragment (static flags + GitHub vars/secrets) and pushes it to Coolify
-# in the same job, via the sync-env-to-coolify composite action — the fragment never
-# leaves the runner or gets persisted as an artifact.
-# DB vars (DB_APP_*) are not included — DATABASE_URL is set by Ansible infrastructure.
+# Builds the env fragment (secrets + computed per-environment values) and pushes it to
+# Coolify in the same job, via the sync-env-to-coolify composite action — the fragment
+# never leaves the runner or gets persisted as an artifact.
+# Static flags (FILE_UPLOAD_ENABLED, MEDIA_DIR, etc.) and DB vars are NOT included here —
+# they're owned by Ansible infrastructure (group_vars/all.yml's static_env / DATABASE_URL)
+# to avoid two sources of truth drifting apart.
 # Requires org-level vars COOLIFY_SUBDOMAIN, DOMAIN_NAME and org-level secret COOLIFY_API_TOKEN.
 name: Sync env to Coolify
 
@@ -25,6 +27,8 @@ jobs:
           SPOTIFY_CLIENT_ID: ${{ vars.SPOTIFY_CLIENT_ID_STAGING }}
           SPOTIFY_SCOPES: ${{ vars.SPOTIFY_SCOPES }}
           GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID_STAGING }}
+          SPOTIFY_REDIRECT_URI: "https://staging.${{ vars.HTMT_FRONT_SUBDOMAIN }}.${{ vars.DOMAIN_NAME }}/${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}"
+          GOOGLE_REDIRECT_URI: "https://staging.${{ vars.HTMT_FRONT_SUBDOMAIN }}.${{ vars.DOMAIN_NAME }}/${{ vars.GOOGLE_REDIRECT_RELATIVE_URI }}"
           DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
           DEMO_USERNAME: ${{ secrets.DEMO_USERNAME }}
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
@@ -36,17 +40,9 @@ jobs:
           TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
         run: |
           : > fragment.env
-          printf '%s\n' \
-            'FILE_UPLOAD_ENABLED=true' \
-            'SPOTIFY_ENABLED=true' \
-            'GOOGLE_OAUTH_ENABLED=true' \
-            'MUSICBRAINZ_LOOKUP_ENABLED=true' \
-            'AFP_ENABLED=true' \
-            'MEDIA_DIR=/app/media' \
-            'LIBRARIES_DIR=/app/media/libraries/' \
-            'TMP_UPLOADED_FILES=/tmp/uploads' >> fragment.env
           required=(
             DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID
+            SPOTIFY_REDIRECT_URI GOOGLE_REDIRECT_URI
             DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY ACOUSTID_API_KEY
             GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET
             SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME
@@ -63,7 +59,8 @@ jobs:
           for key in DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY ACOUSTID_API_KEY \
             GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET \
             SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME \
-            DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID; do
+            DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID \
+            SPOTIFY_REDIRECT_URI GOOGLE_REDIRECT_URI; do
             val="${!key}"
             val=$(printf '%s' "$val" | tr -d '\n\r')
             [ -n "${val}" ] && printf '%s=%s\n' "$key" "$val" >> fragment.env
@@ -91,6 +88,8 @@ jobs:
           SPOTIFY_CLIENT_ID: ${{ vars.SPOTIFY_CLIENT_ID_PROD }}
           SPOTIFY_SCOPES: ${{ vars.SPOTIFY_SCOPES }}
           GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID_PROD }}
+          SPOTIFY_REDIRECT_URI: "https://${{ vars.HTMT_FRONT_SUBDOMAIN }}.${{ vars.DOMAIN_NAME }}/${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}"
+          GOOGLE_REDIRECT_URI: "https://${{ vars.HTMT_FRONT_SUBDOMAIN }}.${{ vars.DOMAIN_NAME }}/${{ vars.GOOGLE_REDIRECT_RELATIVE_URI }}"
           DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
           DEMO_USERNAME: ${{ secrets.DEMO_USERNAME }}
           DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
@@ -102,17 +101,9 @@ jobs:
           TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
         run: |
           : > fragment.env
-          printf '%s\n' \
-            'FILE_UPLOAD_ENABLED=true' \
-            'SPOTIFY_ENABLED=true' \
-            'GOOGLE_OAUTH_ENABLED=true' \
-            'MUSICBRAINZ_LOOKUP_ENABLED=true' \
-            'AFP_ENABLED=true' \
-            'MEDIA_DIR=/app/media' \
-            'LIBRARIES_DIR=/app/media/libraries/' \
-            'TMP_UPLOADED_FILES=/tmp/uploads' >> fragment.env
           required=(
             DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID
+            SPOTIFY_REDIRECT_URI GOOGLE_REDIRECT_URI
             DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY ACOUSTID_API_KEY
             GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET
             SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME
@@ -129,7 +120,8 @@ jobs:
           for key in DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY ACOUSTID_API_KEY \
             GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET \
             SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME \
-            DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID; do
+            DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID \
+            SPOTIFY_REDIRECT_URI GOOGLE_REDIRECT_URI; do
             val="${!key}"
             val=$(printf '%s' "$val" | tr -d '\n\r')
             [ -n "${val}" ] && printf '%s=%s\n' "$key" "$val" >> fragment.env
