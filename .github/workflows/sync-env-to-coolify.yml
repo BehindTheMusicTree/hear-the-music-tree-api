@@ -1,0 +1,142 @@
+# Sync htmt-api env vars to Coolify via API (replaces sync-env-to-server.yml).
+# Builds the env fragment (secrets + computed per-environment values) and pushes it to
+# Coolify in the same job, via the sync-env-to-coolify composite action — the fragment
+# never leaves the runner or gets persisted as an artifact.
+# Static flags (FILE_UPLOAD_ENABLED, MEDIA_DIR, etc.) and DB vars are NOT included here —
+# they're owned by Ansible infrastructure (group_vars/all.yml's static_env / DATABASE_URL)
+# to avoid two sources of truth drifting apart.
+# Requires org-level vars COOLIFY_SUBDOMAIN, DOMAIN_NAME and org-level secret COOLIFY_API_TOKEN.
+name: Sync env to Coolify
+
+on:
+  workflow_dispatch:
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  sync-staging:
+    name: Sync API env (staging)
+    runs-on: ubuntu-latest
+    environment: STAGING
+    steps:
+      - name: Validate vars and build API env fragment
+        env:
+          DEMO_EMAIL: ${{ vars.DEMO_EMAIL }}
+          SUPERADMIN_EMAIL: ${{ vars.SUPERADMIN_EMAIL }}
+          SPOTIFY_CLIENT_ID: ${{ vars.SPOTIFY_CLIENT_ID_STAGING }}
+          SPOTIFY_SCOPES: ${{ vars.SPOTIFY_SCOPES }}
+          GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID_STAGING }}
+          SPOTIFY_REDIRECT_URI: "https://${{ vars.HTMT_FRONT_SUBDOMAIN }}-staging.${{ vars.DOMAIN_NAME }}/${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}"
+          GOOGLE_REDIRECT_URI: "https://${{ vars.HTMT_FRONT_SUBDOMAIN }}-staging.${{ vars.DOMAIN_NAME }}/${{ vars.GOOGLE_REDIRECT_RELATIVE_URI }}"
+          ALLOWED_HOSTS: "${{ vars.HTMT_API_SUBDOMAIN }}-staging.${{ vars.DOMAIN_NAME }}"
+          CSRF_TRUSTED_ORIGINS: "https://${{ vars.HTMT_API_SUBDOMAIN }}-staging.${{ vars.DOMAIN_NAME }},https://${{ vars.HTMT_FRONT_SUBDOMAIN }}-staging.${{ vars.DOMAIN_NAME }},https://${{ vars.GTMT_FRONT_SUBDOMAIN }}-staging.${{ vars.DOMAIN_NAME }},https://${{ vars.AUDIOMETA_FRONT_SUBDOMAIN }}-staging.${{ vars.DOMAIN_NAME }}"
+          DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
+          DEMO_USERNAME: ${{ secrets.DEMO_USERNAME }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          ACOUSTID_API_KEY: ${{ secrets.ACOUSTID_API_KEY }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SUPERADMIN_PASSWORD: ${{ secrets.SUPERADMIN_PASSWORD }}
+          SUPERADMIN_USERNAME: ${{ secrets.SUPERADMIN_USERNAME }}
+          TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
+        run: |
+          : > fragment.env
+          required=(
+            DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID
+            SPOTIFY_REDIRECT_URI GOOGLE_REDIRECT_URI ALLOWED_HOSTS CSRF_TRUSTED_ORIGINS
+            DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY ACOUSTID_API_KEY
+            GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET
+            SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME
+          )
+          missing=()
+          for v in "${required[@]}"; do
+            [ -z "${!v}" ] && missing+=("$v")
+          done
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "ERROR: Missing required vars or secrets: ${missing[*]}"
+            exit 1
+          fi
+          echo "All required vars and secrets are set."
+          for key in DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY ACOUSTID_API_KEY \
+            GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET \
+            SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME \
+            DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID \
+            SPOTIFY_REDIRECT_URI GOOGLE_REDIRECT_URI ALLOWED_HOSTS CSRF_TRUSTED_ORIGINS; do
+            val="${!key}"
+            val=$(printf '%s' "$val" | tr -d '\n\r')
+            [ -n "${val}" ] && printf '%s=%s\n' "$key" "$val" >> fragment.env
+          done
+
+      - name: Sync env vars to Coolify
+        uses: BehindTheMusicTree/github-workflows/.github/actions/sync-env-to-coolify@main
+        with:
+          app_name: htmt-api
+          coolify_environment: staging
+          fragment_path: fragment.env
+          coolify_subdomain: ${{ vars.COOLIFY_SUBDOMAIN }}
+          domain: ${{ vars.DOMAIN_NAME }}
+          coolify_api_token: ${{ secrets.COOLIFY_API_TOKEN }}
+
+  sync-prod:
+    name: Sync API env (prod)
+    runs-on: ubuntu-latest
+    environment: PROD
+    steps:
+      - name: Validate vars and build API env fragment
+        env:
+          DEMO_EMAIL: ${{ vars.DEMO_EMAIL }}
+          SUPERADMIN_EMAIL: ${{ vars.SUPERADMIN_EMAIL }}
+          SPOTIFY_CLIENT_ID: ${{ vars.SPOTIFY_CLIENT_ID_PROD }}
+          SPOTIFY_SCOPES: ${{ vars.SPOTIFY_SCOPES }}
+          GOOGLE_CLIENT_ID: ${{ vars.GOOGLE_CLIENT_ID_PROD }}
+          SPOTIFY_REDIRECT_URI: "https://${{ vars.HTMT_FRONT_SUBDOMAIN }}.${{ vars.DOMAIN_NAME }}/${{ vars.SPOTIFY_REDIRECT_RELATIVE_URI }}"
+          GOOGLE_REDIRECT_URI: "https://${{ vars.HTMT_FRONT_SUBDOMAIN }}.${{ vars.DOMAIN_NAME }}/${{ vars.GOOGLE_REDIRECT_RELATIVE_URI }}"
+          ALLOWED_HOSTS: "${{ vars.HTMT_API_SUBDOMAIN }}.${{ vars.DOMAIN_NAME }}"
+          CSRF_TRUSTED_ORIGINS: "https://${{ vars.HTMT_API_SUBDOMAIN }}.${{ vars.DOMAIN_NAME }},https://${{ vars.HTMT_FRONT_SUBDOMAIN }}.${{ vars.DOMAIN_NAME }},https://${{ vars.GTMT_FRONT_SUBDOMAIN }}.${{ vars.DOMAIN_NAME }},https://${{ vars.AUDIOMETA_FRONT_SUBDOMAIN }}.${{ vars.DOMAIN_NAME }}"
+          DEMO_PASSWORD: ${{ secrets.DEMO_PASSWORD }}
+          DEMO_USERNAME: ${{ secrets.DEMO_USERNAME }}
+          DJANGO_SECRET_KEY: ${{ secrets.DJANGO_SECRET_KEY }}
+          ACOUSTID_API_KEY: ${{ secrets.ACOUSTID_API_KEY }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SUPERADMIN_PASSWORD: ${{ secrets.SUPERADMIN_PASSWORD }}
+          SUPERADMIN_USERNAME: ${{ secrets.SUPERADMIN_USERNAME }}
+          TMTA_USERNAME: ${{ secrets.TMTA_USERNAME }}
+        run: |
+          : > fragment.env
+          required=(
+            DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID
+            SPOTIFY_REDIRECT_URI GOOGLE_REDIRECT_URI ALLOWED_HOSTS CSRF_TRUSTED_ORIGINS
+            DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY ACOUSTID_API_KEY
+            GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET
+            SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME
+          )
+          missing=()
+          for v in "${required[@]}"; do
+            [ -z "${!v}" ] && missing+=("$v")
+          done
+          if [ "${#missing[@]}" -gt 0 ]; then
+            echo "ERROR: Missing required vars or secrets: ${missing[*]}"
+            exit 1
+          fi
+          echo "All required vars and secrets are set."
+          for key in DEMO_PASSWORD DEMO_USERNAME DJANGO_SECRET_KEY ACOUSTID_API_KEY \
+            GOOGLE_CLIENT_SECRET SPOTIFY_CLIENT_SECRET \
+            SUPERADMIN_PASSWORD SUPERADMIN_USERNAME TMTA_USERNAME \
+            DEMO_EMAIL SUPERADMIN_EMAIL SPOTIFY_CLIENT_ID SPOTIFY_SCOPES GOOGLE_CLIENT_ID \
+            SPOTIFY_REDIRECT_URI GOOGLE_REDIRECT_URI ALLOWED_HOSTS CSRF_TRUSTED_ORIGINS; do
+            val="${!key}"
+            val=$(printf '%s' "$val" | tr -d '\n\r')
+            [ -n "${val}" ] && printf '%s=%s\n' "$key" "$val" >> fragment.env
+          done
+
+      - name: Sync env vars to Coolify
+        uses: BehindTheMusicTree/github-workflows/.github/actions/sync-env-to-coolify@main
+        with:
+          app_name: htmt-api
+          coolify_environment: production
+          fragment_path: fragment.env
+          coolify_subdomain: ${{ vars.COOLIFY_SUBDOMAIN }}
+          domain: ${{ vars.DOMAIN_NAME }}
+          coolify_api_token: ${{ secrets.COOLIFY_API_TOKEN }}

@@ -64,7 +64,15 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
-## [v2.2.7] - 2026-05-07
+### Changed
+
+- **AFP connection** ([`api/settings.py`](api/settings.py), [`api/utils/audio_fingerprinter/utils.py`](api/utils/audio_fingerprinter/utils.py)): AFP now moves to its own Coolify project, so it's no longer reachable by a stable Docker container name on the same network. When `APP_IS_EXPOSED=true`, AFP is now reached via its public **`AFP_URL`** over HTTPS through Traefik (no port suffix) instead of **`AFP_CONTAINER_NAME`**. `AFP_PORT` is now only read when `APP_IS_EXPOSED=false` (local/dev, bare host + port over HTTP). **`AFP_CONTAINER_NAME`** is removed from settings, `docker-compose.yml`, env examples, and CI workflows.
+
+- **Database connection** ([`api/settings.py`](api/settings.py)): The DB connection is now configured from a single **`DATABASE_URL`** (parsed with **`dj-database-url`**), provided by Ansible infrastructure, instead of individual **`DB_APP_DB_NAME`**/**`DB_APP_USERNAME`**/**`DB_APP_USER_PASSWORD`**/**`DB_CONTAINER_NAME`**/**`DB_URL`**/**`DB_PORT`** vars. The **`DB_IS_NEEDED`** flag is replaced by a presence check on **`DATABASE_URL`**.
+
+### CI
+
+- **Env sync to Coolify** ([`.github/workflows/sync-env-to-coolify.yml`](.github/workflows/sync-env-to-coolify.yml)): Replaced the SSH-based **`sync-env-to-server.yml`** with an API-driven workflow that builds a per-environment (staging/prod) env fragment and pushes it straight to Coolify via the **`sync-env-to-coolify`** composite action from `github-workflows`, so the fragment never leaves the runner or gets persisted as an artifact. DB vars (**`DB_APP_*`**) are no longer synced — **`DATABASE_URL`** is now set by Ansible infrastructure. **`SERVER_HOST`** removed from actionlint config-variables; **`COOLIFY_API_URL`**, **`COOLIFY_SUBDOMAIN`**, **`DOMAIN_NAME`** added.
 
 ### CI
 
