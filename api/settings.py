@@ -330,7 +330,20 @@ def setup_app_exposure_if_needed():
         else:
             raise OSError("The app is exposed but no allowed hosts are set.")
 
-        print_django("CORS_ALLOW_ALL_ORIGINS is not set as a web server interface is used to handle CORS.")
+        CORS_ALLOWED_ORIGINS_STR = load_required_str_env_var("CORS_ALLOWED_ORIGINS")
+        print_django(f"CORS_ALLOWED_ORIGINS env variable: {CORS_ALLOWED_ORIGINS_STR}")
+        global CORS_ALLOWED_ORIGINS
+        CORS_ALLOWED_ORIGINS = CORS_ALLOWED_ORIGINS_STR.split(",")
+        for cors_allowed_origin in CORS_ALLOWED_ORIGINS:
+            cors_allowed_origin = cors_allowed_origin.strip()
+            if cors_allowed_origin == "":
+                raise ValueError("A CORS allowed origin is empty.")
+        if len(CORS_ALLOWED_ORIGINS) > 0:
+            print_django("CORS is allowed for the following origin(s):")
+            for cors_allowed_origin in CORS_ALLOWED_ORIGINS:
+                print_django(str(cors_allowed_origin))
+        else:
+            raise OSError("The app is exposed but no CORS allowed origins are set.")
     else:
         ALLOWED_HOSTS = [
             "127.0.0.1",
