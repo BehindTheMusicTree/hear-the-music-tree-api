@@ -64,6 +64,14 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v2.2.9] - 2026-06-20
+
+### Fixed
+
+- **CORS configuration** ([`api/settings.py`](api/settings.py)): When `APP_IS_EXPOSED=true`, `CORS_ALLOWED_ORIGINS` is now loaded from a required `CORS_ALLOWED_ORIGINS` env var (comma-separated, same validation pattern as `CSRF_TRUSTED_ORIGINS`/`ALLOWED_HOSTS`), restoring Django-level CORS handling that was silently dropped when the nginx gateway was replaced by Traefik/Coolify. Companion `infrastructure` change supplies the env var via Ansible.
+- **CORS allowed headers** ([`api/settings.py`](api/settings.py)): `CORS_ALLOW_HEADERS` now extends corsheaders' `default_headers` with `sentry-trace`/`baggage`, which Sentry's browser SDK auto-attaches to outgoing requests for distributed tracing. Preflight requests from cross-origin frontends with Sentry tracing enabled were rejected with "Request header field sentry-trace is not allowed by Access-Control-Allow-Headers" — another casualty of the same nginx-to-Traefik CORS regression, since the legacy gateway explicitly allowed `baggage,sentry-trace`.
+- **CORS exposed headers** ([`api/settings.py`](api/settings.py)): `CORS_EXPOSE_HEADERS` now exposes `Content-Length`/`Content-Range`/`Content-Disposition` to cross-origin JS, matching what the legacy nginx gateway exposed. Without it, browsers only surface a small safe-list of response headers, so `audiometa-frontend`'s session-download flow (`res.headers.get("Content-Disposition")` for the filename) was silently getting `null` cross-origin.
+
 ## [v2.2.8] - 2026-06-19
 
 ### Changed
