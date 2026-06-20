@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 import dj_database_url
+from corsheaders.defaults import default_headers
 
 # Third-party imports
 from api.CiStartupTraceEnabled import CiStartupTraceEnabled
@@ -289,6 +290,16 @@ def setup_app_exposure_if_needed():
 
     global ROOT_URLCONF
     ROOT_URLCONF = "api.urls"
+
+    # Sentry's browser SDK auto-attaches these to outgoing fetch/XHR calls for distributed
+    # tracing; not in corsheaders' default_headers, so preflight rejects them otherwise.
+    global CORS_ALLOW_HEADERS
+    CORS_ALLOW_HEADERS = [*default_headers, "sentry-trace", "baggage"]
+
+    # Browsers only expose a small safe list of response headers to JS by default; the session
+    # download flow reads Content-Disposition for the filename and needs it exposed explicitly.
+    global CORS_EXPOSE_HEADERS
+    CORS_EXPOSE_HEADERS = ["Content-Length", "Content-Range", "Content-Disposition"]
 
     if APP_IS_EXPOSED:
         print_django("APP_IS_EXPOSED is true. Setting up security.")
