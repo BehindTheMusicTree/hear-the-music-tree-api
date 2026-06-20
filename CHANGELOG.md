@@ -64,6 +64,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v2.2.9] - 2026-06-20
+
 ### Fixed
 
 - **CORS configuration** ([`api/settings.py`](api/settings.py)): When `APP_IS_EXPOSED=true`, `CORS_ALLOWED_ORIGINS` is now loaded from a required `CORS_ALLOWED_ORIGINS` env var (comma-separated, same validation pattern as `CSRF_TRUSTED_ORIGINS`/`ALLOWED_HOSTS`), restoring Django-level CORS handling that was silently dropped when the nginx gateway was replaced by Traefik/Coolify. Companion `infrastructure` change supplies the env var via Ansible.
