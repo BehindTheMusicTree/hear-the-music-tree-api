@@ -355,6 +355,18 @@ def setup_app_exposure_if_needed():
                 print_django(str(cors_allowed_origin))
         else:
             raise OSError("The app is exposed but no CORS allowed origins are set.")
+
+        CORS_ALLOWED_ORIGIN_REGEXES_STR = load_optional_str_env_var("CORS_ALLOWED_ORIGIN_REGEXES")
+        global CORS_ALLOWED_ORIGIN_REGEXES
+        CORS_ALLOWED_ORIGIN_REGEXES = (
+            [p.strip() for p in CORS_ALLOWED_ORIGIN_REGEXES_STR.split(",") if p.strip()]
+            if CORS_ALLOWED_ORIGIN_REGEXES_STR
+            else []
+        )
+        if CORS_ALLOWED_ORIGIN_REGEXES:
+            print_django("CORS is also allowed via regex pattern(s):")
+            for pattern in CORS_ALLOWED_ORIGIN_REGEXES:
+                print_django(pattern)
     else:
         ALLOWED_HOSTS = [
             "127.0.0.1",
