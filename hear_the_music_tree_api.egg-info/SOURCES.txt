@@ -1,10 +1,13 @@
 LICENSE
 README.md
 pyproject.toml
+api/CiPytestStartupTracer.py
+api/CiStartupTraceEnabled.py
 api/__init__.py
 api/admin.py
 api/apps.py
 api/asgi.py
+api/ci_pytest_startup_plugin.py
 api/models.py
 api/settings.py
 api/urls.py
@@ -105,6 +108,9 @@ api/model/artist/Fields.py
 api/model/base/BaseManager.py
 api/model/base/BaseModel.py
 api/model/base/BaseQuerySet.py
+api/model/base/name_field_utils.py
+api/model/criteria/AbstractCriteria.py
+api/model/criteria/AbstractCriteriaManager.py
 api/model/criteria/Criteria.py
 api/model/criteria/CriteriaManager.py
 api/model/criteria/Fields.py
@@ -199,7 +205,6 @@ api/model/uploaded_track_mixin/Fields.py
 api/model/uploaded_track_mixin/UploadedTrackMixin.py
 api/model/uploaded_track_mixin/UploadedTrackMixinManager.py
 api/model/uploaded_track_mixin/UploadedTrackMixinWithInternalNameManager.py
-api/model/uploaded_track_mixin/query_utils.py
 api/model/uploaded_track_playlist_rel/Fields.py
 api/model/uploaded_track_playlist_rel/UploadedTrackPlaylistRel.py
 api/model/uploaded_track_playlist_rel/UploadedTrackPlaylistRelManager.py
@@ -337,6 +342,7 @@ api/serializer/model/user/spotify/output/Fields.py
 api/serializer/model/user/spotify/output/detailed.py
 api/serializer/token/Fields.py
 api/test/__init__.py
+api/test/conftest.py
 api/test/tests/__init__.py
 api/test/tests/conftest.py
 api/test/tests/critical/__init__.py
