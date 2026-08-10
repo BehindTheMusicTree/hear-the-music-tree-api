@@ -58,10 +58,10 @@ class CriteriaManager(AbstractCriteriaManager[T]):
                 direct_tracks=criteria_uploaded_tracks, criteria_playlist=instance.criteria_playlist
             )
 
-        if instance.children.exists():
-            for child in instance.children.all():
-                child.criteria_playlist.parent = instance.parent.criteria_playlist if instance.parent else None
-                child.criteria_playlist.save(update_fields=[Fields.PARENT])
+        if instance.criteria_playlist.children.exists():
+            for child_playlist in instance.criteria_playlist.children.all():
+                child_playlist.parent = instance.parent.criteria_playlist if instance.parent else None
+                child_playlist.save(update_fields=[Fields.PARENT])
 
                 if not instance.parent:
-                    CriteriaPlaylist.objects.make_playlist_root(child.criteria_playlist)
+                    CriteriaPlaylist.objects.make_playlist_root(child_playlist)
