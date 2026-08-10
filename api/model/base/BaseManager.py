@@ -34,11 +34,11 @@ class BaseManager[T: "BaseModel"](models.Manager):
 
     def _transform_field_key(self, instance: T, key: str) -> str:
         """Transform field key based on model's field configuration"""
-        from api.model.uploaded_track_mixin.query_utils import Fields, uses_internal_name
+        from api.model.base.name_field_utils import NAME_INTERNAL, NAME_PUBLIC, uses_internal_name
 
         # Handle internal name transformation if applicable
-        if key == Fields.NAME_PUBLIC and uses_internal_name(instance.__class__):
-            return Fields.NAME_INTERNAL
+        if key == NAME_PUBLIC and uses_internal_name(instance.__class__):
+            return NAME_INTERNAL
         return key
 
     def update_instance(self, instance: T, **kwargs) -> T:
