@@ -30,7 +30,7 @@ class AbstractCriteria(PrivateUniqueResource):
     """
 
     _name = AppCharField(max_length=settings.CRITERIA_NAME_LEN_MAX, db_column=Fields.NAME_PUBLIC)
-    ascendants: QuerySet["AbstractCriteria"] = PrivateManyToManyField(
+    ascendants: QuerySet[AbstractCriteria] = PrivateManyToManyField(
         "self",
         through="CriteriaLineageRel",
         through_fields=(CriteriaLineageRelFields.DESCENDANT, CriteriaLineageRelFields.ASCENDANT),
