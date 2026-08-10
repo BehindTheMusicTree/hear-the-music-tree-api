@@ -20,7 +20,7 @@ class Criteria(AbstractCriteria, UploadedTrackMixin):
     objects: CriteriaManager = CriteriaManager()
 
     @property
-    def uploaded_tracks(self) -> models.QuerySet["UploadedTrack"]:
+    def uploaded_tracks(self) -> models.QuerySet[UploadedTrack]:
         return getattr(self, Fields.UPLOADED_TRACKS_RELATED_NAME)
 
     class Meta:

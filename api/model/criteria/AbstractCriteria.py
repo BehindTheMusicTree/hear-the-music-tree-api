@@ -36,11 +36,11 @@ class AbstractCriteria(PrivateUniqueResource):
         through_fields=(CriteriaLineageRelFields.DESCENDANT, CriteriaLineageRelFields.ASCENDANT),
         symmetrical=False,
     )  # type: ignore
-    parent: "AbstractCriteria | None" = PrivateForeignKey(
+    parent: AbstractCriteria | None = PrivateForeignKey(
         "self", on_delete=models.SET_NULL, null=True, related_name=Fields.CHILDREN
     )  # type: ignore
 
-    root: "AbstractCriteria" = PrivateForeignKey("self", on_delete=models.DO_NOTHING, related_name=Fields.DESCENDANTS)  # type: ignore
+    root: AbstractCriteria = PrivateForeignKey("self", on_delete=models.DO_NOTHING, related_name=Fields.DESCENDANTS)  # type: ignore
 
     type = AppForeignKey(CriteriaType, on_delete=models.CASCADE)
 
@@ -49,9 +49,9 @@ class AbstractCriteria(PrivateUniqueResource):
 
     if TYPE_CHECKING:
         ascendants_rels: QuerySet[CriteriaLineageRel]
-        descendants: QuerySet["AbstractCriteria"]
+        descendants: QuerySet[AbstractCriteria]
         descendants_rels: QuerySet[CriteriaLineageRel]
-        children: QuerySet["AbstractCriteria"]
+        children: QuerySet[AbstractCriteria]
 
     @property
     def name(self) -> str:
@@ -62,7 +62,7 @@ class AbstractCriteria(PrivateUniqueResource):
         return not self.parent
 
     @property
-    def descendant_list(self) -> list["AbstractCriteria"]:
+    def descendant_list(self) -> list[AbstractCriteria]:
         """
         Get all descendants of this criteria using the lineage system.
         This is more efficient than recursive traversal as it uses the pre-computed relationships.
@@ -121,7 +121,7 @@ class AbstractCriteria(PrivateUniqueResource):
             # Let other database integrity errors propagate to be handled as system errors
             raise
 
-    def is_descendant_of(self, other_criteria: "AbstractCriteria") -> bool:
+    def is_descendant_of(self, other_criteria: AbstractCriteria) -> bool:
         if self.parent == other_criteria:
             return True
         if self.parent:
