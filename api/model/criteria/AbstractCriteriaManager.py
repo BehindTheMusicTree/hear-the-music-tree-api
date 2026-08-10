@@ -191,7 +191,7 @@ class AbstractCriteriaManager(UploadedTrackMixinWithInternalNameManager[T]):
         }
         """
         # Get all criteria for the user
-        queryset = self.filter(user=user)
+        queryset = self.filter(user=user).select_related(Fields.PARENT)
 
         # Build a dictionary of criteria by parent ID for efficient lookup
         criteria_by_parent = {}
