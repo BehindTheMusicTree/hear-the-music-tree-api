@@ -58,7 +58,7 @@ class BaseModel(models.Model):
         self._post_save(adding=adding)
 
     def _prepare_save(self, ctx: SaveContext) -> dict:
-        from api.model.uploaded_track_mixin.query_utils import transform_name_fields
+        from api.model.base.name_field_utils import transform_name_fields
 
         transformed_kwargs = transform_name_fields(self.__class__, **ctx.kwargs)
         ctx.kwargs = transformed_kwargs
