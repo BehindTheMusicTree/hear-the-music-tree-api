@@ -1,10 +1,9 @@
 from typing import Any
 
-from django.core.exceptions import FieldDoesNotExist, ObjectDoesNotExist
 from django.db import models
 from django.db.models import F, OrderBy, Q
 
-from api.model.uploaded_track_mixin.Fields import Fields as UploadedTrackMixinFields
+from api.model.base.name_field_utils import NAME_INTERNAL, NAME_PUBLIC, uses_internal_name
 
 
 def get_related_model(model: type[models.Model], field_path: str) -> type[models.Model]:
@@ -35,16 +34,6 @@ def get_related_model(model: type[models.Model], field_path: str) -> type[models
             break
 
     return current_model
-
-
-def uses_internal_name(model: type[models.Model]) -> bool:
-    from api.model.field.AppCharField import AppCharField
-
-    try:
-        field = model._meta.get_field(UploadedTrackMixinFields.NAME_INTERNAL)
-        return isinstance(field, AppCharField) and field.db_column == UploadedTrackMixinFields.NAME_PUBLIC
-    except ObjectDoesNotExist, FieldDoesNotExist, AttributeError:
-        return False
 
 
 class BaseQuerySet(models.QuerySet):
@@ -125,7 +114,7 @@ class BaseQuerySet(models.QuerySet):
             # Find any part that starts with 'name'
             name_part_index = -1
             for i, part in enumerate(parts):
-                if part.startswith(UploadedTrackMixinFields.NAME_PUBLIC):
+                if part.startswith(NAME_PUBLIC):
                     name_part_index = i
                     break
 
@@ -140,8 +129,8 @@ class BaseQuerySet(models.QuerySet):
                 if uses_internal:
                     # Transform name to _name while preserving any suffixes
                     name_part = parts[name_part_index]
-                    suffix = name_part[len(UploadedTrackMixinFields.NAME_PUBLIC) :]  # Get any suffix after 'name'
-                    parts[name_part_index] = UploadedTrackMixinFields.NAME_INTERNAL + suffix
+                    suffix = name_part[len(NAME_PUBLIC) :]  # Get any suffix after 'name'
+                    parts[name_part_index] = NAME_INTERNAL + suffix
                     transformed_key = "__".join(parts)
                     transformed[transformed_key] = value
                 else:
@@ -210,7 +199,7 @@ class BaseQuerySet(models.QuerySet):
                     # Find any part that starts with 'name'
                     name_part_index = -1
                     for i, part in enumerate(parts):
-                        if part.startswith(UploadedTrackMixinFields.NAME_PUBLIC):
+                        if part.startswith(NAME_PUBLIC):
                             name_part_index = i
                             break
 
@@ -224,7 +213,7 @@ class BaseQuerySet(models.QuerySet):
                         # Check if this model uses internal name fields
                         if uses_internal_name(current_model):
                             # Transform name to _name
-                            parts[name_part_index] = UploadedTrackMixinFields.NAME_INTERNAL
+                            parts[name_part_index] = NAME_INTERNAL
                             transformed_field_path = "__".join(parts)
                             # Create new OrderBy with the transformed field path
                             transformed_field_names.append(OrderBy(F(transformed_field_path), descending=descending))
@@ -243,7 +232,7 @@ class BaseQuerySet(models.QuerySet):
                 # Find any part that starts with 'name'
                 name_part_index = -1
                 for i, part in enumerate(parts):
-                    if part.startswith(UploadedTrackMixinFields.NAME_PUBLIC):
+                    if part.startswith(NAME_PUBLIC):
                         name_part_index = i
                         break
 
@@ -255,7 +244,7 @@ class BaseQuerySet(models.QuerySet):
                     # Check if this model uses internal name fields
                     if uses_internal_name(current_model):
                         # Transform name to _name
-                        parts[name_part_index] = UploadedTrackMixinFields.NAME_INTERNAL
+                        parts[name_part_index] = NAME_INTERNAL
                         transformed_name = "__".join(parts)
                         # Restore descending prefix if needed
                         transformed_field_names.append(f"-{transformed_name}" if descending else transformed_name)
