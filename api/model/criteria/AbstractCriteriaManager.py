@@ -147,8 +147,6 @@ class AbstractCriteriaManager(UploadedTrackMixinWithInternalNameManager[T]):
         - If it has children but no parent, children become root criteria
         Non-tree side effects (uploaded tracks, playlists) are left to `_on_before_delete`.
         """
-        self._on_before_delete(instance)
-
         if instance.children.exists():
             children = list(instance.children.all())
 
@@ -158,6 +156,11 @@ class AbstractCriteriaManager(UploadedTrackMixinWithInternalNameManager[T]):
                 child.save(update_fields=[Fields.PARENT, Fields.ROOT])
                 self._refresh_ascendants_of_instance_and_children(child)
                 self.update_children_root(child, child.root)
+
+        # Model-level tree state must be updated before this hook runs: subclass hooks
+        # (e.g. playlist maintenance) may re-derive fields from the criteria's current
+        # parent/root, so they need the post-reassignment state, not the pre-delete one.
+        self._on_before_delete(instance)
 
         # Delete the criteria instance directly
         # This will cascade delete its playlist due to foreign key relationships
