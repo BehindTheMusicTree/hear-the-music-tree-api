@@ -257,7 +257,7 @@ class AbstractCriteriaManager(UploadedTrackMixinWithInternalNameManager[T]):
                 name = node.get(InputFields.NAME_PUBLIC)
                 criteria = self.create(name=name, parent=parent, user=user)
 
-                children = node.get("children", [])
+                children = node.get(InputFields.CHILDREN, [])
                 if children is None:
                     children = []
 
