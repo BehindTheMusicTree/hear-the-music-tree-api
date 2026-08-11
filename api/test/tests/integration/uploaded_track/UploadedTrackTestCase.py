@@ -1,13 +1,13 @@
 from uuid import UUID
 
 from django.urls import reverse
+from the_music_tree_api_kit.utils import data_transformer
 
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.utils.AppTestCase import AppTestCase
 from api.test.utils.uploaded_track.UploadedTrackDownloadTestUrl import UploadedTrackDownloadTestUrl
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.utils import data_transformer
 
 
 class UploadedTrackTestCase(AppTestCase[UploadedTrack]):

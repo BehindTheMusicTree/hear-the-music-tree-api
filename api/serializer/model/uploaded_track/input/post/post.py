@@ -4,13 +4,14 @@ from typing import cast
 from django.core.files.base import File as DjangoFile
 from the_music_tree_api_kit.exception.validation.app.AppValidationException import AppValidationException
 from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
+from the_music_tree_api_kit.utils import data_transformer
 
 from api import settings
 from api.model.user.User import User
 from api.serializer.field.TrackFileField import TrackFileField
 from api.serializer.model.uploaded_track.input.input import UploadedTrackInputSerializer
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
-from api.utils import audio_file_metadata, data_transformer, utils
+from api.utils import audio_file_metadata, utils
 from api.utils.audio_file_metadata.AppMetadataKey import AppMetadataKey
 from api.utils.audio_file_metadata.exceptions import FileCorruptedError
 

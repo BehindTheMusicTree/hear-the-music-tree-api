@@ -1,11 +1,11 @@
 from uuid import uuid4
 
 from rest_framework import status
+from the_music_tree_api_kit.utils.data_transformer import to_camel_case
 
 from api.model.spotify_resource.children.track.Fields import Fields as ModelFields
 from api.serializer.model.spotify.lib_track.output.Fields import Fields as SerializerFields
 from api.test.tests.integration.spotify_lib_track.SpotifyLibTrackTestCase import SpotifyLibTrackTestCase
-from api.utils.data_transformer import to_camel_case
 
 
 class TestGet(SpotifyLibTrackTestCase):

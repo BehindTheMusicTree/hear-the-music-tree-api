@@ -1,5 +1,6 @@
 import pytest
 from rest_framework import status
+from the_music_tree_api_kit.utils.data_transformer import to_camel_case
 
 from api.model.criteria.children.genre.Genre import Genre
 from api.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
@@ -22,7 +23,6 @@ from api.test.tests.integration.playlist.children.manual.ManualPlaylistTestCase 
 from api.test.tests.integration.search.SearchTestCase import SearchMixin
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.utils.data_transformer import to_camel_case
 
 
 @pytest.mark.e2e

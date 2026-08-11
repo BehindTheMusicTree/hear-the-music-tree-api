@@ -4,9 +4,9 @@ from unittest.mock import Mock, patch
 import pytest
 from django.core.exceptions import DisallowedHost
 from django.http import HttpRequest
+from the_music_tree_api_kit.view.error.ApiErrorCode import ApiErrorCodeNumeric
 
 from api.middleware.HostValidationMiddleware import HostValidationMiddleware
-from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
 
 
 class TestHostValidationMiddleware:

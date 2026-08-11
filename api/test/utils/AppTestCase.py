@@ -10,7 +10,9 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework_simplejwt.tokens import AccessToken
+from the_music_tree_api_kit.utils import data_transformer
 from the_music_tree_api_kit.uuid.Fields import Fields as UuidModelFields
+from the_music_tree_api_kit.view.error.ErrorResponseFields import ErrorResponseFields
 
 from api import settings
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
@@ -19,8 +21,7 @@ from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import
 from api.test.utils.AppApiClient import AppApiClient
 from api.test.utils.ModelFixtureFactory import ModelFixtureFactory
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.utils import audio_file_metadata, data_transformer
-from api.view.error.ErrorResponseFields import ErrorResponseFields
+from api.utils import audio_file_metadata
 from api.view.pagination.PaginatedResponseFields import PaginatedResponseFields
 
 

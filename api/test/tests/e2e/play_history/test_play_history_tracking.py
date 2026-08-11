@@ -4,13 +4,13 @@ import pytest
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
 from rest_framework import status
+from the_music_tree_api_kit.utils.data_transformer import to_camel_case
 
 from api.model.play.Play import Play
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.serializer.model.play.input.schema.PostFields import Fields as PlayPostFields
 from api.test.tests.integration.play.PlayTestCase import PlayTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.utils.data_transformer import to_camel_case
 
 
 @pytest.mark.e2e

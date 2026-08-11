@@ -1,7 +1,7 @@
 from rest_framework import status
+from the_music_tree_api_kit.view.error.ApiErrorCode import ApiErrorCodeNumeric
 
 from api.test.utils.AppTestCase import AppTestCase
-from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
 
 
 class TestSpotifyUserRequiredDecoratorIntegration(AppTestCase):

@@ -1,11 +1,11 @@
 from rest_framework import status
 from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
+from the_music_tree_api_kit.utils.data_transformer import to_camel_case
 
 from api.model.playlist.Playlist import Playlist
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.serializer.model.play.input.schema.PostFields import Fields
 from api.test.tests.integration.play.PlayTestCase import PlayTestCase
-from api.utils.data_transformer import to_camel_case
 
 
 class TestCase(PlayTestCase):

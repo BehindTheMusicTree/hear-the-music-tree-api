@@ -1,7 +1,7 @@
 from functools import wraps
 
-from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
-from api.view.error.ErrorResponse import ErrorResponse
+from the_music_tree_api_kit.view.error.ApiErrorCode import ApiErrorCodeNumeric
+from the_music_tree_api_kit.view.error.ErrorResponse import ErrorResponse
 
 
 def spotify_user_required(view_func):
