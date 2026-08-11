@@ -5,6 +5,7 @@ from drf_spectacular.utils import (
 )
 from rest_framework import status
 from rest_framework.response import Response
+from the_music_tree_api_kit.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 from api.filtering.set.spotify.artist.Fields import Fields as FilterFields
 from api.filtering.set.spotify.artist.SpotifyArtistFilterSet import SpotifyArtistFilterSet
@@ -12,7 +13,6 @@ from api.model.spotify_resource.children.artist.SpotifyArtist import SpotifyArti
 from api.serializer.model.spotify.artist.output.detailed import SpotifyArtistDetailedSerializer
 from api.serializer.model.spotify.artist.output.simple import SpotifyArtistSimpleSerializer
 from api.utils.spotify_api.SpotifyClient import get_spotify_client
-from api.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 
 class SpotifyArtistViewSet(AppModelViewSet[SpotifyArtist]):

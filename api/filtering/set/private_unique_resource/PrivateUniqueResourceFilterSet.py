@@ -1,6 +1,5 @@
 from django_filters import DateTimeFilter
-
-from api.filtering.set.AppFilterSet import AppFilterSet
+from the_music_tree_api_kit.filtering.set.AppFilterSet import AppFilterSet
 
 from .Fields import Fields
 

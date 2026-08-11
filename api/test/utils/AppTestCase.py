@@ -13,6 +13,7 @@ from rest_framework_simplejwt.tokens import AccessToken
 from the_music_tree_api_kit.utils import data_transformer
 from the_music_tree_api_kit.uuid.Fields import Fields as UuidModelFields
 from the_music_tree_api_kit.view.error.ErrorResponseFields import ErrorResponseFields
+from the_music_tree_api_kit.view.pagination.PaginatedResponseFields import PaginatedResponseFields
 
 from api import settings
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
@@ -22,7 +23,6 @@ from api.test.utils.AppApiClient import AppApiClient
 from api.test.utils.ModelFixtureFactory import ModelFixtureFactory
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.utils import audio_file_metadata
-from api.view.pagination.PaginatedResponseFields import PaginatedResponseFields
 
 
 class AppTestCase[T: models.Model](TestCase):

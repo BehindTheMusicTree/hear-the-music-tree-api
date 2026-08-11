@@ -1,12 +1,12 @@
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
+from the_music_tree_api_kit.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 from api.filtering.set.playlist.children.criteria.CriteriaPlaylistFilterSet import CriteriaPlaylistFilterSet
 from api.filtering.set.playlist.children.criteria.Fields import Fields as FilterFields
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 from api.serializer.model.playlist.children.criteria.output.detailed import CriteriaPlaylistDetailedSerializer
 from api.serializer.model.playlist.children.criteria.output.simple import CriteriaPlaylistSimpleSerializer
-from api.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 
 class CriteriaPlaylistViewSet(AppModelViewSet[CriteriaPlaylist]):

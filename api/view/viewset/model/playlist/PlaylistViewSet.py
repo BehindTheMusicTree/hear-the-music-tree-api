@@ -3,13 +3,13 @@ from drf_spectacular.utils import (
     OpenApiTypes,
     extend_schema,
 )
+from the_music_tree_api_kit.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 from api.filtering.set.playlist.Fields import Fields as QueryParamsFields
 from api.filtering.set.playlist.PlaylistFilterSet import PlaylistFilterSet
 from api.model.playlist.Playlist import Playlist
 from api.serializer.model.playlist.base.output.detailed import PlaylistDetailedSerializer
 from api.serializer.model.playlist.base.output.simple import PlaylistSimpleSerializer
-from api.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 
 class PlaylistViewSet(AppModelViewSet[Playlist]):

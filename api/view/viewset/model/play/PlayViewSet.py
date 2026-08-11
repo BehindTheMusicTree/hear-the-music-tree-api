@@ -1,11 +1,11 @@
 from drf_spectacular.utils import extend_schema
 from rest_framework.response import Response
+from the_music_tree_api_kit.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 from api.filtering.set.play.PlayFilterSet import PlayFilterSet
 from api.model.play.Play import Play
 from api.serializer.model.play.input.schema.post import PlayPostSerializer
 from api.serializer.model.play.output.detailed import PlayDetailedSerializer
-from api.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 
 class PlayViewSet(AppModelViewSet[Play]):
