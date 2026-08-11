@@ -3,8 +3,8 @@ from typing import Any, Generic, TypeVar
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from rest_framework.request import Request
+from the_music_tree_api_kit.uuid.UuidModel import UuidModel
 
-from api.model.uuid.UuidModel import UuidModel
 from api.serializer.field.AppUuidField import AppUuidField
 from api.serializer.field.foreign_key.ForeignKeyField import ForeignKeyField
 

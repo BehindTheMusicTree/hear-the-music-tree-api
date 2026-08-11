@@ -10,11 +10,11 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework_simplejwt.tokens import AccessToken
+from the_music_tree_api_kit.uuid.Fields import Fields as UuidModelFields
 
 from api import settings
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.model.user.User import User
-from api.model.uuid.Fields import Fields as UuidModelFields
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.test.utils.AppApiClient import AppApiClient
 from api.test.utils.ModelFixtureFactory import ModelFixtureFactory

@@ -1,7 +1,7 @@
 from django.db.models import Case, Q, Value, When
+from the_music_tree_api_kit.base.BaseQuerySet import BaseQuerySet
 
 from api.filtering.filter.char.NonEmptiableCharFilter import NonEmptiableCharFilter
-from api.model.base.BaseQuerySet import BaseQuerySet
 from api.model.criteria.Criteria import Criteria
 from api.model.criteria.type.CriteriaTypePks import CriteriaTypePks
 from api.model.field.AppCharField import AppCharField

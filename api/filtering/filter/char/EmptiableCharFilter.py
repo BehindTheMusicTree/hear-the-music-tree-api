@@ -1,9 +1,9 @@
 from typing import TYPE_CHECKING
 
 from django_filters import CharFilter
+from the_music_tree_api_kit.base.BaseQuerySet import BaseQuerySet
 
 from api.filtering.filter.AppFilter import AppFilter
-from api.model.base.BaseQuerySet import BaseQuerySet
 
 if TYPE_CHECKING:
     from api.filtering.set.AppFilterSet import AppFilterSet

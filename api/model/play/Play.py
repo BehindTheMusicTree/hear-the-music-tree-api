@@ -1,10 +1,10 @@
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from the_music_tree_api_kit.private_unique_resource.PrivateUniqueResource import PrivateUniqueResource
 
 from api.model.field.foreign_key.AppForeignKey import AppForeignKey
 from api.model.field.foreign_key.PrivateUuidGenericForeignKey import PrivateUuidGenericForeignKey
 from api.model.play.PlayManager import PlayManager
-from api.model.private_unique_resource.PrivateUniqueResource import PrivateUniqueResource
 from api.model.trackable_play_count.TrackablePlayCount import TrackablePlayCount
 
 from .Fields import Fields
