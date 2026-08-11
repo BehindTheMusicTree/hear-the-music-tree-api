@@ -1,7 +1,7 @@
 from django.utils.translation import gettext_lazy as _
+from the_music_tree_api_kit.exception.validation.app.AppValidationException import AppValidationException
+from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 
-from api.exception.validation.app.AppValidationException import AppValidationException
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.filtering.filter.char.EmptiableCharFilter import EmptiableCharFilter
 from api.filtering.set.AppFilterSet import AppFilterSet
 

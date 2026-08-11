@@ -1,10 +1,10 @@
 from typing import Any
 
 from rest_framework import serializers
+from the_music_tree_api_kit.serializer.PutSerializer import PutSerializer
 
 from api.serializer.field.AppBooleanField import AppBooleanField
 from api.serializer.model.uploaded_track.input.input import UploadedTrackInputSerializer
-from api.serializer.PutSerializer import PutSerializer
 
 
 class UploadedTrackPutSerializer(PutSerializer, UploadedTrackInputSerializer):

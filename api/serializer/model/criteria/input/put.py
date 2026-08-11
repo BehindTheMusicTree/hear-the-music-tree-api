@@ -1,8 +1,9 @@
+from the_music_tree_api_kit.serializer.field.AppCharField import AppCharField
+from the_music_tree_api_kit.serializer.PutSerializer import PutSerializer
+
 from api import settings
 from api.model.criteria.Criteria import Criteria
-from api.serializer.field.AppCharField import AppCharField
 from api.serializer.field.foreign_key.DescendantAwareField import DescendantAwareField
-from api.serializer.PutSerializer import PutSerializer
 
 from .Fields import Fields
 

@@ -1,11 +1,10 @@
 from typing import Any
 
 from rest_framework.fields import ListField
-
-from api.exception.validation.app.AppValidationException import AppValidationException
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
-from api.serializer.field.AppCharField import AppCharField
-from api.serializer.field.AppField import AppField
+from the_music_tree_api_kit.exception.validation.app.AppValidationException import AppValidationException
+from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
+from the_music_tree_api_kit.serializer.field.AppCharField import AppCharField
+from the_music_tree_api_kit.serializer.field.AppField import AppField
 
 
 class ArtistsNamesField(AppField, ListField):

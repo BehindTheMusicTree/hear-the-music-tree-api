@@ -12,10 +12,10 @@ from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer, ModelSerializer, Serializer
 from the_music_tree_api_kit.base.BaseModel import BaseModel
 from the_music_tree_api_kit.private.Fields import Fields as PrivateFields
+from the_music_tree_api_kit.serializer.SerializerType import SerializerType
 
 from api.filtering.backend.ConsistentParametersFilterBackend import ConsistentParametersFilterBackend
 from api.filtering.set.AppFilterSet import AppFilterSet
-from api.serializer.SerializerType import SerializerType
 from api.view.file_response.AppFileResponse import AppFileResponse
 
 from ...pagination.AppPagination import AppPagination
@@ -154,8 +154,8 @@ class AppModelViewSet[T: BaseModel](viewsets.ModelViewSet):
         return self.paginator.paginate_queryset(cast(QuerySet[T], queryset), self.request, view=self)
 
     def get_object(self) -> T:
-        from api.exception.validation.app.AppValidationException import AppValidationException
-        from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
+        from the_music_tree_api_kit.exception.validation.app.AppValidationException import AppValidationException
+        from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 
         # Use a direct query instead of relying on the DRF lookup mechanism
         lookup_url_kwarg = self.lookup_url_kwarg or self.lookup_field

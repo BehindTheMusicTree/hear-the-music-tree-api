@@ -4,11 +4,11 @@ from urllib.parse import urlparse
 
 import requests
 from django.core.files.uploadedfile import TemporaryUploadedFile, UploadedFile
+from the_music_tree_api_kit.exception.validation.app.AppValidationException import AppValidationException
+from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
+from the_music_tree_api_kit.serializer.field.AppField import AppField
 
 from api import settings
-from api.exception.validation.app.AppValidationException import AppValidationException
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
-from api.serializer.field.AppField import AppField
 from api.serializer.field.AppFileField import AppFileField
 from api.serializer.field.AppUrlField import AppUrlField
 from api.validator.TrackFileValidator import TrackFileValidator

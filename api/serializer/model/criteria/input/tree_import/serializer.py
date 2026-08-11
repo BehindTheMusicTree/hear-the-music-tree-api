@@ -1,5 +1,6 @@
+from the_music_tree_api_kit.serializer.AppInputSerializer import AppInputSerializer
+
 from api import settings
-from api.serializer.AppInputSerializer import AppInputSerializer
 from api.serializer.field.TreeField import TreeField
 
 

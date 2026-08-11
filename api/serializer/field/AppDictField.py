@@ -1,8 +1,7 @@
 from typing import Any
 
 from rest_framework.fields import DictField
-
-from api.serializer.field.AppField import AppField
+from the_music_tree_api_kit.serializer.field.AppField import AppField
 
 
 class AppDictField(AppField, DictField):

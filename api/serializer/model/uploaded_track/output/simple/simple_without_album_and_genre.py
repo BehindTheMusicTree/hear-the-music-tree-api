@@ -1,7 +1,7 @@
 from rest_framework import serializers
+from the_music_tree_api_kit.serializer.AppInputSerializer import AppInputSerializer
 
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
-from api.serializer.AppInputSerializer import AppInputSerializer
 from api.serializer.model.artist.minimum import ArtistMinimumSerializer
 from api.serializer.model.uploaded_track.output.UploadedTrackOutputFieldKey import UploadedTrackOutputFieldKey
 

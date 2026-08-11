@@ -1,6 +1,6 @@
 from rest_framework import status
+from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.serializer.model.album.Fields import Fields as AlbumFields
 from api.test.tests.integration.album.AlbumTestCase import AlbumTestCase
 from api.test.utils.field.filter.char.NotNullableFreeCharFilterTestCase import NotNullableFreeCharFilterTestCase

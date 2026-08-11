@@ -2,11 +2,11 @@ from typing import Any
 from uuid import UUID
 
 from django.contrib.contenttypes.models import ContentType
+from the_music_tree_api_kit.serializer.field.foreign_key.PrivateUuidField import PrivateUuidField
 
 from api.model.ContentObjectFields import ContentObjectFields
 from api.model.playlist.Playlist import Playlist
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
-from api.serializer.field.foreign_key.PrivateUuidField import PrivateUuidField
 
 
 class PrivateContentUuidField(PrivateUuidField):
