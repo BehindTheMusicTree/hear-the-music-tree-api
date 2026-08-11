@@ -1,9 +1,9 @@
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models import Case, F, Value, When
+from the_music_tree_api_kit.field.foreign_key.PrivateForeignKey import PrivateForeignKey
 from the_music_tree_api_kit.private_standard_resource.PrivateStandardResource import PrivateStandardResource
 
-from api.model.field.foreign_key.PrivateForeignKey import PrivateForeignKey
 from api.model.playlist.Fields import Fields as PlayListFields
 from api.model.playlist.Playlist import Playlist
 from api.model.uploaded_track.UploadedTrack import UploadedTrack

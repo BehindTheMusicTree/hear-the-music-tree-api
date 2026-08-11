@@ -1,8 +1,8 @@
 from django.db import models
 from django.db.models import F, Value
+from the_music_tree_api_kit.field.AppCharField import AppCharField
 
 from api import settings
-from api.model.field.AppCharField import AppCharField
 from api.model.utils.ConcatOp import ConcatOp
 
 from ...MusicbrainzResource import MusicbrainzResource
