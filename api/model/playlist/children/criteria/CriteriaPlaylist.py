@@ -3,14 +3,14 @@ from typing import TYPE_CHECKING
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from the_music_tree_api_kit.base.save_context import SaveContext
+from the_music_tree_api_kit.field.foreign_key.AppForeignKey import AppForeignKey
+from the_music_tree_api_kit.field.foreign_key.PrivateForeignKey import PrivateForeignKey
+from the_music_tree_api_kit.field.foreign_key.PrivateOneToOneField import PrivateOneToOneField
 
 from api.model.criteria.Criteria import Criteria
 from api.model.criteria.Fields import Fields as CriteriaFields
 from api.model.criteria.type.CriteriaType import CriteriaType
 from api.model.criteria.type.CriteriaTypePks import CriteriaTypePks
-from api.model.field.foreign_key.AppForeignKey import AppForeignKey
-from api.model.field.foreign_key.PrivateForeignKey import PrivateForeignKey
-from api.model.field.foreign_key.PrivateOneToOneField import PrivateOneToOneField
 from api.model.playlist.Fields import Fields as PlayListFields
 from api.model.playlist.Playlist import Playlist
 

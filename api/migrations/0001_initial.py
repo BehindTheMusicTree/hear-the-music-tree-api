@@ -8,16 +8,16 @@ import django.core.validators
 import django.db.models.deletion
 import django.db.models.expressions
 import django.utils.timezone
+import the_music_tree_api_kit.field
+import the_music_tree_api_kit.field.foreign_key.AppForeignKey
+import the_music_tree_api_kit.field.foreign_key.AppManyToManyField
+import the_music_tree_api_kit.field.foreign_key.AppOneToOneField
+import the_music_tree_api_kit.field.foreign_key.PrivateForeignKey
+import the_music_tree_api_kit.field.foreign_key.PrivateManyToManyField
+import the_music_tree_api_kit.field.foreign_key.PrivateOneToOneField
 from django.conf import settings
 from django.db import migrations, models
 
-import api.model.field
-import api.model.field.foreign_key.AppForeignKey
-import api.model.field.foreign_key.AppManyToManyField
-import api.model.field.foreign_key.AppOneToOneField
-import api.model.field.foreign_key.PrivateForeignKey
-import api.model.field.foreign_key.PrivateManyToManyField
-import api.model.field.foreign_key.PrivateOneToOneField
 import api.model.utils.ConcatOp
 import api.model.utils.ConditionalExpression
 import api.model.utils.PreserveSpacesStorage
@@ -86,7 +86,7 @@ class Migration(migrations.Migration):
                         db_persist=True,
                         expression=api.model.utils.ConditionalExpression.ConditionalExpression(
                             condition_field="is_test_user",
-                            output_field=api.model.field.AppCharField(max_length=256),
+                            output_field=the_music_tree_api_kit.field.AppCharField(max_length=256),
                             when_false=api.model.utils.ConcatOp.ConcatOp(
                                 models.Value("libraries"), models.Value("/"), models.Value("user_"), models.F("id")
                             ),
@@ -94,7 +94,7 @@ class Migration(migrations.Migration):
                                 models.Value("libraries"), models.Value("/"), models.Value("test_user_"), models.F("id")
                             ),
                         ),
-                        output_field=api.model.field.AppCharField(max_length=256),
+                        output_field=the_music_tree_api_kit.field.AppCharField(max_length=256),
                     ),
                 ),
                 (
@@ -175,7 +175,7 @@ class Migration(migrations.Migration):
                         unique=True,
                     ),
                 ),
-                ("label", api.model.field.AppCharField(max_length=256, unique=True)),
+                ("label", the_music_tree_api_kit.field.AppCharField(max_length=256, unique=True)),
             ],
             options={
                 "verbose_name": "MusicBrainz Recording Missing Cause Code",
@@ -233,7 +233,7 @@ class Migration(migrations.Migration):
                 ),
                 ("created_on", models.DateTimeField(default=django.utils.timezone.now, editable=False)),
                 ("updated_on", models.DateTimeField(null=True)),
-                ("_name", api.model.field.AppCharField(db_column="name", default=None, max_length=256)),
+                ("_name", the_music_tree_api_kit.field.AppCharField(db_column="name", default=None, max_length=256)),
                 (
                     "user",
                     models.ForeignKey(
@@ -258,8 +258,8 @@ class Migration(migrations.Migration):
                 ),
                 ("created_on", models.DateTimeField(default=django.utils.timezone.now, editable=False)),
                 ("updated_on", models.DateTimeField(null=True)),
-                ("_name", api.model.field.AppCharField(db_column="name", default=None, max_length=256)),
-                ("year", api.model.field.AppCharField(default=None, max_length=4, null=True)),
+                ("_name", the_music_tree_api_kit.field.AppCharField(db_column="name", default=None, max_length=256)),
+                ("year", the_music_tree_api_kit.field.AppCharField(default=None, max_length=4, null=True)),
                 (
                     "user",
                     models.ForeignKey(
@@ -270,7 +270,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "album_artists",
-                    api.model.field.foreign_key.PrivateManyToManyField.PrivateManyToManyField(
+                    the_music_tree_api_kit.field.foreign_key.PrivateManyToManyField.PrivateManyToManyField(
                         related_name="albums", to="api.artist"
                     ),
                 ),
@@ -290,10 +290,10 @@ class Migration(migrations.Migration):
                 ),
                 ("created_on", models.DateTimeField(default=django.utils.timezone.now, editable=False)),
                 ("updated_on", models.DateTimeField(null=True)),
-                ("_name", api.model.field.AppCharField(db_column="name", max_length=256)),
+                ("_name", the_music_tree_api_kit.field.AppCharField(db_column="name", max_length=256)),
                 (
                     "parent",
-                    api.model.field.foreign_key.PrivateForeignKey.PrivateForeignKey(
+                    the_music_tree_api_kit.field.foreign_key.PrivateForeignKey.PrivateForeignKey(
                         null=True,
                         on_delete=django.db.models.deletion.SET_NULL,
                         related_name="children",
@@ -302,7 +302,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "root",
-                    api.model.field.foreign_key.PrivateForeignKey.PrivateForeignKey(
+                    the_music_tree_api_kit.field.foreign_key.PrivateForeignKey.PrivateForeignKey(
                         on_delete=django.db.models.deletion.DO_NOTHING, related_name="descendants", to="api.criteria"
                     ),
                 ),
@@ -352,13 +352,13 @@ class Migration(migrations.Migration):
                 ("degree", models.PositiveIntegerField()),
                 (
                     "ascendant",
-                    api.model.field.foreign_key.PrivateForeignKey.PrivateForeignKey(
+                    the_music_tree_api_kit.field.foreign_key.PrivateForeignKey.PrivateForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, related_name="descendants_rels", to="api.criteria"
                     ),
                 ),
                 (
                     "descendant",
-                    api.model.field.foreign_key.PrivateForeignKey.PrivateForeignKey(
+                    the_music_tree_api_kit.field.foreign_key.PrivateForeignKey.PrivateForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, related_name="ascendants_rels", to="api.criteria"
                     ),
                 ),
@@ -380,7 +380,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="criteria",
             name="ascendants",
-            field=api.model.field.foreign_key.PrivateManyToManyField.PrivateManyToManyField(
+            field=the_music_tree_api_kit.field.foreign_key.PrivateManyToManyField.PrivateManyToManyField(
                 through="api.CriteriaLineageRel", through_fields=("descendant", "ascendant"), to="api.criteria"
             ),
         ),
@@ -389,7 +389,7 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "playlist",
-                    api.model.field.foreign_key.PrivateOneToOneField.PrivateOneToOneField(
+                    the_music_tree_api_kit.field.foreign_key.PrivateOneToOneField.PrivateOneToOneField(
                         on_delete=django.db.models.deletion.CASCADE,
                         parent_link=True,
                         primary_key=True,
@@ -411,7 +411,7 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "playlist",
-                    api.model.field.foreign_key.PrivateOneToOneField.PrivateOneToOneField(
+                    the_music_tree_api_kit.field.foreign_key.PrivateOneToOneField.PrivateOneToOneField(
                         on_delete=django.db.models.deletion.CASCADE,
                         parent_link=True,
                         primary_key=True,
@@ -420,7 +420,7 @@ class Migration(migrations.Migration):
                         to="api.playlist",
                     ),
                 ),
-                ("_name", api.model.field.AppCharField(db_column="name", max_length=256)),
+                ("_name", the_music_tree_api_kit.field.AppCharField(db_column="name", max_length=256)),
             ],
             options={
                 "verbose_name": "Manual Playlist",
@@ -433,7 +433,7 @@ class Migration(migrations.Migration):
             name="CriteriaType",
             fields=[
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
-                ("label", api.model.field.AppCharField(max_length=50, unique=True)),
+                ("label", the_music_tree_api_kit.field.AppCharField(max_length=50, unique=True)),
             ],
             options={
                 "verbose_name": "Criteria Type",
@@ -449,7 +449,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="criteria",
             name="type",
-            field=api.model.field.foreign_key.AppForeignKey.AppForeignKey(
+            field=the_music_tree_api_kit.field.foreign_key.AppForeignKey.AppForeignKey(
                 on_delete=django.db.models.deletion.CASCADE, to="api.criteriatype"
             ),
         ),
@@ -477,7 +477,7 @@ class Migration(migrations.Migration):
                         unique=True,
                     ),
                 ),
-                ("label", api.model.field.AppCharField(max_length=256, unique=True)),
+                ("label", the_music_tree_api_kit.field.AppCharField(max_length=256, unique=True)),
             ],
             options={
                 "verbose_name": "Fingerprinting Error Code",
@@ -502,7 +502,7 @@ class Migration(migrations.Migration):
                 ),
                 ("created_on", models.DateTimeField(default=django.utils.timezone.now, editable=False)),
                 ("updated_on", models.DateTimeField(null=True)),
-                ("message", api.model.field.AppCharField(max_length=256, null=True)),
+                ("message", the_music_tree_api_kit.field.AppCharField(max_length=256, null=True)),
                 (
                     "user",
                     models.ForeignKey(
@@ -513,7 +513,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "code",
-                    api.model.field.foreign_key.AppForeignKey.AppForeignKey(
+                    the_music_tree_api_kit.field.foreign_key.AppForeignKey.AppForeignKey(
                         on_delete=django.db.models.deletion.DO_NOTHING, to="api.fingerprintmissingcausecode"
                     ),
                 ),
@@ -530,7 +530,7 @@ class Migration(migrations.Migration):
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("created_on", models.DateTimeField(default=django.utils.timezone.now, editable=False)),
                 ("updated_on", models.DateTimeField(null=True)),
-                ("musicbrainz_id", api.model.field.AppCharField(max_length=36, unique=True)),
+                ("musicbrainz_id", the_music_tree_api_kit.field.AppCharField(max_length=36, unique=True)),
                 (
                     "musicbrainz_link",
                     models.GeneratedField(
@@ -538,10 +538,10 @@ class Migration(migrations.Migration):
                         expression=api.model.utils.ConcatOp.ConcatOp(
                             models.Value("https://musicbrainz.org/artist/"), models.F("musicbrainz_id")
                         ),
-                        output_field=api.model.field.AppCharField(max_length=70),
+                        output_field=the_music_tree_api_kit.field.AppCharField(max_length=70),
                     ),
                 ),
-                ("name", api.model.field.AppCharField(default=None, max_length=256)),
+                ("name", the_music_tree_api_kit.field.AppCharField(default=None, max_length=256)),
             ],
             options={
                 "verbose_name": "Musicbrainz Artist",
@@ -556,7 +556,7 @@ class Migration(migrations.Migration):
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("created_on", models.DateTimeField(default=django.utils.timezone.now, editable=False)),
                 ("updated_on", models.DateTimeField(null=True)),
-                ("musicbrainz_id", api.model.field.AppCharField(max_length=36, unique=True)),
+                ("musicbrainz_id", the_music_tree_api_kit.field.AppCharField(max_length=36, unique=True)),
                 (
                     "musicbrainz_link",
                     models.GeneratedField(
@@ -564,16 +564,16 @@ class Migration(migrations.Migration):
                         expression=api.model.utils.ConcatOp.ConcatOp(
                             models.Value("https://musicbrainz.org/recording/"), models.F("musicbrainz_id")
                         ),
-                        output_field=api.model.field.AppCharField(max_length=70),
+                        output_field=the_music_tree_api_kit.field.AppCharField(max_length=70),
                     ),
                 ),
-                ("title", api.model.field.AppCharField(editable=False, max_length=256)),
+                ("title", the_music_tree_api_kit.field.AppCharField(editable=False, max_length=256)),
                 ("score", models.DecimalField(decimal_places=8, editable=False, max_digits=9)),
                 ("duration_in_sec", models.IntegerField(editable=False, null=True)),
                 ("release_date", models.DateField(blank=True, editable=False, null=True)),
                 (
                     "musicbrainz_artists",
-                    api.model.field.foreign_key.AppManyToManyField.AppManyToManyField(to="api.mbartist"),
+                    the_music_tree_api_kit.field.foreign_key.AppManyToManyField.AppManyToManyField(to="api.mbartist"),
                 ),
             ],
             options={
@@ -588,7 +588,7 @@ class Migration(migrations.Migration):
                 ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
                 ("created_on", models.DateTimeField(default=django.utils.timezone.now, editable=False)),
                 ("updated_on", models.DateTimeField(null=True)),
-                ("message", api.model.field.AppCharField(max_length=400, null=True)),
+                ("message", the_music_tree_api_kit.field.AppCharField(max_length=400, null=True)),
                 (
                     "user",
                     models.ForeignKey(
@@ -599,7 +599,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "code",
-                    api.model.field.foreign_key.AppForeignKey.AppForeignKey(
+                    the_music_tree_api_kit.field.foreign_key.AppForeignKey.AppForeignKey(
                         on_delete=django.db.models.deletion.DO_NOTHING, to="api.mbrecordingmissingcausecode"
                     ),
                 ),
@@ -624,7 +624,7 @@ class Migration(migrations.Migration):
                 ("content_uuid", models.UUIDField(db_column="object_pk")),
                 (
                     "content_type",
-                    api.model.field.foreign_key.AppForeignKey.AppForeignKey(
+                    the_music_tree_api_kit.field.foreign_key.AppForeignKey.AppForeignKey(
                         on_delete=django.db.models.deletion.CASCADE, to="contenttypes.contenttype"
                     ),
                 ),
@@ -648,9 +648,11 @@ class Migration(migrations.Migration):
             fields=[
                 (
                     "spotify_id",
-                    api.model.field.AppCharField(max_length=50, primary_key=True, serialize=False, unique=True),
+                    the_music_tree_api_kit.field.AppCharField(
+                        max_length=50, primary_key=True, serialize=False, unique=True
+                    ),
                 ),
-                ("name", api.model.field.AppCharField(editable=False, max_length=256)),
+                ("name", the_music_tree_api_kit.field.AppCharField(editable=False, max_length=256)),
                 ("popularity", models.IntegerField(editable=False, null=True)),
                 (
                     "spotify_link",
@@ -659,7 +661,7 @@ class Migration(migrations.Migration):
                         expression=api.model.utils.ConcatOp.ConcatOp(
                             models.Value("https://open.spotify.com/artist/"), models.F("spotify_id")
                         ),
-                        output_field=api.model.field.AppCharField(max_length=500),
+                        output_field=the_music_tree_api_kit.field.AppCharField(max_length=500),
                     ),
                 ),
                 (
@@ -686,9 +688,11 @@ class Migration(migrations.Migration):
                 ("updated_on", models.DateTimeField(null=True)),
                 (
                     "spotify_id",
-                    api.model.field.AppCharField(max_length=50, primary_key=True, serialize=False, unique=True),
+                    the_music_tree_api_kit.field.AppCharField(
+                        max_length=50, primary_key=True, serialize=False, unique=True
+                    ),
                 ),
-                ("name", api.model.field.AppCharField(db_column="name", editable=False, max_length=256)),
+                ("name", the_music_tree_api_kit.field.AppCharField(db_column="name", editable=False, max_length=256)),
                 ("duration_ms", models.IntegerField(db_column="duration_ms", editable=False)),
                 ("popularity", models.IntegerField(db_column="popularity", editable=False, null=True)),
                 (
@@ -699,7 +703,7 @@ class Migration(migrations.Migration):
                         expression=api.model.utils.ConcatOp.ConcatOp(
                             models.Value("https://open.spotify.com/track/"), models.F("spotify_id")
                         ),
-                        output_field=api.model.field.AppCharField(max_length=500),
+                        output_field=the_music_tree_api_kit.field.AppCharField(max_length=500),
                     ),
                 ),
                 ("album", models.JSONField(db_column="album", editable=False, null=True)),
@@ -720,11 +724,21 @@ class Migration(migrations.Migration):
                 ),
                 ("followers", models.IntegerField(db_column="followers", editable=False, null=True)),
                 ("href", models.URLField(blank=True, db_column="href", editable=False, max_length=512, null=True)),
-                ("type", api.model.field.AppCharField(db_column="type", editable=False, max_length=50, null=True)),
-                ("uri", api.model.field.AppCharField(db_column="uri", editable=False, max_length=256, null=True)),
+                (
+                    "type",
+                    the_music_tree_api_kit.field.AppCharField(
+                        db_column="type", editable=False, max_length=50, null=True
+                    ),
+                ),
+                (
+                    "uri",
+                    the_music_tree_api_kit.field.AppCharField(
+                        db_column="uri", editable=False, max_length=256, null=True
+                    ),
+                ),
                 (
                     "spotify_artists",
-                    api.model.field.foreign_key.AppManyToManyField.AppManyToManyField(
+                    the_music_tree_api_kit.field.foreign_key.AppManyToManyField.AppManyToManyField(
                         db_column="spotify_artists", to="api.spotifyartist"
                     ),
                 ),
@@ -747,7 +761,7 @@ class Migration(migrations.Migration):
                 ("created_on", models.DateTimeField(default=django.utils.timezone.now, editable=False)),
                 ("updated_on", models.DateTimeField(null=True)),
                 ("play_count", models.PositiveIntegerField(default=0)),
-                ("title", api.model.field.AppCharField(max_length=256)),
+                ("title", the_music_tree_api_kit.field.AppCharField(max_length=256)),
                 ("track_file_fingerprint_must_be_unique", models.BooleanField(default=False)),
                 (
                     "track_number",
@@ -771,11 +785,14 @@ class Migration(migrations.Migration):
                         ],
                     ),
                 ),
-                ("language", api.model.field.AppCharField(blank=True, default=None, max_length=3, null=True)),
+                (
+                    "language",
+                    the_music_tree_api_kit.field.AppCharField(blank=True, default=None, max_length=3, null=True),
+                ),
                 ("archived", models.BooleanField(default=False)),
                 (
                     "album",
-                    api.model.field.foreign_key.PrivateForeignKey.PrivateForeignKey(
+                    the_music_tree_api_kit.field.foreign_key.PrivateForeignKey.PrivateForeignKey(
                         blank=True,
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
@@ -785,7 +802,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "artists",
-                    api.model.field.foreign_key.PrivateManyToManyField.PrivateManyToManyField(
+                    the_music_tree_api_kit.field.foreign_key.PrivateManyToManyField.PrivateManyToManyField(
                         blank=True, related_name="uploaded_tracks_of_artist", to="api.artist"
                     ),
                 ),
@@ -847,7 +864,7 @@ class Migration(migrations.Migration):
                 ("bitrate_in_kbps", models.IntegerField()),
                 (
                     "fingerprint_missing_cause",
-                    api.model.field.foreign_key.AppForeignKey.AppForeignKey(
+                    the_music_tree_api_kit.field.foreign_key.AppForeignKey.AppForeignKey(
                         blank=True,
                         null=True,
                         on_delete=django.db.models.deletion.DO_NOTHING,
@@ -856,13 +873,13 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "musicbrainz_recording",
-                    api.model.field.foreign_key.AppForeignKey.AppForeignKey(
+                    the_music_tree_api_kit.field.foreign_key.AppForeignKey.AppForeignKey(
                         default=None, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to="api.mbrecording"
                     ),
                 ),
                 (
                     "musicbrainz_recording_missing_cause",
-                    api.model.field.foreign_key.AppOneToOneField.AppOneToOneField(
+                    the_music_tree_api_kit.field.foreign_key.AppOneToOneField.AppOneToOneField(
                         null=True, on_delete=django.db.models.deletion.DO_NOTHING, to="api.mbrecordingmissingcause"
                     ),
                 ),
@@ -876,7 +893,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "uploaded_track",
-                    api.model.field.foreign_key.PrivateOneToOneField.PrivateOneToOneField(
+                    the_music_tree_api_kit.field.foreign_key.PrivateOneToOneField.PrivateOneToOneField(
                         on_delete=django.db.models.deletion.CASCADE, related_name="track_file", to="api.uploadedtrack"
                     ),
                 ),
@@ -896,7 +913,7 @@ class Migration(migrations.Migration):
                 ("position", models.PositiveIntegerField(blank=True, null=True)),
                 (
                     "playlist",
-                    api.model.field.foreign_key.PrivateForeignKey.PrivateForeignKey(
+                    the_music_tree_api_kit.field.foreign_key.PrivateForeignKey.PrivateForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="uploaded_track_playlist_rels",
                         to="api.playlist",
@@ -904,7 +921,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "uploaded_track",
-                    api.model.field.foreign_key.PrivateForeignKey.PrivateForeignKey(
+                    the_music_tree_api_kit.field.foreign_key.PrivateForeignKey.PrivateForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="uploaded_track_playlist_rels",
                         to="api.uploadedtrack",
@@ -928,7 +945,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="uploadedtrack",
             name="playlists",
-            field=api.model.field.foreign_key.PrivateManyToManyField.PrivateManyToManyField(
+            field=the_music_tree_api_kit.field.foreign_key.PrivateManyToManyField.PrivateManyToManyField(
                 related_name="uploaded_tracks_of_playlist", through="api.UploadedTrackPlaylistRel", to="api.playlist"
             ),
         ),
@@ -974,7 +991,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="uploadedtrack",
             name="genre",
-            field=api.model.field.foreign_key.PrivateForeignKey.PrivateForeignKey(
+            field=the_music_tree_api_kit.field.foreign_key.PrivateForeignKey.PrivateForeignKey(
                 blank=True,
                 null=True,
                 on_delete=django.db.models.deletion.DO_NOTHING,
@@ -989,7 +1006,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="criteriaplaylist",
             name="criteria",
-            field=api.model.field.foreign_key.PrivateOneToOneField.PrivateOneToOneField(
+            field=the_music_tree_api_kit.field.foreign_key.PrivateOneToOneField.PrivateOneToOneField(
                 blank=True,
                 null=True,
                 on_delete=django.db.models.deletion.CASCADE,
@@ -1000,7 +1017,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="criteriaplaylist",
             name="parent",
-            field=api.model.field.foreign_key.PrivateForeignKey.PrivateForeignKey(
+            field=the_music_tree_api_kit.field.foreign_key.PrivateForeignKey.PrivateForeignKey(
                 null=True,
                 on_delete=django.db.models.deletion.SET_NULL,
                 related_name="children",
@@ -1010,7 +1027,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="criteriaplaylist",
             name="root",
-            field=api.model.field.foreign_key.PrivateForeignKey.PrivateForeignKey(
+            field=the_music_tree_api_kit.field.foreign_key.PrivateForeignKey.PrivateForeignKey(
                 on_delete=django.db.models.deletion.DO_NOTHING,
                 related_name="root_descendants",
                 to="api.criteriaplaylist",
@@ -1019,7 +1036,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="criteriaplaylist",
             name="type",
-            field=api.model.field.foreign_key.AppForeignKey.AppForeignKey(
+            field=the_music_tree_api_kit.field.foreign_key.AppForeignKey.AppForeignKey(
                 on_delete=django.db.models.deletion.CASCADE, to="api.criteriatype"
             ),
         ),
