@@ -6,9 +6,9 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from the_music_tree_api_kit.exception.validation.app.AppValidationException import AppValidationException
+from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 
-from api.exception.validation.app.AppValidationException import AppValidationException
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.model.spotify_resource.Fields import Fields as SpotifyFields
 from api.model.user.Fields import Fields as UserFields
 from api.model.user.User import User

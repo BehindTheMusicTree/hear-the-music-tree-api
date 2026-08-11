@@ -1,9 +1,9 @@
 from django.utils.translation import gettext as _
 from django_filters.filterset import FilterSet
 from the_music_tree_api_kit.base.BaseQuerySet import BaseQuerySet
+from the_music_tree_api_kit.exception.validation.app.AppValidationException import AppValidationException
+from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 
-from api.exception.validation.app.AppValidationException import AppValidationException
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.filtering.filter.char.EmptiableCharFilter import EmptiableCharFilter
 
 

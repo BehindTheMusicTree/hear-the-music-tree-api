@@ -2,9 +2,9 @@ from unittest.mock import MagicMock, Mock, patch
 
 import pytest
 from django.core.files.uploadedfile import SimpleUploadedFile
+from the_music_tree_api_kit.exception.validation.app.AppValidationException import AppValidationException
+from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 
-from api.exception.validation.app.AppValidationException import AppValidationException
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.validator.TrackFileValidator import TrackFileValidator
 
 

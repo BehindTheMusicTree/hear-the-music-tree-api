@@ -3,9 +3,9 @@ from unittest.mock import MagicMock, Mock
 import pytest
 from django.http import HttpRequest, QueryDict
 from rest_framework.request import Request
+from the_music_tree_api_kit.exception.validation.app.AppValidationException import AppValidationException
+from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 
-from api.exception.validation.app.AppValidationException import AppValidationException
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.middleware.list_value_validation.middleware import ListValueValidationMiddleware
 
 

@@ -1,8 +1,9 @@
+from the_music_tree_api_kit.serializer.PutSerializer import PutSerializer
+
 from api import settings
 from api.model.playlist.children.manual.Fields import Fields as ModelFields
 from api.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
 from api.serializer.field.UniquePerUserNameField import UniquePerUserNameField
-from api.serializer.PutSerializer import PutSerializer
 
 from .input import ManualPlaylistInputSerializer
 
