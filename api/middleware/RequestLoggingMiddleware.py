@@ -3,7 +3,7 @@ import time
 import traceback
 import uuid
 
-from api.view.error.ErrorResponse import ErrorResponse
+from the_music_tree_api_kit.view.error.ErrorResponse import ErrorResponse
 
 
 def _generate_log_about_headers(request):

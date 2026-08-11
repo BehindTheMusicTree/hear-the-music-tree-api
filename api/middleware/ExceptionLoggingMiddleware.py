@@ -2,7 +2,7 @@ import logging
 import traceback
 from time import time
 
-from api.view.error.ErrorResponse import ErrorResponse
+from the_music_tree_api_kit.view.error.ErrorResponse import ErrorResponse
 
 
 class ExceptionLoggingMiddleware:

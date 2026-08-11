@@ -2,14 +2,14 @@ import json
 
 from django.test import TestCase
 from rest_framework import status
+from the_music_tree_api_kit.view.error.ApiErrorCode import ApiErrorCodeNumeric
+from the_music_tree_api_kit.view.error.ErrorResponse import ErrorResponse
 
 from api.exception.spotify import (
     SpotifyAuthenticationException,
     SpotifyInvalidGrantException,
     SpotifyUserNotAllowlistedException,
 )
-from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
-from api.view.error.ErrorResponse import ErrorResponse
 
 
 class TestSpotifyGlobalErrorHandling(TestCase):
