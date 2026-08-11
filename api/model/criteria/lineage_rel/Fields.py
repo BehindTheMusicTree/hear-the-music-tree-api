@@ -1,4 +1,4 @@
-from api.model.private_standard_resource.Fields import Fields as PrivateRelationFields
+from the_music_tree_api_kit.private_standard_resource.Fields import Fields as PrivateRelationFields
 
 
 class Fields(PrivateRelationFields):

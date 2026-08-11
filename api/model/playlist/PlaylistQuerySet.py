@@ -1,4 +1,4 @@
-from api.model.base.BaseQuerySet import BaseQuerySet
+from the_music_tree_api_kit.base.BaseQuerySet import BaseQuerySet
 
 
 class PlaylistQuerySet(BaseQuerySet):

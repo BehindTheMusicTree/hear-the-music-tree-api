@@ -1,7 +1,7 @@
 from django.db import models
+from the_music_tree_api_kit.base.BaseModel import BaseModel
 
 from api import settings
-from api.model.base.BaseModel import BaseModel
 from api.model.field.AppCharField import AppCharField
 
 

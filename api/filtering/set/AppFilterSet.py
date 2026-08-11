@@ -1,8 +1,8 @@
 from django_filters import FilterSet
+from the_music_tree_api_kit.base.BaseQuerySet import BaseQuerySet
 
 from api.exception.validation.app.AppValidationException import AppValidationException
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
-from api.model.base.BaseQuerySet import BaseQuerySet
 from api.utils import data_transformer
 
 

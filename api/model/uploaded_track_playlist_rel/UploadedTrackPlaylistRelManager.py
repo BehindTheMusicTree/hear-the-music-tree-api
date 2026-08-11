@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING, cast
 
 from django.db.models import F, QuerySet
+from the_music_tree_api_kit.public_standard_resource.StandardResourceManager import StandardResourceManager
 
-from api.model.public_standard_resource.StandardResourceManager import StandardResourceManager
 from api.model.user.User import User
 
 from .Fields import Fields

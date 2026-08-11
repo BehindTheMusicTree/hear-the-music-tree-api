@@ -2,8 +2,8 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from django.db import models
+from the_music_tree_api_kit.private_unique_resource.PrivateUniqueResource import PrivateUniqueResource
 
-from api.model.private_unique_resource.PrivateUniqueResource import PrivateUniqueResource
 from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
 
 if TYPE_CHECKING:

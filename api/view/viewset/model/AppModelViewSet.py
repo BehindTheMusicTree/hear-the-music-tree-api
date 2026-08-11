@@ -10,11 +10,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.serializers import BaseSerializer, ModelSerializer, Serializer
+from the_music_tree_api_kit.base.BaseModel import BaseModel
+from the_music_tree_api_kit.private.Fields import Fields as PrivateFields
 
 from api.filtering.backend.ConsistentParametersFilterBackend import ConsistentParametersFilterBackend
 from api.filtering.set.AppFilterSet import AppFilterSet
-from api.model.base.BaseModel import BaseModel
-from api.model.private.Fields import Fields as PrivateFields
 from api.serializer.SerializerType import SerializerType
 from api.view.file_response.AppFileResponse import AppFileResponse
 
