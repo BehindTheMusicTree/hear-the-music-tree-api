@@ -19,8 +19,6 @@ api/exception/musicbrainz.py
 api/exception/spotify.py
 api/exception/validation/DrfValidationErrorFields.py
 api/filtering/__init__.py
-api/filtering/backend/ConsistentParametersFilterBackend.py
-api/filtering/filter/AppFilter.py
 api/filtering/filter/char/CriteriaNameFilter.py
 api/filtering/filter/char/EmptiableCharFilter.py
 api/filtering/filter/char/EnumCharFilter.py
@@ -30,7 +28,6 @@ api/filtering/filter/char/RelatedObjectCharFilter.py
 api/filtering/filter/foreign_key/DescendantAwareFilter.py
 api/filtering/filter/foreign_key/ForeignKeyFilter.py
 api/filtering/filter/foreign_key/NonSelfReferencingFilter.py
-api/filtering/set/AppFilterSet.py
 api/filtering/set/album/AlbumFilterSet.py
 api/filtering/set/album/Fields.py
 api/filtering/set/artist/ArtistFilterSet.py
@@ -892,16 +889,12 @@ api/view/spotify_auth.py
 api/view/error/exception_handler.py
 api/view/file_response/AppFileResponse.py
 api/view/file_response/FileResponseHeaders.py
-api/view/pagination/AppPagination.py
 api/view/pagination/DefaultMultipleModelLimitOffsetPagination.py
-api/view/pagination/PaginatedResponseFields.py
 api/view/pagination/__init__.py
-api/view/permission/IsAuthenticatedReturn401.py
 api/view/schema/AppAutoSchema.py
 api/view/schema/__init__.py
 api/view/viewset/SearchViewSet.py
 api/view/viewset/model/AllUploadedTracksMixinViewSet.py
-api/view/viewset/model/AppModelViewSet.py
 api/view/viewset/model/ReferenceViewSetMixin.py
 api/view/viewset/model/SpotifyArtistViewSet.py
 api/view/viewset/model/SpotifyLibTrackViewSet.py

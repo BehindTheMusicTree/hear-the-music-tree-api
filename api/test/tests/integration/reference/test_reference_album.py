@@ -3,10 +3,10 @@ from uuid import UUID
 from django.db import models
 from django.urls import reverse
 from rest_framework import status
+from the_music_tree_api_kit.view.pagination.PaginatedResponseFields import PaginatedResponseFields
 
 from api.model.album.Album import Album
 from api.test.tests.integration.reference.reference_test_case import ReferenceTestCase
-from the_music_tree_api_kit.view.pagination.PaginatedResponseFields import PaginatedResponseFields
 
 
 class ReferenceAlbumTestCase(ReferenceTestCase):
