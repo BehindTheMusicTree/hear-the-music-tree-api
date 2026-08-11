@@ -1,5 +1,5 @@
-from api.model.field.AppCharField import AppCharField
-from api.model.public_standard_resource.PublicStandardResource import PublicStandardResource
+from the_music_tree_api_kit.field.AppCharField import AppCharField
+from the_music_tree_api_kit.public_standard_resource.PublicStandardResource import PublicStandardResource
 
 
 class SpotifyResource(PublicStandardResource):

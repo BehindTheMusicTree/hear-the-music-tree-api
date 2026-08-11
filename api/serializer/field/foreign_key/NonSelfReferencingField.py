@@ -3,10 +3,10 @@ from typing import Any, Generic, TypeVar
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from the_music_tree_api_kit.uuid.UuidModel import UuidModel
 
 from api.exception.validation.app.AppValidationException import AppValidationException
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
-from api.model.uuid.UuidModel import UuidModel
 from api.serializer.field.foreign_key.PrivateUuidField import PrivateUuidField
 
 T = TypeVar("T", bound=models.Model)

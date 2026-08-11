@@ -1,9 +1,9 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models import F, Value
+from the_music_tree_api_kit.field.AppCharField import AppCharField
+from the_music_tree_api_kit.public_standard_resource.PublicStandardResource import PublicStandardResource
 
-from api.model.field.AppCharField import AppCharField
-from api.model.public_standard_resource.PublicStandardResource import PublicStandardResource
 from api.model.spotify_resource.SpotifyResource import SpotifyResource
 from api.model.utils.ConcatOp import ConcatOp
 

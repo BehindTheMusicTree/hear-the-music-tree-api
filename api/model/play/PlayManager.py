@@ -1,4 +1,5 @@
-from api.model.public_standard_resource.StandardResourceManager import StandardResourceManager
+from the_music_tree_api_kit.public_standard_resource.StandardResourceManager import StandardResourceManager
+
 from api.model.trackable_play_count.Fields import Fields as TrackablePlayCountFields
 from api.model.trackable_play_count.TrackablePlayCount import TrackablePlayCount
 from api.serializer.model.play.input.schema.PostFields import Fields as PostFields

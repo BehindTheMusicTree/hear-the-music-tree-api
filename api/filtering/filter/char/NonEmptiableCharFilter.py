@@ -1,10 +1,10 @@
 from django.utils.translation import gettext as _
 from django_filters.filterset import FilterSet
+from the_music_tree_api_kit.base.BaseQuerySet import BaseQuerySet
 
 from api.exception.validation.app.AppValidationException import AppValidationException
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.filtering.filter.char.EmptiableCharFilter import EmptiableCharFilter
-from api.model.base.BaseQuerySet import BaseQuerySet
 
 
 class NonEmptiableCharFilter(EmptiableCharFilter):
