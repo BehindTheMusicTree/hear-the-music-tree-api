@@ -1,15 +1,15 @@
 import logging
 from typing import Any, cast
 
-from api import settings
-
-logger = logging.getLogger(__name__)
 from the_music_tree_api_kit.exception.validation.app.AppValidationException import AppValidationException
 from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from the_music_tree_api_kit.serializer.field.AppListField import AppListField
 
+from api import settings
 from api.serializer.model.criteria.input.tree_import.Fields import Fields
 from api.serializer.model.criteria.input.tree_node import CriteriaTreeNodeSerializer
+
+logger = logging.getLogger(__name__)
 
 
 class TreeField(AppListField):
