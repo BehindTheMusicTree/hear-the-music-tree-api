@@ -3,9 +3,9 @@ from unittest.mock import MagicMock
 
 from django.test import TestCase
 from rest_framework import status
+from the_music_tree_api_kit.view.error.ApiErrorCode import ApiErrorCodeNumeric
 
 from api.utils.decorators.spotify import spotify_user_required
-from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
 
 
 def _fake_view(self, request, *args, **kwargs):

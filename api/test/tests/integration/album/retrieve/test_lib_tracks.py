@@ -1,10 +1,10 @@
 from rest_framework import status
+from the_music_tree_api_kit.utils.data_transformer import to_camel_case
 
 from api.serializer.model.album.detailed import Fields as RetrieveFields
 from api.serializer.model.uploaded_track.output.UploadedTrackOutputFieldKey import UploadedTrackOutputFieldKey
 from api.test.tests.integration.album.AlbumTestCase import AlbumTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.utils.data_transformer import to_camel_case
 
 
 class TestCase(AlbumTestCase):

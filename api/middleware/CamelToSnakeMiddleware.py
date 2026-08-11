@@ -5,8 +5,7 @@ from typing import Any
 
 from django.http import QueryDict
 from rest_framework.request import Request
-
-from api.utils import data_transformer
+from the_music_tree_api_kit.utils import data_transformer
 
 
 class CamelToSnakeMiddleware:

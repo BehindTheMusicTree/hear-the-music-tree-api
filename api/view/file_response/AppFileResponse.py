@@ -3,9 +3,9 @@ from mimetypes import guess_type
 from urllib.parse import quote
 
 from django.http import FileResponse
+from the_music_tree_api_kit.view.error.ApiErrorCode import ApiErrorCodeNumeric
+from the_music_tree_api_kit.view.error.ErrorResponseFields import ErrorResponseFields
 
-from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
-from api.view.error.ErrorResponseFields import ErrorResponseFields
 from api.view.file_response.FileResponseHeaders import FileResponseHeaders
 
 

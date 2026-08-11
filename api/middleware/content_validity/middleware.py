@@ -4,8 +4,7 @@ from typing import Union
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from rest_framework.exceptions import ParseError
 from rest_framework.request import Request
-
-from api.view.error.ErrorResponse import ErrorResponse
+from the_music_tree_api_kit.view.error.ErrorResponse import ErrorResponse
 
 logger = logging.getLogger(__name__)
 

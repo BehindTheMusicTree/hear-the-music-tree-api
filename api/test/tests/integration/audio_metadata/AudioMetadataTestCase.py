@@ -1,9 +1,9 @@
 from django.urls import reverse
+from the_music_tree_api_kit.utils import data_transformer
 
 from api.serializer.audio_metadata.Fields import Fields
 from api.test.utils.AppTestCase import AppTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.utils import data_transformer
 
 
 class AudioMetadataTestCase(AppTestCase):

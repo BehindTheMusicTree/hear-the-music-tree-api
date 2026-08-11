@@ -4,8 +4,8 @@ from unittest.mock import MagicMock
 from django.test import TestCase
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
+from the_music_tree_api_kit.view.error.ApiErrorCode import ApiErrorCodeNumeric
 
-from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
 from api.view.error.exception_handler import _handle_exception_with_request
 
 

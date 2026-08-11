@@ -4,8 +4,7 @@ import traceback
 from django.conf import settings
 from django.core.exceptions import DisallowedHost
 from django.http import HttpRequest
-
-from api.view.error.ErrorResponse import ErrorResponse
+from the_music_tree_api_kit.view.error.ErrorResponse import ErrorResponse
 
 
 class HostValidationMiddleware:

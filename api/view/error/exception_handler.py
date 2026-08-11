@@ -1,25 +1,109 @@
 import sys
 
 from django.conf import settings
-from django.http.response import Http404
-from rest_framework.exceptions import (
-    AuthenticationFailed,
-    MethodNotAllowed,
-    NotAuthenticated,
-    ParseError,
-    PermissionDenied,
-    UnsupportedMediaType,
-    ValidationError,
-)
+from rest_framework.exceptions import AuthenticationFailed, NotAuthenticated, PermissionDenied
 from rest_framework_simplejwt.exceptions import InvalidToken
+from the_music_tree_api_kit.view.error.ApiErrorCode import ApiErrorCodeNumeric
+from the_music_tree_api_kit.view.error.ErrorResponse import ErrorResponse
+from the_music_tree_api_kit.view.error.ErrorResponseFields import ErrorResponseFields
 
 from api.exception.google import GoogleAuthenticationException
 from api.exception.spotify import (
     SpotifyAuthenticationException,
     SpotifyInvalidGrantException,
+    SpotifyUserNotAllowlistedException,
 )
-from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
-from api.view.error.ErrorResponse import ErrorResponse
+
+
+def _from_invalid_jwt_token(exception: InvalidToken | NotAuthenticated | AuthenticationFailed):
+    try:
+        detail = exception.detail
+        message = detail["detail"] if isinstance(detail, dict) and "detail" in detail else exception.default_detail
+        code = detail["code"] if isinstance(detail, dict) and "code" in detail else exception.default_code
+    except AttributeError, TypeError:
+        message = getattr(exception, "default_detail", str(exception))
+        code = getattr(exception, "default_code", "authentication_failed")
+    api_error_code = (
+        ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED
+        if code == "authentication_required"
+        else ApiErrorCodeNumeric.AUTH_INVALID_CREDENTIALS
+    )
+    return ErrorResponse.create_error_response(
+        error_detail={"message": message, "code": code}, api_error_code=api_error_code
+    )
+
+
+def _from_spotify_user_not_allowlisted_exception(exception: SpotifyUserNotAllowlistedException):
+    try:
+        message = str(exception)
+    except Exception:
+        message = ErrorResponseFields.MESSAGES[ApiErrorCodeNumeric.AUTH_SPOTIFY_USER_NOT_ALLOWLISTED]
+    return ErrorResponse.create_error_response(
+        error_detail={"message": message, "code": "spotify_user_not_allowlisted"},
+        api_error_code=ApiErrorCodeNumeric.AUTH_SPOTIFY_USER_NOT_ALLOWLISTED,
+    )
+
+
+def _from_spotify_invalid_grant_exception(exception: SpotifyInvalidGrantException):
+    try:
+        message = str(exception)
+    except Exception:
+        message = ErrorResponseFields.MESSAGES[ApiErrorCodeNumeric.AUTH_SPOTIFY_CODE_EXPIRED_OR_USED]
+    return ErrorResponse.create_error_response(
+        error_detail={"message": message, "code": "spotify_code_expired_or_used"},
+        api_error_code=ApiErrorCodeNumeric.AUTH_SPOTIFY_CODE_EXPIRED_OR_USED,
+    )
+
+
+def _from_spotify_authentication_exception(exception: SpotifyAuthenticationException):
+    detail_code = getattr(exception, "detail_code", "spotify_authentication_error")
+    if detail_code == "spotify_invalid_client":
+        return ErrorResponse.create_error_response(
+            error_detail={
+                "message": "Sign-in is temporarily misconfigured. Please try again later or contact support.",
+                "code": detail_code,
+            },
+            api_error_code=ApiErrorCodeNumeric.SYSTEM_INTERNAL_ERROR,
+        )
+    try:
+        message = str(exception)
+    except Exception:
+        message = f"{type(exception).__name__}: <unable to stringify exception>"
+    return ErrorResponse.create_error_response(
+        error_detail={"message": message, "code": detail_code},
+        api_error_code=ApiErrorCodeNumeric.AUTH_INVALID_CREDENTIALS,
+    )
+
+
+def _from_google_authentication_exception(exception: GoogleAuthenticationException):
+    try:
+        message = str(exception)
+    except Exception:
+        message = f"{type(exception).__name__}: <unable to stringify exception>"
+    detail_code = getattr(exception, "detail_code", "google_authentication_error")
+    if detail_code in (
+        "google_oauth_redirect_uri_mismatch",
+        "google_oauth_invalid_client",
+        "google_oauth_unauthorized_client",
+    ):
+        return ErrorResponse.create_error_response(
+            error_detail={
+                "message": "Sign-in is temporarily misconfigured. Please try again later or contact support.",
+                "code": detail_code,
+            },
+            api_error_code=ApiErrorCodeNumeric.SYSTEM_INTERNAL_ERROR,
+        )
+    return ErrorResponse.create_error_response(
+        error_detail={"message": message, "code": detail_code},
+        api_error_code=ApiErrorCodeNumeric.AUTH_INVALID_CREDENTIALS,
+    )
+
+
+ErrorResponse.register_handler(InvalidToken, _from_invalid_jwt_token)
+ErrorResponse.register_handler(SpotifyUserNotAllowlistedException, _from_spotify_user_not_allowlisted_exception)
+ErrorResponse.register_handler(SpotifyInvalidGrantException, _from_spotify_invalid_grant_exception)
+ErrorResponse.register_handler(SpotifyAuthenticationException, _from_spotify_authentication_exception)
+ErrorResponse.register_handler(GoogleAuthenticationException, _from_google_authentication_exception)
 
 
 def custom_exception_handler(exc, context):
@@ -64,23 +148,7 @@ def custom_exception_handler(exc, context):
 
     is_test_mode = "pytest" in sys.argv[0]
 
-    if settings.DEBUG and not isinstance(
-        exc,
-        (
-            ValidationError,
-            InvalidToken,
-            NotAuthenticated,
-            AuthenticationFailed,
-            MethodNotAllowed,
-            Http404,
-            PermissionDenied,
-            ParseError,
-            UnsupportedMediaType,
-            SpotifyAuthenticationException,
-            SpotifyInvalidGrantException,
-            GoogleAuthenticationException,
-        ),
-    ):
+    if settings.DEBUG and not isinstance(exc, ErrorResponse.get_registered_exception_types()):
         if is_test_mode:
             return _handle_exception_with_request(exc, context)
         return None
