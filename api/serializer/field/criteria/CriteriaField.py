@@ -2,13 +2,13 @@ from typing import Any
 
 from django.db.models.query import QuerySet
 from rest_framework.relations import PrimaryKeyRelatedField
+from the_music_tree_api_kit.serializer.field.AppCharField import AppCharField
+from the_music_tree_api_kit.serializer.field.AppField import AppField
+from the_music_tree_api_kit.serializer.field.foreign_key.PrivateUuidField import PrivateUuidField
 
 from api import settings
 from api.model.criteria.Criteria import Criteria
-from api.serializer.field.AppCharField import AppCharField
-from api.serializer.field.AppField import AppField
 from api.serializer.field.criteria.CriteriaFieldInputType import CriteriaFieldInputType
-from api.serializer.field.foreign_key.PrivateUuidField import PrivateUuidField
 
 
 class CriteriaField(AppField, PrimaryKeyRelatedField):

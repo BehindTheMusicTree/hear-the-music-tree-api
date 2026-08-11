@@ -1,6 +1,5 @@
 from rest_framework import status
-
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
+from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 
 from ..AllUploadedTracksMixinTestCase import AllUploadedTracksMixinTestCase
 

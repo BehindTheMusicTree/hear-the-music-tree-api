@@ -1,7 +1,7 @@
 from rest_framework import serializers
+from the_music_tree_api_kit.serializer.AppInputSerializer import AppInputSerializer
 
 from api.model.play.Play import Play
-from api.serializer.AppInputSerializer import AppInputSerializer
 from api.serializer.field.foreign_key.UserContentObjectUuidField import PrivateContentUuidField
 
 from .PostFields import Fields as PostFields

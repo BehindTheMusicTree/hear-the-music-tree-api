@@ -3,10 +3,9 @@ from typing import Any, Generic, Protocol, TypeVar, runtime_checkable
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-
-from api.exception.validation.app.AppValidationException import AppValidationException
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
-from api.serializer.field.foreign_key.NonSelfReferencingField import NonSelfReferencingField
+from the_music_tree_api_kit.exception.validation.app.AppValidationException import AppValidationException
+from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
+from the_music_tree_api_kit.serializer.field.foreign_key.NonSelfReferencingField import NonSelfReferencingField
 
 
 @runtime_checkable

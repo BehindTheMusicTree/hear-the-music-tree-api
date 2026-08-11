@@ -3,9 +3,9 @@ import pkgutil
 from pathlib import Path
 
 from rest_framework import serializers
+from the_music_tree_api_kit.serializer.AppInputSerializer import AppInputSerializer
+from the_music_tree_api_kit.serializer.PutSerializer import PutSerializer
 
-from api.serializer.AppInputSerializer import AppInputSerializer
-from api.serializer.PutSerializer import PutSerializer
 from api.test.utils.AppTestCase import AppTestCase
 
 

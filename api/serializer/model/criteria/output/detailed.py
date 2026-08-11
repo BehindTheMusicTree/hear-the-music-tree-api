@@ -1,10 +1,10 @@
 from rest_framework import serializers
 from rest_framework.fields import IntegerField
+from the_music_tree_api_kit.serializer.AppInputSerializer import AppInputSerializer
+from the_music_tree_api_kit.serializer.field.AppCharField import AppCharField
 
 from api.model.criteria.Criteria import Criteria
 from api.model.criteria.Fields import Fields as ModelFields
-from api.serializer.AppInputSerializer import AppInputSerializer
-from api.serializer.field.AppCharField import AppCharField
 from api.serializer.model.criteria_lineage_rel.without_ascendant import CriteriaLineageRelWithoutAscendantSerializer
 from api.serializer.model.criteria_lineage_rel.without_descendant import CriteriaLineageRelWithoutDescendantSerializer
 from api.serializer.model.playlist.children.criteria.output.minumum import CriteriaPlaylistMinimumSerializer

@@ -1,7 +1,7 @@
 from django.urls import reverse
 from rest_framework import status
+from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.serializer.model.criteria.input.Fields import Fields as CriteriaPostFields
 from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 

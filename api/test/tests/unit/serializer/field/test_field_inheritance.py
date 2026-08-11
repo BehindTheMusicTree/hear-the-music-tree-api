@@ -3,8 +3,8 @@ import pkgutil
 from pathlib import Path
 
 from rest_framework import serializers
+from the_music_tree_api_kit.serializer.field.AppField import AppField
 
-from api.serializer.field.AppField import AppField
 from api.test.utils.AppTestCase import AppTestCase
 
 

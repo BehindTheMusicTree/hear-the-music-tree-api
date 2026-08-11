@@ -1,8 +1,8 @@
 from rest_framework import serializers
+from the_music_tree_api_kit.serializer.AppInputSerializer import AppInputSerializer
 
 from api.model.playlist.Fields import Fields as PlayListFields
 from api.model.playlist.Playlist import Playlist
-from api.serializer.AppInputSerializer import AppInputSerializer
 
 
 class Fields:
