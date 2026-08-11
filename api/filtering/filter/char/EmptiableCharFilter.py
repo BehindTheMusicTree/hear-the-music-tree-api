@@ -2,11 +2,10 @@ from typing import TYPE_CHECKING
 
 from django_filters import CharFilter
 from the_music_tree_api_kit.base.BaseQuerySet import BaseQuerySet
-
-from api.filtering.filter.AppFilter import AppFilter
+from the_music_tree_api_kit.filtering.filter.AppFilter import AppFilter
 
 if TYPE_CHECKING:
-    from api.filtering.set.AppFilterSet import AppFilterSet
+    from the_music_tree_api_kit.filtering.set.AppFilterSet import AppFilterSet
 
 
 class EmptiableCharFilter(CharFilter, AppFilter):

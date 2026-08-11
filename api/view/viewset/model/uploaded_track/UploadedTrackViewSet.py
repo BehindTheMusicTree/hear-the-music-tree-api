@@ -6,6 +6,7 @@ from django.core.files.storage import default_storage
 from drf_spectacular.types import OpenApiTypes  # type: ignore
 from drf_spectacular.utils import OpenApiParameter, OpenApiResponse, extend_schema  # type: ignore
 from rest_framework.decorators import action
+from the_music_tree_api_kit.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 from api.filtering.set.uploaded_track.UploadedTrackFilterFieldKey import UploadedTrackFilterFieldKey
 from api.filtering.set.uploaded_track.UploadedTrackFilterSet import UploadedTrackFilterSet
@@ -14,8 +15,7 @@ from api.serializer.model.uploaded_track.input.post.post import UploadedTrackPos
 from api.serializer.model.uploaded_track.input.put.put import UploadedTrackPutSerializer
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.serializer.model.uploaded_track.output.detailed import UploadedTrackDetailedSerializer
-
-from ..AppModelViewSet import AppModelViewSet
+from api.view.file_response.AppFileResponse import AppFileResponse
 
 
 class UploadedTrackViewSet(AppModelViewSet[UploadedTrack]):
@@ -29,6 +29,9 @@ class UploadedTrackViewSet(AppModelViewSet[UploadedTrack]):
             update_serializer_class=UploadedTrackPutSerializer,
             **kwargs,
         )
+
+    def get_file_response(self, file_path: str):
+        return AppFileResponse.from_file(file_path=file_path, filename=file_path.rsplit("/", maxsplit=1)[-1])
 
     @action(detail=True, methods=["get"])
     def download(self, request, pk=None):

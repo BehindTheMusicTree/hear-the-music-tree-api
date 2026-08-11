@@ -2,10 +2,10 @@ from typing import Any
 
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
+from the_music_tree_api_kit.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 from api.model.user.User import User
 from api.serializer.model.user.base.output.detailed import UserDetailedSerializer
-from api.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 
 class BaseUserViewSet(AppModelViewSet[User]):

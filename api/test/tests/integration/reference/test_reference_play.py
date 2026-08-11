@@ -6,7 +6,7 @@ from rest_framework import status
 
 from api.model.play.Play import Play
 from api.test.tests.integration.reference.reference_test_case import ReferenceTestCase
-from api.view.pagination.PaginatedResponseFields import PaginatedResponseFields
+from the_music_tree_api_kit.view.pagination.PaginatedResponseFields import PaginatedResponseFields
 
 
 class ReferencePlayTestCase(ReferenceTestCase):

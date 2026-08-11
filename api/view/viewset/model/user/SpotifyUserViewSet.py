@@ -1,11 +1,11 @@
 from drf_spectacular.utils import extend_schema
 from rest_framework.exceptions import MethodNotAllowed
+from the_music_tree_api_kit.view.permission.IsAuthenticatedReturn401 import IsAuthenticatedReturn401
+from the_music_tree_api_kit.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 from api.model.user.User import User
 from api.serializer.model.user.spotify.output.detailed import SpotifyUserDetailedSerializer
 from api.utils.decorators.spotify import spotify_user_required
-from api.view.permission.IsAuthenticatedReturn401 import IsAuthenticatedReturn401
-from api.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 
 class SpotifyUserViewSet(AppModelViewSet[User]):
