@@ -1,4 +1,5 @@
-from api.model.public_standard_resource.Fields import Fields as PublicStandardResourceFields
+from the_music_tree_api_kit.public_standard_resource.Fields import Fields as PublicStandardResourceFields
+
 from api.model.spotify_resource.children.artist.Fields import Fields as SpotifyArtistFields
 
 

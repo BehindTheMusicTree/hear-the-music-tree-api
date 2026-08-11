@@ -1,7 +1,7 @@
 from django_filters.filterset import FilterSet
+from the_music_tree_api_kit.base.BaseQuerySet import BaseQuerySet
 
 from api.filtering.filter.char.EnumCharFilter import EnumCharFilter
-from api.model.base.BaseQuerySet import BaseQuerySet
 
 
 class OptionalEnumCharFilter(EnumCharFilter):

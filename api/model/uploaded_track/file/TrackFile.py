@@ -12,13 +12,14 @@ from django.db.models.fields.files import FieldFile
 from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
 from django.utils.translation import gettext as _
+from the_music_tree_api_kit.field.foreign_key.AppForeignKey import AppForeignKey
+from the_music_tree_api_kit.field.foreign_key.AppOneToOneField import AppOneToOneField
+from the_music_tree_api_kit.field.foreign_key.PrivateOneToOneField import PrivateOneToOneField
+from the_music_tree_api_kit.private_standard_resource.PrivateStandardResource import PrivateStandardResource
 
 from api import settings
 from api.exception.validation.app.AppValidationException import AppValidationException
 from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
-from api.model.field.foreign_key.AppForeignKey import AppForeignKey
-from api.model.field.foreign_key.AppOneToOneField import AppOneToOneField
-from api.model.field.foreign_key.PrivateOneToOneField import PrivateOneToOneField
 from api.model.musicbrainz_resource.children.recording.MbRecording import MbRecording
 from api.model.musicbrainz_resource.children.recording.MbRecordingLookupResult import MusicbrainzRecordingLookupResult
 from api.model.musicbrainz_resource.children.recording.missing_cause.code.MbRecordingMissingCauseCode import (
@@ -27,7 +28,6 @@ from api.model.musicbrainz_resource.children.recording.missing_cause.code.MbReco
 from api.model.musicbrainz_resource.children.recording.missing_cause.MbRecordingMissingCause import (
     MbRecordingMissingCause,
 )
-from api.model.private_standard_resource.PrivateStandardResource import PrivateStandardResource
 from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
 from api.model.utils import utils as model_utils
 from api.model.utils.PreserveSpacesStorage import PreserveSpacesStorage

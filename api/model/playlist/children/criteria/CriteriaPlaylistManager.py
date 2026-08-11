@@ -2,8 +2,7 @@ from typing import TYPE_CHECKING
 
 from django.db import models
 from django.db.models import QuerySet
-
-from api.model.public_standard_resource.StandardResourceManager import StandardResourceManager
+from the_music_tree_api_kit.public_standard_resource.StandardResourceManager import StandardResourceManager
 
 from .Fields import Fields
 

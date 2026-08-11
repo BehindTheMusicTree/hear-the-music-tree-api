@@ -1,7 +1,6 @@
 from django.db import models
-
-from api.model.field.foreign_key.PrivateForeignKey import PrivateForeignKey
-from api.model.private_standard_resource.PrivateStandardResource import PrivateStandardResource
+from the_music_tree_api_kit.field.foreign_key.PrivateForeignKey import PrivateForeignKey
+from the_music_tree_api_kit.private_standard_resource.PrivateStandardResource import PrivateStandardResource
 
 from ..Criteria import Criteria
 from ..Fields import Fields as CriteriaFields

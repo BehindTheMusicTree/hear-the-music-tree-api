@@ -2,9 +2,9 @@ import datetime
 
 from django.db import models
 from django.db.models import F, Value
+from the_music_tree_api_kit.field.AppCharField import AppCharField
+from the_music_tree_api_kit.field.foreign_key.AppManyToManyField import AppManyToManyField
 
-from api.model.field.AppCharField import AppCharField
-from api.model.field.foreign_key.AppManyToManyField import AppManyToManyField
 from api.model.spotify_resource.children.artist.SpotifyArtist import SpotifyArtist
 from api.model.spotify_resource.children.track.Fields import Fields
 from api.model.spotify_resource.children.track.SpotifyLibTrackManager import SpotifyLibTrackManager

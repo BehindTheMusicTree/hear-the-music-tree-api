@@ -1,9 +1,9 @@
 from django.db import models
+from the_music_tree_api_kit.field.AppCharField import AppCharField
+from the_music_tree_api_kit.field.foreign_key.AppForeignKey import AppForeignKey
+from the_music_tree_api_kit.private_standard_resource.PrivateStandardResource import PrivateStandardResource
 
 from api import settings
-from api.model.field.AppCharField import AppCharField
-from api.model.field.foreign_key.AppForeignKey import AppForeignKey
-from api.model.private_standard_resource.PrivateStandardResource import PrivateStandardResource
 
 from .code.MbRecordingMissingCauseCode import MbRecordingMissingCauseCode
 from .MbRecordingMissingCauseManager import MbRecordingMissingCauseManager

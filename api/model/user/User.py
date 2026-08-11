@@ -7,10 +7,10 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import F, Value
 from django.utils.functional import cached_property
+from the_music_tree_api_kit.base.BaseModel import BaseModel
+from the_music_tree_api_kit.field.AppCharField import AppCharField
 
 from api import settings
-from api.model.base.BaseModel import BaseModel
-from api.model.field.AppCharField import AppCharField
 from api.model.utils.ConcatOp import ConcatOp
 from api.model.utils.ConditionalExpression import ConditionalExpression
 
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from api.model.all_uploaded_tracks_mixin.AllUploadedTracksMixin import AllUploadedTracksMixin
 
 
-class User(AbstractUser, BaseModel):
+class User(AbstractUser, BaseModel):  # type: ignore[django-manager-missing]
     DEFAULT_UPLOADED_TRACK_FILENAME_WITH_EXTENSION = "default.mp3"
 
     is_system = models.BooleanField(

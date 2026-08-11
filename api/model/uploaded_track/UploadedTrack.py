@@ -3,6 +3,9 @@ from typing import TYPE_CHECKING
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import QuerySet
+from the_music_tree_api_kit.field.AppCharField import AppCharField
+from the_music_tree_api_kit.field.foreign_key.PrivateForeignKey import PrivateForeignKey
+from the_music_tree_api_kit.field.foreign_key.PrivateManyToManyField import PrivateManyToManyField
 
 from api import settings
 from api.model.album.Album import Album
@@ -11,9 +14,6 @@ from api.model.artist.Artist import Artist
 from api.model.artist.Fields import Fields as ArtistFields
 from api.model.criteria.children.genre.Genre import Genre
 from api.model.criteria.Fields import Fields as CriteriaFields
-from api.model.field.AppCharField import AppCharField
-from api.model.field.foreign_key.PrivateForeignKey import PrivateForeignKey
-from api.model.field.foreign_key.PrivateManyToManyField import PrivateManyToManyField
 from api.model.playlist.Fields import Fields as PlayListFields
 from api.model.playlist.Playlist import Playlist
 from api.model.trackable_play_count.TrackablePlayCount import TrackablePlayCount

@@ -1,4 +1,4 @@
-from api.model.base.BaseManager import BaseManager
+from the_music_tree_api_kit.base.BaseManager import BaseManager
 
 
 class AllUploadedTrackMixinManager(BaseManager):

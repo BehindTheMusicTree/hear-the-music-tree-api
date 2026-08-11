@@ -1,4 +1,4 @@
-from api.model.public_standard_resource.StandardResourceManager import StandardResourceManager
+from the_music_tree_api_kit.public_standard_resource.StandardResourceManager import StandardResourceManager
 
 from .Fields import Fields
 
