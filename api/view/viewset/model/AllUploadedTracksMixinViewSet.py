@@ -1,11 +1,11 @@
 from drf_spectacular.utils import extend_schema
 from rest_framework.exceptions import APIException
 from the_music_tree_api_kit.serializer.SerializerType import SerializerType
+from the_music_tree_api_kit.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 from api.model.all_uploaded_tracks_mixin.AllUploadedTracksMixin import AllUploadedTracksMixin
 from api.model.user.User import User
 from api.serializer.model.uploaded_track.output.minimum import UploadedTrackMinimumSerializer
-from api.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 
 class AllUploadedTracksViewSet(AppModelViewSet[AllUploadedTracksMixin]):
