@@ -1,10 +1,10 @@
 from rest_framework import status
 from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
+from the_music_tree_api_kit.utils.data_transformer import to_camel_case
 
 from api.serializer.model.artist.Fields import Fields as ArtistFields
 from api.test.tests.integration.artist.ArtistTestCase import ArtistTestCase
 from api.test.utils.field.filter.char.NotNullableFreeCharFilterTestCase import NotNullableFreeCharFilterTestCase
-from api.utils.data_transformer import to_camel_case
 
 
 class TestCase(ArtistTestCase, NotNullableFreeCharFilterTestCase):

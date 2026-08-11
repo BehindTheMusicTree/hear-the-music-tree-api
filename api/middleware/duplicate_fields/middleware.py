@@ -8,8 +8,7 @@ from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from rest_framework.request import Request
 from the_music_tree_api_kit.exception.validation.app.AppValidationException import AppValidationException
 from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
-
-from api.view.error.ErrorResponse import ErrorResponse
+from the_music_tree_api_kit.view.error.ErrorResponse import ErrorResponse
 
 from .JsonDuplicateKeyDetectingDecoder import JsonDuplicateKeyDetectingDecoder
 

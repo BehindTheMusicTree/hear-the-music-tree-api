@@ -1,4 +1,5 @@
 from rest_framework import status
+from the_music_tree_api_kit.utils import data_transformer
 
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 from api.model.uploaded_track_playlist_rel.Fields import Fields as UploadedTrackPlaylistRelFields
@@ -6,7 +7,6 @@ from api.serializer.model.playlist.base.output.detailed import Fields as Playlis
 from api.serializer.model.uploaded_track.output.UploadedTrackOutputFieldKey import UploadedTrackOutputFieldKey
 from api.test.tests.integration.playlist.base.PlaylistTestCase import PlaylistTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.utils import data_transformer
 
 
 class TestCase(PlaylistTestCase):

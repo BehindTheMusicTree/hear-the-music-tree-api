@@ -7,8 +7,7 @@ from django.http.multipartparser import MultiPartParser as DjangoMultiPartParser
 from rest_framework.request import Request
 from the_music_tree_api_kit.exception.validation.app.AppValidationException import AppValidationException
 from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
-
-from api.view.error.ErrorResponse import ErrorResponse
+from the_music_tree_api_kit.view.error.ErrorResponse import ErrorResponse
 
 logger = logging.getLogger(__name__)
 
@@ -148,7 +147,7 @@ class ListValueValidationMiddleware:
 
                     if has_empty and has_non_empty:
                         # Convert field name to camelCase for error response
-                        from api.utils import data_transformer
+                        from the_music_tree_api_kit.utils import data_transformer
 
                         field_name = data_transformer.to_camel_case(key)
                         raise AppValidationException(
@@ -167,7 +166,7 @@ class ListValueValidationMiddleware:
 
                 if has_empty and has_non_empty:
                     # Convert field name to camelCase for error response
-                    from api.utils import data_transformer
+                    from the_music_tree_api_kit.utils import data_transformer
 
                     field_name = data_transformer.to_camel_case(key)
                     raise AppValidationException(

@@ -1,9 +1,9 @@
 from rest_framework import status
+from the_music_tree_api_kit.utils import data_transformer
 
 from api.serializer.model.artist.detailed import Fields as ArtistFields
 from api.test.tests.integration.artist.ArtistTestCase import ArtistTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.utils import data_transformer
 
 
 class TestCase(ArtistTestCase):

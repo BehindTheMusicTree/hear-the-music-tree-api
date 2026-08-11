@@ -1,10 +1,10 @@
 from uuid import UUID
 
 from rest_framework import status
+from the_music_tree_api_kit.utils.data_transformer import to_camel_case
 
 from api.serializer.model.criteria.output.CriteriaOutputFieldKey import CriteriaOutputFieldKey
 from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
-from api.utils.data_transformer import to_camel_case
 
 
 class TestCase(GenreTestCase):

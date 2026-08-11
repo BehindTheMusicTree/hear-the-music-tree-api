@@ -1,13 +1,13 @@
 from unittest.mock import patch
 
 from rest_framework import status
+from the_music_tree_api_kit.utils.data_transformer import to_camel_case
 
 from api.serializer.audio_metadata.AudioMetadataFull import AudioMetadataFullSerializer
 from api.serializer.audio_metadata.Fields import Fields
 from api.test.tests.integration.audio_metadata.AudioMetadataTestCase import AudioMetadataTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 from api.utils.audio_fingerprinter import service as audio_fingerprinter_service
-from api.utils.data_transformer import to_camel_case
 from api.utils.musicbrainz import service as musicbrainz_service
 
 MUSICBRAINZ_RAW_DATA_CAMEL = to_camel_case("musicbrainz_raw_data")

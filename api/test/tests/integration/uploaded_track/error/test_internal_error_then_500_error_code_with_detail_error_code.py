@@ -3,10 +3,10 @@ from unittest.mock import patch
 from django.db import IntegrityError
 from django.test import override_settings
 from rest_framework import status
+from the_music_tree_api_kit.view.error.ApiErrorCode import ApiErrorCodeNumeric
 
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
-from api.view.error.ApiErrorCode import ApiErrorCodeNumeric
 
 
 class TestCase(UploadedTrackTestCase):
