@@ -7,6 +7,7 @@ from drf_spectacular.utils import (
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from the_music_tree_api_kit.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 from api.filtering.set.spotify.lib_track.Fields import Fields as FilterFields
 from api.filtering.set.spotify.lib_track.SpotifyLibTrackFilterSet import SpotifyLibTrackFilterSet
@@ -16,7 +17,6 @@ from api.serializer.model.spotify.lib_track.output.detailed import SpotifyLibTra
 from api.serializer.model.spotify.lib_track.output.simple import SpotifyLibTrackSimpleSerializer
 from api.utils.decorators.spotify import spotify_user_required
 from api.utils.spotify_api.managers.SpotifyApiLibTrackManager import SpotifyApiLibTrackManager
-from api.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 
 class SpotifyLibTrackViewSet(AppModelViewSet[SpotifyLibTrack]):

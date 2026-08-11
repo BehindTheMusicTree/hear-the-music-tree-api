@@ -3,12 +3,12 @@ from drf_spectacular.utils import (
     OpenApiParameter,  # type: ignore
     extend_schema,
 )
+from the_music_tree_api_kit.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 from api.filtering.set.artist.ArtistFilterSet import ArtistFilterSet
 from api.filtering.set.artist.ArtistFilterSet import Fields as FilterFields
 from api.model.artist.Artist import Artist
 from api.serializer.model.artist.detailed import ArtistDetailedSerializer
-from api.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 
 class ArtistViewSet(AppModelViewSet[Artist]):

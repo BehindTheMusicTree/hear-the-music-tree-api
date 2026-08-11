@@ -1,5 +1,6 @@
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
+from the_music_tree_api_kit.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 from api.filtering.set.playlist.children.manual.ManualPlaylistFilterSet import Fields, ManualPlaylistFilterSet
 from api.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
@@ -8,7 +9,6 @@ from api.serializer.model.playlist.children.manual.input.post import ManualPlayl
 from api.serializer.model.playlist.children.manual.input.put import ManualPlaylistPutSerializer
 from api.serializer.model.playlist.children.manual.output.detailed import ManualPlaylistDetailedSerializer
 from api.serializer.model.playlist.children.manual.output.simple import ManualPlaylistSimpleSerializer
-from api.view.viewset.model.AppModelViewSet import AppModelViewSet
 
 
 class ManualPlaylistViewSet(AppModelViewSet[ManualPlaylist]):

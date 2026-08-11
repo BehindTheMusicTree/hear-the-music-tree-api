@@ -4,7 +4,7 @@ from django.db import models
 from rest_framework import status
 
 from api.test.utils.AppTestCase import AppTestCase
-from api.view.pagination.PaginatedResponseFields import PaginatedResponseFields
+from the_music_tree_api_kit.view.pagination.PaginatedResponseFields import PaginatedResponseFields
 
 
 class ReferenceTestCase(AppTestCase):

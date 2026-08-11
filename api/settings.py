@@ -684,7 +684,7 @@ def setup_django_constants():
             "djangorestframework_camel_case.parser.CamelCaseMultiPartParser",
             "djangorestframework_camel_case.parser.CamelCaseFormParser",
         ),
-        "DEFAULT_PAGINATION_CLASS": "api.view.pagination.AppPagination",
+        "DEFAULT_PAGINATION_CLASS": "the_music_tree_api_kit.view.pagination.AppPagination.AppPagination",
         "PAGE_SIZE": 30,
         "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
         "DEFAULT_PERMISSION_CLASSES": [
