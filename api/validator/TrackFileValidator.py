@@ -3,9 +3,9 @@ from pathlib import Path
 import audiometa
 from django.utils.deconstruct import deconstructible
 from django.utils.translation import gettext as _
+from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 
 from api import settings
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from api.utils.file_path_utils import get_file_path
 
@@ -42,7 +42,9 @@ class TrackFileValidator:
             if field and hasattr(field, "fail"):
                 field.fail(FieldValidationErrorCode.TRACK_FILE_EXTENSION_INVALID, message)
             else:
-                from api.exception.validation.app.AppValidationException import AppValidationException
+                from the_music_tree_api_kit.exception.validation.app.AppValidationException import (
+                    AppValidationException,
+                )
 
                 raise AppValidationException(
                     message=message,
@@ -59,7 +61,9 @@ class TrackFileValidator:
             if field and hasattr(field, "fail"):
                 field.fail(FieldValidationErrorCode.FILE_TOO_LARGE, message)
             else:
-                from api.exception.validation.app.AppValidationException import AppValidationException
+                from the_music_tree_api_kit.exception.validation.app.AppValidationException import (
+                    AppValidationException,
+                )
 
                 raise AppValidationException(
                     field_name=self.field_name,
@@ -75,7 +79,9 @@ class TrackFileValidator:
             if field and hasattr(field, "fail"):
                 field.fail(FieldValidationErrorCode.FILE_TOO_SMALL, message)
             else:
-                from api.exception.validation.app.AppValidationException import AppValidationException
+                from the_music_tree_api_kit.exception.validation.app.AppValidationException import (
+                    AppValidationException,
+                )
 
                 raise AppValidationException(
                     field_name=UploadedTrackInputFieldKey.TRACK_FILE_PUBLIC.value,
@@ -105,7 +111,9 @@ class TrackFileValidator:
             if field and hasattr(field, "fail"):
                 field.fail(FieldValidationErrorCode.TRACK_FILE_TYPE_INVALID, message)
             else:
-                from api.exception.validation.app.AppValidationException import AppValidationException
+                from the_music_tree_api_kit.exception.validation.app.AppValidationException import (
+                    AppValidationException,
+                )
 
                 raise AppValidationException(
                     field_name=self.field_name,

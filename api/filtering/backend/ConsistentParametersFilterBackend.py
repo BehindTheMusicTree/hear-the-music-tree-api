@@ -1,7 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
-
-from api.exception.validation.app.AppValidationException import AppValidationException
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
+from the_music_tree_api_kit.exception.validation.app.AppValidationException import AppValidationException
+from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 
 
 class ConsistentParametersFilterBackend(DjangoFilterBackend):

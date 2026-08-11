@@ -1,7 +1,7 @@
 from rest_framework import serializers
+from the_music_tree_api_kit.serializer.field.AppCharField import AppCharField
 
 from api.model.playlist.Playlist import Playlist
-from api.serializer.field.AppCharField import AppCharField
 from api.serializer.model.uploaded_track_playlist_rel.output.without_playlist import (
     UploadedTrackPlaylistRelWithoutPlaylist,
 )

@@ -2,8 +2,7 @@ from typing import Any
 
 from django.core.files.uploadedfile import UploadedFile
 from rest_framework import serializers
-
-from api.serializer.field.AppField import AppField
+from the_music_tree_api_kit.serializer.field.AppField import AppField
 
 
 class AppFileField(AppField, serializers.FileField):

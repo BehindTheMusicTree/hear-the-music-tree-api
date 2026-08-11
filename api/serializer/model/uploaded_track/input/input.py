@@ -1,13 +1,13 @@
 from rest_framework import serializers
+from the_music_tree_api_kit.exception.validation.app.AppValidationException import AppValidationException
+from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
+from the_music_tree_api_kit.serializer.AppInputSerializer import AppInputSerializer
+from the_music_tree_api_kit.serializer.field.AppCharField import AppCharField
 
 from api import settings
-from api.exception.validation.app.AppValidationException import AppValidationException
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from api.model.artist.Artist import Artist
 from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as ModelFields
 from api.model.user.User import User
-from api.serializer.AppInputSerializer import AppInputSerializer
-from api.serializer.field.AppCharField import AppCharField
 from api.serializer.field.ArtistsNamesField import ArtistsNamesField
 from api.serializer.field.criteria.CriteriaFieldInputType import CriteriaFieldInputType
 from api.serializer.field.criteria.GenreField import GenreField
