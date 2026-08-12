@@ -1,11 +1,11 @@
 import os
 
 from rest_framework import status
+from the_music_tree_genre_kit.criteria.type.CriteriaTypePks import CriteriaTypePks
 
 from api.model.album.Album import Album
 from api.model.artist.Artist import Artist
 from api.model.criteria.Criteria import Criteria
-from the_music_tree_genre_kit.criteria.type.CriteriaTypePks import CriteriaTypePks
 from api.model.musicbrainz_resource.children.recording.MbRecording import MbRecording
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 from api.model.uploaded_track.UploadedTrack import UploadedTrack

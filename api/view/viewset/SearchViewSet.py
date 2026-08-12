@@ -2,6 +2,7 @@ from drf_multiple_model.viewsets import ObjectMultipleModelAPIViewSet
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from rest_framework.permissions import IsAuthenticated
+from the_music_tree_genre_kit.criteria.type.CriteriaTypePks import CriteriaTypePks
 
 from api.filtering.set.search.AlbumSearchFilterSet import AlbumSearchFilterSet
 from api.filtering.set.search.ArtistSearchFilterSet import ArtistSearchFilterSet
@@ -10,7 +11,6 @@ from api.filtering.set.search.ManualPlaylistSearchFilterSet import ManualPlaylis
 from api.filtering.set.search.UploadedTrackSearchFilterSet import UploadedTrackSearchFilterSet
 from api.model.album.Album import Album
 from api.model.artist.Artist import Artist
-from the_music_tree_genre_kit.criteria.type.CriteriaTypePks import CriteriaTypePks
 from api.model.playlist.children.criteria.CriterialessPlaylistNames import CriterialessPlaylistNames
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 from api.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
