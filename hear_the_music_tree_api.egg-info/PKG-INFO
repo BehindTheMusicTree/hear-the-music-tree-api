@@ -48,6 +48,7 @@ Requires-Dist: shortuuid==1.0.9
 Requires-Dist: simplejson==3.16.0
 Requires-Dist: spotipy==2.23.0
 Requires-Dist: the-music-tree-api-kit@ git+https://github.com/BehindTheMusicTree/the-music-tree-api-kit.git@v0.1.0
+Requires-Dist: the-music-tree-genre-kit@ git+https://github.com/BehindTheMusicTree/the-music-tree-genre-kit.git@v0.2.1
 Requires-Dist: tinytag==1.10.1
 Requires-Dist: uvicorn==0.20.0
 Requires-Dist: werkzeug==2.2.2

@@ -4,13 +4,13 @@ from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import
 from the_music_tree_api_kit.serializer.AppInputSerializer import AppInputSerializer
 from the_music_tree_api_kit.serializer.field.AppCharField import AppCharField
 from the_music_tree_api_kit.utils import data_transformer
+from the_music_tree_genre_kit.serializer.field.criteria.CriteriaFieldInputType import CriteriaFieldInputType
 
 from api import settings
 from api.model.artist.Artist import Artist
 from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as ModelFields
 from api.model.user.User import User
 from api.serializer.field.ArtistsNamesField import ArtistsNamesField
-from api.serializer.field.criteria.CriteriaFieldInputType import CriteriaFieldInputType
 from api.serializer.field.criteria.GenreField import GenreField
 from api.serializer.field.RatingField import RatingField
 from api.serializer.field.TrackNumberField import TrackNumberField

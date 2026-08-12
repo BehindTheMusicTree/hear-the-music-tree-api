@@ -8,8 +8,8 @@ from django.dispatch import receiver
 from the_music_tree_api_kit.base.BaseManager import BaseManager
 
 from api import settings
-from api.model.criteria.type.CriteriaType import CriteriaType
-from api.model.criteria.type.CriteriaTypePks import CriteriaTypePks
+from the_music_tree_genre_kit.criteria.type.CriteriaType import CriteriaType
+from the_music_tree_genre_kit.criteria.type.CriteriaTypePks import CriteriaTypePks
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 
 from .Fields import Fields

@@ -9,8 +9,8 @@ from the_music_tree_api_kit.field.foreign_key.PrivateOneToOneField import Privat
 
 from api.model.criteria.Criteria import Criteria
 from api.model.criteria.Fields import Fields as CriteriaFields
-from api.model.criteria.type.CriteriaType import CriteriaType
-from api.model.criteria.type.CriteriaTypePks import CriteriaTypePks
+from the_music_tree_genre_kit.criteria.type.CriteriaType import CriteriaType
+from the_music_tree_genre_kit.criteria.type.CriteriaTypePks import CriteriaTypePks
 from api.model.playlist.Fields import Fields as PlayListFields
 from api.model.playlist.Playlist import Playlist
 

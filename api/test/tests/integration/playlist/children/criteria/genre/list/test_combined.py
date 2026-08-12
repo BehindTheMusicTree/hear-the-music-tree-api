@@ -4,7 +4,7 @@ from django.utils import timezone
 from rest_framework import status
 
 from api.filtering.set.private_unique_resource.Fields import Fields as PrivateUniqueResourceFields
-from api.model.criteria.type.CriteriaTypePks import CriteriaTypePks
+from the_music_tree_genre_kit.criteria.type.CriteriaTypePks import CriteriaTypePks
 from api.model.playlist.children.criteria.genre.GenrePlaylist import GenrePlaylist
 from api.model.playlist.Fields import Fields
 from api.serializer.model.playlist.children.criteria.output.detailed import Fields as RietrieveFields

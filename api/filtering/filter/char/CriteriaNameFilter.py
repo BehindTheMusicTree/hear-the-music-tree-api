@@ -4,7 +4,7 @@ from the_music_tree_api_kit.field.AppCharField import AppCharField
 
 from api.filtering.filter.char.NonEmptiableCharFilter import NonEmptiableCharFilter
 from api.model.criteria.Criteria import Criteria
-from api.model.criteria.type.CriteriaTypePks import CriteriaTypePks
+from the_music_tree_genre_kit.criteria.type.CriteriaTypePks import CriteriaTypePks
 from api.model.playlist.children.criteria.CriterialessPlaylistNames import CriterialessPlaylistNames
 
 
