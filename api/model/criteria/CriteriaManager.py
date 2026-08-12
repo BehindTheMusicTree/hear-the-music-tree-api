@@ -1,6 +1,6 @@
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
-from api.model.criteria.AbstractCriteriaManager import AbstractCriteriaManager
+from the_music_tree_genre_kit.criteria.AbstractCriteriaManager import AbstractCriteriaManager
 
 from .Fields import Fields
 
@@ -12,6 +12,11 @@ T = TypeVar("T", bound="Criteria")
 
 class CriteriaManager(AbstractCriteriaManager[T]):
     model: type[T]
+
+    def _create_lineage_rel(self, *, user: Any, descendant: T, ascendant: T, degree: int) -> None:
+        from api.model.criteria.lineage_rel.CriteriaLineageRel import CriteriaLineageRel
+
+        CriteriaLineageRel.objects.create(user=user, descendant=descendant, ascendant=ascendant, degree=degree)
 
     def _on_created(self, instance: T) -> None:
         from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist

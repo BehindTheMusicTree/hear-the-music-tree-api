@@ -472,7 +472,7 @@ def setup_app_constants():
     global ARTISTS_NAMES_LEN_MAX
     ARTISTS_NAMES_LEN_MAX = 256
     global CRITERIA_TYPE_LABEL_LEN_MAX
-    CRITERIA_TYPE_LABEL_LEN_MAX = 50
+    CRITERIA_TYPE_LABEL_LEN_MAX = 255
     global CRITERIA_NAME_LEN_MAX
     CRITERIA_NAME_LEN_MAX = 256
     global MANUAL_PLAYLIST_NAME_LEN_MAX
@@ -571,6 +571,7 @@ def setup_installed_apps_and_caches():
         "rest_framework",
         "rest_framework.authtoken",
         "drf_multiple_model",
+        "the_music_tree_genre_kit",
         "api",
     ]
 

@@ -1,6 +1,7 @@
+from the_music_tree_genre_kit.criteria.type.CriteriaType import CriteriaType
+from the_music_tree_genre_kit.criteria.type.CriteriaTypePks import CriteriaTypePks
+
 from api.model.criteria.Criteria import Criteria
-from api.model.criteria.type.CriteriaType import CriteriaType
-from api.model.criteria.type.CriteriaTypePks import CriteriaTypePks
 
 from .TagManager import TagManager
 

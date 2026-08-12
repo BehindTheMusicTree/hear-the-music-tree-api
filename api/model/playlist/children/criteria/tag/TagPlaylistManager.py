@@ -1,4 +1,5 @@
-from api.model.criteria.type.CriteriaTypePks import CriteriaTypePks
+from the_music_tree_genre_kit.criteria.type.CriteriaTypePks import CriteriaTypePks
+
 from api.model.playlist.children.criteria.CriteriaPlaylistManager import CriteriaPlaylistManager
 
 
