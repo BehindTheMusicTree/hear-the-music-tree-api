@@ -2,10 +2,10 @@ from datetime import timedelta
 
 from django.utils import timezone
 from rest_framework import status
+from the_music_tree_genre_kit.criteria.type.CriteriaTypePks import CriteriaTypePks
 
 from api.filtering.set.playlist.Fields import Fields as Filters
 from api.filtering.set.private_unique_resource.Fields import Fields as PrivateUniqueResourceFields
-from the_music_tree_genre_kit.criteria.type.CriteriaTypePks import CriteriaTypePks
 from api.model.playlist.children.criteria.CriterialessPlaylistNames import CriterialessPlaylistNames
 from api.model.playlist.children.criteria.tag.TagPlaylist import TagPlaylist
 from api.model.playlist.PlaylistTypesLabel import PlaylistTypesLabel

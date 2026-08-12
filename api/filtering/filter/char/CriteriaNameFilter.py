@@ -1,10 +1,10 @@
 from django.db.models import Case, Q, Value, When
 from the_music_tree_api_kit.base.BaseQuerySet import BaseQuerySet
 from the_music_tree_api_kit.field.AppCharField import AppCharField
+from the_music_tree_genre_kit.criteria.type.CriteriaTypePks import CriteriaTypePks
 
 from api.filtering.filter.char.NonEmptiableCharFilter import NonEmptiableCharFilter
 from api.model.criteria.Criteria import Criteria
-from the_music_tree_genre_kit.criteria.type.CriteriaTypePks import CriteriaTypePks
 from api.model.playlist.children.criteria.CriterialessPlaylistNames import CriterialessPlaylistNames
 
 

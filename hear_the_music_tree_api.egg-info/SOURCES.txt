@@ -88,6 +88,7 @@ api/migrations/0009_remove_spotify_and_google_user.py
 api/migrations/0010_add_provider_fields_to_user_state.py
 api/migrations/0011_seed_musicbrainz_lookup_disabled_code.py
 api/migrations/0012_rename_audio_meta_analysis_disabled_to_afp_disabled.py
+api/migrations/0013_move_criteria_type_to_genre_kit.py
 api/migrations/__init__.py
 api/model/ContentObjectFields.py
 api/model/album/Album.py
@@ -108,10 +109,6 @@ api/model/criteria/children/tag/Tag.py
 api/model/criteria/children/tag/TagManager.py
 api/model/criteria/lineage_rel/CriteriaLineageRel.py
 api/model/criteria/lineage_rel/Fields.py
-api/model/criteria/type/CriteriaType.py
-api/model/criteria/type/CriteriaTypePks.py
-api/model/criteria/type/CriteriaTypesLabel.py
-api/model/criteria/type/Fields.py
 api/model/field/AppFileField.py
 api/model/field/__init__.py
 api/model/field/foreign_key/PrivateUuidGenericForeignKey.py
@@ -225,8 +222,6 @@ api/serializer/model/criteria/input/tree_import/Fields.py
 api/serializer/model/criteria/input/tree_import/__init__.py
 api/serializer/model/criteria/output/CriteriaOutputFieldKey.py
 api/serializer/model/criteria/output/detailed.py
-api/serializer/model/criteria_type/output/Fields.py
-api/serializer/model/criteria_type/output/detailed.py
 api/serializer/model/fingerprint_missing_cause/Fields.py
 api/serializer/model/fingerprint_missing_cause/detailed.py
 api/serializer/model/fingerprint_missing_cause/code/Fields.py
