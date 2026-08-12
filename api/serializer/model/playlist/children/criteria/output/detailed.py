@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from the_music_tree_genre_kit.serializer.model.criteria.output.minimum import CriteriaMinimumSerializer
 
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
+from api.serializer.model.criteria.output.minimum import CriteriaMinimumSerializer
 from api.serializer.model.playlist.children.criteria.output.minumum import CriteriaPlaylistMinimumSerializer
 from api.serializer.model.uploaded_track_playlist_rel.output.without_playlist import (
     UploadedTrackPlaylistRelWithoutPlaylist,

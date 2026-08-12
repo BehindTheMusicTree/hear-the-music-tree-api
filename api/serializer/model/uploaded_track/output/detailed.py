@@ -1,10 +1,10 @@
 from rest_framework import serializers
-from the_music_tree_genre_kit.serializer.model.criteria.output.minimum import CriteriaMinimumSerializer
 
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as ModelFields
 from api.serializer.model.album.minimum import AlbumMinimumSerializer
 from api.serializer.model.artist.minimum import ArtistMinimumSerializer
+from api.serializer.model.criteria.output.minimum import CriteriaMinimumSerializer
 from api.serializer.model.playlist.base.output.minimum import PlaylistMinimumSerializer
 from api.serializer.model.uploaded_track.output.UploadedTrackOutputFieldKey import UploadedTrackOutputFieldKey
 from api.serializer.model.uploaded_track_file.output.detailed import FileDetailedSerializer
