@@ -222,6 +222,11 @@ api/serializer/model/criteria/input/tree_import/Fields.py
 api/serializer/model/criteria/input/tree_import/__init__.py
 api/serializer/model/criteria/output/CriteriaOutputFieldKey.py
 api/serializer/model/criteria/output/detailed.py
+api/serializer/model/criteria/output/minimum.py
+api/serializer/model/criteria/output/simple.py
+api/serializer/model/criteria_lineage_rel/detailed.py
+api/serializer/model/criteria_lineage_rel/without_ascendant.py
+api/serializer/model/criteria_lineage_rel/without_descendant.py
 api/serializer/model/fingerprint_missing_cause/Fields.py
 api/serializer/model/fingerprint_missing_cause/detailed.py
 api/serializer/model/fingerprint_missing_cause/code/Fields.py
