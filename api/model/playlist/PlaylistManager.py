@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Any, cast
 from django.db.models import QuerySet
 from the_music_tree_api_kit.public_standard_resource.StandardResourceManager import StandardResourceManager
 
-from api.model.criteria.type.CriteriaTypePks import CriteriaTypePks
+from the_music_tree_genre_kit.criteria.type.CriteriaTypePks import CriteriaTypePks
 from api.model.playlist.PlaylistTypesLabel import PlaylistTypesLabel
 
 from .children.criteria.CriterialessPlaylistNames import CriterialessPlaylistNames

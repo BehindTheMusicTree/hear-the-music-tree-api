@@ -1,9 +1,9 @@
 from rest_framework.serializers import ModelSerializer
 from the_music_tree_api_kit.serializer.AppInputSerializer import AppInputSerializer
+from the_music_tree_genre_kit.serializer.field.foreign_key.DescendantAwareField import DescendantAwareField
 
 from api import settings
 from api.model.criteria.Criteria import Criteria
-from api.serializer.field.foreign_key.DescendantAwareField import DescendantAwareField
 from api.serializer.field.UniquePerUserNameField import UniquePerUserNameField
 
 from .Fields import Fields

@@ -10,7 +10,7 @@ from api.filtering.set.search.ManualPlaylistSearchFilterSet import ManualPlaylis
 from api.filtering.set.search.UploadedTrackSearchFilterSet import UploadedTrackSearchFilterSet
 from api.model.album.Album import Album
 from api.model.artist.Artist import Artist
-from api.model.criteria.type.CriteriaTypePks import CriteriaTypePks
+from the_music_tree_genre_kit.criteria.type.CriteriaTypePks import CriteriaTypePks
 from api.model.playlist.children.criteria.CriterialessPlaylistNames import CriterialessPlaylistNames
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 from api.model.playlist.children.manual.ManualPlaylist import ManualPlaylist

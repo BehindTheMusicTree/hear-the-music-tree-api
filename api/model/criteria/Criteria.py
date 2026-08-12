@@ -1,8 +1,8 @@
 from typing import TYPE_CHECKING
 
 from django.db import models
+from the_music_tree_genre_kit.criteria.AbstractCriteria import AbstractCriteria
 
-from api.model.criteria.AbstractCriteria import AbstractCriteria
 from api.model.criteria.CriteriaManager import CriteriaManager
 from api.model.uploaded_track_mixin.UploadedTrackMixin import UploadedTrackMixin
 

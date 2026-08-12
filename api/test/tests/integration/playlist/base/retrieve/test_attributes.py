@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from api.model.criteria.type.CriteriaTypePks import CriteriaTypePks
+from the_music_tree_genre_kit.criteria.type.CriteriaTypePks import CriteriaTypePks
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 from api.serializer.model.playlist.base.output.detailed import Fields as RetrieveFields
 from api.test.tests.integration.playlist.base.PlaylistTestCase import PlaylistTestCase
