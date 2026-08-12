@@ -8,7 +8,6 @@ from the_music_tree_api_kit.exception.validation.app.AppValidationException impo
 from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from the_music_tree_api_kit.serializer.SerializerType import SerializerType
 from the_music_tree_api_kit.view.viewset.model.AppModelViewSet import AppModelViewSet
-from the_music_tree_genre_kit.serializer.model.criteria.output.simple import CriteriaSimpleSerializer
 
 from api.filtering.set.criteria.Fields import Fields as FilterFields
 from api.model.criteria.Criteria import Criteria
@@ -16,6 +15,7 @@ from api.serializer.model.criteria.input.post import CriteriaPostSerializer
 from api.serializer.model.criteria.input.put import CriteriaPutSerializer
 from api.serializer.model.criteria.input.tree_import import CriteriaTreeImportSerializer
 from api.serializer.model.criteria.output.detailed import CriteriaDetailedSerializer
+from api.serializer.model.criteria.output.simple import CriteriaSimpleSerializer
 
 
 class CriteriaViewSet(AppModelViewSet[Criteria]):

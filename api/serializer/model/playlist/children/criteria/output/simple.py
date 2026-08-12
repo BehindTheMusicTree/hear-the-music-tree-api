@@ -1,8 +1,8 @@
 from django.core.exceptions import ImproperlyConfigured
 from rest_framework import serializers
-from the_music_tree_genre_kit.serializer.model.criteria.output.simple import CriteriaSimpleSerializer
 
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
+from api.serializer.model.criteria.output.simple import CriteriaSimpleSerializer
 from api.serializer.model.playlist.children.criteria.output.Fields import Fields as AvailableFields
 from api.serializer.model.playlist.children.criteria.output.minumum import CriteriaPlaylistMinimumSerializer
 
