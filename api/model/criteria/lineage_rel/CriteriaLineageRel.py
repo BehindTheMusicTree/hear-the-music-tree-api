@@ -1,16 +1,15 @@
 from django.db import models
 from the_music_tree_api_kit.field.foreign_key.PrivateForeignKey import PrivateForeignKey
-from the_music_tree_api_kit.private_standard_resource.PrivateStandardResource import PrivateStandardResource
+from the_music_tree_genre_kit.criteria.lineage_rel.AbstractCriteriaLineageRel import AbstractCriteriaLineageRel
 
 from ..Criteria import Criteria
 from ..Fields import Fields as CriteriaFields
 from .Fields import Fields
 
 
-class CriteriaLineageRel(PrivateStandardResource):
+class CriteriaLineageRel(AbstractCriteriaLineageRel):
     descendant = PrivateForeignKey(Criteria, on_delete=models.CASCADE, related_name=CriteriaFields.ASCENDANTS_RELS)
     ascendant = PrivateForeignKey(Criteria, on_delete=models.CASCADE, related_name=CriteriaFields.DESCENDANTS_RELS)
-    degree = models.PositiveIntegerField()
 
     def __str__(self):
         return f"Descendant {self.descendant.uuid} | Degree {self.degree} | Ascendant {self.ascendant.uuid}"

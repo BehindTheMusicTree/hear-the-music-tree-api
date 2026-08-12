@@ -1,15 +1,5 @@
-from rest_framework import serializers
-from the_music_tree_api_kit.serializer.AppInputSerializer import AppInputSerializer
+from the_music_tree_genre_kit.serializer.model.criteria.output.minimum import build_criteria_minimum_serializer
 
 from api.model.criteria.Criteria import Criteria
 
-from .CriteriaOutputFieldKey import CriteriaOutputFieldKey
-
-
-class CriteriaMinimumSerializer(AppInputSerializer, serializers.ModelSerializer):
-    class Meta:
-        model = Criteria
-        fields = [
-            CriteriaOutputFieldKey.UUID.value,
-            CriteriaOutputFieldKey.NAME.value,
-        ]
+CriteriaMinimumSerializer = build_criteria_minimum_serializer(Criteria)

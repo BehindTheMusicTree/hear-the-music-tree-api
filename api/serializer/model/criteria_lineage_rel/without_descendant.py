@@ -1,17 +1,10 @@
+from the_music_tree_genre_kit.serializer.model.criteria_lineage_rel.without_descendant import (
+    build_criteria_lineage_rel_without_descendant_serializer,
+)
+
+from api.model.criteria.Criteria import Criteria
 from api.model.criteria.lineage_rel.CriteriaLineageRel import CriteriaLineageRel
-from api.serializer.model.criteria.output.minimum import CriteriaMinimumSerializer
-from api.serializer.model.criteria_lineage_rel.detailed import CriteriaLineageRelDetailedSerializer
-from api.serializer.model.criteria_lineage_rel.Fields import Fields as AvailableFields
 
-
-class Fields:
-    ASCENDANT = AvailableFields.ASCENDANT
-    DEGREE = AvailableFields.DEGREE
-
-
-class CriteriaLineageRelWithoutDescendantSerializer(CriteriaLineageRelDetailedSerializer):
-    ascendant = CriteriaMinimumSerializer()
-
-    class Meta:
-        model = CriteriaLineageRel
-        fields = [Fields.ASCENDANT, Fields.DEGREE]
+CriteriaLineageRelWithoutDescendantSerializer = build_criteria_lineage_rel_without_descendant_serializer(
+    CriteriaLineageRel, Criteria
+)

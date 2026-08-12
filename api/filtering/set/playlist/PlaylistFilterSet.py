@@ -1,9 +1,9 @@
 from django.db.models.query import QuerySet
+from the_music_tree_genre_kit.criteria.type.CriteriaTypePks import CriteriaTypePks
 
 from api.filtering.filter.char.NonEmptiableCharFilter import NonEmptiableCharFilter
 from api.filtering.filter.char.OptionalEnumCharFilter import OptionalEnumCharFilter
 from api.filtering.set.private_unique_resource.PrivateUniqueResourceFilterSet import PrivateUniqueResourceFilterSet
-from api.model.criteria.type.CriteriaTypePks import CriteriaTypePks
 from api.model.playlist.children.criteria.CriterialessPlaylistNames import CriterialessPlaylistNames
 from api.model.playlist.Fields import Fields as ModelFields
 from api.model.playlist.Playlist import Playlist
