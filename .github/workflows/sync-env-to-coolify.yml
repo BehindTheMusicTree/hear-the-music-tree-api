@@ -5,7 +5,9 @@
 # Static flags (FILE_UPLOAD_ENABLED, MEDIA_DIR, etc.) and DB vars are NOT included here —
 # they're owned by Ansible infrastructure (group_vars/all.yml's static_env / DATABASE_URL)
 # to avoid two sources of truth drifting apart.
-# Requires org-level vars COOLIFY_SUBDOMAIN, DOMAIN_NAME and org-level secret COOLIFY_API_TOKEN.
+# Requires org-level vars COOLIFY_API_SUBDOMAIN, DOMAIN_NAME and org-level secret COOLIFY_API_TOKEN.
+# Uses COOLIFY_API_SUBDOMAIN (not COOLIFY_SUBDOMAIN): the latter is gated by Cloudflare
+# Access (browser SSO only) and rejects unattended CI requests with a 302 redirect.
 name: Sync env to Coolify
 
 on:
@@ -74,7 +76,7 @@ jobs:
           app_name: htmt-api
           coolify_environment: staging
           fragment_path: fragment.env
-          coolify_subdomain: ${{ vars.COOLIFY_SUBDOMAIN }}
+          coolify_subdomain: ${{ vars.COOLIFY_API_SUBDOMAIN }}
           domain: ${{ vars.DOMAIN_NAME }}
           coolify_api_token: ${{ secrets.COOLIFY_API_TOKEN }}
 
@@ -137,6 +139,6 @@ jobs:
           app_name: htmt-api
           coolify_environment: production
           fragment_path: fragment.env
-          coolify_subdomain: ${{ vars.COOLIFY_SUBDOMAIN }}
+          coolify_subdomain: ${{ vars.COOLIFY_API_SUBDOMAIN }}
           domain: ${{ vars.DOMAIN_NAME }}
           coolify_api_token: ${{ secrets.COOLIFY_API_TOKEN }}
