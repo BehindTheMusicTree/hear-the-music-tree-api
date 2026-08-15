@@ -1,9 +1,7 @@
-import os
 from pathlib import Path
 from typing import cast
 from uuid import UUID
 
-from django.contrib.auth.hashers import make_password
 from django.db import models
 from django.http import HttpResponse, JsonResponse
 from django.test import TestCase
@@ -196,27 +194,6 @@ class AppTestCase[T: models.Model](TestCase):
         inst._login_as_test_user1()
         return inst
 
-    def _setup_system_user_for_reference_tests(self, system_username: str = "test_reference_system_user"):
-        """Set up system user for reference endpoint tests and configure TMTA_USERNAME environment variable."""
-        self._system_user, created = User.objects.get_or_create(
-            username=system_username,
-            defaults={
-                "is_system": True,
-                "is_active": True,
-                "is_staff": False,
-                "is_superuser": False,
-                "email": "system@test.com",
-                "is_test_user": True,
-                "password": make_password(None),
-            },
-        )
-        if created or not self._system_user.password.startswith("!"):
-            self._system_user.set_unusable_password()
-            self._system_user.save(update_fields=["password"])
-        self._original_tmta_username = os.environ.get("TMTA_USERNAME")
-        os.environ["TMTA_USERNAME"] = system_username
-        return self._system_user
-
     def setUp(self, methods_names_to_implement: list[str] | None = None) -> None:
 
         self.test_admin_user = User.objects.create_superuser(
@@ -292,9 +269,4 @@ class AppTestCase[T: models.Model](TestCase):
                             child.unlink()
                     except OSError:
                         pass
-        if hasattr(self, "_original_tmta_username"):
-            if self._original_tmta_username is not None:
-                os.environ["TMTA_USERNAME"] = self._original_tmta_username
-            elif "TMTA_USERNAME" in os.environ:
-                del os.environ["TMTA_USERNAME"]
         super().tearDown()

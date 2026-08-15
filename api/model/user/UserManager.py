@@ -1,4 +1,3 @@
-import os
 from typing import TYPE_CHECKING, TypeVar
 
 from django.contrib.auth.models import BaseUserManager
@@ -24,12 +23,6 @@ T = TypeVar("T", bound="User")
 class UserManager(BaseManager[T], BaseUserManager):
     def get_default_ordering(self):
         return [Fields.USERNAME]
-
-    def get_system_user(self) -> T:
-        username = os.getenv("TMTA_USERNAME")
-        if not username:
-            raise ValueError("TMTA_USERNAME must be set in environment variables.")
-        return self.get(is_system=True, username=username)
 
     def create_instance(self, **kwargs) -> T:
         if not kwargs[Fields.EMAIL]:
