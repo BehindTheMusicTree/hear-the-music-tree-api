@@ -103,26 +103,25 @@ See `api.middleware.duplicate_fields.middleware.DuplicateFieldsMiddleware` for i
 
 **Scope as path segment**
 
-URLs use **hierarchy for scope or context**, not compound resource names. When the same logical resource is exposed in different contexts (e.g. current user vs system/reference), the context is a path segment and the resource name stays the same.
+URLs use **hierarchy for scope or context**, not compound resource names. When the same logical resource is exposed in different contexts (e.g. current user vs another scope), the context is a path segment and the resource name stays the same.
 
-- **Preferred:** `/{scope}/{resource}/` — e.g. `reference/genres/`, `reference/genre-playlists/`, `me/playlists/`
-- **Avoid:** `/{scope-resource}/` — e.g. `reference-genres/` (scope glued to resource name)
+- **Preferred:** `/{scope}/{resource}/` — e.g. `me/genres/`, `me/genre-playlists/`, `me/playlists/`
+- **Avoid:** `/{scope-resource}/` — e.g. `me-genres/` (scope glued to resource name)
 
-This follows common practice (e.g. Spotify’s `/v1/me/playlists`, Google/Microsoft REST guidance) and keeps the API consistent and extensible: all reference data lives under `reference/`, and the resource name (`genres`, `playlists`) is unchanged.
+This follows common practice (e.g. Spotify’s `/v1/me/playlists`, Google/Microsoft REST guidance) and keeps the API consistent and extensible: the resource name (`genres`, `playlists`) is unchanged across scopes.
 
 **Rules:**
 
-- Use a **path segment for scope** when the same resource exists in multiple contexts (e.g. user-owned vs reference/public).
+- Use a **path segment for scope** when the same resource could exist in multiple contexts (e.g. user-owned vs another scope).
 - Keep **resource names as nouns** (plural for collections): `genres`, `playlists`, `tags`.
-- Use **hierarchy for real parent-child relationships** (e.g. `/users/{id}/playlists`), and for scope when the same resource is scoped (e.g. `/reference/genres`).
+- Use **hierarchy for real parent-child relationships** (e.g. `/users/{id}/playlists`), and for scope when the same resource is scoped (e.g. `/me/genres`).
 
 **Examples:**
 
-| Purpose            | URL pattern                                        | Example                    |
-| ------------------ | -------------------------------------------------- | -------------------------- |
-| User’s resource    | `/{resource}/` or `/{scope}/{resource}/`           | `genres/`, `me/genres/`    |
-| Reference (system) | `reference/{resource}/`                            | `reference/genres/`        |
-| Resource by ID     | `/{resource}/{id}/` or `/{scope}/{resource}/{id}/` | `reference/genres/{uuid}/` |
+| Purpose         | URL pattern                                        | Example                 |
+| --------------- | -------------------------------------------------- | ----------------------- |
+| User’s resource | `/{resource}/` or `/{scope}/{resource}/`           | `genres/`, `me/genres/` |
+| Resource by ID  | `/{resource}/{id}/` or `/{scope}/{resource}/{id}/` | `me/genres/{uuid}/`     |
 
 ## Core Architectural Patterns
 
