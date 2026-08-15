@@ -6,9 +6,9 @@ Manage tag hierarchies and trees.
 
 ## Contexts
 
-| Context | Base Path | Authentication | Description |
-| ------- | --------- | --------------- | ----------- |
-| `me` | `/v1/me/tags/` | Required | Tags owned by the authenticated user |
+| Context | Base Path      | Authentication | Description                          |
+| ------- | -------------- | -------------- | ------------------------------------ |
+| `me`    | `/v1/me/tags/` | Required       | Tags owned by the authenticated user |
 
 ## Endpoints
 

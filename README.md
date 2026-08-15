@@ -390,16 +390,16 @@ All endpoints are prefixed with the API base URL (`{version}/`). Most endpoints 
 
 ### Library Management
 
-| Method   | Endpoint                           | Description                                  | Auth Required |
-| -------- | ---------------------------------- | -------------------------------------------- | ------------- |
-| `GET`    | `me/library/uploaded/`             | List user's uploaded tracks                  | 🔒            |
-| `POST`   | `me/library/uploaded/`             | Upload a new track                           | 🔒            |
-| `GET`    | `me/library/uploaded/{id}/`        | Retrieve a specific uploaded track           | 🔒            |
-| `PUT`    | `me/library/uploaded/{id}/`        | Update an uploaded track                     | 🔒            |
-| `DELETE` | `me/library/uploaded/{id}/`        | Delete an uploaded track                     | 🔒            |
-| `GET`    | `me/library/spotify/`              | List user's Spotify library tracks           | 🔒            |
-| `GET`    | `me/library/spotify/{id}/`         | Retrieve a specific Spotify track            | 🔒            |
-| `GET`    | `all-tracks/`                      | Get all tracks (uploaded and Spotify)        | 🔒            |
+| Method   | Endpoint                    | Description                           | Auth Required |
+| -------- | --------------------------- | ------------------------------------- | ------------- |
+| `GET`    | `me/library/uploaded/`      | List user's uploaded tracks           | 🔒            |
+| `POST`   | `me/library/uploaded/`      | Upload a new track                    | 🔒            |
+| `GET`    | `me/library/uploaded/{id}/` | Retrieve a specific uploaded track    | 🔒            |
+| `PUT`    | `me/library/uploaded/{id}/` | Update an uploaded track              | 🔒            |
+| `DELETE` | `me/library/uploaded/{id}/` | Delete an uploaded track              | 🔒            |
+| `GET`    | `me/library/spotify/`       | List user's Spotify library tracks    | 🔒            |
+| `GET`    | `me/library/spotify/{id}/`  | Retrieve a specific Spotify track     | 🔒            |
+| `GET`    | `all-tracks/`               | Get all tracks (uploaded and Spotify) | 🔒            |
 
 ### Music Metadata
 
@@ -452,18 +452,18 @@ All endpoints are prefixed with the API base URL (`{version}/`). Most endpoints 
 
 ### Playlists
 
-| Method | Endpoint                           | Description                          | Auth Required |
-| ------ | ---------------------------------- | ------------------------------------ | ------------- |
-| `GET`  | `me/playlists/`                    | List my playlists                    | 🔒            |
-| `GET`  | `me/playlists/{id}/`               | Retrieve a specific playlist         | 🔒            |
-| `GET`  | `me/manual-playlists/`             | List my manual playlists             | 🔒            |
-| `POST` | `me/manual-playlists/`             | Create a manual playlist             | 🔒            |
-| `GET`  | `me/manual-playlists/{id}/`        | Retrieve a manual playlist           | 🔒            |
-| `PUT`  | `me/manual-playlists/{id}/`        | Update a manual playlist             | 🔒            |
-| `GET`  | `me/genre-playlists/`              | List my genre-based playlists        | 🔒            |
-| `GET`  | `me/genre-playlists/{id}/`         | Retrieve a genre playlist            | 🔒            |
-| `GET`  | `me/tag-playlists/`                | List my tag-based playlists          | 🔒            |
-| `GET`  | `me/tag-playlists/{id}/`           | Retrieve a tag playlist              | 🔒            |
+| Method | Endpoint                    | Description                   | Auth Required |
+| ------ | --------------------------- | ----------------------------- | ------------- |
+| `GET`  | `me/playlists/`             | List my playlists             | 🔒            |
+| `GET`  | `me/playlists/{id}/`        | Retrieve a specific playlist  | 🔒            |
+| `GET`  | `me/manual-playlists/`      | List my manual playlists      | 🔒            |
+| `POST` | `me/manual-playlists/`      | Create a manual playlist      | 🔒            |
+| `GET`  | `me/manual-playlists/{id}/` | Retrieve a manual playlist    | 🔒            |
+| `PUT`  | `me/manual-playlists/{id}/` | Update a manual playlist      | 🔒            |
+| `GET`  | `me/genre-playlists/`       | List my genre-based playlists | 🔒            |
+| `GET`  | `me/genre-playlists/{id}/`  | Retrieve a genre playlist     | 🔒            |
+| `GET`  | `me/tag-playlists/`         | List my tag-based playlists   | 🔒            |
+| `GET`  | `me/tag-playlists/{id}/`    | Retrieve a tag playlist       | 🔒            |
 
 ### Play History
 

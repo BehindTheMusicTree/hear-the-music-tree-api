@@ -119,9 +119,9 @@ This follows common practice (e.g. Spotify’s `/v1/me/playlists`, Google/Micros
 **Examples:**
 
 | Purpose         | URL pattern                                        | Example                 |
-| ---------------- | -------------------------------------------------- | ------------------------ |
-| User’s resource | `/{resource}/` or `/{scope}/{resource}/`           | `genres/`, `me/genres/`  |
-| Resource by ID    | `/{resource}/{id}/` or `/{scope}/{resource}/{id}/` | `me/genres/{uuid}/`      |
+| --------------- | -------------------------------------------------- | ----------------------- |
+| User’s resource | `/{resource}/` or `/{scope}/{resource}/`           | `genres/`, `me/genres/` |
+| Resource by ID  | `/{resource}/{id}/` or `/{scope}/{resource}/{id}/` | `me/genres/{uuid}/`     |
 
 ## Core Architectural Patterns
 

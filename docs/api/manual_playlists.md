@@ -6,9 +6,9 @@ Manage manual playlists
 
 ## Contexts
 
-| Context | Base Path | Authentication | Description |
-| ------- | --------- | --------------- | ----------- |
-| `me` | `/v1/me/manual-playlists/` | Required | Manual playlists owned by the authenticated user |
+| Context | Base Path                  | Authentication | Description                                      |
+| ------- | -------------------------- | -------------- | ------------------------------------------------ |
+| `me`    | `/v1/me/manual-playlists/` | Required       | Manual playlists owned by the authenticated user |
 
 ## Endpoints
 

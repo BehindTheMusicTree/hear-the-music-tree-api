@@ -6,9 +6,9 @@ Manage genre hierarchies and trees.
 
 ## Contexts
 
-| Context | Base Path        | Authentication | Description                              |
-| ------- | ----------------- | -------------- | ---------------------------------------- |
-| `me`    | `/v1/me/genres/`  | Required       | Genres owned by the authenticated user   |
+| Context | Base Path        | Authentication | Description                            |
+| ------- | ---------------- | -------------- | -------------------------------------- |
+| `me`    | `/v1/me/genres/` | Required       | Genres owned by the authenticated user |
 
 ## Endpoints
 

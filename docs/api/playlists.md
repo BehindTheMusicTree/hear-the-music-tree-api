@@ -6,9 +6,9 @@ Manage playlists
 
 ## Contexts
 
-| Context | Base Path            | Authentication | Description                                |
-| ------- | --------------------- | -------------- | -------------------------------------------- |
-| `me`    | `/v1/me/playlists/`   | Required       | Playlists owned by the authenticated user      |
+| Context | Base Path           | Authentication | Description                               |
+| ------- | ------------------- | -------------- | ----------------------------------------- |
+| `me`    | `/v1/me/playlists/` | Required       | Playlists owned by the authenticated user |
 
 ## Endpoints
 

@@ -6,9 +6,9 @@ Manage playlists based on tags.
 
 ## Contexts
 
-| Context | Base Path                | Authentication | Description                                    |
-| ------- | -------------------------- | -------------- | ------------------------------------------------ |
-| `me`    | `/v1/me/tag-playlists/`    | Required       | Tag playlists owned by the authenticated user     |
+| Context | Base Path               | Authentication | Description                                   |
+| ------- | ----------------------- | -------------- | --------------------------------------------- |
+| `me`    | `/v1/me/tag-playlists/` | Required       | Tag playlists owned by the authenticated user |
 
 ## Endpoints
 
