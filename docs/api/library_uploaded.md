@@ -6,9 +6,9 @@ Manage uploaded tracks in user library.
 
 ## Contexts
 
-| Context | Base Path | Authentication | Description |
-| ------- | --------- | --------------- | ----------- |
-| `me` | `/v1/me/library/uploaded/` | Required | Uploaded tracks owned by the authenticated user |
+| Context | Base Path                  | Authentication | Description                                     |
+| ------- | -------------------------- | -------------- | ----------------------------------------------- |
+| `me`    | `/v1/me/library/uploaded/` | Required       | Uploaded tracks owned by the authenticated user |
 
 ## Endpoints
 
