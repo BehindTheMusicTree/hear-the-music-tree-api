@@ -6,10 +6,9 @@ Manage playlists based on tags.
 
 ## Contexts
 
-| Context     | Base Path                      | Authentication    | Description                                                                                         |
-| ----------- | ------------------------------ | ----------------- | --------------------------------------------------------------------------------------------------- |
-| `me`        | `/v1/me/tag-playlists/`        | Required          | Tag playlists owned by the authenticated user                                                       |
-| `reference` | `/v1/reference/tag-playlists/` | Optional / Public | System-owned reference resources (managed by account defined by TMTA_USERNAME environment variable) |
+| Context | Base Path                | Authentication | Description                                    |
+| ------- | -------------------------- | -------------- | ------------------------------------------------ |
+| `me`    | `/v1/me/tag-playlists/`    | Required       | Tag playlists owned by the authenticated user     |
 
 ## Endpoints
 
@@ -20,19 +19,6 @@ Manage playlists based on tags.
 #### Retrieve
 
 `GET {base}{id}/`
-
-### Context Differences
-
-#### Reference
-
-- Read-only
-- Public access
-- Owned by system account (defined by TMTA_USERNAME environment variable)
-
-#### Me
-
-- Editable by owner
-- Scoped to authenticated user
 
 ## Request / Response
 
