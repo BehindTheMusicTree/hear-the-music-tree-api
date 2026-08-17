@@ -68,6 +68,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **CORS regex allow-list** ([`api/settings.py`](api/settings.py)): `CORS_ALLOWED_ORIGIN_REGEXES` is now loaded from an optional env var (comma-separated regex patterns) alongside `CORS_ALLOWED_ORIGINS`, letting `django-cors-headers` match origins by pattern. Companion `infrastructure` change uses this on staging to allow ad-hoc Vercel preview-deployment URLs for `grow-the-music-tree-frontend`, which don't fit the fixed exact-match origin list.
 
+### Changed
+
+- **Shared example genre tree fixture**: `GenreViewSet`'s `tree/load-example` action now comes from `the-music-tree-genre-kit`'s `GenreExampleTreeMixin`, and `DATA_DIR` points at the kit's bundled `genre_example_tree.json` instead of a local copy, so `hear-the-music-tree-api` and `grow-the-music-tree-api` share one canonical fixture.
+
 ## [v2.2.9] - 2026-06-20
 
 ### Fixed
