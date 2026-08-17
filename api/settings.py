@@ -7,6 +7,7 @@ from typing import Any
 
 import dj_database_url
 from corsheaders.defaults import default_headers
+from the_music_tree_genre_kit.data import DATA_DIR as GENRE_KIT_DATA_DIR
 
 # Third-party imports
 from api.CiStartupTraceEnabled import CiStartupTraceEnabled
@@ -534,7 +535,7 @@ def setup_afp_connection():
 
 def setup_data_dir():
     global DATA_DIR
-    DATA_DIR = BASE_DIR / "data"
+    DATA_DIR = GENRE_KIT_DATA_DIR
     if not DATA_DIR.exists():
         raise OSError(f"The data directory {DATA_DIR} does not exist.")
     print_django(f"DATA_DIR: {DATA_DIR}")
