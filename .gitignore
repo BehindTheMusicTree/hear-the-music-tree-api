@@ -54,3 +54,4 @@ analysis/
 # Claude Code worktrees
 # =============================================================================
 .claude/worktrees/
+.local/
