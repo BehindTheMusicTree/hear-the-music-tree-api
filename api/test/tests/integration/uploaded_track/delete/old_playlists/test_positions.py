@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
+from api.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 from api.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 
@@ -20,9 +20,9 @@ class TrackDeleteViewTestCase(UploadedTrackTestCase):
         response = self._delete_uploaded_track(uuid=track_old_position_1.uuid)
 
         assert response.status_code == status.HTTP_204_NO_CONTENT
-        playlist_relations = UploadedTrackPlaylistRel.objects.filter(playlist=genre_rock.criteria_playlist)
+        playlist_relations = TrackPlaylistRel.objects.filter(playlist=genre_rock.criteria_playlist)
         assert len(playlist_relations) == 2
-        playlist_relation: UploadedTrackPlaylistRel = playlist_relations.get(uploaded_track=track_old_position_2)
+        playlist_relation: TrackPlaylistRel = playlist_relations.get(track=track_old_position_2)
         assert playlist_relation.position == 1
-        playlist_relation = playlist_relations.get(uploaded_track=track_old_position_3)
+        playlist_relation = playlist_relations.get(track=track_old_position_3)
         assert playlist_relation.position == 2

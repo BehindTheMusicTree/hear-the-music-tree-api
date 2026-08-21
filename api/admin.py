@@ -16,13 +16,13 @@ from .model.playlist.children.manual.ManualPlaylist import ManualPlaylist
 from .model.playlist.Playlist import Playlist
 from .model.spotify_resource.children.artist.SpotifyArtist import SpotifyArtist
 from .model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
+from .model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 from .model.uploaded_track.file.fingerprinting.missing_cause.code.FingerprintMissingCauseCode import (
     FingerprintMissingCauseCode,
 )
 from .model.uploaded_track.file.fingerprinting.missing_cause.FingerprintMissingCause import FingerprintMissingCause
 from .model.uploaded_track.file.TrackFile import TrackFile
 from .model.uploaded_track.UploadedTrack import UploadedTrack
-from .model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
 from .model.user.admin.UserAdmin import UserAdmin
 from .model.user.User import User
 
@@ -39,7 +39,7 @@ admin.site.register(CriteriaLineageRel)
 admin.site.register(Playlist)
 admin.site.register(ManualPlaylist)
 admin.site.register(CriteriaPlaylist)
-admin.site.register(UploadedTrackPlaylistRel)
+admin.site.register(TrackPlaylistRel)
 admin.site.register(MbRecording)
 admin.site.register(MbRecordingMissingCause)
 admin.site.register(MbRecordingMissingCauseCode)

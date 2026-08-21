@@ -2,7 +2,7 @@ from rest_framework import status
 from the_music_tree_api_kit.utils import data_transformer
 
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
-from api.model.uploaded_track_playlist_rel.Fields import Fields as UploadedTrackPlaylistRelFields
+from api.model.track_playlist_rel.Fields import Fields as TrackPlaylistRelFields
 from api.serializer.model.playlist.base.output.detailed import Fields as PlaylistOutputFields
 from api.serializer.model.uploaded_track.output.UploadedTrackOutputFieldKey import UploadedTrackOutputFieldKey
 from api.test.tests.integration.playlist.base.PlaylistTestCase import PlaylistTestCase
@@ -30,9 +30,9 @@ class TestCase(PlaylistTestCase):
             data_transformer.to_camel_case(PlaylistOutputFields.UPLOADED_TRACK_PLAYLIST_RELS_PUBLIC)
         ]
         result_tracks_sorted = sorted(
-            result_tracks_raw, key=lambda x: x[data_transformer.to_camel_case(UploadedTrackPlaylistRelFields.POSITION)]
+            result_tracks_raw, key=lambda x: x[data_transformer.to_camel_case(TrackPlaylistRelFields.POSITION)]
         )
-        uploaded_track_field_name = data_transformer.to_camel_case(UploadedTrackPlaylistRelFields.UPLOADED_TRACK_PUBLIC)
+        uploaded_track_field_name = data_transformer.to_camel_case(TrackPlaylistRelFields.TRACK_PUBLIC)
         assert (
             result_tracks_sorted[0][uploaded_track_field_name][UploadedTrackOutputFieldKey.TITLE.value]
             == uploaded_track1.title

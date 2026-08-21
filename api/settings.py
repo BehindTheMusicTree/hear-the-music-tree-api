@@ -85,6 +85,9 @@ TEMPLATES: list[dict[str, Any]] = []
 # Django Constants
 WSGI_APPLICATION: str
 AUTH_USER_MODEL: str
+CRITERIA_MODEL: str
+TRACK_MODEL: str
+PLAYLIST_MODEL: str
 AUTH_PASSWORD_VALIDATORS: list[dict[str, Any]] = []
 LANGUAGE_CODE: str
 TIME_ZONE: str
@@ -652,6 +655,15 @@ def setup_django_constants():
 
     global AUTH_USER_MODEL
     AUTH_USER_MODEL = "api.User"
+
+    global CRITERIA_MODEL
+    CRITERIA_MODEL = "api.Criteria"
+
+    global TRACK_MODEL
+    TRACK_MODEL = "api.UploadedTrack"
+
+    global PLAYLIST_MODEL
+    PLAYLIST_MODEL = "api.Playlist"
 
     global AUTH_PASSWORD_VALIDATORS
     AUTH_PASSWORD_VALIDATORS = [

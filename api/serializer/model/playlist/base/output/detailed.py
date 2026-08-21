@@ -2,15 +2,15 @@ from rest_framework import serializers
 from the_music_tree_api_kit.serializer.field.AppCharField import AppCharField
 
 from api.model.playlist.Playlist import Playlist
-from api.serializer.model.uploaded_track_playlist_rel.output.without_playlist import (
-    UploadedTrackPlaylistRelWithoutPlaylist,
+from api.serializer.model.track_playlist_rel.output.without_playlist import (
+    TrackPlaylistRelWithoutPlaylist,
 )
 
 from .Fields import Fields
 
 
 class PlaylistDetailedSerializer(serializers.ModelSerializer):
-    uploaded_track_playlist_relations = UploadedTrackPlaylistRelWithoutPlaylist(
+    uploaded_track_playlist_relations = TrackPlaylistRelWithoutPlaylist(
         source=Fields.UPLOADED_TRACK_PLAYLIST_RELS_INTERNAL, many=True
     )
     uploaded_tracks_count = serializers.IntegerField(source=Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_INTERNAL)

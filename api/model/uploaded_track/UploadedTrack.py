@@ -24,7 +24,7 @@ from .UploadedTrackFieldKey import UploadedTrackFieldKey as Fields
 from .UploadedTrackManager import UploadedTrackManager
 
 if TYPE_CHECKING:
-    from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
+    from api.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
 
 class UploadedTrack(TrackablePlayCount):
@@ -58,12 +58,12 @@ class UploadedTrack(TrackablePlayCount):
     language = AppCharField(max_length=settings.LANGUAGE_LEN_MAX, blank=True, default=None, null=True)
     archived = models.BooleanField(default=False)
     playlists = PrivateManyToManyField(
-        Playlist, through="UploadedTrackPlaylistRel", related_name=PlayListFields.UPLOADED_TRACKS_RELATED_NAME
+        Playlist, through="TrackPlaylistRel", related_name=PlayListFields.UPLOADED_TRACKS_RELATED_NAME
     )
 
     if TYPE_CHECKING:
         track_file: TrackFile
-        uploaded_track_playlist_rels: models.QuerySet[UploadedTrackPlaylistRel]
+        track_playlist_rels: models.QuerySet[TrackPlaylistRel]
 
     objects: UploadedTrackManager = UploadedTrackManager()
 
@@ -141,14 +141,10 @@ class UploadedTrack(TrackablePlayCount):
 
     @property
     def playlists_with_positions(self) -> list[tuple[str, int]]:
-        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import (
-            Fields as UploadedTrackPlaylistRelFields,
-        )
-        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
+        from api.model.track_playlist_rel.Fields import Fields as TrackPlaylistRelFields
+        from api.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
-        uploaded_track_playlist_rels = UploadedTrackPlaylistRel.objects.filter(user=self.user, uploaded_track=self)
+        track_playlist_rels = TrackPlaylistRel.objects.filter(user=self.user, track=self)
         return list(
-            uploaded_track_playlist_rels.values_list(
-                UploadedTrackPlaylistRelFields.PLAYLIST + "__uuid", UploadedTrackPlaylistRelFields.POSITION
-            )
+            track_playlist_rels.values_list(TrackPlaylistRelFields.PLAYLIST + "__uuid", TrackPlaylistRelFields.POSITION)
         )

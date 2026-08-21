@@ -24,15 +24,15 @@ class UploadedTrackManager(StandardResourceManager["UploadedTrack"]):
 
     def _remove_from_genre_playlists(self, instance: UploadedTrack, old_genre: Genre | None, genre_limit=None):
         from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
-        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
+        from api.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
         update_date = timezone.now()
         if old_genre:
             old_genre_tree_item: Criteria | None = old_genre
             while old_genre_tree_item != genre_limit:
                 old_genre_tree_item = cast(Criteria, old_genre_tree_item)  # Cannot be None at that point
-                UploadedTrackPlaylistRel.objects.delete_instance(
-                    user=instance.user, playlist=old_genre_tree_item.criteria_playlist, uploaded_track=instance
+                TrackPlaylistRel.objects.delete_instance(
+                    user=instance.user, playlist=old_genre_tree_item.criteria_playlist, track=instance
                 )
 
                 # The loop will stop before genre_tree_item is None
@@ -42,20 +42,18 @@ class UploadedTrackManager(StandardResourceManager["UploadedTrack"]):
             genreless_criteria_playlist: CriteriaPlaylist = CriteriaPlaylist.objects.get(
                 user=instance.user, type=CriteriaTypePks.GENRE, criteria=None
             )
-            UploadedTrackPlaylistRel.objects.filter(
-                playlist=genreless_criteria_playlist, uploaded_track=instance
-            ).delete()
+            TrackPlaylistRel.objects.filter(playlist=genreless_criteria_playlist, track=instance).delete()
 
     def _add_to_genre_playlists(self, instance: UploadedTrack, genre_limit=None):
         from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
-        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
+        from api.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
         update_date = timezone.now()
         if instance.genre:
             genre_tree_item: Genre = instance.genre
             while genre_tree_item != genre_limit:
-                UploadedTrackPlaylistRel.objects.create(
-                    user=instance.user, playlist=genre_tree_item.criteria_playlist, uploaded_track=instance
+                TrackPlaylistRel.objects.create(
+                    user=instance.user, playlist=genre_tree_item.criteria_playlist, track=instance
                 )
 
                 # The loop will stop before genre_tree_item is None
@@ -64,21 +62,17 @@ class UploadedTrackManager(StandardResourceManager["UploadedTrack"]):
             genreless_criteria_playlist: CriteriaPlaylist = CriteriaPlaylist.objects.get(
                 user=instance.user, type=CriteriaTypePks.GENRE, criteria=None
             )
-            UploadedTrackPlaylistRel.objects.create(
-                user=instance.user, playlist=genreless_criteria_playlist, uploaded_track=instance
-            )
+            TrackPlaylistRel.objects.create(user=instance.user, playlist=genreless_criteria_playlist, track=instance)
 
     def _decrease_position_of_next_tracks_in_old_track_playlists(self, user: User, playlists_with_old_position: list):
-        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import (
-            Fields as UploadedTrackPlaylistRelFields,
-        )
-        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
+        from api.model.track_playlist_rel.Fields import Fields as TrackPlaylistRelFields
+        from api.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
         for playlist_uuid, old_position in playlists_with_old_position:
-            uploaded_track_playlist_rels_to_update = UploadedTrackPlaylistRel.objects.filter(
+            track_playlist_rels_to_update = TrackPlaylistRel.objects.filter(
                 user=user, playlist=playlist_uuid, position__gt=old_position
             )
-            uploaded_track_playlist_rels_to_update.update(position=F(UploadedTrackPlaylistRelFields.POSITION) - 1)
+            track_playlist_rels_to_update.update(position=F(TrackPlaylistRelFields.POSITION) - 1)
 
     def _update_genre_playlists(self, instance: UploadedTrack, old_genre: Genre | None):
         from api.model.criteria.children.genre.Genre import Genre
@@ -134,7 +128,7 @@ class UploadedTrackManager(StandardResourceManager["UploadedTrack"]):
     def update_instance(self, old_instance: UploadedTrack, **kwargs) -> UploadedTrack:
         from api.model.album.Album import Album
         from api.model.artist.Artist import Artist
-        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
+        from api.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
         with transaction.atomic():
             old_album_artists_list = []
@@ -171,13 +165,9 @@ class UploadedTrackManager(StandardResourceManager["UploadedTrack"]):
 
             if old_archived_state != updated_instance.archived:
                 if updated_instance.archived:
-                    UploadedTrackPlaylistRel.objects.archive_instances_of_uploaded_track(
-                        uploaded_track=updated_instance
-                    )
+                    TrackPlaylistRel.objects.archive_instances_of_track(track=updated_instance)
                 else:
-                    UploadedTrackPlaylistRel.objects.unarchive_instances_of_uploaded_track(
-                        uploaded_track=updated_instance
-                    )
+                    TrackPlaylistRel.objects.unarchive_instances_of_track(track=updated_instance)
 
             return updated_instance
 
