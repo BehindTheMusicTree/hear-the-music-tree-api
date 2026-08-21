@@ -80,19 +80,19 @@ class PlaylistManager(StandardResourceManager):
         Archived tracks (null positions) are sorted last.
         Returns empty dict if no tracks.
         """
-        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
+        from api.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
-        relations = UploadedTrackPlaylistRel.objects.get_ordered_relations_for_playlist(playlist)
+        relations = TrackPlaylistRel.objects.get_ordered_relations_for_playlist(playlist)
 
         if not relations.exists():
             return {}
 
         result: dict[int | None, UploadedTrack] = {}
         for relation in relations.filter(position__isnull=False):
-            relation = cast(UploadedTrackPlaylistRel, relation)
-            result[relation.position] = relation.uploaded_track
+            relation = cast(TrackPlaylistRel, relation)
+            result[relation.position] = relation.track
         for relation in relations.filter(position__isnull=True):
-            relation = cast(UploadedTrackPlaylistRel, relation)
-            result[len(result) + 1] = relation.uploaded_track
+            relation = cast(TrackPlaylistRel, relation)
+            result[len(result) + 1] = relation.track
 
         return result
