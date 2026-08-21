@@ -15,7 +15,7 @@ class TestCase(UploadedTrackTestCase):
 
         assert response.status_code == status.HTTP_201_CREATED
         genre_playlist: CriteriaPlaylist = CriteriaPlaylist.objects.get(user=self.test_user1, criteria__name=genre_name)
-        assert genre_playlist.uploaded_track_playlist_rels.get(uploaded_track=self.saved_object).position == 1
+        assert genre_playlist.track_playlist_rels.get(track=self.saved_object).position == 1
 
     def test_existing_then_first_position_and_other_tracks_after(self):
         genre_name = "Rock"
@@ -33,6 +33,6 @@ class TestCase(UploadedTrackTestCase):
 
         assert response.status_code == status.HTTP_201_CREATED
         genre_playlist: CriteriaPlaylist = CriteriaPlaylist.objects.get(criteria__name=genre_name)
-        assert genre_playlist.uploaded_track_playlist_rels.get(uploaded_track=self.saved_object).position == 1
-        assert genre_playlist.uploaded_track_playlist_rels.get(uploaded_track=uploaded_track1).position == 3
-        assert genre_playlist.uploaded_track_playlist_rels.get(uploaded_track=uploaded_track2).position == 2
+        assert genre_playlist.track_playlist_rels.get(track=self.saved_object).position == 1
+        assert genre_playlist.track_playlist_rels.get(track=uploaded_track1).position == 3
+        assert genre_playlist.track_playlist_rels.get(track=uploaded_track2).position == 2

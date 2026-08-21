@@ -3,8 +3,8 @@ from rest_framework import status
 from api.model.criteria.children.genre.Genre import Genre
 from api.model.playlist.children.criteria.genre.GenrePlaylist import GenrePlaylist
 from api.model.playlist.Playlist import Playlist
-from api.model.uploaded_track_playlist_rel.Fields import Fields as UploadedTrackPlaylistRelFields
-from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
+from api.model.track_playlist_rel.Fields import Fields as TrackPlaylistRelFields
+from api.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 from api.serializer.model.criteria.input.tree_import.Fields import Fields
 from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
@@ -64,10 +64,10 @@ class TestOldCriteriasDeletion(GenreTestCase):
         assert response.status_code == status.HTTP_201_CREATED
 
         criterialess_playlist = GenrePlaylist.objects.get(user=self.test_user1, criteria=None)
-        rels = UploadedTrackPlaylistRel.objects.filter(playlist=criterialess_playlist).select_related(
-            UploadedTrackPlaylistRelFields.UPLOADED_TRACK_INTERNAL
+        rels = TrackPlaylistRel.objects.filter(playlist=criterialess_playlist).select_related(
+            TrackPlaylistRelFields.TRACK_INTERNAL
         )
-        tracks = [getattr(rel, UploadedTrackPlaylistRelFields.UPLOADED_TRACK_INTERNAL) for rel in rels]
+        tracks = [getattr(rel, TrackPlaylistRelFields.TRACK_INTERNAL) for rel in rels]
         assert len(tracks) == 3
         track_titles = [track.title for track in tracks]
         assert "Track 1" in track_titles
@@ -92,10 +92,10 @@ class TestOldCriteriasDeletion(GenreTestCase):
         assert response.status_code == status.HTTP_201_CREATED
 
         criterialess_playlist = GenrePlaylist.objects.get(user=self.test_user1, criteria=None)
-        rels = UploadedTrackPlaylistRel.objects.filter(playlist=criterialess_playlist).select_related(
-            UploadedTrackPlaylistRelFields.UPLOADED_TRACK_INTERNAL
+        rels = TrackPlaylistRel.objects.filter(playlist=criterialess_playlist).select_related(
+            TrackPlaylistRelFields.TRACK_INTERNAL
         )
-        tracks = [getattr(rel, UploadedTrackPlaylistRelFields.UPLOADED_TRACK_INTERNAL) for rel in rels]
+        tracks = [getattr(rel, TrackPlaylistRelFields.TRACK_INTERNAL) for rel in rels]
         for track in tracks:
             assert track.genre is None
 
@@ -125,10 +125,10 @@ class TestOldCriteriasDeletion(GenreTestCase):
 
         # Verify all tracks are moved to criterialess playlist
         criterialess_playlist = GenrePlaylist.objects.get(user=self.test_user1, criteria=None)
-        rels = UploadedTrackPlaylistRel.objects.filter(playlist=criterialess_playlist).select_related(
-            UploadedTrackPlaylistRelFields.UPLOADED_TRACK_INTERNAL
+        rels = TrackPlaylistRel.objects.filter(playlist=criterialess_playlist).select_related(
+            TrackPlaylistRelFields.TRACK_INTERNAL
         )
-        tracks = [getattr(rel, UploadedTrackPlaylistRelFields.UPLOADED_TRACK_INTERNAL) for rel in rels]
+        tracks = [getattr(rel, TrackPlaylistRelFields.TRACK_INTERNAL) for rel in rels]
         assert len(tracks) == 2
         track_titles = [track.title for track in tracks]
         assert "Track 1" in track_titles

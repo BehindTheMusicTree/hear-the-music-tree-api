@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
+from api.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 from api.serializer.model.criteria.input.put import Fields as PutFields
 from api.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
@@ -46,14 +46,14 @@ class TestCase(GenreTestCase):
 
         assert genre_guitare.criteria_playlist.uploaded_tracks.count() == 2
         assert (
-            genre_guitare.criteria_playlist.uploaded_track_playlist_rels.get(
-                uploaded_track=uploaded_track_previously_first_in_guitare
+            genre_guitare.criteria_playlist.track_playlist_rels.get(
+                track=uploaded_track_previously_first_in_guitare
             ).position
             == 1
         )
         assert (
-            genre_guitare.criteria_playlist.uploaded_track_playlist_rels.get(
-                uploaded_track=uploaded_track_previously_second_in_guitare
+            genre_guitare.criteria_playlist.track_playlist_rels.get(
+                track=uploaded_track_previously_second_in_guitare
             ).position
             == 2
         )
@@ -77,12 +77,10 @@ class TestCase(GenreTestCase):
 
         response = self._put_genre(uuid=genre_punk.uuid, **{PutFields.PARENT: genre_rock.uuid})
         assert response.status_code == status.HTTP_200_OK
-        uploaded_track_playlist_rels: list[UploadedTrackPlaylistRel] = list(
-            UploadedTrackPlaylistRel.objects.filter(user=self.test_user1, playlist=genre_guitare.criteria_playlist)
+        track_playlist_rels: list[TrackPlaylistRel] = list(
+            TrackPlaylistRel.objects.filter(user=self.test_user1, playlist=genre_guitare.criteria_playlist)
         )
-        tracks_uuids_positions = {
-            relation.uploaded_track.uuid: relation.position for relation in uploaded_track_playlist_rels
-        }
+        tracks_uuids_positions = {relation.track.uuid: relation.position for relation in track_playlist_rels}
         assert tracks_uuids_positions[uploaded_track_previously_first_in_punk.uuid] == 1
         assert tracks_uuids_positions[uploaded_track_previously_second_in_punk.uuid] == 2
         assert tracks_uuids_positions[uploaded_track_previously_first_in_rock.uuid] == 3
@@ -139,7 +137,7 @@ class TestCase(GenreTestCase):
         response = self._put_genre(uuid=punk_fr_genre.uuid, **{PutFields.PARENT: genre_rock.uuid})
 
         assert response.status_code == status.HTTP_200_OK
-        uploaded_track_playlist_rel: UploadedTrackPlaylistRel = UploadedTrackPlaylistRel.objects.get(
-            user=self.test_user1, playlist=genre_punk.criteria_playlist, uploaded_track=track_second_in_punk
+        track_playlist_rel: TrackPlaylistRel = TrackPlaylistRel.objects.get(
+            user=self.test_user1, playlist=genre_punk.criteria_playlist, track=track_second_in_punk
         )
-        assert uploaded_track_playlist_rel.position == 1
+        assert track_playlist_rel.position == 1

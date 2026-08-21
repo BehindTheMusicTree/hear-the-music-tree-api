@@ -5,8 +5,9 @@ from django.db import transaction
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from the_music_tree_api_kit.base.BaseManager import BaseManager
-from the_music_tree_genre_kit.criteria.type.CriteriaType import CriteriaType
-from the_music_tree_genre_kit.criteria.type.CriteriaTypePks import CriteriaTypePks
+from the_music_tree_genre_kit.criteria.playlist.bootstrap_criterialess_playlists_for_user import (
+    bootstrap_criterialess_playlists_for_user,
+)
 
 from api import settings
 from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
@@ -55,9 +56,7 @@ class UserManager(BaseManager[T], BaseUserManager):
 @receiver(post_save, sender="api.User")
 def create_user_criterialess_playlists(sender, instance, created, **kwargs):
     if created:
-        for criteria_type in [CriteriaTypePks.GENRE, CriteriaTypePks.TAG]:
-            type = CriteriaType.objects.get(pk=criteria_type)
-            CriteriaPlaylist.objects.create(user=instance, type=type, criteria=None)
+        bootstrap_criterialess_playlists_for_user(user=instance, criteria_playlist_model=CriteriaPlaylist)
 
         from api.model.all_uploaded_tracks_mixin.AllUploadedTracksMixin import AllUploadedTracksMixin
 

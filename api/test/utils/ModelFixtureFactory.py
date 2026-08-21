@@ -35,11 +35,11 @@ from api.model.spotify_resource.children.artist.Fields import Fields as ArtistFi
 from api.model.spotify_resource.children.artist.SpotifyArtist import SpotifyArtist
 from api.model.spotify_resource.children.track.Fields import Fields as TrackFields
 from api.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
+from api.model.track_playlist_rel.Fields import Fields as TrackPlaylistRelFields
+from api.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 from api.model.trackable_play_count.TrackablePlayCount import TrackablePlayCount
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
-from api.model.uploaded_track_playlist_rel.Fields import Fields as UploadedTrackPlaylistRelFields
-from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
 from api.model.user.User import User
 from api.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
 
@@ -104,13 +104,13 @@ class ModelFixtureFactory:
         playlist: Playlist,
         uploaded_track: UploadedTrack,
         user: User | None = None,
-    ) -> UploadedTrackPlaylistRel:
+    ) -> TrackPlaylistRel:
         model_fields = {
-            UploadedTrackPlaylistRelFields.USER: user or self.default_test_user,
-            UploadedTrackPlaylistRelFields.PLAYLIST: playlist,
-            UploadedTrackPlaylistRelFields.UPLOADED_TRACK_INTERNAL: uploaded_track,
+            TrackPlaylistRelFields.USER: user or self.default_test_user,
+            TrackPlaylistRelFields.PLAYLIST: playlist,
+            TrackPlaylistRelFields.TRACK_INTERNAL: uploaded_track,
         }
-        return G(UploadedTrackPlaylistRel, **model_fields)
+        return G(TrackPlaylistRel, **model_fields)
 
     def create_uploaded_track_with_file(
         self,
@@ -154,11 +154,11 @@ class ModelFixtureFactory:
             model_fields.update({UploadedTrackFields.TRACK_FILE_INTERNAL.value: django_file})
             uploaded_track = UploadedTrack.objects.create(**model_fields)
         if not use_manager_for_genre_playlist_adding:
-            from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import (
-                UploadedTrackPlaylistRel,
+            from api.model.track_playlist_rel.TrackPlaylistRel import (
+                TrackPlaylistRel,
             )
 
-            UploadedTrackPlaylistRel.objects.filter(user=user, uploaded_track=uploaded_track).delete()
+            TrackPlaylistRel.objects.filter(user=user, track=uploaded_track).delete()
 
         return uploaded_track
 

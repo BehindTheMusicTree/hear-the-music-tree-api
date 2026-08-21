@@ -18,7 +18,7 @@ class UploadedTrackFieldKey(StrEnum):
     GENRE = "genre"
     RATING = "rating"
     PLAYLISTS = "playlists"
-    UPLOADED_TRACK_PLAYLIST_RELS = "uploaded_track_playlist_rels"
+    TRACK_PLAYLIST_RELS = "track_playlist_rels"
     LANGUAGE = "language"
     PLAYLISTS_PUBLIC = "playlists"
     ARCHIVED = "archived"

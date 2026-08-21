@@ -34,7 +34,7 @@ class CriteriaManager(AbstractCriteriaManager[T]):
         )
 
         common_criteria = self.get_common_ascendant(instance, old_parent)
-        CriteriaPlaylist.objects.update_ascendants_uploaded_tracks(
+        CriteriaPlaylist.objects.update_ascendants_tracks(
             instance=instance.criteria_playlist, old_parent=old_parent, common_criteria=common_criteria
         )
 
@@ -52,7 +52,7 @@ class CriteriaManager(AbstractCriteriaManager[T]):
         from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
         from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
 
-        criteria_uploaded_tracks = instance.uploaded_tracks.all()
+        criteria_uploaded_tracks = list(instance.uploaded_tracks.all())
         for uploaded_track in criteria_uploaded_tracks:
             uploaded_track.genre = instance.parent
             uploaded_track.save(update_fields=[f"{UploadedTrackFields.GENRE.value}_id"])
