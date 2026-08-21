@@ -12,8 +12,6 @@ api/models.py
 api/settings.py
 api/urls.py
 api/wsgi.py
-api/apps/__init__.py
-api/apps/apps.py
 api/exception/google.py
 api/exception/musicbrainz.py
 api/exception/spotify.py
@@ -376,6 +374,7 @@ api/test/tests/integration/criteria/delete/test_lib_tracks_criteria.py
 api/test/tests/integration/criteria/delete/test_lib_tracks_metadata_genre.py
 api/test/tests/integration/criteria/delete/test_ok.py
 api/test/tests/integration/criteria/delete/test_playlists.py
+api/test/tests/integration/criteria/delete/test_playlists_tag.py
 api/test/tests/integration/criteria/delete/test_root.py
 api/test/tests/integration/criteria/endpoints/__init__.py
 api/test/tests/integration/criteria/endpoints/genre/__init__.py
