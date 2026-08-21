@@ -5,6 +5,8 @@ from the_music_tree_genre_kit.criteria.AbstractCriteriaManager import AbstractCr
 from .Fields import Fields
 
 if TYPE_CHECKING:
+    from api.model.uploaded_track.UploadedTrack import UploadedTrack
+
     from .Criteria import Criteria
 
 T = TypeVar("T", bound="Criteria")
@@ -48,25 +50,5 @@ class CriteriaManager(AbstractCriteriaManager[T]):
             for uploaded_track in instance.uploaded_tracks.all():
                 uploaded_track.update_file_metadata_from_uploaded_track_instance_values()
 
-    def _on_before_delete(self, instance: T) -> None:
-        from api.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
-        from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
-
-        criteria_uploaded_tracks = list(instance.uploaded_tracks.all())
-        for uploaded_track in criteria_uploaded_tracks:
-            uploaded_track.genre = instance.parent
-            uploaded_track.save(update_fields=[f"{UploadedTrackFields.GENRE.value}_id"])
-            uploaded_track.update_file_metadata_from_uploaded_track_instance_values()
-
-        if instance.is_root:
-            CriteriaPlaylist.objects.transfer_direct_tracks_to_criterialess_playlist(
-                direct_tracks=criteria_uploaded_tracks, criteria_playlist=instance.criteria_playlist
-            )
-
-        if instance.criteria_playlist.children.exists():
-            for child_playlist in instance.criteria_playlist.children.all():
-                child_playlist.parent = instance.parent.criteria_playlist if instance.parent else None
-                child_playlist.save(update_fields=[Fields.PARENT])
-
-                if not instance.parent:
-                    CriteriaPlaylist.objects.make_playlist_root(child_playlist)
+    def _on_track_genre_cleared(self, track: UploadedTrack) -> None:
+        track.update_file_metadata_from_uploaded_track_instance_values()

@@ -1,5 +1,6 @@
 from rest_framework import status
 
+from api.model.playlist.children.criteria.genre.GenrePlaylist import GenrePlaylist
 from api.model.uploaded_track.UploadedTrack import UploadedTrack
 from api.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
 from api.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
@@ -44,6 +45,29 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
 
         assert response.status_code == status.HTTP_200_OK
         assert self.saved_object.genre == None
+
+    def test_empty_then_removed_from_genre_playlists_and_added_to_genreless_playlist(self):
+        rock_criteria = self.model_fixture_factory.create_genre(name="Rock")
+        punk_criteria = self.model_fixture_factory.create_genre(name="Punk", parent=rock_criteria)
+        uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(
+            title="wech", genre=punk_criteria, use_manager_for_genre_playlist_adding=True
+        )
+
+        response = self._put_uploaded_track(uuid=uploaded_track.uuid, **{UploadedTrackInputFieldKey.GENRE.value: ""})
+
+        assert response.status_code == status.HTTP_200_OK
+        assert self.saved_object.genre == None
+
+        rock_tracks_dict_by_position = rock_criteria.criteria_playlist.uploaded_tracks_not_archived_dict_by_position
+        assert uploaded_track.uuid not in [track.uuid for track in rock_tracks_dict_by_position.values()]
+
+        punk_tracks_dict_by_position = punk_criteria.criteria_playlist.uploaded_tracks_not_archived_dict_by_position
+        assert uploaded_track.uuid not in [track.uuid for track in punk_tracks_dict_by_position.values()]
+
+        genreless_playlist = GenrePlaylist.objects.get(user=self.test_user1, criteria=None)
+        genreless_tracks_dict_by_position = genreless_playlist.uploaded_tracks_not_archived_dict_by_position
+        assert len(genreless_tracks_dict_by_position) == 1
+        assert genreless_tracks_dict_by_position[1].uuid == uploaded_track.uuid
 
     def test_provided_then_update(self):
         genre_name = "rap"
