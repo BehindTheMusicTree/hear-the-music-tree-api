@@ -14,3 +14,6 @@ class GenreManager(CriteriaManager):
 
     def _get_criteria_type(self) -> CriteriaType:
         return CriteriaType(pk=CriteriaTypePks.GENRE)
+
+    def _get_direct_tracks(self, instance: Genre) -> list:
+        return list(instance.uploaded_tracks.all())
