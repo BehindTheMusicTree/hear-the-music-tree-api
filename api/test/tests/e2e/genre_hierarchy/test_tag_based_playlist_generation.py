@@ -62,23 +62,13 @@ class TestCase(AppTestCase):
             title="Track 3", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3
         )
 
-        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
+        from api.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
-        UploadedTrackPlaylistRel.objects.create(
-            user=self.test_user1, playlist=tag1_playlist.playlist, uploaded_track=track1
-        )
-        UploadedTrackPlaylistRel.objects.create(
-            user=self.test_user1, playlist=tag2_playlist.playlist, uploaded_track=track1
-        )
-        UploadedTrackPlaylistRel.objects.create(
-            user=self.test_user1, playlist=tag2_playlist.playlist, uploaded_track=track2
-        )
-        UploadedTrackPlaylistRel.objects.create(
-            user=self.test_user1, playlist=tag3_playlist.playlist, uploaded_track=track2
-        )
-        UploadedTrackPlaylistRel.objects.create(
-            user=self.test_user1, playlist=tag1_playlist.playlist, uploaded_track=track3
-        )
+        TrackPlaylistRel.objects.create(user=self.test_user1, playlist=tag1_playlist.playlist, track=track1)
+        TrackPlaylistRel.objects.create(user=self.test_user1, playlist=tag2_playlist.playlist, track=track1)
+        TrackPlaylistRel.objects.create(user=self.test_user1, playlist=tag2_playlist.playlist, track=track2)
+        TrackPlaylistRel.objects.create(user=self.test_user1, playlist=tag3_playlist.playlist, track=track2)
+        TrackPlaylistRel.objects.create(user=self.test_user1, playlist=tag1_playlist.playlist, track=track3)
 
         track1.refresh_from_db()
         track2.refresh_from_db()

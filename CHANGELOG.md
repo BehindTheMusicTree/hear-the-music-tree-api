@@ -67,13 +67,11 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ### Fixed
 
 - **Retired the CI-side sync of `ALLOWED_HOSTS`/`CSRF_TRUSTED_ORIGINS`/`DJANGO_SECRET_KEY`/`DEMO_EMAIL`/`SUPERADMIN_EMAIL`/`SPOTIFY_SCOPES`** (`.github/workflows/sync-env-to-coolify.yml`): these were pushed to Coolify by this manually-triggered (`workflow_dispatch`) workflow, but three of them (`DEMO_EMAIL`, `SUPERADMIN_EMAIL`, `SPOTIFY_SCOPES`) were **also** being set by Ansible's `static_env`, a real dual-writer drift risk, and the other three (`ALLOWED_HOSTS`/`CSRF_TRUSTED_ORIGINS`/`DJANGO_SECRET_KEY`) are either composable from facts Ansible already has or a secret Ansible can generate the same way it already does for `gtmt-api`'s `SECRET_KEY`. Companion `infrastructure` change moves all six to Ansible ownership; this workflow keeps the 12 remaining vars (OAuth client IDs/secrets, demo/superadmin credentials, `ACOUSTID_API_KEY`, etc.) that Ansible has no way to generate or derive.
-
-### Added
-
-- **CORS regex allow-list** ([`api/settings.py`](api/settings.py)): `CORS_ALLOWED_ORIGIN_REGEXES` is now loaded from an optional env var (comma-separated regex patterns) alongside `CORS_ALLOWED_ORIGINS`, letting `django-cors-headers` match origins by pattern. Companion `infrastructure` change uses this on staging to allow ad-hoc Vercel preview-deployment URLs for `grow-the-music-tree-frontend`, which don't fit the fixed exact-match origin list.
+- **`CriteriaPlaylist.DoesNotExist` on root `Genre`/`Tag` deletion**: `CriteriaManager._on_before_delete` reused a lazy `uploaded_tracks` queryset across a mutation boundary — the tracks' `genre` was reassigned before the queryset was consumed by `transfer_direct_tracks_to_criterialess_playlist`, so Django's `track__in=<queryset>` subquery re-evaluated against the already-mutated rows and matched nothing. Now materialized to a `list(...)` before the mutation loop runs.
 
 ### Changed
 
+- **`UploadedTrackPlaylistRel` renamed to `TrackPlaylistRel`** ([`api/model/track_playlist_rel/`](api/model/track_playlist_rel/)): unifies naming with `grow-the-music-tree-api` and `the-music-tree-genre-kit`'s new shared `AbstractTrackPlaylistRel`/`AbstractTrackPlaylistRelManager`, which `CriteriaPlaylistManager` now delegates to instead of implementing its own track/playlist-rel logic. `db_table` is unchanged; only the model/manager class names, the `uploaded_track` field (now `track`), and related accessors are renamed. Migration `0014` performs the rename in place.
 - **Shared example genre tree fixture**: `GenreViewSet`'s `tree/load-example` action now comes from `the-music-tree-genre-kit`'s `GenreExampleTreeMixin`, and `DATA_DIR` points at the kit's bundled `genre_example_tree.json` instead of a local copy, so `hear-the-music-tree-api` and `grow-the-music-tree-api` share one canonical fixture.
 
 ## [v2.2.9] - 2026-06-20

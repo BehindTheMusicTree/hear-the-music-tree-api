@@ -46,12 +46,12 @@ class TestCase(AppTestCase):
         assert isinstance(playlist, ManualPlaylist)
         assert playlist.name == playlist_name
 
-        from api.model.uploaded_track_playlist_rel.Fields import Fields as RelFields
-        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
+        from api.model.track_playlist_rel.Fields import Fields as RelFields
+        from api.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
-        UploadedTrackPlaylistRel.objects.create(user=self.test_user1, playlist=playlist.playlist, uploaded_track=track1)
-        UploadedTrackPlaylistRel.objects.create(user=self.test_user1, playlist=playlist.playlist, uploaded_track=track2)
-        UploadedTrackPlaylistRel.objects.create(user=self.test_user1, playlist=playlist.playlist, uploaded_track=track3)
+        TrackPlaylistRel.objects.create(user=self.test_user1, playlist=playlist.playlist, track=track1)
+        TrackPlaylistRel.objects.create(user=self.test_user1, playlist=playlist.playlist, track=track2)
+        TrackPlaylistRel.objects.create(user=self.test_user1, playlist=playlist.playlist, track=track3)
 
         playlist.refresh_from_db()
         playlist_tracks = playlist.uploaded_tracks.filter(user=self.test_user1)
@@ -66,9 +66,7 @@ class TestCase(AppTestCase):
         assert retrieved_playlist.uuid == playlist.uuid
         assert retrieved_playlist.name == playlist_name
 
-        UploadedTrackPlaylistRel.objects.filter(
-            user=self.test_user1, playlist=playlist.playlist, uploaded_track=track2
-        ).delete()
+        TrackPlaylistRel.objects.filter(user=self.test_user1, playlist=playlist.playlist, track=track2).delete()
 
         playlist.refresh_from_db()
         playlist_tracks = playlist.uploaded_tracks.filter(user=self.test_user1)

@@ -18,21 +18,13 @@ class TestCase(UploadedTrackTestCase):
             title="Love", genre=old_genre, use_manager_for_genre_playlist_adding=True
         )
         old_genre_playlist: CriteriaPlaylist = CriteriaPlaylist.objects.get(criteria=old_genre)
-        assert old_genre_playlist.uploaded_track_playlist_rels.get(uploaded_track=uploaded_track).position == 1
-        assert (
-            old_genre_playlist.uploaded_track_playlist_rels.get(uploaded_track=uploaded_track_following1).position == 2
-        )
-        assert (
-            old_genre_playlist.uploaded_track_playlist_rels.get(uploaded_track=uploaded_track_following2).position == 3
-        )
+        assert old_genre_playlist.track_playlist_rels.get(track=uploaded_track).position == 1
+        assert old_genre_playlist.track_playlist_rels.get(track=uploaded_track_following1).position == 2
+        assert old_genre_playlist.track_playlist_rels.get(track=uploaded_track_following2).position == 3
 
         response = self._put_uploaded_track(uploaded_track.uuid, **{UploadedTrackInputFieldKey.GENRE.value: "Rock"})
 
         assert response.status_code == status.HTTP_200_OK
         old_genre_playlist: CriteriaPlaylist = CriteriaPlaylist.objects.get(criteria=old_genre)
-        assert (
-            old_genre_playlist.uploaded_track_playlist_rels.get(uploaded_track=uploaded_track_following1).position == 1
-        )
-        assert (
-            old_genre_playlist.uploaded_track_playlist_rels.get(uploaded_track=uploaded_track_following2).position == 2
-        )
+        assert old_genre_playlist.track_playlist_rels.get(track=uploaded_track_following1).position == 1
+        assert old_genre_playlist.track_playlist_rels.get(track=uploaded_track_following2).position == 2

@@ -10,8 +10,8 @@ from api.model.uploaded_track_mixin.UploadedTrackMixin import UploadedTrackMixin
 from .Fields import Fields
 
 if TYPE_CHECKING:
+    from api.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
     from api.model.uploaded_track.UploadedTrack import UploadedTrack
-    from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
 
     from .children.criteria.CriteriaPlaylist import CriteriaPlaylist
     from .children.manual.ManualPlaylist import ManualPlaylist
@@ -21,7 +21,7 @@ class Playlist(UploadedTrackMixin, TrackablePlayCount):
     objects: PlaylistManager = PlaylistManager()
 
     if TYPE_CHECKING:
-        uploaded_track_playlist_rels: models.QuerySet[UploadedTrackPlaylistRel]
+        track_playlist_rels: models.QuerySet[TrackPlaylistRel]
         manual_playlist: ManualPlaylist | None
         criteria_playlist: CriteriaPlaylist | None
 
@@ -68,20 +68,20 @@ class Playlist(UploadedTrackMixin, TrackablePlayCount):
         Archived tracks (null positions) are sorted last.
         Returns empty dict if no tracks.
         """
-        from api.model.uploaded_track_playlist_rel.UploadedTrackPlaylistRel import UploadedTrackPlaylistRel
+        from api.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
-        relations = UploadedTrackPlaylistRel.objects.get_ordered_relations_for_playlist(playlist)
+        relations = TrackPlaylistRel.objects.get_ordered_relations_for_playlist(playlist)
 
         if not relations.exists():
             return {}
 
         result: dict[int | None, UploadedTrack] = {}
         for relation in relations.filter(position__isnull=False):
-            relation = cast(UploadedTrackPlaylistRel, relation)
-            result[relation.position] = relation.uploaded_track
+            relation = cast(TrackPlaylistRel, relation)
+            result[relation.position] = relation.track
         for relation in relations.filter(position__isnull=True):
-            relation = cast(UploadedTrackPlaylistRel, relation)
-            result[len(result) + 1] = relation.uploaded_track
+            relation = cast(TrackPlaylistRel, relation)
+            result[len(result) + 1] = relation.track
 
         return result
 

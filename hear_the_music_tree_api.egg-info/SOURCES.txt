@@ -89,6 +89,7 @@ api/migrations/0010_add_provider_fields_to_user_state.py
 api/migrations/0011_seed_musicbrainz_lookup_disabled_code.py
 api/migrations/0012_rename_audio_meta_analysis_disabled_to_afp_disabled.py
 api/migrations/0013_move_criteria_type_to_genre_kit.py
+api/migrations/0014_rename_uploaded_track_playlist_rel_to_track_playlist_rel.py
 api/migrations/__init__.py
 api/model/ContentObjectFields.py
 api/model/album/Album.py
@@ -157,6 +158,9 @@ api/model/spotify_resource/children/track/Fields.py
 api/model/spotify_resource/children/track/SpotifyLibTrack.py
 api/model/spotify_resource/children/track/SpotifyLibTrackManager.py
 api/model/spotify_resource/children/track/__init__.py
+api/model/track_playlist_rel/Fields.py
+api/model/track_playlist_rel/TrackPlaylistRel.py
+api/model/track_playlist_rel/TrackPlaylistRelManager.py
 api/model/trackable_play_count/Fields.py
 api/model/trackable_play_count/TrackablePlayCount.py
 api/model/uploaded_track/UploadedTrack.py
@@ -174,9 +178,6 @@ api/model/uploaded_track_mixin/Fields.py
 api/model/uploaded_track_mixin/UploadedTrackMixin.py
 api/model/uploaded_track_mixin/UploadedTrackMixinManager.py
 api/model/uploaded_track_mixin/UploadedTrackMixinWithInternalNameManager.py
-api/model/uploaded_track_playlist_rel/Fields.py
-api/model/uploaded_track_playlist_rel/UploadedTrackPlaylistRel.py
-api/model/uploaded_track_playlist_rel/UploadedTrackPlaylistRelManager.py
 api/model/user/Fields.py
 api/model/user/User.py
 api/model/user/UserManager.py
@@ -265,6 +266,9 @@ api/serializer/model/spotify/artist/output/simple.py
 api/serializer/model/spotify/lib_track/output/Fields.py
 api/serializer/model/spotify/lib_track/output/detailed.py
 api/serializer/model/spotify/lib_track/output/simple.py
+api/serializer/model/track_playlist_rel/output/Fields.py
+api/serializer/model/track_playlist_rel/output/without_playlist.py
+api/serializer/model/track_playlist_rel/output/without_track.py
 api/serializer/model/uploaded_track/input/UploadedTrackInputFieldKey.py
 api/serializer/model/uploaded_track/input/input.py
 api/serializer/model/uploaded_track/input/post/post.py
@@ -280,9 +284,6 @@ api/serializer/model/uploaded_track/output/simple/simple_without_genre.py
 api/serializer/model/uploaded_track/output/simple/simple_without_track_number.py
 api/serializer/model/uploaded_track_file/output/Fields.py
 api/serializer/model/uploaded_track_file/output/detailed.py
-api/serializer/model/uploaded_track_playlist_rel/output/Fields.py
-api/serializer/model/uploaded_track_playlist_rel/output/without_playlist.py
-api/serializer/model/uploaded_track_playlist_rel/output/without_uploaded_track.py
 api/serializer/model/user/base/input/Fields.py
 api/serializer/model/user/base/output/Fields.py
 api/serializer/model/user/base/output/detailed.py
