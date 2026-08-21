@@ -20,7 +20,7 @@ def _from_invalid_jwt_token(exception: InvalidToken | NotAuthenticated | Authent
         detail = exception.detail
         message = detail["detail"] if isinstance(detail, dict) and "detail" in detail else exception.default_detail
         code = detail["code"] if isinstance(detail, dict) and "code" in detail else exception.default_code
-    except (AttributeError, TypeError):
+    except AttributeError, TypeError:
         message = getattr(exception, "default_detail", str(exception))
         code = getattr(exception, "default_code", "authentication_failed")
     api_error_code = (
