@@ -1,0 +1,40 @@
+from uuid import UUID
+
+from django.urls import reverse
+
+from hear.model.playlist.children.criteria.genre.GenrePlaylist import GenrePlaylist
+from hear.test.utils.AppTestCase import AppTestCase
+
+
+class GenrePlaylistTestCase(AppTestCase):
+    model_class = GenrePlaylist
+    saved_object: GenrePlaylist
+
+    def _post_genre_playlist(self, **kwargs):
+        return self.api_client.post(
+            path=reverse("me-genre-playlist-list"),
+            data=kwargs,
+            content_type="application/json",
+            handle_response=self._set_results,
+        )
+
+    def _retrieve_genre_playlist(self, uuid):
+        return self.api_client.get(
+            path=reverse("me-genre-playlist-detail", kwargs={"pk": uuid}), handle_response=self._set_results
+        )
+
+    def _list_genre_playlists(self, **kwargs):
+        return self.api_client.get(
+            path=reverse("me-genre-playlist-list"), data=kwargs, handle_response=self._set_results
+        )
+
+    def _put_genre_playlist(self, uuid: UUID, **kwargs):
+        return self.api_client.put(
+            path=reverse("me-genre-playlist-detail", kwargs={"pk": uuid}),
+            data=kwargs,
+            content_type="application/json",
+            handle_response=self._set_results,
+        )
+
+    def _delete_genre_playlist(self, uuid):
+        return self.api_client.delete(path=reverse("me-genre-playlist-detail", kwargs={"pk": uuid}))

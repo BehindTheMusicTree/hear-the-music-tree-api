@@ -1,0 +1,11 @@
+from hear.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
+
+from .GenrePlaylistManager import GenrePlaylistManager
+
+
+class GenrePlaylist(CriteriaPlaylist):
+    objects: GenrePlaylistManager = GenrePlaylistManager()
+
+    class Meta:
+        db_table = "htmt_api_genre_playlist"
+        proxy = True
