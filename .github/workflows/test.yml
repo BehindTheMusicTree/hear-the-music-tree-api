@@ -204,7 +204,7 @@ jobs:
               "bash scripts/wait-for-postgres-db.sh db 5432 10 5" \
               "bash scripts/wait-for-afp.sh afp ${AFP_PORT} 12 5" \
               'bash scripts/init-django-data.sh' \
-              "pytest -v --tb=short -x --junitxml=test-results.xml ${pytest_target_q}"
+              "pytest -v --tb=short -x --junitxml=test-results.xml --cov=hear --cov-report=term-missing ${pytest_target_q}"
           )
           # Mount workspace so --junitxml=test-results.xml is visible on the runner (base compose has no ./ bind mount).
           # CI_STARTUP_TRACE: verbose Django/pytest startup diagnostics (see docs/workflows.md).
