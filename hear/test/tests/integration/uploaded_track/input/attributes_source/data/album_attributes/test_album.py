@@ -1,0 +1,28 @@
+from rest_framework import status
+
+from hear.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
+from hear.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from hear.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
+
+
+class TestCase(UploadedTrackTestCase):
+    def test_value_then_ok(self):
+        value = "fofof"
+        data = {
+            UploadedTrackInputFieldKey.ALBUM_NAME.value: value,
+            UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: [],
+        }
+        response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3, **data)
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert self.saved_object.album
+        assert self.saved_object.album.name == value
+
+    def test_empty_then_none(self):
+        response = self._post_uploaded_track(
+            UploadedTrackTestFilename.METADATA_NONE_MP3,
+            **{UploadedTrackInputFieldKey.ALBUM_NAME.value: ""},
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert self.saved_object.album == None

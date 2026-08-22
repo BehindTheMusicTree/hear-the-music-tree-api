@@ -28,7 +28,7 @@ Tests are organized into three categories: **unit**, **integration**, and **e2e*
 
 Unit tests test individual functions, classes, or modules in isolation with mocked dependencies.
 
-**Location:** `api/test/tests/unit/`
+**Location:** `hear/test/tests/unit/`
 
 **Examples:**
 
@@ -47,7 +47,7 @@ Unit tests test individual functions, classes, or modules in isolation with mock
 
 Integration tests test how multiple components work together, typically through API endpoints.
 
-**Location:** `api/test/tests/integration/`
+**Location:** `hear/test/tests/integration/`
 
 **Examples:**
 
@@ -67,7 +67,7 @@ Integration tests test how multiple components work together, typically through 
 
 End-to-end tests test complete user workflows and critical paths.
 
-**Location:** `api/test/tests/e2e/`
+**Location:** `hear/test/tests/e2e/`
 
 **Examples:**
 
@@ -86,7 +86,7 @@ End-to-end tests test complete user workflows and critical paths.
 
 ### Test Location
 
-All tests are located in `api/test/tests/` directory, organized by category. This keeps the test directory structure clean with only test files in the `tests/` subdirectory.
+All tests are located in `hear/test/tests/` directory, organized by category. This keeps the test directory structure clean with only test files in the `tests/` subdirectory.
 
 ## Test Naming Convention
 
@@ -218,24 +218,24 @@ pytest
 Run specific category:
 
 ```bash
-pytest api/test/tests/unit/
-pytest api/test/tests/integration/
-pytest api/test/tests/e2e/
+pytest hear/test/tests/unit/
+pytest hear/test/tests/integration/
+pytest hear/test/tests/e2e/
 ```
 
 Run specific test file:
 
 ```bash
-pytest api/test/tests/unit/utils/audiometa_adapter/test_audiometa_adapter.py
+pytest hear/test/tests/unit/utils/audiometa_adapter/test_audiometa_adapter.py
 ```
 
 Run specific test:
 
 ```bash
-pytest api/test/tests/integration/view/uploaded_track/test_specific.py::TestCase::test_specific_scenario
+pytest hear/test/tests/integration/view/uploaded_track/test_specific.py::TestCase::test_specific_scenario
 ```
 
-For more detailed information about test structure and organization, see [Test README](api/test/README.md).
+For more detailed information about test structure and organization, see [Test README](hear/test/README.md).
 
 ## External Service Dependencies
 

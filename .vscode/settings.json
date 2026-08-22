@@ -21,7 +21,7 @@
 	],
 	"python.testing.pytestEnabled": true,
 	"python.testing.pytestArgs": [
-		"api/test"
+		"hear/test"
 	],
 	"python.analysis.autoImportCompletions": true,
 	"editor.defaultFormatter": "ms-python.autopep8",

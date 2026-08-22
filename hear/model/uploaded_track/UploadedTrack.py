@@ -1,0 +1,150 @@
+from typing import TYPE_CHECKING
+
+from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+from django.db.models import QuerySet
+from the_music_tree_api_kit.field.AppCharField import AppCharField
+from the_music_tree_api_kit.field.foreign_key.PrivateForeignKey import PrivateForeignKey
+from the_music_tree_api_kit.field.foreign_key.PrivateManyToManyField import PrivateManyToManyField
+
+from hear import settings
+from hear.model.album.Album import Album
+from hear.model.album.Fields import Fields as AlbumFields
+from hear.model.artist.Artist import Artist
+from hear.model.artist.Fields import Fields as ArtistFields
+from hear.model.criteria.children.genre.Genre import Genre
+from hear.model.criteria.Fields import Fields as CriteriaFields
+from hear.model.playlist.Fields import Fields as PlayListFields
+from hear.model.playlist.Playlist import Playlist
+from hear.model.trackable_play_count.TrackablePlayCount import TrackablePlayCount
+from hear.utils.audio_file_metadata.AppMetadataKey import AppMetadataKey
+
+from .file.TrackFile import TrackFile
+from .UploadedTrackFieldKey import UploadedTrackFieldKey as Fields
+from .UploadedTrackManager import UploadedTrackManager
+
+if TYPE_CHECKING:
+    from hear.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
+
+
+class UploadedTrack(TrackablePlayCount):
+    title = AppCharField(max_length=settings.UPLOADED_TRACK_TITLE_LEN_MAX)
+    track_file_fingerprint_must_be_unique = models.BooleanField(default=False)
+    artists = PrivateManyToManyField(Artist, blank=True, related_name=ArtistFields.UPLOADED_TRACKS_RELATED_NAME)
+    album: Album = PrivateForeignKey(
+        Album,  # type: ignore
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name=AlbumFields.UPLOADED_TRACKS_RELATED_NAME,
+    )
+    track_number = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(1), MaxValueValidator(settings.UPLOADED_TRACK_TRACK_NUMBER_MAX)],
+    )
+    genre = PrivateForeignKey(
+        Genre,
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+        related_name=CriteriaFields.UPLOADED_TRACKS_RELATED_NAME,
+    )
+    rating = models.IntegerField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(settings.UPLOADED_TRACK_RATING_VALUE_MAX)],
+    )
+    language = AppCharField(max_length=settings.LANGUAGE_LEN_MAX, blank=True, default=None, null=True)
+    archived = models.BooleanField(default=False)
+    playlists = PrivateManyToManyField(
+        Playlist, through="TrackPlaylistRel", related_name=PlayListFields.UPLOADED_TRACKS_RELATED_NAME
+    )
+
+    if TYPE_CHECKING:
+        track_file: TrackFile
+        track_playlist_rels: models.QuerySet[TrackPlaylistRel]
+
+    objects: UploadedTrackManager = UploadedTrackManager()
+
+    class Meta:
+        db_table = "htmt_api_uploaded_track"
+        verbose_name = "Uploaded Track"
+        verbose_name_plural = "Uploaded Tracks"
+        indexes = [
+            models.Index(fields=[Fields.USER.value, Fields.TITLE.value]),
+            models.Index(fields=[Fields.USER.value, Fields.GENRE.value]),
+            models.Index(fields=[Fields.USER.value, Fields.ALBUM.value]),
+        ]
+
+    @property
+    def relative_url(self) -> str:
+        return f"library/uploaded/{self.uuid}/"
+
+    def __str__(self):
+        position_str = f"#{self.track_number}" if self.track_number else "#--"
+
+        artists: QuerySet[Artist] = self.artists.all()
+        artists_str = (
+            ", ".join(artist.name for artist in artists) if self.artists.exists() else f"[no {Fields.ARTISTS.value}]"
+        )
+        album_str = str(self.album) if self.album else f"[no {Fields.ALBUM.value}]"
+
+        genre_str = f"{Fields.GENRE.value}: {self.genre}" if self.genre else f"{Fields.GENRE.value}: --"
+        rating_str = f"{Fields.RATING.value}: {self.rating}" if self.rating else f"{Fields.RATING.value}: --"
+        language_str = f"{Fields.LANGUAGE.value}: {self.language}" if self.language else f"{Fields.LANGUAGE.value}: --"
+        file_str = f"{Fields.TRACK_FILE_INTERNAL.value}: {self.track_file}" if self.track_file else "no track file"
+
+        return (
+            f"{self.uuid} | {position_str} | '{self.title}' by {artists_str} | {album_str} | "
+            f"{genre_str} | {rating_str} | {language_str} | "
+            + f"{Fields.CREATED_ON.value}: {self.created_on} | {file_str}"
+        )
+
+    def simple_str(self) -> str:
+        artists: QuerySet[Artist] = self.artists.all()
+        artists_str = (
+            ", ".join(artist.name for artist in artists) if self.artists.exists() else f"no {Fields.ARTISTS.value}"
+        )
+        return f"{self.uuid} | '{self.title}' by {artists_str}"
+
+    def update_file_metadata_from_uploaded_track_instance_values(self):
+        """Write current track/album/artist/genre/rating/language into the file. Uses the same metadata keys as
+        metadata-session download (APP_METADATA_WRITABLE_KEYS).
+        """
+        normalized_metadata = {}
+        normalized_metadata[AppMetadataKey.TITLE] = self.title
+
+        if self.artists.exists():
+            artists_names_tag = [artist.name for artist in self.artists.all()]
+        else:
+            artists_names_tag = None
+        normalized_metadata[AppMetadataKey.ARTISTS_NAMES] = artists_names_tag
+
+        if self.album:
+            album_name_tag = self.album.name
+            album_artists_list = self.album.album_artists.all()
+            album_artists_tag = (
+                [album_artist.name for album_artist in album_artists_list] if album_artists_list.exists() else None
+            )
+        else:
+            album_name_tag = None
+            album_artists_tag = None
+
+        normalized_metadata[AppMetadataKey.ALBUM_NAME] = album_name_tag
+        normalized_metadata[AppMetadataKey.ALBUM_ARTISTS_NAMES] = album_artists_tag
+        normalized_metadata[AppMetadataKey.GENRES_NAMES] = [self.genre.name] if self.genre else []
+        normalized_metadata[AppMetadataKey.RATING] = self.rating
+        normalized_metadata[AppMetadataKey.LANGUAGE] = self.language if self.language else None
+
+        self.track_file.update_file_metadata(app_metadata=normalized_metadata)
+
+    @property
+    def playlists_with_positions(self) -> list[tuple[str, int]]:
+        from hear.model.track_playlist_rel.Fields import Fields as TrackPlaylistRelFields
+        from hear.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
+
+        track_playlist_rels = TrackPlaylistRel.objects.filter(user=self.user, track=self)
+        return list(
+            track_playlist_rels.values_list(TrackPlaylistRelFields.PLAYLIST + "__uuid", TrackPlaylistRelFields.POSITION)
+        )

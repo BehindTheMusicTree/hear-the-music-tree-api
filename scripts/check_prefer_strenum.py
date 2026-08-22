@@ -51,7 +51,7 @@ def _scan_file(path: Path) -> list[tuple[int, str]]:
 
 
 def _default_roots(repo_root: Path) -> list[Path]:
-    return [repo_root / "api"]
+    return [repo_root / "hear"]
 
 
 def main() -> int:

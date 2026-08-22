@@ -88,7 +88,7 @@ API path prefix uses the major version only (e.g. `v1`), derived from `APP_VERSI
 
 ### Notes
 
-- Metadata is merged from all formats present in the file (e.g. ID3v1 + ID3v2 for MP3). Format-specific behaviour is documented in `api/utils/audio_file_metadata/README.md`.
+- Metadata is merged from all formats present in the file (e.g. ID3v1 + ID3v2 for MP3). Format-specific behaviour is documented in `hear/utils/audio_file_metadata/README.md`.
 - Not all fields are supported by every format (e.g. album artist is not supported by ID3v1).
 
 ### When `include_musicbrainz_analysis` is true
