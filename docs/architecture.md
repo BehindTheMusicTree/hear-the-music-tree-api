@@ -97,7 +97,7 @@ When duplicate fields are detected, the API returns:
 
 Duplicate field detection is handled by `DuplicateFieldsMiddleware` before request data reaches the serializer. For PUT/PATCH requests, the middleware manually parses multipart data since Django doesn't populate `request.POST` for these methods.
 
-See `api.middleware.duplicate_fields.middleware.DuplicateFieldsMiddleware` for implementation details.
+See `hear.middleware.duplicate_fields.middleware.DuplicateFieldsMiddleware` for implementation details.
 
 ### API URL Design
 
@@ -151,7 +151,7 @@ The application uses a hierarchical model structure with base classes for common
 
 ```python
 # Genre.py
-from api.model.genre.Fields import Fields
+from hear.model.genre.Fields import Fields
 
 class Genre(PrivateStandardResource):
     name = models.CharField(max_length=100)
@@ -260,10 +260,10 @@ All custom field classes should inherit from `AppField` (not DRF's `Field` direc
 
 ```python
 # genre.py
-from api.model.genre.Fields import Fields
-from api.serializer.AppInputSerializer import AppInputSerializer
-from api.serializer.field.AppCharField import AppCharField
-from api.serializer.field.AppListField import AppListField
+from hear.model.genre.Fields import Fields
+from hear.serializer.AppInputSerializer import AppInputSerializer
+from hear.serializer.field.AppCharField import AppCharField
+from hear.serializer.field.AppListField import AppListField
 
 class GenreSerializer(AppInputSerializer):
     name = AppCharField()
@@ -275,7 +275,7 @@ class GenreSerializer(AppInputSerializer):
 
 ```python
 # Custom field example
-from api.serializer.field.AppField import AppField
+from hear.serializer.field.AppField import AppField
 from rest_framework import serializers
 
 class AppCharField(AppField, serializers.CharField):
@@ -432,9 +432,9 @@ class GenreFilterSet(AppFilterSet):
 **Good example:**
 
 ```python
-from api.exception.validation.app.AppValidationException import AppValidationException
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
-from api.model.genre.Fields import Fields
+from hear.exception.validation.app.AppValidationException import AppValidationException
+from hear.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
+from hear.model.genre.Fields import Fields
 
 def validate_genre_name(self, name: str, user: User) -> None:
     if not name:

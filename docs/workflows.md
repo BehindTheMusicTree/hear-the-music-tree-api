@@ -45,15 +45,15 @@ If the job prints Django lines ending around **`apps.populate() finished`** / **
 
 1. **Use the full job log** (GitHub Actions: raw log or download). Search for:
    - `ci_pytest_startup_plugin` — **`outer enter`** without **`outer leave`** means the process is stuck **inside** the rest of `pytest_load_initial_conftests` (after `django.setup()`, before that hook finishes).
-   - `api/test/conftest.py: imported` — confirms initial conftest import ran.
+   - `hear/test/conftest.py: imported` — confirms initial conftest import ran.
 2. **Probe step:** The pytest job runs **`pytest --show-ini`** and **`pytest --trace-config`** (truncated) **before** the main `pytest` invocation so you can confirm **`inifile`**, **`rootdir`**, **`addopts`**, and registered plugins.
 3. **Environment (set in `test.yml` for `docker compose run`):**
    - **`CI_STARTUP_TRACE=1`** — enables verbose `[Django]` / `[pytest]` diagnostics in application code.
-   - **`PYTEST_PLUGINS=api.ci_pytest_startup_plugin`** — loads the hook-bracket plugin even when a bind-mount hides image-local `*.egg-info` entry points.
+   - **`PYTEST_PLUGINS=hear.ci_pytest_startup_plugin`** — loads the hook-bracket plugin even when a bind-mount hides image-local `*.egg-info` entry points.
    - **`PYTHONFAULTHANDLER=1`** — on hang, send **SIGQUIT** to the pytest process (e.g. from another shell: `docker kill -s QUIT <container>` or `kill -QUIT <pid>`) to dump Python stacks to stderr.
 4. **Repo / image:** `pytest.ini` is **not** listed in `.dockerignore` so the Docker build context includes it; the workflow still bind-mounts the workspace for JUnit output.
 
-For local reproduction with the same diagnostics: `CI_STARTUP_TRACE=1 PYTEST_PLUGINS=api.ci_pytest_startup_plugin PYTHONFAULTHANDLER=1 docker compose exec api pytest api/test/ …`
+For local reproduction with the same diagnostics: `CI_STARTUP_TRACE=1 PYTEST_PLUGINS=hear.ci_pytest_startup_plugin PYTHONFAULTHANDLER=1 docker compose exec api pytest hear/test/ …`
 
 ## Publish
 
@@ -106,7 +106,7 @@ Manually sync app env vars and secrets for **both STAGING and PROD** in one run.
 
 **Secrets (this repo, per environment):** `DB_APP_DB_NAME`, `DB_APP_USERNAME`, `DB_APP_USER_PASSWORD`, `DB_SUPERUSER_PASSWORD`, `DEMO_PASSWORD`, `DEMO_USERNAME`, `DJANGO_SECRET_KEY`, `GOOGLE_CLIENT_SECRET`, `SPOTIFY_CLIENT_SECRET`, `SUPERADMIN_PASSWORD`, `SUPERADMIN_USERNAME`, `TMTA_USERNAME`, plus deploy secrets `SERVER_DEPLOY_USERNAME`, `SERVER_DEPLOY_SSH_PRIVATE_KEY`.
 
-**Variables (this repo or org, per GitHub Environment):** `SERVER_HOST`, `SYNC_ENV_REMOTE_FILENAME_PREFIX_BASE`, `HTMT_API_APP_NAME`, **`DB_APP_NAME_SUFFIX`** (required, non-empty; must match **BehindTheMusicTree/infrastructure**, e.g. `_db`), `DEMO_EMAIL`, `SUPERADMIN_EMAIL`, `SPOTIFY_CLIENT_ID_STAGING`, `SPOTIFY_CLIENT_ID_PROD`, `GOOGLE_CLIENT_ID_STAGING`, `GOOGLE_CLIENT_ID_PROD`, **`SPOTIFY_SCOPES`** (see `env/dev/.env.dev.example`). The compose-required API booleans above are **not** Variables—they are written as **`true`** in the workflow. Locally and in CI you still set **`FILE_UPLOAD_ENABLED`** in `.env` as needed (see `api/settings.py` / `TMP_UPLOADED_FILES`).
+**Variables (this repo or org, per GitHub Environment):** `SERVER_HOST`, `SYNC_ENV_REMOTE_FILENAME_PREFIX_BASE`, `HTMT_API_APP_NAME`, **`DB_APP_NAME_SUFFIX`** (required, non-empty; must match **BehindTheMusicTree/infrastructure**, e.g. `_db`), `DEMO_EMAIL`, `SUPERADMIN_EMAIL`, `SPOTIFY_CLIENT_ID_STAGING`, `SPOTIFY_CLIENT_ID_PROD`, `GOOGLE_CLIENT_ID_STAGING`, `GOOGLE_CLIENT_ID_PROD`, **`SPOTIFY_SCOPES`** (see `env/dev/.env.dev.example`). The compose-required API booleans above are **not** Variables—they are written as **`true`** in the workflow. Locally and in CI you still set **`FILE_UPLOAD_ENABLED`** in `.env` as needed (see `hear/settings.py` / `TMP_UPLOADED_FILES`).
 
 ## Static Files
 
@@ -122,7 +122,7 @@ Collects Django static files and commits/pushes them back to the repo.
 
 **Environment:** `collect_static`. Outputs are used by Publish so Build uses the commit that includes collected static files and the correct version.
 
-**Django `ENV`:** The workflow sets **`ENV=collect_static`** on the job (see `api/settings.py`); it is **not** read from a GitHub Variable.
+**Django `ENV`:** The workflow sets **`ENV=collect_static`** on the job (see `hear/settings.py`); it is **not** read from a GitHub Variable.
 
 **Runtime staging / production:** Values such as **`ENV=prod`** (or your chosen string) for containers on the VPS belong in [**BehindTheMusicTree/infrastructure**](https://github.com/BehindTheMusicTree/infrastructure)—generated or merged **`scripts/.env`**, compose templates, sync jobs—not in this app repo’s GitHub Variables. This repo only hard-codes **`ENV` for CI-only workflows** (`ci_test` in **Test**, **`collect_static`** here).
 

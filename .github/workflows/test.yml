@@ -215,7 +215,7 @@ jobs:
           "${compose[@]}" run --rm -T \
             -e CI_STARTUP_TRACE=1 \
             -e PYTHONFAULTHANDLER=1 \
-            -e PYTEST_PLUGINS=api.ci_pytest_startup_plugin \
+            -e PYTEST_PLUGINS=hear.ci_pytest_startup_plugin \
             -v "${GITHUB_WORKSPACE}:/home/app" api bash -lc "$inner_script"
 
       - name: Show Compose service logs on failure

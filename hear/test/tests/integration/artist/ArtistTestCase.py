@@ -1,0 +1,38 @@
+from uuid import UUID
+
+from django.urls import reverse
+
+from hear.model.artist.Artist import Artist
+from hear.test.utils.AppTestCase import AppTestCase
+
+
+class ArtistTestCase(AppTestCase[Artist]):
+    model_class = Artist
+    saved_object: Artist
+
+    def _post_artist(self, **kwargs):
+        return self.api_client.post(
+            path=reverse("me-artist-list"),
+            data=kwargs,
+            content_type="application/json",
+            handle_response=self._set_results,
+        )
+
+    def _get_artists(self, **kwargs):
+        return self.api_client.get(path=reverse("me-artist-list"), data=kwargs, handle_response=self._set_results)
+
+    def _retrieve_artist(self, uuid: UUID):
+        return self.api_client.get(
+            path=reverse("me-artist-detail", kwargs={"pk": uuid}), handle_response=self._set_results
+        )
+
+    def _put_artist(self, uuid: UUID, **kwargs):
+        return self.api_client.put(
+            path=reverse("me-artist-detail", kwargs={"pk": uuid}),
+            data=kwargs,
+            content_type="application/json",
+            handle_response=self._set_results,
+        )
+
+    def _delete_artist(self, uuid: UUID):
+        return self.api_client.delete(path=reverse("me-artist-detail", kwargs={"pk": uuid}))
