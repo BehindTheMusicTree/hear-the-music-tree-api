@@ -32,11 +32,11 @@
       "justMyCode": false
     },
     {
-      "name": "Pytest: api/test",
+      "name": "Pytest: hear/test",
       "type": "debugpy",
       "request": "launch",
       "module": "pytest",
-      "args": ["api/test", "-v"],
+      "args": ["hear/test", "-v"],
       "cwd": "${workspaceFolder}",
       "python": "${command:python.interpreterPath}",
       "justMyCode": false

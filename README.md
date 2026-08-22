@@ -215,7 +215,7 @@ The API provides interactive documentation using OpenAPI (OAS 3.x):
 - **ReDoc**: `http://localhost:8000/schema/redoc/` — Alternative API documentation with a readable layout
 - **OpenAPI Schema**: `http://localhost:8000/schema/` — Raw OpenAPI schema (JSON or YAML via content negotiation) for code generation and tooling
 
-**How the schema is generated**: The schema is produced at runtime by [drf-spectacular](https://drf-spectacular.readthedocs.io/), which introspects Django REST Framework views and serializers. The OpenAPI **title** (shown in Swagger/ReDoc) is set via the `OPENAPI_TITLE` env var, defaulting to `APP_NAME`; the **version** (in `info.version`) is taken from `APP_VERSION` so it matches the API app version. The project uses a custom schema class (`api.view.schema.AppAutoSchema`) so that Django `GeneratedField` and `DecimalField` (e.g. on `TrackFile`) are mapped correctly; otherwise schema generation would raise when visiting `/schema/` or `/docs/`. The schema always reflects the current API; no separate hand-written spec is required for the served docs.
+**How the schema is generated**: The schema is produced at runtime by [drf-spectacular](https://drf-spectacular.readthedocs.io/), which introspects Django REST Framework views and serializers. The OpenAPI **title** (shown in Swagger/ReDoc) is set via the `OPENAPI_TITLE` env var, defaulting to `APP_NAME`; the **version** (in `info.version`) is taken from `APP_VERSION` so it matches the API app version. The project uses a custom schema class (`hear.view.schema.AppAutoSchema`) so that Django `GeneratedField` and `DecimalField` (e.g. on `TrackFile`) are mapped correctly; otherwise schema generation would raise when visiting `/schema/` or `/docs/`. The schema always reflects the current API; no separate hand-written spec is required for the served docs.
 
 > **Quick Access**: When running the development server locally, visit [http://localhost:8000/api/docs/](http://localhost:8000/api/docs/) to explore the API interactively.
 
@@ -347,7 +347,7 @@ After Spotify authentication, use the returned `accessToken` as a JWT Bearer tok
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc...
 ```
 
-**Note**: For detailed setup instructions and Spotify API configuration, see the [Spotify Integration documentation](api/utils/spotify_api/README.md).
+**Note**: For detailed setup instructions and Spotify API configuration, see the [Spotify Integration documentation](hear/utils/spotify_api/README.md).
 
 #### Google Authentication
 
@@ -606,7 +606,7 @@ When uploading tracks, the API automatically:
 3. Retrieves metadata from MusicBrainz
 4. Populates track, artist, and album information
 
-For more details, see the [MusicBrainz Integration documentation](api/utils/musicbrainz/README.md).
+For more details, see the [MusicBrainz Integration documentation](hear/utils/musicbrainz/README.md).
 
 ### Error Handling
 
@@ -646,11 +646,11 @@ For validation errors:
 
 ### Audio Metadata Handling
 
-The HearTheMusicTree API uses [`audiometa-python`](https://github.com/your-username/audiometa-python) for reading and writing audio metadata. The implementation is format-agnostic and handles multiple metadata formats (ID3v1, ID3v2, Vorbis, RIFF) automatically. For more details, see the [Audio Metadata Handling documentation](api/utils/audiometa_adapter/README.md).
+The HearTheMusicTree API uses [`audiometa-python`](https://github.com/your-username/audiometa-python) for reading and writing audio metadata. The implementation is format-agnostic and handles multiple metadata formats (ID3v1, ID3v2, Vorbis, RIFF) automatically. For more details, see the [Audio Metadata Handling documentation](hear/utils/audiometa_adapter/README.md).
 
 ### MusicBrainz Integration
 
-The HearTheMusicTree API integrates with MusicBrainz through the AcoustID fingerprinting service to automatically identify audio tracks and retrieve metadata such as title, artist, and release date. Audio files are fingerprinted using Chromaprint and matched against the MusicBrainz database. For more details, see the [MusicBrainz Integration documentation](api/utils/musicbrainz/README.md).
+The HearTheMusicTree API integrates with MusicBrainz through the AcoustID fingerprinting service to automatically identify audio tracks and retrieve metadata such as title, artist, and release date. Audio files are fingerprinted using Chromaprint and matched against the MusicBrainz database. For more details, see the [MusicBrainz Integration documentation](hear/utils/musicbrainz/README.md).
 
 ## Contributing
 

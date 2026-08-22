@@ -248,7 +248,7 @@ The HearTheMusicTree API requires a PostgreSQL database to function. With **Dock
 
 #### Database migrations
 
-- **Create migrations in development**: Run `python manage.py makemigrations` locally and commit the generated files under `api/migrations/`.
+- **Create migrations in development**: Run `python manage.py makemigrations` locally and commit the generated files under `hear/migrations/`.
 - **Never run `makemigrations` in production**: Schema changes are created in dev and shipped with the code; production only applies them.
 - **Migrations run automatically on deploy**: The container entrypoint (`scripts/entrypoint.sh`) runs `migrate` after the database is ready, so every deployment applies pending migrations before starting the app.
 - **Keep migrations backward-compatible**: Prefer additive changes (e.g. nullable columns or defaults) so the previous app version keeps working until the new one has run.
@@ -416,12 +416,12 @@ With **`docker compose up`** running, from the repository root, run **`pytest`**
 pytest
 
 # Run tests for a specific category
-pytest api/test/tests/unit/
-pytest api/test/tests/integration/
-pytest api/test/tests/e2e/
+pytest hear/test/tests/unit/
+pytest hear/test/tests/integration/
+pytest hear/test/tests/e2e/
 
 # Run tests for a specific module
-pytest api/test/tests/integration/view/uploaded_track/
+pytest hear/test/tests/integration/view/uploaded_track/
 
 # Run tests with coverage
 pytest --cov=app --cov-report=html --cov-report=term-missing
@@ -430,7 +430,7 @@ pytest --cov=app --cov-report=html --cov-report=term-missing
 pytest -v
 
 # Run a specific test file
-pytest api/test/tests/integration/view/uploaded_track/test_specific.py
+pytest hear/test/tests/integration/view/uploaded_track/test_specific.py
 
 # Quieter / faster-feeling run (disables live log streaming entirely)
 pytest -o log_cli=false
@@ -448,7 +448,7 @@ pytest -o log_cli_level=DEBUG
 
 **Test Structure:**
 
-- Tests are located in `api/test/tests/` directory, organized by category:
+- Tests are located in `hear/test/tests/` directory, organized by category:
   - `tests/unit/` - Unit tests
   - `tests/integration/` - Integration tests
   - `tests/e2e/` - End-to-end tests
@@ -456,7 +456,7 @@ pytest -o log_cli_level=DEBUG
 - Use `assert` instead of `assertEqual`
 - Each test should focus on a single scenario
 
-For detailed information about test structure, organization, and conventions, see [Test README](api/test/README.md).
+For detailed information about test structure, organization, and conventions, see [Test README](hear/test/README.md).
 
 **Mocked vs real (e2e) tests:**
 
@@ -469,9 +469,9 @@ Integration tests that depend on external services (URLs, third-party APIs) use 
   - Dev: nothing mocked; e2e can use real providers locally when the corresponding services are enabled (env / feature flags). When the run includes e2e tests, every enabled service must be reachable or the session fails early.
   - All runs: `SPOTIFY_ENABLED`, `GOOGLE_OAUTH_ENABLED`, and `MUSICBRAINZ_LOOKUP_ENABLED` must be true or the test run fails at collection. Use fake credentials in CI; conftest only mocks at the boundary.
   - CI (`ENV=ci_test`): only AFP must be reachable for e2e; other services are mocked.
-- Details: [api/test/README.md](api/test/README.md) (OAuth, Spotify API client, Audio meta analysis, fail early).
+- Details: [hear/test/README.md](hear/test/README.md) (OAuth, Spotify API client, Audio meta analysis, fail early).
 
-Add at least one **real** e2e test when the service can be exercised without blocking CI (see [api/test/README.md](api/test/README.md) § E2E tests: when to add, when they hit real services, and how to run them).
+Add at least one **real** e2e test when the service can be exercised without blocking CI (see [hear/test/README.md](hear/test/README.md) § E2E tests: when to add, when they hit real services, and how to run them).
 
 **CI Testing:**
 

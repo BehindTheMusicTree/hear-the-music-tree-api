@@ -1,0 +1,135 @@
+from typing import cast
+
+from rest_framework import status
+from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
+from the_music_tree_api_kit.utils.data_transformer import to_camel_case
+
+from hear.model.album.Album import Album
+from hear.model.artist.Artist import Artist
+from hear.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
+from hear.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
+from hear.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
+
+
+class TestCase(UploadedTrackTestCase):
+    def test_album_provided_but_album_artists_not_then_201_created(self):
+        data = {UploadedTrackInputFieldKey.ALBUM_NAME.value: "Koko"}
+        response = self._post_uploaded_track(
+            title="Time", test_uploaded_track_filename=UploadedTrackTestFilename.SIZE_SMALL_0_01MO_MP3, **data
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert self.saved_object.album.name == "Koko"
+        assert self.saved_object.album.album_artists.count() == 0
+
+    def test_album_artists_provided_but_album_not_then_400_bad_request(self):
+        data = {UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: ["Koko"]}
+        response = self._post_uploaded_track(
+            title="time", test_uploaded_track_filename=UploadedTrackTestFilename.SIZE_SMALL_0_01MO_MP3, **data
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        error = self.bad_request_result_field_errors[0]
+        assert error["field"] == to_camel_case(UploadedTrackInputFieldKey.ALBUM_NAME)
+        assert error["code"] == FieldValidationErrorCode.DEPENDENCY_MISSING
+
+    def test_album_artists_provided_but_album_empty_then_400_bad_request(self):
+        data = {
+            UploadedTrackInputFieldKey.ALBUM_NAME.value: "",
+            UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: ["Koko"],
+        }
+        response = self._post_uploaded_track(
+            test_uploaded_track_filename=UploadedTrackTestFilename.SIZE_SMALL_0_01MO_MP3, **data
+        )
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        error = self.bad_request_result_field_errors[0]
+        assert error["field"] == to_camel_case(UploadedTrackInputFieldKey.ALBUM_NAME)
+        assert error["code"] == FieldValidationErrorCode.DEPENDENCY_MISSING
+
+    def test_provided_with_existing_album_with_album_artists_then_link_to_it(self):
+        album_artist1 = self.model_fixture_factory.create_artist(name="James")
+        album_artist2 = self.model_fixture_factory.create_artist(name="Lebron")
+        album = self.model_fixture_factory.create_album(name="koko", album_artists=[album_artist1, album_artist2])
+
+        data = {
+            UploadedTrackInputFieldKey.ALBUM_NAME.value: album.name,
+            UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: [album_artist1.name],
+        }
+        response = self._post_uploaded_track(
+            test_uploaded_track_filename=UploadedTrackTestFilename.SIZE_SMALL_0_01MO_MP3, **data
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert self.saved_object.album == album
+        assert self.saved_object.album.album_artists.count() == 2
+        album_artists = list(self.saved_object.album.album_artists.all())
+        assert album_artist1 in album_artists
+        assert album_artist2 in album_artists
+
+    def test_provided_with_existing_album_without_album_artists_then_link_to_it(self):
+        album = self.model_fixture_factory.create_album(name="koko")
+
+        data = {
+            UploadedTrackInputFieldKey.ALBUM_NAME.value: album.name,
+            UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: [],
+        }
+        response = self._post_uploaded_track(
+            test_uploaded_track_filename=UploadedTrackTestFilename.SIZE_SMALL_0_01MO_MP3, **data
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert self.saved_object.album == album
+        assert self.saved_object.album.album_artists.count() == 0
+
+    def test_provided_with_new_album_name_then_create_it(self):
+        album_artist_new = self.model_fixture_factory.create_artist(name="James")
+
+        data = {
+            UploadedTrackInputFieldKey.ALBUM_NAME.value: "koko",
+            UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: [album_artist_new.name],
+        }
+        response = self._post_uploaded_track(
+            test_uploaded_track_filename=UploadedTrackTestFilename.SIZE_SMALL_0_01MO_MP3, **data
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert Album.objects.filter(user=self.test_user1, name="koko").exists()
+        assert self.saved_object.album.name == "koko"
+        assert self.saved_object.album.album_artists.count() == 1
+        assert self.saved_object.album.album_artists.first() == album_artist_new
+
+    def test_provided_with_existing_album_artist_then_link_to_it(self):
+        album_artist = self.model_fixture_factory.create_artist(name="a-ha")
+        album = self.model_fixture_factory.create_album(name="Jojo", album_artists=[album_artist])
+
+        data = {
+            UploadedTrackInputFieldKey.ALBUM_NAME.value: album.name,
+            UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: [album_artist.name],
+        }
+        response = self._post_uploaded_track(
+            test_uploaded_track_filename=UploadedTrackTestFilename.SIZE_SMALL_0_01MO_MP3, **data
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert self.saved_object.album == album
+        assert self.saved_object.album.album_artists.count() == 1
+        assert self.saved_object.album.album_artists.first() == album_artist
+
+    def test_provided_with_new_album_artist_name_then_create_it(self):
+        album_old = self.model_fixture_factory.create_album(name="Jojo")
+        uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="koko", album=album_old)
+        album_new = self.model_fixture_factory.create_album(name="koko")
+
+        data = {
+            UploadedTrackInputFieldKey.ALBUM_NAME.value: album_new.name,
+            UploadedTrackInputFieldKey.ALBUM_ARTISTS_NAMES_MULTIPART.value: ["James"],
+        }
+        response = self._post_uploaded_track(
+            test_uploaded_track_filename=UploadedTrackTestFilename.SIZE_SMALL_0_01MO_MP3, **data
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        assert Artist.objects.filter(user=self.test_user1, name="James").exists()
+        assert self.saved_object.album.album_artists.count() == 1
+        assert cast(Artist, self.saved_object.album.album_artists.first()).name == "James"

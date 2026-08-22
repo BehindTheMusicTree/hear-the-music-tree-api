@@ -1,0 +1,7 @@
+from drf_multiple_model.pagination import MultipleModelLimitOffsetPagination
+
+from hear import settings
+
+
+class DefaultMultipleModelLimitOffsetPagination(MultipleModelLimitOffsetPagination):
+    default_limit = settings.PAGINATION_PAGE_SIZE_MULTIMODEL_DEFAULT

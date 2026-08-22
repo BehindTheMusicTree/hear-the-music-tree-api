@@ -1,0 +1,36 @@
+from drf_spectacular.types import OpenApiTypes  # type: ignore
+from drf_spectacular.utils import (
+    OpenApiParameter,  # type: ignore
+    extend_schema,
+)
+from the_music_tree_api_kit.view.viewset.model.AppModelViewSet import AppModelViewSet
+
+from hear.filtering.set.artist.ArtistFilterSet import ArtistFilterSet
+from hear.filtering.set.artist.ArtistFilterSet import Fields as FilterFields
+from hear.model.artist.Artist import Artist
+from hear.serializer.model.artist.detailed import ArtistDetailedSerializer
+
+
+class ArtistViewSet(AppModelViewSet[Artist]):
+    def __init__(self, **kwargs):
+        super().__init__(
+            model_class=Artist,
+            filterset_class=ArtistFilterSet,
+            simple_serializer_class=ArtistDetailedSerializer,
+            detailed_serializer_class=ArtistDetailedSerializer,
+            **kwargs,
+        )
+
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(name=FilterFields.NAME_PUBLIC, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
+        ]
+    )
+    def list(self, *args, **kwargs):
+        return self._handle_list()
+
+    def retrieve(self, *args, **kwargs):
+        return self._handle_retrieve()
+
+    def destroy(self, *args, **kwargs):
+        return self._handle_destroy()
