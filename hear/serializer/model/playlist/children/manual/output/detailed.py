@@ -14,7 +14,7 @@ class ManualPlaylistDetailedSerializer(serializers.ModelSerializer):
     uploaded_tracks = UploadedTrackSimpleWithoutPlaylistAndAlbumSerializer(
         source=Fields.UPLOADED_TRACKS_NOT_ARCHIVED_INTERNAL, many=True
     )
-    uploaded_tracks_archived_count = serializers.IntegerField()
+    uploaded_tracks_archived_count = serializers.IntegerField(source=Fields.UPLOADED_TRACKS_ARCHIVED_COUNT_INTERNAL)
     name = AppCharField()
 
     class Meta:

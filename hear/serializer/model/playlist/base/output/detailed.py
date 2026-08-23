@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from the_music_tree_api_kit.serializer.field.AppCharField import AppCharField
+from the_music_tree_genre_kit.playlist.Playlist import Playlist
 
-from hear.model.playlist.Playlist import Playlist
+from hear.model.playlist.PlaylistDuration import get_duration_in_sec, get_duration_str_in_hour_min_sec
 from hear.serializer.model.track_playlist_rel.output.without_playlist import (
     TrackPlaylistRelWithoutPlaylist,
 )
@@ -14,8 +15,10 @@ class PlaylistDetailedSerializer(serializers.ModelSerializer):
         source=Fields.UPLOADED_TRACK_PLAYLIST_RELS_INTERNAL, many=True
     )
     uploaded_tracks_count = serializers.IntegerField(source=Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_INTERNAL)
-    uploaded_tracks_archived_count = serializers.IntegerField()
+    uploaded_tracks_archived_count = serializers.IntegerField(source=Fields.UPLOADED_TRACKS_ARCHIVED_COUNT_INTERNAL)
     type = AppCharField(source=Fields.TYPE_LABEL_INTERNAL)
+    duration_in_sec = serializers.SerializerMethodField()
+    duration_str_in_hour_min_sec = serializers.SerializerMethodField()
 
     class Meta:
         model = Playlist
@@ -32,3 +35,9 @@ class PlaylistDetailedSerializer(serializers.ModelSerializer):
             Fields.CREATED_ON,
             Fields.UPDATED_ON,
         ]
+
+    def get_duration_in_sec(self, obj: Playlist) -> int:
+        return get_duration_in_sec(obj)
+
+    def get_duration_str_in_hour_min_sec(self, obj: Playlist) -> str:
+        return get_duration_str_in_hour_min_sec(obj)

@@ -17,6 +17,6 @@ class TestCase(UploadedTrackTestCase):
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3)
 
         assert response.status_code == status.HTTP_201_CREATED
-        playlist_tracks_by_positions = genre.criteria_playlist.uploaded_tracks_not_archived_dict_by_position
-        assert playlist_tracks_by_positions[1] == uploaded_track_added_second
-        assert playlist_tracks_by_positions[2] == uploaded_track_added_first
+        playlist_tracks_by_positions = genre.criteria_playlist.tracks_not_archived_dict_by_position
+        assert playlist_tracks_by_positions[1].uuid == uploaded_track_added_second.uuid
+        assert playlist_tracks_by_positions[2].uuid == uploaded_track_added_first.uuid

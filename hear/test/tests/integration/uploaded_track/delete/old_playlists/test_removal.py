@@ -20,10 +20,10 @@ class TrackDeleteViewTestCase(UploadedTrackTestCase):
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
         criteria_playlist1: CriteriaPlaylist = genre1.criteria_playlist
-        assert track not in criteria_playlist1.uploaded_tracks.all()
+        assert track.uuid not in criteria_playlist1.tracks.values_list("uuid", flat=True)
 
         criteria_playlist2: CriteriaPlaylist = genre2.criteria_playlist
-        assert track not in criteria_playlist2.uploaded_tracks.all()
+        assert track.uuid not in criteria_playlist2.tracks.values_list("uuid", flat=True)
 
         criteria_playlist3: CriteriaPlaylist = genre3.criteria_playlist
-        assert track not in criteria_playlist3.uploaded_tracks.all()
+        assert track.uuid not in criteria_playlist3.tracks.values_list("uuid", flat=True)

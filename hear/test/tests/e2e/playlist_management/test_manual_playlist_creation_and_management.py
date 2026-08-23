@@ -1,8 +1,8 @@
 import pytest
 from rest_framework import status
+from the_music_tree_genre_kit.playlist.Fields import Fields as PlaylistFields
 
 from hear.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
-from hear.model.playlist.Playlist import Fields as PlaylistFields
 from hear.test.tests.integration.playlist.children.manual.ManualPlaylistTestCase import ManualPlaylistTestCase
 from hear.test.utils.AppTestCase import AppTestCase
 from hear.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
@@ -46,19 +46,20 @@ class TestCase(AppTestCase):
         assert isinstance(playlist, ManualPlaylist)
         assert playlist.name == playlist_name
 
-        from hear.model.track_playlist_rel.Fields import Fields as RelFields
-        from hear.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
+        from the_music_tree_genre_kit.criteria.track_playlist_rel.Fields import Fields as RelFields
+        from the_music_tree_genre_kit.criteria.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
         TrackPlaylistRel.objects.create(user=self.test_user1, playlist=playlist.playlist, track=track1)
         TrackPlaylistRel.objects.create(user=self.test_user1, playlist=playlist.playlist, track=track2)
         TrackPlaylistRel.objects.create(user=self.test_user1, playlist=playlist.playlist, track=track3)
 
         playlist.refresh_from_db()
-        playlist_tracks = playlist.uploaded_tracks.filter(user=self.test_user1)
+        playlist_tracks = playlist.tracks.filter(user=self.test_user1)
         assert playlist_tracks.count() == 3
-        assert track1 in playlist_tracks
-        assert track2 in playlist_tracks
-        assert track3 in playlist_tracks
+        playlist_track_uuids = [playlist_track.uuid for playlist_track in playlist_tracks]
+        assert track1.uuid in playlist_track_uuids
+        assert track2.uuid in playlist_track_uuids
+        assert track3.uuid in playlist_track_uuids
 
         response = manual_playlist_test_case._retrieve_manual_playlist(playlist.uuid)
         assert response.status_code == status.HTTP_200_OK
@@ -69,11 +70,12 @@ class TestCase(AppTestCase):
         TrackPlaylistRel.objects.filter(user=self.test_user1, playlist=playlist.playlist, track=track2).delete()
 
         playlist.refresh_from_db()
-        playlist_tracks = playlist.uploaded_tracks.filter(user=self.test_user1)
+        playlist_tracks = playlist.tracks.filter(user=self.test_user1)
         assert playlist_tracks.count() == 2
-        assert track1 in playlist_tracks
-        assert track2 not in playlist_tracks
-        assert track3 in playlist_tracks
+        playlist_track_uuids = [playlist_track.uuid for playlist_track in playlist_tracks]
+        assert track1.uuid in playlist_track_uuids
+        assert track2.uuid not in playlist_track_uuids
+        assert track3.uuid in playlist_track_uuids
 
         new_playlist_name = "Updated Playlist Name"
         response = manual_playlist_test_case._put_manual_playlist(

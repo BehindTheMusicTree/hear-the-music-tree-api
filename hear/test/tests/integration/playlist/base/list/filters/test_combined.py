@@ -3,12 +3,12 @@ from datetime import timedelta
 from django.utils import timezone
 from rest_framework import status
 from the_music_tree_genre_kit.criteria.type.CriteriaTypePks import CriteriaTypePks
+from the_music_tree_genre_kit.playlist.PlaylistTypesLabel import PlaylistTypesLabel
 
 from hear.filtering.set.playlist.Fields import Fields as Filters
 from hear.filtering.set.private_unique_resource.Fields import Fields as PrivateUniqueResourceFields
 from hear.model.playlist.children.criteria.CriterialessPlaylistNames import CriterialessPlaylistNames
 from hear.model.playlist.children.criteria.tag.TagPlaylist import TagPlaylist
-from hear.model.playlist.PlaylistTypesLabel import PlaylistTypesLabel
 from hear.serializer.model.playlist.base.output.detailed import Fields as PlaylistGetFields
 from hear.test.tests.integration.playlist.base.PlaylistTestCase import PlaylistTestCase
 

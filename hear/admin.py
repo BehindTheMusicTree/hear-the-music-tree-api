@@ -1,4 +1,6 @@
 from django.contrib import admin
+from the_music_tree_genre_kit.criteria.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
+from the_music_tree_genre_kit.playlist.Playlist import Playlist
 
 from .model.album.Album import Album
 from .model.all_uploaded_tracks_mixin.AllUploadedTracksMixin import AllUploadedTracksMixin
@@ -13,10 +15,8 @@ from .model.musicbrainz_resource.children.recording.missing_cause.code.MbRecordi
 from .model.musicbrainz_resource.children.recording.missing_cause.MbRecordingMissingCause import MbRecordingMissingCause
 from .model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 from .model.playlist.children.manual.ManualPlaylist import ManualPlaylist
-from .model.playlist.Playlist import Playlist
 from .model.spotify_resource.children.artist.SpotifyArtist import SpotifyArtist
 from .model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
-from .model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 from .model.uploaded_track.file.fingerprinting.missing_cause.code.FingerprintMissingCauseCode import (
     FingerprintMissingCauseCode,
 )
