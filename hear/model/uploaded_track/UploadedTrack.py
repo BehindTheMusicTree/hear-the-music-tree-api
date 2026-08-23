@@ -56,7 +56,9 @@ class UploadedTrack(Track):
 
     def simple_str(self) -> str:
         artists: QuerySet[Artist] = self.artists.all()
-        artists_str = ", ".join(artist.name for artist in artists) if self.artists.exists() else f"no {TrackFields.ARTISTS}"
+        artists_str = (
+            ", ".join(artist.name for artist in artists) if self.artists.exists() else f"no {TrackFields.ARTISTS}"
+        )
         return f"{self.uuid} | '{self.title}' by {artists_str}"
 
     def update_file_metadata_from_uploaded_track_instance_values(self):

@@ -1,5 +1,5 @@
 import django.db.models.deletion
-import the_music_tree_api_kit.field.AppCharField
+import the_music_tree_api_kit.field
 import the_music_tree_api_kit.field.foreign_key.AppForeignKey
 import the_music_tree_api_kit.field.foreign_key.PrivateForeignKey
 import the_music_tree_api_kit.field.foreign_key.PrivateOneToOneField
@@ -110,10 +110,7 @@ class Migration(migrations.Migration):
                         to="the_music_tree_genre_kit.playlist",
                     ),
                 ),
-                (
-                    "_name",
-                    the_music_tree_api_kit.field.AppCharField.AppCharField(db_column="name", max_length=256),
-                ),
+                ("_name", the_music_tree_api_kit.field.AppCharField(db_column="name", max_length=256)),
             ],
             options={
                 "verbose_name": "Manual Playlist",
