@@ -54,7 +54,10 @@ dependencies = [
     "shortuuid==1.0.9",
     "simplejson==3.16.0",
     "spotipy==2.23.0",
-    "the-music-tree-api-kit @ git+https://github.com/BehindTheMusicTree/the-music-tree-api-kit.git@v0.2.0",
+    # Pinned to the feature branch pending release of the-music-tree-api-kit v0.3.0 (PR #7),
+    # which adds the shared HostValidationMiddleware this app now uses. Repin to the v0.3.0
+    # tag once that PR is merged and released.
+    "the-music-tree-api-kit @ git+https://github.com/BehindTheMusicTree/the-music-tree-api-kit.git@feature/host-validation-middleware",
     "the-music-tree-genre-kit @ git+https://github.com/BehindTheMusicTree/the-music-tree-genre-kit.git@v0.7.0",
     "tinytag==1.10.1",
     "uvicorn==0.20.0",
