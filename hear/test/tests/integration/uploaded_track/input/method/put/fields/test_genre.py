@@ -58,14 +58,14 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         assert response.status_code == status.HTTP_200_OK
         assert self.saved_object.genre == None
 
-        rock_tracks_dict_by_position = rock_criteria.criteria_playlist.uploaded_tracks_not_archived_dict_by_position
+        rock_tracks_dict_by_position = rock_criteria.criteria_playlist.tracks_not_archived_dict_by_position
         assert uploaded_track.uuid not in [track.uuid for track in rock_tracks_dict_by_position.values()]
 
-        punk_tracks_dict_by_position = punk_criteria.criteria_playlist.uploaded_tracks_not_archived_dict_by_position
+        punk_tracks_dict_by_position = punk_criteria.criteria_playlist.tracks_not_archived_dict_by_position
         assert uploaded_track.uuid not in [track.uuid for track in punk_tracks_dict_by_position.values()]
 
         genreless_playlist = GenrePlaylist.objects.get(user=self.test_user1, criteria=None)
-        genreless_tracks_dict_by_position = genreless_playlist.uploaded_tracks_not_archived_dict_by_position
+        genreless_tracks_dict_by_position = genreless_playlist.tracks_not_archived_dict_by_position
         assert len(genreless_tracks_dict_by_position) == 1
         assert genreless_tracks_dict_by_position[1].uuid == uploaded_track.uuid
 
