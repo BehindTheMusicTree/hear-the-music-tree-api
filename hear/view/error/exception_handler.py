@@ -1,3 +1,4 @@
+import logging
 import sys
 
 from django.conf import settings
@@ -170,4 +171,5 @@ def _handle_exception_with_request(exc, context):
             error_detail={"message": "Authentication required", "code": "authentication_required"},
             api_error_code=ApiErrorCodeNumeric.AUTH_NOT_AUTHENTICATED,
         )
+    logging.getLogger("exceptions").exception("Exception handled by DRF exception handler", exc_info=exc)
     return ErrorResponse.handle_exception(exc)
