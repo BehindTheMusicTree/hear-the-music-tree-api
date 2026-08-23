@@ -89,7 +89,7 @@ class TestCase(UploadedTrackTestCase):
             user=self.test_user1, playlist=manual_playlist, position__isnull=True
         )
         assert archived_track_playlist_rels.count() == 1
-        assert cast(TrackPlaylistRel, archived_track_playlist_rels.first()).track == track_to_archive
+        assert cast(TrackPlaylistRel, archived_track_playlist_rels.first()).track.uuid == track_to_archive.uuid
 
     def test_unarchived_uploaded_track_then_in_first_position_of_playlist(self):
         manual_playlist = self.model_fixture_factory.create_manual_playlist(name="Cuisine")
@@ -122,7 +122,7 @@ class TestCase(UploadedTrackTestCase):
             user=self.test_user1, playlist=manual_playlist, position__isnull=True
         )
         assert track_playlist_rels_of_playlist_archived.count() == 1
-        assert cast(TrackPlaylistRel, track_playlist_rels_of_playlist_archived.first()).track == track_to_unarchive
+        assert cast(TrackPlaylistRel, track_playlist_rels_of_playlist_archived.first()).track.uuid == track_to_unarchive.uuid
 
         response = self._put_uploaded_track(
             uuid=track_to_unarchive.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: "false"}
