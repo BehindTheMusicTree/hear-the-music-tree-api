@@ -88,6 +88,9 @@ hear/migrations/0011_seed_musicbrainz_lookup_disabled_code.py
 hear/migrations/0012_rename_audio_meta_analysis_disabled_to_afp_disabled.py
 hear/migrations/0013_move_criteria_type_to_genre_kit.py
 hear/migrations/0014_rename_uploaded_track_playlist_rel_to_track_playlist_rel.py
+hear/migrations/0015_alter_fingerprintmissingcausecode_code_and_more.py
+hear/migrations/0016_remove_stale_playlist_user_uuid_index.py
+hear/migrations/0017_reparent_uploaded_track_and_playlists_onto_genre_kit.py
 hear/migrations/__init__.py
 hear/model/ContentObjectFields.py
 hear/model/album/Album.py
@@ -126,11 +129,7 @@ hear/model/musicbrainz_resource/children/recording/missing_cause/code/MbRecordin
 hear/model/play/Fields.py
 hear/model/play/Play.py
 hear/model/play/PlayManager.py
-hear/model/playlist/Fields.py
-hear/model/playlist/Playlist.py
-hear/model/playlist/PlaylistManager.py
-hear/model/playlist/PlaylistQuerySet.py
-hear/model/playlist/PlaylistTypesLabel.py
+hear/model/playlist/PlaylistDuration.py
 hear/model/playlist/children/criteria/CriteriaPlaylist.py
 hear/model/playlist/children/criteria/CriteriaPlaylistManager.py
 hear/model/playlist/children/criteria/CriterialessPlaylistNames.py
@@ -141,7 +140,6 @@ hear/model/playlist/children/criteria/tag/TagPlaylist.py
 hear/model/playlist/children/criteria/tag/TagPlaylistManager.py
 hear/model/playlist/children/manual/Fields.py
 hear/model/playlist/children/manual/ManualPlaylist.py
-hear/model/playlist/children/manual/ManualPlaylistTypeLabel.py
 hear/model/publique_unique_resource/Fields.py
 hear/model/publique_unique_resource/PublicUniqueResource.py
 hear/model/spotify_resource/Fields.py
@@ -156,9 +154,6 @@ hear/model/spotify_resource/children/track/Fields.py
 hear/model/spotify_resource/children/track/SpotifyLibTrack.py
 hear/model/spotify_resource/children/track/SpotifyLibTrackManager.py
 hear/model/spotify_resource/children/track/__init__.py
-hear/model/track_playlist_rel/Fields.py
-hear/model/track_playlist_rel/TrackPlaylistRel.py
-hear/model/track_playlist_rel/TrackPlaylistRelManager.py
 hear/model/trackable_play_count/Fields.py
 hear/model/trackable_play_count/TrackablePlayCount.py
 hear/model/uploaded_track/UploadedTrack.py

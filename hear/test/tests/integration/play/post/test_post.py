@@ -1,8 +1,8 @@
 from rest_framework import status
 from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from the_music_tree_api_kit.utils.data_transformer import to_camel_case
+from the_music_tree_genre_kit.playlist.Playlist import Playlist
 
-from hear.model.playlist.Playlist import Playlist
 from hear.model.uploaded_track.UploadedTrack import UploadedTrack
 from hear.serializer.model.play.input.schema.PostFields import Fields
 from hear.test.tests.integration.play.PlayTestCase import PlayTestCase
@@ -64,8 +64,8 @@ class TestCase(PlayTestCase):
 
         assert response.status_code == status.HTTP_201_CREATED
         playlist: Playlist = self.saved_object.content  # type: ignore
-        assert playlist.uploaded_tracks.count() == 1
-        playlist_uploaded_track: UploadedTrack | None = playlist.uploaded_tracks.first()
+        assert playlist.tracks.count() == 1
+        playlist_uploaded_track: UploadedTrack | None = playlist.tracks.first()
         assert playlist_uploaded_track
         assert playlist_uploaded_track.uuid == uploaded_track.uuid
 

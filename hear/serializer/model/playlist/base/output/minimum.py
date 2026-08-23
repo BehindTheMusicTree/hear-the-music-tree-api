@@ -1,6 +1,6 @@
 from rest_framework import serializers
+from the_music_tree_genre_kit.playlist.Playlist import Playlist
 
-from hear.model.playlist.Playlist import Playlist
 from hear.serializer.model.playlist.base.output.Fields import Fields as AvailableFields
 
 

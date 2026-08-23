@@ -1,6 +1,6 @@
 from rest_framework import status
+from the_music_tree_genre_kit.criteria.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
-from hear.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 from hear.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
 

@@ -87,9 +87,10 @@ class TestCase(UploadedTrackTestCase, SearchMixin):
         techno_playlist = CriteriaPlaylist.objects.get(user=self.test_user1, criteria=techno_genre)
         assert techno_playlist is not None
 
-        playlist_tracks = techno_playlist.playlist.uploaded_tracks.filter(user=self.test_user1)
-        assert track1 in playlist_tracks
-        assert track2 in playlist_tracks
+        playlist_tracks = techno_playlist.playlist.tracks.filter(user=self.test_user1)
+        playlist_track_uuids = [playlist_track.uuid for playlist_track in playlist_tracks]
+        assert track1.uuid in playlist_track_uuids
+        assert track2.uuid in playlist_track_uuids
 
         playlist_helper = self._domain_helper(ManualPlaylistTestCase)
         response = playlist_helper._post_manual_playlist(

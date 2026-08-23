@@ -62,7 +62,7 @@ class TestCase(AppTestCase):
             title="Track 3", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3
         )
 
-        from hear.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
+        from the_music_tree_genre_kit.criteria.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
         TrackPlaylistRel.objects.create(user=self.test_user1, playlist=tag1_playlist.playlist, track=track1)
         TrackPlaylistRel.objects.create(user=self.test_user1, playlist=tag2_playlist.playlist, track=track1)
@@ -89,8 +89,8 @@ class TestCase(AppTestCase):
         assert tag1_playlist.playlist.uuid in track3_playlists
         assert len(track3_playlists) == 1
 
-        assert track1 in tag1_playlist.playlist.uploaded_tracks.all()
-        assert track1 in tag2_playlist.playlist.uploaded_tracks.all()
-        assert track2 in tag2_playlist.playlist.uploaded_tracks.all()
-        assert track2 in tag3_playlist.playlist.uploaded_tracks.all()
-        assert track3 in tag1_playlist.playlist.uploaded_tracks.all()
+        assert track1.uuid in tag1_playlist.playlist.tracks.values_list("uuid", flat=True)
+        assert track1.uuid in tag2_playlist.playlist.tracks.values_list("uuid", flat=True)
+        assert track2.uuid in tag2_playlist.playlist.tracks.values_list("uuid", flat=True)
+        assert track2.uuid in tag3_playlist.playlist.tracks.values_list("uuid", flat=True)
+        assert track3.uuid in tag1_playlist.playlist.tracks.values_list("uuid", flat=True)

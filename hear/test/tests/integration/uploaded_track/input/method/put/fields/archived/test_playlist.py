@@ -2,10 +2,10 @@ from typing import cast
 
 from django.db.models import QuerySet
 from rest_framework import status
+from the_music_tree_genre_kit.criteria.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
 from hear.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 from hear.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
-from hear.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 from hear.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from hear.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
@@ -28,8 +28,8 @@ class TestCase(UploadedTrackTestCase):
         manual_playlist_updated: ManualPlaylist = ManualPlaylist.objects.get(
             user=self.test_user1, name=manual_playlist.name
         )
-        assert manual_playlist_updated.uploaded_tracks_archived_count == 2
-        assert manual_playlist_updated.uploaded_tracks_not_archived_count == 0
+        assert manual_playlist_updated.tracks_archived_count == 2
+        assert manual_playlist_updated.tracks_not_archived_count == 0
 
     def test_archived_uploaded_track_then_criteria_playlist_has_plus_1_archived_uploaded_tracks(self):
         criteria = self.model_fixture_factory.create_genre(name="rock")
@@ -48,8 +48,8 @@ class TestCase(UploadedTrackTestCase):
         assert response.status_code == status.HTTP_200_OK
         assert self.saved_object.genre
         criteria_playlist_saved: CriteriaPlaylist = self.saved_object.genre.criteria_playlist
-        assert criteria_playlist_saved.uploaded_tracks_archived_count == 2
-        assert criteria_playlist_saved.uploaded_tracks_not_archived_count == 1
+        assert criteria_playlist_saved.tracks_archived_count == 2
+        assert criteria_playlist_saved.tracks_not_archived_count == 1
 
     def test_archived_uploaded_track_then_decrement_next_positions(self):
         manual_playlist = self.model_fixture_factory.create_manual_playlist(name="teuf")
@@ -70,10 +70,10 @@ class TestCase(UploadedTrackTestCase):
             playlist=manual_playlist.playlist, uploaded_track=track4
         )
 
-        assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[1] == track4
-        assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[2] == track3
-        assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[3] == track_to_archive
-        assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[4] == track1
+        assert manual_playlist.tracks_not_archived_dict_by_position[1].uuid == track4.uuid
+        assert manual_playlist.tracks_not_archived_dict_by_position[2].uuid == track3.uuid
+        assert manual_playlist.tracks_not_archived_dict_by_position[3].uuid == track_to_archive.uuid
+        assert manual_playlist.tracks_not_archived_dict_by_position[4].uuid == track1.uuid
 
         response = self._put_uploaded_track(
             uuid=track_to_archive.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: "true"}
@@ -81,15 +81,15 @@ class TestCase(UploadedTrackTestCase):
 
         assert response.status_code == status.HTTP_200_OK
 
-        assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[1] == track4
-        assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[2] == track3
-        assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[3] == track1
+        assert manual_playlist.tracks_not_archived_dict_by_position[1].uuid == track4.uuid
+        assert manual_playlist.tracks_not_archived_dict_by_position[2].uuid == track3.uuid
+        assert manual_playlist.tracks_not_archived_dict_by_position[3].uuid == track1.uuid
 
         archived_track_playlist_rels = TrackPlaylistRel.objects.filter(
             user=self.test_user1, playlist=manual_playlist, position__isnull=True
         )
         assert archived_track_playlist_rels.count() == 1
-        assert cast(TrackPlaylistRel, archived_track_playlist_rels.first()).track == track_to_archive
+        assert cast(TrackPlaylistRel, archived_track_playlist_rels.first()).track.uuid == track_to_archive.uuid
 
     def test_unarchived_uploaded_track_then_in_first_position_of_playlist(self):
         manual_playlist = self.model_fixture_factory.create_manual_playlist(name="Cuisine")
@@ -104,25 +104,28 @@ class TestCase(UploadedTrackTestCase):
         track4 = self.model_fixture_factory.create_uploaded_track_with_file(title="not archived 4")
         self.model_fixture_factory.create_uploaded_track_playlist_rel(playlist=manual_playlist, uploaded_track=track4)
 
-        assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[1] == track4
-        assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[2] == track3
-        assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[3] == track_to_unarchive
-        assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[4] == track1
+        assert manual_playlist.tracks_not_archived_dict_by_position[1].uuid == track4.uuid
+        assert manual_playlist.tracks_not_archived_dict_by_position[2].uuid == track3.uuid
+        assert manual_playlist.tracks_not_archived_dict_by_position[3].uuid == track_to_unarchive.uuid
+        assert manual_playlist.tracks_not_archived_dict_by_position[4].uuid == track1.uuid
 
         response = self._put_uploaded_track(
             uuid=track_to_unarchive.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: "true"}
         )
         assert response.status_code == status.HTTP_200_OK
 
-        assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[1] == track4
-        assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[2] == track3
-        assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[3] == track1
+        assert manual_playlist.tracks_not_archived_dict_by_position[1].uuid == track4.uuid
+        assert manual_playlist.tracks_not_archived_dict_by_position[2].uuid == track3.uuid
+        assert manual_playlist.tracks_not_archived_dict_by_position[3].uuid == track1.uuid
 
         track_playlist_rels_of_playlist_archived: QuerySet[TrackPlaylistRel] = TrackPlaylistRel.objects.filter(
             user=self.test_user1, playlist=manual_playlist, position__isnull=True
         )
         assert track_playlist_rels_of_playlist_archived.count() == 1
-        assert cast(TrackPlaylistRel, track_playlist_rels_of_playlist_archived.first()).track == track_to_unarchive
+        assert (
+            cast(TrackPlaylistRel, track_playlist_rels_of_playlist_archived.first()).track.uuid
+            == track_to_unarchive.uuid
+        )
 
         response = self._put_uploaded_track(
             uuid=track_to_unarchive.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: "false"}
@@ -130,10 +133,10 @@ class TestCase(UploadedTrackTestCase):
 
         assert response.status_code == status.HTTP_200_OK
 
-        assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[1] == track_to_unarchive
-        assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[2] == track4
-        assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[3] == track3
-        assert manual_playlist.uploaded_tracks_not_archived_dict_by_position[4] == track1
+        assert manual_playlist.tracks_not_archived_dict_by_position[1].uuid == track_to_unarchive.uuid
+        assert manual_playlist.tracks_not_archived_dict_by_position[2].uuid == track4.uuid
+        assert manual_playlist.tracks_not_archived_dict_by_position[3].uuid == track3.uuid
+        assert manual_playlist.tracks_not_archived_dict_by_position[4].uuid == track1.uuid
 
         assert (
             TrackPlaylistRel.objects.filter(

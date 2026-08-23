@@ -1,9 +1,9 @@
 from rest_framework import status
 from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
+from the_music_tree_genre_kit.playlist.Playlist import Playlist
 
 from hear.filtering.set.playlist.Fields import Fields as Filters
 from hear.model.playlist.children.criteria.CriterialessPlaylistNames import CriterialessPlaylistNames
-from hear.model.playlist.Playlist import Playlist
 from hear.test.tests.integration.playlist.base.PlaylistTestCase import PlaylistTestCase
 from hear.test.utils.field.filter.char.NotNullableFreeCharFilterTestCase import NotNullableFreeCharFilterTestCase
 

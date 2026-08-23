@@ -1,69 +1,27 @@
 from typing import TYPE_CHECKING
 
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import QuerySet
-from the_music_tree_api_kit.field.AppCharField import AppCharField
-from the_music_tree_api_kit.field.foreign_key.PrivateForeignKey import PrivateForeignKey
-from the_music_tree_api_kit.field.foreign_key.PrivateManyToManyField import PrivateManyToManyField
+from the_music_tree_api_kit.field.foreign_key.PrivateOneToOneField import PrivateOneToOneField
+from the_music_tree_genre_kit.track.Fields import Fields as TrackFields
+from the_music_tree_genre_kit.track.Track import Track
 
-from hear import settings
-from hear.model.album.Album import Album
-from hear.model.album.Fields import Fields as AlbumFields
 from hear.model.artist.Artist import Artist
-from hear.model.artist.Fields import Fields as ArtistFields
-from hear.model.criteria.children.genre.Genre import Genre
-from hear.model.criteria.Fields import Fields as CriteriaFields
-from hear.model.playlist.Fields import Fields as PlayListFields
-from hear.model.playlist.Playlist import Playlist
-from hear.model.trackable_play_count.TrackablePlayCount import TrackablePlayCount
 from hear.utils.audio_file_metadata.AppMetadataKey import AppMetadataKey
 
 from .file.TrackFile import TrackFile
 from .UploadedTrackFieldKey import UploadedTrackFieldKey as Fields
 from .UploadedTrackManager import UploadedTrackManager
 
-if TYPE_CHECKING:
-    from hear.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
-
-class UploadedTrack(TrackablePlayCount):
-    title = AppCharField(max_length=settings.UPLOADED_TRACK_TITLE_LEN_MAX)
+class UploadedTrack(Track):
+    track = PrivateOneToOneField(
+        Track, on_delete=models.CASCADE, parent_link=True, related_name=Fields.UPLOADED_TRACK_RELATED_NAME.value
+    )
     track_file_fingerprint_must_be_unique = models.BooleanField(default=False)
-    artists = PrivateManyToManyField(Artist, blank=True, related_name=ArtistFields.UPLOADED_TRACKS_RELATED_NAME)
-    album: Album = PrivateForeignKey(
-        Album,  # type: ignore
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-        related_name=AlbumFields.UPLOADED_TRACKS_RELATED_NAME,
-    )
-    track_number = models.PositiveIntegerField(
-        null=True,
-        blank=True,
-        validators=[MinValueValidator(1), MaxValueValidator(settings.UPLOADED_TRACK_TRACK_NUMBER_MAX)],
-    )
-    genre = PrivateForeignKey(
-        Genre,
-        on_delete=models.DO_NOTHING,
-        null=True,
-        blank=True,
-        related_name=CriteriaFields.UPLOADED_TRACKS_RELATED_NAME,
-    )
-    rating = models.IntegerField(
-        null=True,
-        blank=True,
-        validators=[MinValueValidator(0), MaxValueValidator(settings.UPLOADED_TRACK_RATING_VALUE_MAX)],
-    )
-    language = AppCharField(max_length=settings.LANGUAGE_LEN_MAX, blank=True, default=None, null=True)
-    archived = models.BooleanField(default=False)
-    playlists = PrivateManyToManyField(
-        Playlist, through="TrackPlaylistRel", related_name=PlayListFields.UPLOADED_TRACKS_RELATED_NAME
-    )
 
     if TYPE_CHECKING:
         track_file: TrackFile
-        track_playlist_rels: models.QuerySet[TrackPlaylistRel]
 
     objects: UploadedTrackManager = UploadedTrackManager()
 
@@ -71,11 +29,6 @@ class UploadedTrack(TrackablePlayCount):
         db_table = "htmt_api_uploaded_track"
         verbose_name = "Uploaded Track"
         verbose_name_plural = "Uploaded Tracks"
-        indexes = [
-            models.Index(fields=[Fields.USER.value, Fields.TITLE.value]),
-            models.Index(fields=[Fields.USER.value, Fields.GENRE.value]),
-            models.Index(fields=[Fields.USER.value, Fields.ALBUM.value]),
-        ]
 
     @property
     def relative_url(self) -> str:
@@ -86,13 +39,13 @@ class UploadedTrack(TrackablePlayCount):
 
         artists: QuerySet[Artist] = self.artists.all()
         artists_str = (
-            ", ".join(artist.name for artist in artists) if self.artists.exists() else f"[no {Fields.ARTISTS.value}]"
+            ", ".join(artist.name for artist in artists) if self.artists.exists() else f"[no {TrackFields.ARTISTS}]"
         )
-        album_str = str(self.album) if self.album else f"[no {Fields.ALBUM.value}]"
+        album_str = str(self.album) if self.album else f"[no {TrackFields.ALBUM}]"
 
-        genre_str = f"{Fields.GENRE.value}: {self.genre}" if self.genre else f"{Fields.GENRE.value}: --"
-        rating_str = f"{Fields.RATING.value}: {self.rating}" if self.rating else f"{Fields.RATING.value}: --"
-        language_str = f"{Fields.LANGUAGE.value}: {self.language}" if self.language else f"{Fields.LANGUAGE.value}: --"
+        genre_str = f"{TrackFields.GENRE}: {self.genre}" if self.genre else f"{TrackFields.GENRE}: --"
+        rating_str = f"{TrackFields.RATING}: {self.rating}" if self.rating else f"{TrackFields.RATING}: --"
+        language_str = f"{TrackFields.LANGUAGE}: {self.language}" if self.language else f"{TrackFields.LANGUAGE}: --"
         file_str = f"{Fields.TRACK_FILE_INTERNAL.value}: {self.track_file}" if self.track_file else "no track file"
 
         return (
@@ -104,7 +57,7 @@ class UploadedTrack(TrackablePlayCount):
     def simple_str(self) -> str:
         artists: QuerySet[Artist] = self.artists.all()
         artists_str = (
-            ", ".join(artist.name for artist in artists) if self.artists.exists() else f"no {Fields.ARTISTS.value}"
+            ", ".join(artist.name for artist in artists) if self.artists.exists() else f"no {TrackFields.ARTISTS}"
         )
         return f"{self.uuid} | '{self.title}' by {artists_str}"
 
@@ -141,8 +94,8 @@ class UploadedTrack(TrackablePlayCount):
 
     @property
     def playlists_with_positions(self) -> list[tuple[str, int]]:
-        from hear.model.track_playlist_rel.Fields import Fields as TrackPlaylistRelFields
-        from hear.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
+        from the_music_tree_genre_kit.criteria.track_playlist_rel.Fields import Fields as TrackPlaylistRelFields
+        from the_music_tree_genre_kit.criteria.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
         track_playlist_rels = TrackPlaylistRel.objects.filter(user=self.user, track=self)
         return list(

@@ -100,10 +100,10 @@ class TestCase(AppTestCase):
         assert child_genre_playlist.playlist.uuid in track_playlists_uuids
         assert grandchild_genre_playlist.playlist.uuid in track_playlists_uuids
 
-        parent_playlist_tracks = parent_genre_playlist.playlist.uploaded_tracks.filter(user=self.test_user1)
-        child_playlist_tracks = child_genre_playlist.playlist.uploaded_tracks.filter(user=self.test_user1)
-        grandchild_playlist_tracks = grandchild_genre_playlist.playlist.uploaded_tracks.filter(user=self.test_user1)
+        parent_playlist_tracks = parent_genre_playlist.playlist.tracks.filter(user=self.test_user1)
+        child_playlist_tracks = child_genre_playlist.playlist.tracks.filter(user=self.test_user1)
+        grandchild_playlist_tracks = grandchild_genre_playlist.playlist.tracks.filter(user=self.test_user1)
 
-        assert track in parent_playlist_tracks
-        assert track in child_playlist_tracks
-        assert track in grandchild_playlist_tracks
+        assert track.uuid in [playlist_track.uuid for playlist_track in parent_playlist_tracks]
+        assert track.uuid in [playlist_track.uuid for playlist_track in child_playlist_tracks]
+        assert track.uuid in [playlist_track.uuid for playlist_track in grandchild_playlist_tracks]
