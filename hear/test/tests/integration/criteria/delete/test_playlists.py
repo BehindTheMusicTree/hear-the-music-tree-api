@@ -40,7 +40,7 @@ class TestCase(GenreTestCase):
         )
 
         rock_playlist: Playlist = Playlist.objects.get(user=self.test_user1, uuid=genre_rock.criteria_playlist.uuid)
-        rock_tracks_dict_by_position = rock_playlist.uploaded_tracks_not_archived_dict_by_position
+        rock_tracks_dict_by_position = rock_playlist.tracks_not_archived_dict_by_position
         assert len(rock_tracks_dict_by_position) == 6
         assert rock_tracks_dict_by_position[1].uuid == uploaded_track_punk_added_sixth.uuid
         assert rock_tracks_dict_by_position[2].uuid == uploaded_track_punk_hardcore_added_fifth.uuid
@@ -54,7 +54,7 @@ class TestCase(GenreTestCase):
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
         rock_playlist: Playlist = Playlist.objects.get(user=self.test_user1, uuid=genre_rock.criteria_playlist.uuid)
-        rock_tracks_dict_by_position = rock_playlist.uploaded_tracks_not_archived_dict_by_position
+        rock_tracks_dict_by_position = rock_playlist.tracks_not_archived_dict_by_position
         assert len(rock_tracks_dict_by_position) == 6
         assert rock_tracks_dict_by_position[1].uuid == uploaded_track_punk_added_sixth.uuid
         assert rock_tracks_dict_by_position[2].uuid == uploaded_track_punk_hardcore_added_fifth.uuid
@@ -106,7 +106,7 @@ class TestCase(GenreTestCase):
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
         genreless_playlist: Playlist = GenrePlaylist.objects.get(user=self.test_user1, criteria=None)
-        uploaded_tracks_dict_by_position = genreless_playlist.uploaded_tracks_not_archived_dict_by_position
+        uploaded_tracks_dict_by_position = genreless_playlist.tracks_not_archived_dict_by_position
         assert len(uploaded_tracks_dict_by_position) == 4
         assert uploaded_tracks_dict_by_position[1].uuid == rock_uploaded_track_added_tenth.uuid
         assert uploaded_tracks_dict_by_position[2].uuid == rock_uploaded_track_added_third.uuid
@@ -149,7 +149,7 @@ class TestCase(GenreTestCase):
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
         genreless_playlist: Playlist = GenrePlaylist.objects.get(user=self.test_user1, criteria=None)
-        uploaded_tracks_dict_by_position = genreless_playlist.uploaded_tracks_not_archived_dict_by_position
+        uploaded_tracks_dict_by_position = genreless_playlist.tracks_not_archived_dict_by_position
         assert len(uploaded_tracks_dict_by_position) == 6
         assert uploaded_tracks_dict_by_position[1].uuid == rock_not_archived_second.uuid
         assert uploaded_tracks_dict_by_position[2].uuid == rock_not_archived_first.uuid

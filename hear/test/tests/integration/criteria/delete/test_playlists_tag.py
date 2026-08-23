@@ -52,12 +52,12 @@ class TestCase(TagTestCase):
         assert not TagPlaylist.objects.filter(criteria=party_criteria).exists()
         assert TagPlaylist.objects.filter(criteria=fiesta_criteria).exists()
         fiesta_playlist = TagPlaylist.objects.get(criteria=fiesta_criteria)
-        assert fiesta_playlist.uploaded_tracks_not_archived_dict_by_position[1].uuid == (
+        assert fiesta_playlist.tracks_not_archived_dict_by_position[1].uuid == (
             fiesta_uploaded_track_added_fourth.uuid
         )
 
         tagless_playlist: Playlist = TagPlaylist.objects.get(user=self.test_user1, criteria=None)
-        uploaded_tracks_dict_by_position = tagless_playlist.uploaded_tracks_not_archived_dict_by_position
+        uploaded_tracks_dict_by_position = tagless_playlist.tracks_not_archived_dict_by_position
         assert len(uploaded_tracks_dict_by_position) == 4
         assert uploaded_tracks_dict_by_position[1].uuid == party_uploaded_track_added_fifth.uuid
         assert uploaded_tracks_dict_by_position[2].uuid == party_uploaded_track_added_third.uuid
