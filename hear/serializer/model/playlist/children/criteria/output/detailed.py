@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from hear.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
+from hear.model.playlist.PlaylistDuration import get_duration_in_sec, get_duration_str_in_hour_min_sec
 from hear.serializer.model.criteria.output.minimum import CriteriaMinimumSerializer
 from hear.serializer.model.playlist.children.criteria.output.minumum import CriteriaPlaylistMinimumSerializer
 from hear.serializer.model.track_playlist_rel.output.without_playlist import (
@@ -19,6 +20,8 @@ class CriteriaPlaylistDetailedSerializer(serializers.ModelSerializer):
     criteria = CriteriaMinimumSerializer()
     root = CriteriaPlaylistMinimumSerializer()  # type: ignore
     parent = CriteriaPlaylistMinimumSerializer()
+    duration_in_sec = serializers.SerializerMethodField()
+    duration_str_in_hour_min_sec = serializers.SerializerMethodField()
 
     class Meta:
         model = CriteriaPlaylist
@@ -36,3 +39,9 @@ class CriteriaPlaylistDetailedSerializer(serializers.ModelSerializer):
             Fields.CREATED_ON,
             Fields.UPDATED_ON,
         ]
+
+    def get_duration_in_sec(self, obj: CriteriaPlaylist) -> int:
+        return get_duration_in_sec(obj)
+
+    def get_duration_str_in_hour_min_sec(self, obj: CriteriaPlaylist) -> str:
+        return get_duration_str_in_hour_min_sec(obj)
