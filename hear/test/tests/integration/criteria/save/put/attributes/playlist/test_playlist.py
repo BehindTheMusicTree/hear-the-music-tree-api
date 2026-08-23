@@ -50,7 +50,7 @@ class TestCase(GenreTestCase):
 
         assert response.status_code == status.HTTP_200_OK
         playlist_rock: CriteriaPlaylist = CriteriaPlaylist.objects.get(user=self.test_user1, criteria=genre_rock)
-        assert playlist_rock.tracks.first() == track
+        assert playlist_rock.tracks.first().uuid == track.uuid
 
     def test_new_parent_not_acendant_of_old_parent_then_remove_criteria_playlist_tracks_from_old_criteria_ascendants_playlist(
         self,
@@ -65,7 +65,7 @@ class TestCase(GenreTestCase):
 
         assert response.status_code == status.HTTP_200_OK
         playlist: CriteriaPlaylist = CriteriaPlaylist.objects.get(user=self.test_user1, criteria=genre_rock)
-        assert playlist.tracks.first() != track
+        assert track.uuid not in playlist.tracks.values_list("uuid", flat=True)
 
     def test_new_parent_undirect_ascendant_of_old_parent_then_update_positions_in_criterias_in_between(self):
         genre_rock = self.model_fixture_factory.create_genre(name="Rock")
@@ -82,4 +82,4 @@ class TestCase(GenreTestCase):
 
         assert response.status_code == status.HTTP_200_OK
         assert genre_punk.criteria_playlist.tracks.count() == 1
-        assert genre_punk.criteria_playlist.tracks.first() == track_punk
+        assert genre_punk.criteria_playlist.tracks.first().uuid == track_punk.uuid
