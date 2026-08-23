@@ -89,7 +89,8 @@ hear/migrations/0012_rename_audio_meta_analysis_disabled_to_afp_disabled.py
 hear/migrations/0013_move_criteria_type_to_genre_kit.py
 hear/migrations/0014_rename_uploaded_track_playlist_rel_to_track_playlist_rel.py
 hear/migrations/0015_alter_fingerprintmissingcausecode_code_and_more.py
-hear/migrations/0016_reparent_uploaded_track_and_playlists_onto_genre_kit.py
+hear/migrations/0016_remove_stale_playlist_user_uuid_index.py
+hear/migrations/0017_reparent_uploaded_track_and_playlists_onto_genre_kit.py
 hear/migrations/__init__.py
 hear/model/ContentObjectFields.py
 hear/model/album/Album.py

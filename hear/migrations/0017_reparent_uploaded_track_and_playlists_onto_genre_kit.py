@@ -8,7 +8,7 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("hear", "0015_alter_fingerprintmissingcausecode_code_and_more"),
+        ("hear", "0016_remove_stale_playlist_user_uuid_index"),
         ("the_music_tree_genre_kit", "0005_trackplaylistrel_track_playlists_and_more"),
     ]
 
