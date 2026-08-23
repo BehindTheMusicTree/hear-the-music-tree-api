@@ -11,6 +11,10 @@ from django.core.files import File
 from django.db import transaction
 from django.utils import timezone
 from django_dynamic_fixture import global_settings
+from the_music_tree_genre_kit.criteria.track_playlist_rel.Fields import Fields as TrackPlaylistRelFields
+from the_music_tree_genre_kit.criteria.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
+from the_music_tree_genre_kit.playlist.Fields import Fields as PlayListFields
+from the_music_tree_genre_kit.playlist.Playlist import Playlist
 
 from hear.model.album.Album import Album
 from hear.model.album.Fields import Fields as AlbumModelFields
@@ -29,14 +33,10 @@ from hear.model.play.Fields import Fields as PlayFields
 from hear.model.play.Play import Play
 from hear.model.playlist.children.manual.Fields import Fields as ManualPlayListFields
 from hear.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
-from hear.model.playlist.Fields import Fields as PlayListFields
-from hear.model.playlist.Playlist import Playlist
 from hear.model.spotify_resource.children.artist.Fields import Fields as ArtistFields
 from hear.model.spotify_resource.children.artist.SpotifyArtist import SpotifyArtist
 from hear.model.spotify_resource.children.track.Fields import Fields as TrackFields
 from hear.model.spotify_resource.children.track.SpotifyLibTrack import SpotifyLibTrack
-from hear.model.track_playlist_rel.Fields import Fields as TrackPlaylistRelFields
-from hear.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 from hear.model.trackable_play_count.TrackablePlayCount import TrackablePlayCount
 from hear.model.uploaded_track.UploadedTrack import UploadedTrack
 from hear.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey as UploadedTrackFields
@@ -154,10 +154,6 @@ class ModelFixtureFactory:
             model_fields.update({UploadedTrackFields.TRACK_FILE_INTERNAL.value: django_file})
             uploaded_track = UploadedTrack.objects.create(**model_fields)
         if not use_manager_for_genre_playlist_adding:
-            from hear.model.track_playlist_rel.TrackPlaylistRel import (
-                TrackPlaylistRel,
-            )
-
             TrackPlaylistRel.objects.filter(user=user, track=uploaded_track).delete()
 
         return uploaded_track

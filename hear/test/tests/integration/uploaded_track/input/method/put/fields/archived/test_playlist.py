@@ -2,10 +2,10 @@ from typing import cast
 
 from django.db.models import QuerySet
 from rest_framework import status
+from the_music_tree_genre_kit.criteria.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
 from hear.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 from hear.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
-from hear.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 from hear.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from hear.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 

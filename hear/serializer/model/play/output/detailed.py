@@ -4,7 +4,7 @@ from rest_framework import serializers
 from the_music_tree_api_kit.serializer.field.AppCharField import AppCharField
 
 from hear.model.play.Play import Play
-from hear.model.playlist.Playlist import Playlist
+from the_music_tree_genre_kit.playlist.Playlist import Playlist
 from hear.serializer.model.playlist.base.output.detailed import PlaylistDetailedSerializer
 from hear.serializer.model.uploaded_track.output.detailed import UploadedTrackDetailedSerializer
 

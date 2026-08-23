@@ -1,8 +1,8 @@
 from rest_framework import status
 from the_music_tree_api_kit.utils import data_transformer
+from the_music_tree_genre_kit.criteria.track_playlist_rel.Fields import Fields as TrackPlaylistRelFields
 
 from hear.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
-from hear.model.track_playlist_rel.Fields import Fields as TrackPlaylistRelFields
 from hear.serializer.model.playlist.base.output.detailed import Fields as PlaylistOutputFields
 from hear.serializer.model.uploaded_track.output.UploadedTrackOutputFieldKey import UploadedTrackOutputFieldKey
 from hear.test.tests.integration.playlist.base.PlaylistTestCase import PlaylistTestCase

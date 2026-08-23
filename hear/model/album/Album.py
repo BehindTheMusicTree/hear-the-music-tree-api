@@ -32,7 +32,9 @@ class Album(UploadedTrackMixin):
 
     @property
     def uploaded_tracks(self) -> models.QuerySet[UploadedTrack]:
-        return getattr(self, Fields.UPLOADED_TRACKS_RELATED_NAME)
+        from hear.model.uploaded_track.UploadedTrack import UploadedTrack
+
+        return UploadedTrack.objects.filter(album=self)
 
     @property
     def uploaded_tracks_not_archived_sorted(self) -> models.QuerySet[UploadedTrack]:

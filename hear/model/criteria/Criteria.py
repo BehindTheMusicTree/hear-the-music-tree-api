@@ -21,7 +21,9 @@ class Criteria(AbstractCriteria, UploadedTrackMixin):
 
     @property
     def uploaded_tracks(self) -> models.QuerySet[UploadedTrack]:
-        return getattr(self, Fields.UPLOADED_TRACKS_RELATED_NAME)
+        from hear.model.uploaded_track.UploadedTrack import UploadedTrack
+
+        return UploadedTrack.objects.filter(genre=self)
 
     class Meta:
         db_table = "htmt_api_criteria"

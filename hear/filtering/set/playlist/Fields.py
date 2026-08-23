@@ -1,4 +1,4 @@
-from hear.model.playlist.Playlist import Fields as ModelFields
+from the_music_tree_genre_kit.playlist.Fields import Fields as ModelFields
 
 
 class Fields:

@@ -1,7 +1,7 @@
 from rest_framework import status
+from the_music_tree_genre_kit.playlist.Playlist import Playlist
 
 from hear.model.playlist.children.criteria.genre.GenrePlaylist import GenrePlaylist
-from hear.model.playlist.Playlist import Playlist
 from hear.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 

@@ -62,7 +62,7 @@ class TestCase(AppTestCase):
             title="Track 3", test_uploaded_track_filename=UploadedTrackTestFilename.DEFAULT_MP3
         )
 
-        from hear.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
+        from the_music_tree_genre_kit.criteria.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
         TrackPlaylistRel.objects.create(user=self.test_user1, playlist=tag1_playlist.playlist, track=track1)
         TrackPlaylistRel.objects.create(user=self.test_user1, playlist=tag2_playlist.playlist, track=track1)

@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from the_music_tree_api_kit.serializer.field.foreign_key.PrivateUuidField import PrivateUuidField
 
 from hear.model.ContentObjectFields import ContentObjectFields
-from hear.model.playlist.Playlist import Playlist
+from the_music_tree_genre_kit.playlist.Playlist import Playlist
 from hear.model.uploaded_track.UploadedTrack import UploadedTrack
 
 

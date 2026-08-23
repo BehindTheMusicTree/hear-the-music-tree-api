@@ -1,7 +1,7 @@
 from rest_framework import status
 from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
+from the_music_tree_genre_kit.playlist.Fields import Fields as PlayListFields
 
-from hear.model.playlist.Playlist import Fields as PlayListFields
 from hear.test.tests.integration.playlist.children.manual.ManualPlaylistTestCase import ManualPlaylistTestCase
 
 

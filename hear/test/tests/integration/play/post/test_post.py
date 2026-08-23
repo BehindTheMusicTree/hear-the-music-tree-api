@@ -1,8 +1,8 @@
 from rest_framework import status
 from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from the_music_tree_api_kit.utils.data_transformer import to_camel_case
+from the_music_tree_genre_kit.playlist.Playlist import Playlist
 
-from hear.model.playlist.Playlist import Playlist
 from hear.model.uploaded_track.UploadedTrack import UploadedTrack
 from hear.serializer.model.play.input.schema.PostFields import Fields
 from hear.test.tests.integration.play.PlayTestCase import PlayTestCase

@@ -23,3 +23,4 @@ class UploadedTrackFieldKey(StrEnum):
     PLAYLISTS_PUBLIC = "playlists"
     ARCHIVED = "archived"
     RELATIVE_URL = "relative_url"
+    UPLOADED_TRACK_RELATED_NAME = "uploadedtrack"
