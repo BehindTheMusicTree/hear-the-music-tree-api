@@ -56,9 +56,10 @@ class TestCase(AppTestCase):
         playlist.refresh_from_db()
         playlist_tracks = playlist.tracks.filter(user=self.test_user1)
         assert playlist_tracks.count() == 3
-        assert track1 in playlist_tracks
-        assert track2 in playlist_tracks
-        assert track3 in playlist_tracks
+        playlist_track_uuids = [playlist_track.uuid for playlist_track in playlist_tracks]
+        assert track1.uuid in playlist_track_uuids
+        assert track2.uuid in playlist_track_uuids
+        assert track3.uuid in playlist_track_uuids
 
         response = manual_playlist_test_case._retrieve_manual_playlist(playlist.uuid)
         assert response.status_code == status.HTTP_200_OK
@@ -71,9 +72,10 @@ class TestCase(AppTestCase):
         playlist.refresh_from_db()
         playlist_tracks = playlist.tracks.filter(user=self.test_user1)
         assert playlist_tracks.count() == 2
-        assert track1 in playlist_tracks
-        assert track2 not in playlist_tracks
-        assert track3 in playlist_tracks
+        playlist_track_uuids = [playlist_track.uuid for playlist_track in playlist_tracks]
+        assert track1.uuid in playlist_track_uuids
+        assert track2.uuid not in playlist_track_uuids
+        assert track3.uuid in playlist_track_uuids
 
         new_playlist_name = "Updated Playlist Name"
         response = manual_playlist_test_case._put_manual_playlist(

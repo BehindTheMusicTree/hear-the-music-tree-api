@@ -122,7 +122,10 @@ class TestCase(UploadedTrackTestCase):
             user=self.test_user1, playlist=manual_playlist, position__isnull=True
         )
         assert track_playlist_rels_of_playlist_archived.count() == 1
-        assert cast(TrackPlaylistRel, track_playlist_rels_of_playlist_archived.first()).track.uuid == track_to_unarchive.uuid
+        assert (
+            cast(TrackPlaylistRel, track_playlist_rels_of_playlist_archived.first()).track.uuid
+            == track_to_unarchive.uuid
+        )
 
         response = self._put_uploaded_track(
             uuid=track_to_unarchive.uuid, **{UploadedTrackInputFieldKey.ARCHIVED.value: "false"}
