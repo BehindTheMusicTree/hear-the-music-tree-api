@@ -1,5 +1,5 @@
 from hear.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
-from hear.model.playlist.Fields import Fields as PlayListFields
+from the_music_tree_genre_kit.playlist.Fields import Fields as PlayListFields
 
 from .SearchFilterSet import SearchFilterSet
 

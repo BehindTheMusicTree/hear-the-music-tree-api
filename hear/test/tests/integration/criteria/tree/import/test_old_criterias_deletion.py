@@ -1,10 +1,10 @@
 from rest_framework import status
+from the_music_tree_genre_kit.criteria.track_playlist_rel.Fields import Fields as TrackPlaylistRelFields
+from the_music_tree_genre_kit.criteria.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
+from the_music_tree_genre_kit.playlist.Playlist import Playlist
 
 from hear.model.criteria.children.genre.Genre import Genre
 from hear.model.playlist.children.criteria.genre.GenrePlaylist import GenrePlaylist
-from hear.model.playlist.Playlist import Playlist
-from hear.model.track_playlist_rel.Fields import Fields as TrackPlaylistRelFields
-from hear.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 from hear.serializer.model.criteria.input.tree_import.Fields import Fields
 from hear.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 

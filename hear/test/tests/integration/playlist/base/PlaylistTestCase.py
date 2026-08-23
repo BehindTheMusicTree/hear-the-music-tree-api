@@ -1,8 +1,8 @@
 from uuid import UUID
 
 from django.urls import reverse
+from the_music_tree_genre_kit.playlist.Playlist import Playlist
 
-from hear.model.playlist.Playlist import Playlist
 from hear.test.utils.AppTestCase import AppTestCase
 
 

@@ -7,7 +7,7 @@ from the_music_tree_api_kit.view.viewset.model.AppModelViewSet import AppModelVi
 
 from hear.filtering.set.playlist.Fields import Fields as QueryParamsFields
 from hear.filtering.set.playlist.PlaylistFilterSet import PlaylistFilterSet
-from hear.model.playlist.Playlist import Playlist
+from the_music_tree_genre_kit.playlist.Playlist import Playlist
 from hear.serializer.model.playlist.base.output.detailed import PlaylistDetailedSerializer
 from hear.serializer.model.playlist.base.output.simple import PlaylistSimpleSerializer
 

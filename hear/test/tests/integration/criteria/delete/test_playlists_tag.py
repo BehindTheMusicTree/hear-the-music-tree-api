@@ -1,8 +1,8 @@
 from rest_framework import status
+from the_music_tree_genre_kit.criteria.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
+from the_music_tree_genre_kit.playlist.Playlist import Playlist
 
 from hear.model.playlist.children.criteria.tag.TagPlaylist import TagPlaylist
-from hear.model.playlist.Playlist import Playlist
-from hear.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 from hear.test.tests.integration.criteria.TagTestCase import TagTestCase
 
 

@@ -5,9 +5,9 @@ from hear.filtering.filter.char.NonEmptiableCharFilter import NonEmptiableCharFi
 from hear.filtering.filter.char.OptionalEnumCharFilter import OptionalEnumCharFilter
 from hear.filtering.set.private_unique_resource.PrivateUniqueResourceFilterSet import PrivateUniqueResourceFilterSet
 from hear.model.playlist.children.criteria.CriterialessPlaylistNames import CriterialessPlaylistNames
-from hear.model.playlist.Fields import Fields as ModelFields
-from hear.model.playlist.Playlist import Playlist
-from hear.model.playlist.PlaylistTypesLabel import PlaylistTypesLabel
+from the_music_tree_genre_kit.playlist.Fields import Fields as ModelFields
+from the_music_tree_genre_kit.playlist.Playlist import Playlist
+from the_music_tree_genre_kit.playlist.PlaylistTypesLabel import PlaylistTypesLabel
 
 from .Fields import Fields
 

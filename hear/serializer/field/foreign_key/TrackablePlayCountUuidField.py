@@ -7,7 +7,7 @@ from the_music_tree_api_kit.exception.validation.app.AppValidationException impo
 from the_music_tree_api_kit.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
 from the_music_tree_api_kit.serializer.field.foreign_key.PrivateUuidField import PrivateUuidField
 
-from hear.model.playlist.Playlist import Playlist
+from the_music_tree_genre_kit.playlist.Playlist import Playlist
 from hear.model.uploaded_track.UploadedTrack import UploadedTrack
 
 

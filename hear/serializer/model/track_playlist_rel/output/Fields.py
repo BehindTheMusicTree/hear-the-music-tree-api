@@ -1,4 +1,4 @@
-from hear.model.track_playlist_rel.TrackPlaylistRel import Fields as ModelFields
+from the_music_tree_genre_kit.criteria.track_playlist_rel.Fields import Fields as ModelFields
 
 
 class Fields:

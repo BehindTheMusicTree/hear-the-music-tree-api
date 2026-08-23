@@ -1,8 +1,8 @@
 import pytest
 from rest_framework import status
+from the_music_tree_genre_kit.playlist.Fields import Fields as PlaylistFields
 
 from hear.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
-from hear.model.playlist.Playlist import Fields as PlaylistFields
 from hear.test.tests.integration.playlist.children.manual.ManualPlaylistTestCase import ManualPlaylistTestCase
 from hear.test.utils.AppTestCase import AppTestCase
 from hear.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename
@@ -46,8 +46,8 @@ class TestCase(AppTestCase):
         assert isinstance(playlist, ManualPlaylist)
         assert playlist.name == playlist_name
 
-        from hear.model.track_playlist_rel.Fields import Fields as RelFields
-        from hear.model.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
+        from the_music_tree_genre_kit.criteria.track_playlist_rel.Fields import Fields as RelFields
+        from the_music_tree_genre_kit.criteria.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
         TrackPlaylistRel.objects.create(user=self.test_user1, playlist=playlist.playlist, track=track1)
         TrackPlaylistRel.objects.create(user=self.test_user1, playlist=playlist.playlist, track=track2)
