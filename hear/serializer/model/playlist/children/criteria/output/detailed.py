@@ -16,7 +16,7 @@ class CriteriaPlaylistDetailedSerializer(serializers.ModelSerializer):
         source=Fields.UPLOADED_TRACK_PLAYLIST_RELS_INTERNAL, many=True
     )
     uploaded_tracks_count = serializers.IntegerField(source=Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_INTERNAL)
-    uploaded_tracks_archived_count = serializers.IntegerField()
+    uploaded_tracks_archived_count = serializers.IntegerField(source=Fields.UPLOADED_TRACKS_ARCHIVED_COUNT_INTERNAL)
     criteria = CriteriaMinimumSerializer()
     root = CriteriaPlaylistMinimumSerializer()  # type: ignore
     parent = CriteriaPlaylistMinimumSerializer()
