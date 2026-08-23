@@ -57,7 +57,7 @@ class TestCase(AppTestCase):
 
         track_playlists = [p.uuid for p in track.playlists.all()]
         assert rock_playlist.playlist.uuid in track_playlists
-        assert track in rock_playlist.playlist.uploaded_tracks.all()
+        assert track in rock_playlist.playlist.tracks.all()
 
         response = genre_test_case._post_genre(**{PostUploadedTrackInputFieldKey.NAME_PUBLIC: jazz_genre_name})
         assert response.status_code == status.HTTP_201_CREATED
@@ -76,5 +76,5 @@ class TestCase(AppTestCase):
 
         jazz_playlist = CriteriaPlaylist.objects.get(user=self.test_user1, criteria=jazz_genre)
         assert jazz_playlist.playlist.uuid in track_playlists
-        assert track in jazz_playlist.playlist.uploaded_tracks.all()
-        assert track not in rock_playlist.playlist.uploaded_tracks.all()
+        assert track in jazz_playlist.playlist.tracks.all()
+        assert track not in rock_playlist.playlist.tracks.all()

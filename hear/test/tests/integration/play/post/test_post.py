@@ -64,8 +64,8 @@ class TestCase(PlayTestCase):
 
         assert response.status_code == status.HTTP_201_CREATED
         playlist: Playlist = self.saved_object.content  # type: ignore
-        assert playlist.uploaded_tracks.count() == 1
-        playlist_uploaded_track: UploadedTrack | None = playlist.uploaded_tracks.first()
+        assert playlist.tracks.count() == 1
+        playlist_uploaded_track: UploadedTrack | None = playlist.tracks.first()
         assert playlist_uploaded_track
         assert playlist_uploaded_track.uuid == uploaded_track.uuid
 

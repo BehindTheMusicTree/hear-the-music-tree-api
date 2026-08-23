@@ -54,7 +54,7 @@ class TestCase(AppTestCase):
         TrackPlaylistRel.objects.create(user=self.test_user1, playlist=playlist.playlist, track=track3)
 
         playlist.refresh_from_db()
-        playlist_tracks = playlist.uploaded_tracks.filter(user=self.test_user1)
+        playlist_tracks = playlist.tracks.filter(user=self.test_user1)
         assert playlist_tracks.count() == 3
         assert track1 in playlist_tracks
         assert track2 in playlist_tracks
@@ -69,7 +69,7 @@ class TestCase(AppTestCase):
         TrackPlaylistRel.objects.filter(user=self.test_user1, playlist=playlist.playlist, track=track2).delete()
 
         playlist.refresh_from_db()
-        playlist_tracks = playlist.uploaded_tracks.filter(user=self.test_user1)
+        playlist_tracks = playlist.tracks.filter(user=self.test_user1)
         assert playlist_tracks.count() == 2
         assert track1 in playlist_tracks
         assert track2 not in playlist_tracks
