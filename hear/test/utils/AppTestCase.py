@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import cast
 from uuid import UUID
 
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.http import HttpResponse, JsonResponse
 from django.test import TestCase
@@ -195,6 +196,10 @@ class AppTestCase[T: models.Model](TestCase):
         return inst
 
     def setUp(self, methods_names_to_implement: list[str] | None = None) -> None:
+        # ContentType's manager caches rows in-process; a row created inside a prior test's
+        # atomic transaction stays cached after that transaction rolls back, so a later test
+        # can insert a FK referencing a content_type_id that no longer exists in the DB.
+        ContentType.objects.clear_cache()
 
         self.test_admin_user = User.objects.create_superuser(
             username="test_admin", password="test_admin", email="test_admin@example.com", is_test_user=True
