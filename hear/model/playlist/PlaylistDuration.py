@@ -4,7 +4,7 @@ if TYPE_CHECKING:
     from the_music_tree_genre_kit.playlist.Playlist import Playlist
 
 
-def get_duration_in_sec(playlist: "Playlist") -> int:
+def get_duration_in_sec(playlist: Playlist) -> int:
     """Genre-kit's Playlist/TrackMixin has no notion of file duration (it's generic across
     apps), so hear computes it here from its own UploadedTrack/TrackFile.
     """
@@ -17,7 +17,7 @@ def get_duration_in_sec(playlist: "Playlist") -> int:
     )
 
 
-def get_duration_str_in_hour_min_sec(playlist: "Playlist") -> str:
+def get_duration_str_in_hour_min_sec(playlist: Playlist) -> str:
     total_seconds = get_duration_in_sec(playlist)
     hours = total_seconds // 3600
     minutes = (total_seconds % 3600) // 60
