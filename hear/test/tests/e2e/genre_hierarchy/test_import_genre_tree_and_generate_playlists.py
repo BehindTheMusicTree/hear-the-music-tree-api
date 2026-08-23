@@ -138,6 +138,6 @@ class TestCase(AppTestCase):
         assert metal_playlist.playlist.uuid in track3_playlists
         assert rock_playlist.playlist.uuid in track3_playlists
 
-        assert track1 in electronic_playlist.playlist.uploaded_tracks.all()
-        assert track2 in electronic_playlist.playlist.uploaded_tracks.all()
-        assert track3 not in electronic_playlist.playlist.uploaded_tracks.all()
+        assert track1 in electronic_playlist.playlist.tracks.all()
+        assert track2 in electronic_playlist.playlist.tracks.all()
+        assert track3 not in electronic_playlist.playlist.tracks.all()

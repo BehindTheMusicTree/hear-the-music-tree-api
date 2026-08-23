@@ -44,7 +44,7 @@ class TestCase(GenreTestCase):
             title="guitare1", genre=genre_guitare, use_manager_for_genre_playlist_adding=True
         )
 
-        assert genre_guitare.criteria_playlist.uploaded_tracks.count() == 2
+        assert genre_guitare.criteria_playlist.tracks.count() == 2
         assert (
             genre_guitare.criteria_playlist.track_playlist_rels.get(
                 track=uploaded_track_previously_first_in_guitare
