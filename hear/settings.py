@@ -612,7 +612,7 @@ def setup_middlewares():
         "django.middleware.security.SecurityMiddleware",
         "corsheaders.middleware.CorsMiddleware",
         "django.contrib.sessions.middleware.SessionMiddleware",
-        "hear.middleware.HostValidationMiddleware.HostValidationMiddleware",
+        "the_music_tree_api_kit.view.middleware.HostValidationMiddleware.HostValidationMiddleware",
         "django.middleware.common.CommonMiddleware",
         "hear.middleware.ContentTypeValidationMiddleware.ContentTypeValidationMiddleware",
         "hear.middleware.CamelToSnakeMiddleware.CamelToSnakeMiddleware",
