@@ -50,5 +50,8 @@ RUN pip install --upgrade pip && \
 
 RUN chmod +x scripts/entrypoint.sh scripts/start-server.sh
 
+HEALTHCHECK --interval=5s --timeout=3s --start-period=30s --retries=10 \
+    CMD curl -f "http://127.0.0.1:${APP_PORT:-8000}/health/" || exit 1
+
 ENTRYPOINT ["bash", "scripts/entrypoint.sh"]
 CMD ["bash", "scripts/start-server.sh"]
