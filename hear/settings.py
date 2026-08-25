@@ -615,7 +615,7 @@ def setup_middlewares():
         "the_music_tree_api_kit.view.middleware.HostValidationMiddleware.HostValidationMiddleware",
         "django.middleware.common.CommonMiddleware",
         "hear.middleware.ContentTypeValidationMiddleware.ContentTypeValidationMiddleware",
-        "hear.middleware.CamelToSnakeMiddleware.CamelToSnakeMiddleware",
+        "the_music_tree_api_kit.view.middleware.CamelToSnakeMiddleware.CamelToSnakeMiddleware",
         "hear.middleware.content_validity.middleware.ContentValidityMiddleware",
         "hear.middleware.test_client.middleware.TestClientEmptyListMiddleware",
         "hear.middleware.list_value_validation.middleware.ListValueValidationMiddleware",

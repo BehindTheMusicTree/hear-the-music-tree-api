@@ -685,6 +685,7 @@ dev = [
     { name = "pre-commit" },
     { name = "pydocstringformatter" },
     { name = "pytest" },
+    { name = "pytest-cov" },
     { name = "pytest-django" },
     { name = "pytest-env" },
     { name = "ruff" },
@@ -737,6 +738,7 @@ requires-dist = [
     { name = "pyjwt", specifier = "==2.5.0" },
     { name = "pyopenssl", specifier = "==22.1.0" },
     { name = "pytest", marker = "extra == 'dev'", specifier = "==8.1.1" },
+    { name = "pytest-cov", marker = "extra == 'dev'", specifier = "==5.0.0" },
     { name = "pytest-django", marker = "extra == 'dev'", specifier = "==4.8.0" },
     { name = "pytest-env", marker = "extra == 'dev'", specifier = "==1.1.3" },
     { name = "python-dateutil", specifier = "==2.7.3" },
@@ -748,8 +750,8 @@ requires-dist = [
     { name = "shortuuid", specifier = "==1.0.9" },
     { name = "simplejson", specifier = "==3.16.0" },
     { name = "spotipy", specifier = "==2.23.0" },
-    { name = "the-music-tree-api-kit", git = "https://github.com/BehindTheMusicTree/the-music-tree-api-kit.git?rev=v0.2.0" },
-    { name = "the-music-tree-genre-kit", git = "https://github.com/BehindTheMusicTree/the-music-tree-genre-kit.git?rev=v0.4.0" },
+    { name = "the-music-tree-api-kit", git = "https://github.com/BehindTheMusicTree/the-music-tree-api-kit.git?rev=v0.4.0" },
+    { name = "the-music-tree-genre-kit", git = "https://github.com/BehindTheMusicTree/the-music-tree-genre-kit.git?rev=v0.7.2" },
     { name = "tinytag", specifier = "==1.10.1" },
     { name = "uvicorn", specifier = "==0.20.0" },
     { name = "werkzeug", specifier = "==2.2.2" },
@@ -1238,6 +1240,19 @@ wheels = [
 ]
 
 [[package]]
+name = "pytest-cov"
+version = "5.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "coverage" },
+    { name = "pytest" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/74/67/00efc8d11b630c56f15f4ad9c7f9223f1e5ec275aaae3fa9118c6a223ad2/pytest-cov-5.0.0.tar.gz", hash = "sha256:5837b58e9f6ebd335b0f8060eecce69b662415b16dc503883a02f45dfeb14857", size = 63042, upload-time = "2024-03-24T20:16:34.856Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/78/3a/af5b4fa5961d9a1e6237b530eb87dd04aea6eb83da09d2a4073d81b54ccf/pytest_cov-5.0.0-py3-none-any.whl", hash = "sha256:4f0764a1219df53214206bf1feea4633c3b558a2925c8b59f144f682861ce652", size = 21990, upload-time = "2024-03-24T20:16:32.444Z" },
+]
+
+[[package]]
 name = "pytest-django"
 version = "4.8.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1602,18 +1617,19 @@ wheels = [
 
 [[package]]
 name = "the-music-tree-api-kit"
-version = "0.2.0"
-source = { git = "https://github.com/BehindTheMusicTree/the-music-tree-api-kit.git?rev=v0.2.0#c52a79085dcda44e6e2c80e6ced4800be7571735" }
+version = "0.4.0"
+source = { git = "https://github.com/BehindTheMusicTree/the-music-tree-api-kit.git?rev=v0.4.0#234b5d8f5df55cdbea222d8014e490fefae4d880" }
 dependencies = [
     { name = "django" },
     { name = "django-filter" },
     { name = "djangorestframework" },
+    { name = "djangorestframework-camel-case" },
 ]
 
 [[package]]
 name = "the-music-tree-genre-kit"
-version = "0.4.0"
-source = { git = "https://github.com/BehindTheMusicTree/the-music-tree-genre-kit.git?rev=v0.4.0#615203e0a38d977d99c8aca7e000cd29bf94fb72" }
+version = "0.7.2"
+source = { git = "https://github.com/BehindTheMusicTree/the-music-tree-genre-kit.git?rev=v0.7.2#6ee36b908499390ce3e3e3ae60c3b209ffb2ae32" }
 dependencies = [
     { name = "django" },
     { name = "djangorestframework" },

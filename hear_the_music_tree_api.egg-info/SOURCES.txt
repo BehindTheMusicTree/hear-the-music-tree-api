@@ -58,10 +58,8 @@ hear/filtering/set/uploaded_track/UploadedTrackFilterSet.py
 hear/logging/LoggersName.py
 hear/management/commands/check_data_initialized.py
 hear/management/commands/spotify_connection_test.py
-hear/middleware/CamelToSnakeMiddleware.py
 hear/middleware/ContentTypeValidationMiddleware.py
 hear/middleware/ExceptionLoggingMiddleware.py
-hear/middleware/HostValidationMiddleware.py
 hear/middleware/RequestLoggingMiddleware.py
 hear/middleware/__init__.py
 hear/middleware/content_validity/__init__.py
@@ -759,7 +757,6 @@ hear/test/tests/unit/filtering/filterset/test_pagination.py
 hear/test/tests/unit/middleware/__init__.py
 hear/test/tests/unit/middleware/test_content_type_validation_middleware.py
 hear/test/tests/unit/middleware/test_content_validity_middleware.py
-hear/test/tests/unit/middleware/test_host_validation_middleware.py
 hear/test/tests/unit/middleware/test_list_value_validation_middleware.py
 hear/test/tests/unit/middleware/test_list_value_validation_middleware_bypass.py
 hear/test/tests/unit/middleware/test_request_logging_middleware.py
