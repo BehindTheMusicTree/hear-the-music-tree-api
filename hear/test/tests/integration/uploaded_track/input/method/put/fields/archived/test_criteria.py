@@ -17,7 +17,7 @@ class TestCase(UploadedTrackTestCase):
         data = {UploadedTrackInputFieldKey.ARCHIVED.value: "true"}
         response = self._put_uploaded_track(uuid=track_love.uuid, **data)
         assert response.status_code == status.HTTP_200_OK
-        assert self.saved_object.genre and self.saved_object.genre.uploaded_tracks_archived_count == 4
+        assert self.saved_object.genre and self.saved_object.genre.tracks_archived_count == 4
 
     def test_unarchived_then_criteria_has_minus_1_archived_uploaded_tracks(self):
         criteria = self.model_fixture_factory.create_genre(name="Jojo")
@@ -30,4 +30,4 @@ class TestCase(UploadedTrackTestCase):
         data = {UploadedTrackInputFieldKey.ARCHIVED.value: "false"}
         response = self._put_uploaded_track(uuid=track.uuid, **data)
         assert response.status_code == status.HTTP_200_OK
-        assert self.saved_object.genre and self.saved_object.genre.uploaded_tracks_archived_count == 2
+        assert self.saved_object.genre and self.saved_object.genre.tracks_archived_count == 2
