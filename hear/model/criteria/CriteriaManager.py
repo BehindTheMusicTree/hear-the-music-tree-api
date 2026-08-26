@@ -46,8 +46,8 @@ class CriteriaManager(AbstractCriteriaManager[T]):
             )
 
     def _on_renamed(self, instance: T, *, old_name: str) -> None:
-        if instance.uploaded_tracks:
-            for uploaded_track in instance.uploaded_tracks.all():
+        if instance.tracks:
+            for uploaded_track in instance.tracks.all():
                 uploaded_track.update_file_metadata_from_uploaded_track_instance_values()
 
     def _on_track_genre_cleared(self, track: UploadedTrack) -> None:

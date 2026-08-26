@@ -18,4 +18,4 @@ class TestCase(UploadedTrackTestCase):
                 self._put_uploaded_track(uuid=track.uuid, **{UploadedTrackInputFieldKey.GENRE.value: new_genre_name})
             except Exception as e:
                 assert str(e) == exception_message
-                assert track in original_genre.uploaded_tracks.all()
+                assert track in original_genre.tracks.all()
