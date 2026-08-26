@@ -67,6 +67,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ### Changed
 
 - **`Criteria` adopts `the-music-tree-genre-kit`'s shared `TrackMixin`** (repinned to `v0.9.0`): `hear/model/criteria/Criteria.py` now mixes in the kit's `TrackMixin` instead of the local `UploadedTrackMixin`, and `hear/serializer/model/criteria/output/detailed.py`/`hear/serializer/model/playlist/children/criteria/output/minumum.py` now build their track-count and playlist-minimum fields from the kit's `build_criteria_detailed_tracks_fields`/`build_criteria_playlist_minimum_serializer`, mirroring `grow-the-music-tree-api`'s existing pattern. The public JSON field names (`uploaded_tracks`, `uploaded_tracks_count`, `uploaded_tracks_archived_count`) are unchanged since the kit's builder is parameterized by field name. `UploadedTrackMixin` itself is kept (still used by `Album`/`Artist`); only `Criteria`'s usage moves to the kit.
+- **Migration `hear/migrations/0018_criteria_side.py`**: the `the-music-tree-genre-kit` repin above pulls in the kit's `v0.8.0` change adding a `side` (`core`/`pop`) field to `AbstractCriteria`; this adds the corresponding `side` column to `hear`'s `Criteria` table, matching `grow-the-music-tree-api`'s equivalent migration for the same kit repin.
 
 ### Fixed
 
