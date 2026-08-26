@@ -47,6 +47,7 @@ class CriteriaDetailedSerializer(AppInputSerializer, serializers.ModelSerializer
             CriteriaOutputFieldKey.PARENT.value,
             CriteriaOutputFieldKey.ASCENDANTS.value,
             CriteriaOutputFieldKey.DESCENDANTS.value,
+            CriteriaOutputFieldKey.SIDE.value,
             CriteriaOutputFieldKey.ROOT.value,
             CriteriaOutputFieldKey.CHILDREN.value,
             CriteriaOutputFieldKey.CRITERIA_PLAYLIST.value,

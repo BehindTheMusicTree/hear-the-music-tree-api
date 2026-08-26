@@ -17,6 +17,15 @@ class TestCase(GenreTestCase):
         assert response.status_code == status.HTTP_200_OK
         assert self.result[CriteriaOutputFieldKey.NAME.value] == name
 
+    def test_side(self):
+        side = "core"
+        uuid = self.model_fixture_factory.create_genre(name="rock", side=side).uuid
+
+        response = self._retrieve_genre(uuid=uuid)
+
+        assert response.status_code == status.HTTP_200_OK
+        assert self.result[CriteriaOutputFieldKey.SIDE.value] == side
+
     def test_uploaded_tracks(self):
         criteria = self.model_fixture_factory.create_genre(name="rock")
 
