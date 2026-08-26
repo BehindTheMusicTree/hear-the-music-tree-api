@@ -1,7 +1,9 @@
 from rest_framework import serializers
-from rest_framework.fields import IntegerField
 from the_music_tree_api_kit.serializer.AppInputSerializer import AppInputSerializer
 from the_music_tree_api_kit.serializer.field.AppCharField import AppCharField
+from the_music_tree_genre_kit.serializer.model.criteria.output.detailed_tracks import (
+    build_criteria_detailed_tracks_fields,
+)
 
 from hear.model.criteria.Criteria import Criteria
 from hear.model.criteria.Fields import Fields as ModelFields
@@ -17,14 +19,18 @@ from hear.serializer.model.uploaded_track.output.simple.simple_without_album_and
 
 from .CriteriaOutputFieldKey import CriteriaOutputFieldKey
 
+_tracks_fields = build_criteria_detailed_tracks_fields(
+    UploadedTrackWithoutAlbumPlaylistGenreSerializer,
+    CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_PUBLIC.value,
+    CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC.value,
+    CriteriaOutputFieldKey.UPLOADED_TRACKS_ARCHIVED_COUNT_PUBLIC.value,
+)
+
 
 class CriteriaDetailedSerializer(AppInputSerializer, serializers.ModelSerializer):
-    uploaded_tracks = UploadedTrackWithoutAlbumPlaylistGenreSerializer(
-        source=CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_INTERNAL.value, many=True
-    )
-    uploaded_tracks_count = IntegerField(
-        source=CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_INTERNAL.value
-    )
+    uploaded_tracks = _tracks_fields[CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_PUBLIC.value]
+    uploaded_tracks_count = _tracks_fields[CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC.value]
+    uploaded_tracks_archived_count = _tracks_fields[CriteriaOutputFieldKey.UPLOADED_TRACKS_ARCHIVED_COUNT_PUBLIC.value]
     parent = CriteriaMinimumSerializer()
     ascendants = CriteriaLineageRelWithoutDescendantSerializer(source=ModelFields.ASCENDANTS_RELS, many=True)
     descendants = CriteriaLineageRelWithoutAscendantSerializer(source=ModelFields.DESCENDANTS_RELS, many=True)
@@ -41,6 +47,7 @@ class CriteriaDetailedSerializer(AppInputSerializer, serializers.ModelSerializer
             CriteriaOutputFieldKey.PARENT.value,
             CriteriaOutputFieldKey.ASCENDANTS.value,
             CriteriaOutputFieldKey.DESCENDANTS.value,
+            CriteriaOutputFieldKey.SIDE.value,
             CriteriaOutputFieldKey.ROOT.value,
             CriteriaOutputFieldKey.CHILDREN.value,
             CriteriaOutputFieldKey.CRITERIA_PLAYLIST.value,
