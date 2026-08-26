@@ -2,25 +2,26 @@ from typing import TYPE_CHECKING
 
 from django.db import models
 from the_music_tree_genre_kit.criteria.AbstractCriteria import AbstractCriteria
+from the_music_tree_genre_kit.track_mixin.TrackMixin import TrackMixin
 
 from hear.model.criteria.CriteriaManager import CriteriaManager
-from hear.model.uploaded_track_mixin.UploadedTrackMixin import UploadedTrackMixin
 
 from .Fields import Fields
 
 if TYPE_CHECKING:
+    from the_music_tree_genre_kit.track.Track import Track
+
     from hear.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
-    from hear.model.uploaded_track.UploadedTrack import UploadedTrack
 
 
-class Criteria(AbstractCriteria, UploadedTrackMixin):
+class Criteria(AbstractCriteria, TrackMixin):
     if TYPE_CHECKING:
         criteria_playlist: CriteriaPlaylist
 
     objects: CriteriaManager = CriteriaManager()
 
     @property
-    def uploaded_tracks(self) -> models.QuerySet[UploadedTrack]:
+    def tracks(self) -> models.QuerySet[Track]:
         from hear.model.uploaded_track.UploadedTrack import UploadedTrack
 
         return UploadedTrack.objects.filter(genre=self)
