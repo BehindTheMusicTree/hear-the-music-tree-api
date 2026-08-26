@@ -64,6 +64,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Changed
+
+- **`Criteria` adopts `the-music-tree-genre-kit`'s shared `TrackMixin`** (repinned to `v0.9.0`): `hear/model/criteria/Criteria.py` now mixes in the kit's `TrackMixin` instead of the local `UploadedTrackMixin`, and `hear/serializer/model/criteria/output/detailed.py`/`hear/serializer/model/playlist/children/criteria/output/minumum.py` now build their track-count and playlist-minimum fields from the kit's `build_criteria_detailed_tracks_fields`/`build_criteria_playlist_minimum_serializer`, mirroring `grow-the-music-tree-api`'s existing pattern. The public JSON field names (`uploaded_tracks`, `uploaded_tracks_count`, `uploaded_tracks_archived_count`) are unchanged since the kit's builder is parameterized by field name. `UploadedTrackMixin` itself is kept (still used by `Album`/`Artist`); only `Criteria`'s usage moves to the kit.
+
 ### Fixed
 
 - **`ruff format` on `api/view/error/exception_handler.py`**: the file still used the pre-PEP&nbsp;758 `except (AttributeError, TypeError):` form; `ruff`'s effective target version resolves to 3.14 (from `requires-python = ">=3.14"`, which wins over `baselines/ruff.toml`'s stale `target-version = "py313"`), matching this project's actual runtime (`Dockerfile`, CI both pin 3.14), so `except AttributeError, TypeError:` (parens optional per PEP 758) is valid and is now the formatter-canonical form. Was causing a spurious Pre-commit failure on every PR.
