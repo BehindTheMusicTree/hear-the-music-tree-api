@@ -64,6 +64,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Fixed
+
+- **Docker healthcheck rejected with `DisallowedHost` on every Coolify deploy**: when `APP_IS_EXPOSED` is true, `ALLOWED_HOSTS` was built purely from the `ALLOWED_HOSTS` env var, which never contains a loopback host. The `HEALTHCHECK` in [`Dockerfile`](Dockerfile) curls `http://127.0.0.1:${APP_PORT:-8000}/health/` from inside the container, so Django answered it with a 400, the container was marked unhealthy, and each deployment rolled back. `hear/settings.py` now calls `the-music-tree-api-kit`'s `add_loopback_hosts` (repinned to `v0.5.0`), appending `127.0.0.1`, `127.0.0.1:<APP_PORT>`, `localhost` and `localhost:<APP_PORT>` regardless of `APP_IS_EXPOSED`. The same helper covers Coolify's own container healthcheck, which execs against `localhost` rather than `127.0.0.1` and is not configurable; `grow-the-music-tree-api` shares it rather than duplicating the fix. This does not widen the real attack surface — loopback is not externally reachable.
+
 ### Changed
 
 - **`Criteria` adopts `the-music-tree-genre-kit`'s shared `TrackMixin`** (repinned to `v0.9.0`): `hear/model/criteria/Criteria.py` now mixes in the kit's `TrackMixin` instead of the local `UploadedTrackMixin`, and `hear/serializer/model/criteria/output/detailed.py`/`hear/serializer/model/playlist/children/criteria/output/minumum.py` now build their track-count and playlist-minimum fields from the kit's `build_criteria_detailed_tracks_fields`/`build_criteria_playlist_minimum_serializer`, mirroring `grow-the-music-tree-api`'s existing pattern. The public JSON field names (`uploaded_tracks`, `uploaded_tracks_count`, `uploaded_tracks_archived_count`) are unchanged since the kit's builder is parameterized by field name. `UploadedTrackMixin` itself is kept (still used by `Album`/`Artist`); only `Criteria`'s usage moves to the kit.
