@@ -7,6 +7,7 @@ from typing import Any
 
 import dj_database_url
 from corsheaders.defaults import default_headers
+from the_music_tree_api_kit.utils.allowed_hosts import add_loopback_hosts
 from the_music_tree_genre_kit.data import DATA_DIR as GENRE_KIT_DATA_DIR
 
 # Third-party imports
@@ -349,12 +350,7 @@ def setup_app_exposure_if_needed():
         else:
             raise OSError("The app is exposed but no allowed hosts are set.")
 
-        # The Docker HEALTHCHECK curls 127.0.0.1 from inside the container, regardless of
-        # APP_IS_EXPOSED; without these, Django rejects it with DisallowedHost.
-        app_port = load_optional_str_env_var("APP_PORT", "8000")
-        for loopback_host in ("127.0.0.1", f"127.0.0.1:{app_port}", "localhost"):
-            if loopback_host not in ALLOWED_HOSTS:
-                ALLOWED_HOSTS.append(loopback_host)
+        add_loopback_hosts(ALLOWED_HOSTS, load_optional_str_env_var("APP_PORT", "8000"))
 
         CORS_ALLOWED_ORIGINS_STR = load_required_str_env_var("CORS_ALLOWED_ORIGINS")
         print_django(f"CORS_ALLOWED_ORIGINS env variable: {CORS_ALLOWED_ORIGINS_STR}")
