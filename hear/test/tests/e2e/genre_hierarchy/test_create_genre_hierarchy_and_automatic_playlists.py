@@ -91,7 +91,7 @@ class TestCase(AppTestCase):
         assert response.status_code == status.HTTP_200_OK
 
         track.refresh_from_db()
-        assert track.genre == grandchild_genre
+        assert track.genre.pk == grandchild_genre.pk
 
         track_playlists_uuids = [playlist.uuid for playlist in track.playlists.all()]
         assert len(track_playlists_uuids) == 3
