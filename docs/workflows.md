@@ -50,7 +50,7 @@ If the job prints Django lines ending around **`apps.populate() finished`** / **
 3. **Environment (set in `test.yml` for `docker compose run`):**
    - **`CI_STARTUP_TRACE=1`** — enables verbose `[Django]` / `[pytest]` diagnostics in application code.
    - **`PYTEST_PLUGINS=hear.ci_pytest_startup_plugin`** — loads the hook-bracket plugin even when a bind-mount hides image-local `*.egg-info` entry points.
-   - **`PYTHONFAULTHANDLER=1`** — on hang, send **SIGQUIT** to the pytest process (e.g. from another shell: `docker kill -s QUIT <container>` or `kill -QUIT <pid>`) to dump Python stacks to stderr.
+   - **`PYTHONFAULTHANDLER=1`** — on hang, send **SIGQUIT** to the pytest process (e.g. from another shell: `docker kill -s QUIT <container>` or `kill -QUIT <pid>`) to dump Python stacks to stderr. A watchdog in `test.yml` does this automatically after 10 minutes so the dump lands in the job log even if nobody is watching the run live.
 4. **Repo / image:** `pytest.ini` is **not** listed in `.dockerignore` so the Docker build context includes it; the workflow still bind-mounts the workspace for JUnit output.
 
 For local reproduction with the same diagnostics: `CI_STARTUP_TRACE=1 PYTEST_PLUGINS=hear.ci_pytest_startup_plugin PYTHONFAULTHANDLER=1 docker compose exec api pytest hear/test/ …`
