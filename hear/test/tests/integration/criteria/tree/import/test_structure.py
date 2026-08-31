@@ -6,6 +6,10 @@ from hear.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 
 class TestStructure(GenreTestCase):
+    """`parent` is a self-FK declared on `Criteria`, so it always resolves to a plain
+    `Criteria` instance -- never the `Genre` MTI subtype -- hence comparing by `pk`
+    below rather than object equality."""
+
     def test_single_root_then_ok(self):
         data = [{Fields.NAME_PUBLIC: "Rock", Fields.CHILDREN: []}]
         response = self._post_genres_tree_import(data={Fields.TREE: data})
@@ -56,8 +60,8 @@ class TestStructure(GenreTestCase):
         assert metal is not None
         assert heavy_metal is not None
         assert rock.parent is None
-        assert metal.parent == rock
-        assert heavy_metal.parent == metal
+        assert metal.parent.pk == rock.pk
+        assert heavy_metal.parent.pk == metal.pk
 
     def test_deep_nesting_then_ok(self):
         data = [
@@ -97,10 +101,10 @@ class TestStructure(GenreTestCase):
         assert classic_metal is not None
         assert power_metal is not None
         assert rock.parent is None
-        assert metal.parent == rock
-        assert heavy_metal.parent == metal
-        assert classic_metal.parent == heavy_metal
-        assert power_metal.parent == classic_metal
+        assert metal.parent.pk == rock.pk
+        assert heavy_metal.parent.pk == metal.pk
+        assert classic_metal.parent.pk == heavy_metal.pk
+        assert power_metal.parent.pk == classic_metal.pk
 
     def test_multiple_children_then_ok(self):
         data = [
@@ -127,9 +131,9 @@ class TestStructure(GenreTestCase):
         assert punk is not None
         assert blues is not None
         assert rock.parent is None
-        assert metal.parent == rock
-        assert punk.parent == rock
-        assert blues.parent == rock
+        assert metal.parent.pk == rock.pk
+        assert punk.parent.pk == rock.pk
+        assert blues.parent.pk == rock.pk
 
     def test_complex_structure_then_ok(self):
         data = [
@@ -186,12 +190,12 @@ class TestStructure(GenreTestCase):
         assert bebop is not None
         assert fusion is not None
         assert rock.parent is None
-        assert metal.parent == rock
-        assert heavy_metal.parent == metal
-        assert death_metal.parent == metal
-        assert punk.parent == rock
-        assert hardcore.parent == punk
-        assert pop_punk.parent == punk
+        assert metal.parent.pk == rock.pk
+        assert heavy_metal.parent.pk == metal.pk
+        assert death_metal.parent.pk == metal.pk
+        assert punk.parent.pk == rock.pk
+        assert hardcore.parent.pk == punk.pk
+        assert pop_punk.parent.pk == punk.pk
         assert jazz.parent is None
-        assert bebop.parent == jazz
-        assert fusion.parent == jazz
+        assert bebop.parent.pk == jazz.pk
+        assert fusion.parent.pk == jazz.pk

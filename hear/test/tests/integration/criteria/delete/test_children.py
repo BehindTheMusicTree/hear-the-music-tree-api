@@ -22,8 +22,8 @@ class TestCase(GenreTestCase):
 
         child_first.refresh_from_db()
         child_second.refresh_from_db()
-        assert child_first.parent == parent
-        assert child_second.parent == parent
+        assert child_first.parent.pk == parent.pk
+        assert child_second.parent.pk == parent.pk
 
     def test_delete_as_root_then_set_children_as_root(self):
         criteria = self.model_fixture_factory.create_genre(name="criteria")

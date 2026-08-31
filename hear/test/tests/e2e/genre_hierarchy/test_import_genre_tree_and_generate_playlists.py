@@ -75,11 +75,11 @@ class TestCase(AppTestCase):
         metal = genres.get(name="Metal")
 
         assert electronic.parent is None
-        assert techno.parent == electronic
-        assert minimal_techno.parent == techno
-        assert house.parent == electronic
+        assert techno.parent.pk == electronic.pk
+        assert minimal_techno.parent.pk == techno.pk
+        assert house.parent.pk == electronic.pk
         assert rock.parent is None
-        assert metal.parent == rock
+        assert metal.parent.pk == rock.pk
 
         imported_genre_names = {"Electronic Music", "Techno", "Minimal Techno", "House", "Rock", "Metal"}
         playlists = CriteriaPlaylist.objects.filter(user=self.test_user1, criteria__name__in=imported_genre_names)
