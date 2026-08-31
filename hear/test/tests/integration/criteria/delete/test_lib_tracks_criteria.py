@@ -19,10 +19,10 @@ class TestCase(GenreTestCase):
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
         uploaded_track_first.refresh_from_db()
-        assert uploaded_track_first.genre == rock
+        assert uploaded_track_first.genre.pk == rock.pk
 
         uploaded_track_second.refresh_from_db()
-        assert uploaded_track_second.genre == rock
+        assert uploaded_track_second.genre.pk == rock.pk
 
     def test_delete_root_then_uploaded_tracks_related_have_no_genre(self):
         rock = self.model_fixture_factory.create_genre(name="rock")

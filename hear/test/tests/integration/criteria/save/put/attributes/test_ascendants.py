@@ -92,7 +92,7 @@ class TestCase(GenreTestCase):
 
         assert response.status_code == status.HTTP_200_OK
 
-        assert self.saved_object.root == genre_punk
+        assert self.saved_object.root.pk == genre_punk.pk
         updated_punkhardcore_genre: Criteria = Criteria.objects.get(user=self.test_user1, uuid=punkhardcore_genre.uuid)
         punkhardcore_ascendants_ordered = updated_punkhardcore_genre.ascendants_rels.all().order_by(Fields.DEGREE)
         assert len(punkhardcore_ascendants_ordered) == 1

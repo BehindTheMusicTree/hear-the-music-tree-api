@@ -32,6 +32,6 @@ class TestCase(GenreTestCase):
         assert indie.parent is None
 
         # Verify root relationships
-        assert punk.root == punk
-        assert hardcore_punk.root == punk
-        assert indie.root == indie
+        assert punk.root.pk == punk.pk
+        assert hardcore_punk.root.pk == punk.pk
+        assert indie.root.pk == indie.pk

@@ -19,4 +19,4 @@ class TestCase(GenreTestCase):
             response = self._put_genre(uuid=genre_punk.uuid, parent=genre_metal.uuid)
             assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
             genre: Genre = Genre.objects.get(user=self.test_user1, uuid=genre_punk.uuid)
-            assert genre.parent == genre_rock
+            assert genre.parent.pk == genre_rock.pk

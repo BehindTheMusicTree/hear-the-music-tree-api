@@ -30,8 +30,8 @@ class TestWithExistingTracks(GenreTestCase):
         # Verify tracks have genres before loading example tree
         track1.refresh_from_db()
         track2.refresh_from_db()
-        assert track1.genre == genre_rock
-        assert track2.genre == genre_metal
+        assert track1.genre.pk == genre_rock.pk
+        assert track2.genre.pk == genre_metal.pk
 
         # Load example tree
         response = self._post_genres_tree_load_example()
@@ -85,7 +85,7 @@ class TestWithExistingTracks(GenreTestCase):
         track1_user1.refresh_from_db()
         track2_user2.refresh_from_db()
         assert track1_user1.genre is None
-        assert track2_user2.genre == genre_rock_user2
+        assert track2_user2.genre.pk == genre_rock_user2.pk
 
         # Verify only user1's genre is deleted and example tree is loaded
         # User1 should have new example tree genres (not the old ones we created)

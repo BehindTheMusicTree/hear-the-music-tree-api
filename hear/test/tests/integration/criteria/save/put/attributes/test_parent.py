@@ -13,7 +13,7 @@ class TestCase(GenreTestCase):
         response = self._put_genre(uuid=genre_punk.uuid, **{PutFields.NAME_PUBLIC: "New Punk"})
 
         assert response.status_code == status.HTTP_200_OK
-        assert self.saved_object.parent == genre_rock
+        assert self.saved_object.parent.pk == genre_rock.pk
 
     def test_error_when_parent_is_one_of_descendants(self):
         genre_rock = self.model_fixture_factory.create_genre(name="Rock")

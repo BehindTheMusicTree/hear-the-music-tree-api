@@ -38,6 +38,13 @@ class CriteriaDetailedSerializer(AppInputSerializer, serializers.ModelSerializer
     children = CriteriaMinimumSerializer(many=True)
     criteria_playlist = CriteriaPlaylistMinimumSerializer()
     name = AppCharField(source=ModelFields.NAME_INTERNAL)
+    # `side` lives only on the concrete `Genre` MTI subtype, not on `Meta.model` (`Criteria`,
+    # shared by both `GenreViewSet` and `TagViewSet`) -- read it defensively rather than
+    # relying on DRF's automatic model-field lookup, which would fail Criteria/Tag instances.
+    side = serializers.SerializerMethodField()
+
+    def get_side(self, obj) -> str | None:
+        return getattr(obj, CriteriaOutputFieldKey.SIDE.value, None)
 
     class Meta:
         model = Criteria

@@ -101,21 +101,21 @@ class TestFilterInheritance(AppTestCase):
             queryset=CriteriaFilterSet.Meta.model.objects.all(),
         )
 
-        assert list(filterset.qs) == [present_record]
+        assert [record.pk for record in filterset.qs] == [present_record.pk]
 
         filterset = CriteriaFilterSet(
             {PrivateUniqueResourceFields.CREATED_ON_GT: now.isoformat()},
             queryset=CriteriaFilterSet.Meta.model.objects.all(),
         )
 
-        assert list(filterset.qs) == [future_record]
+        assert [record.pk for record in filterset.qs] == [future_record.pk]
 
         filterset = CriteriaFilterSet(
             {PrivateUniqueResourceFields.CREATED_ON_LT: now.isoformat()},
             queryset=CriteriaFilterSet.Meta.model.objects.all(),
         )
 
-        assert list(filterset.qs) == [past_record]
+        assert [record.pk for record in filterset.qs] == [past_record.pk]
 
         filterset = CriteriaFilterSet(
             {
@@ -125,4 +125,4 @@ class TestFilterInheritance(AppTestCase):
             queryset=CriteriaFilterSet.Meta.model.objects.all(),
         )
 
-        assert set(filterset.qs) == {past_record, present_record}
+        assert {record.pk for record in filterset.qs} == {past_record.pk, present_record.pk}

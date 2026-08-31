@@ -50,7 +50,7 @@ class TestCase(AppTestCase):
         assert response.status_code == status.HTTP_201_CREATED
         child_genre = genre_test_case.saved_object
         assert child_genre.name == child_genre_name
-        assert child_genre.parent == parent_genre
+        assert child_genre.parent.pk == parent_genre.pk
 
         response = genre_test_case._post_genre(
             **{
@@ -61,7 +61,7 @@ class TestCase(AppTestCase):
         assert response.status_code == status.HTTP_201_CREATED
         grandchild_genre = genre_test_case.saved_object
         assert grandchild_genre.name == grandchild_genre_name
-        assert grandchild_genre.parent == child_genre
+        assert grandchild_genre.parent.pk == child_genre.pk
 
         genres = Genre.objects.filter(user=self.test_user1)
         assert genres.count() == 3
@@ -91,7 +91,7 @@ class TestCase(AppTestCase):
         assert response.status_code == status.HTTP_200_OK
 
         track.refresh_from_db()
-        assert track.genre == grandchild_genre
+        assert track.genre.pk == grandchild_genre.pk
 
         track_playlists_uuids = [playlist.uuid for playlist in track.playlists.all()]
         assert len(track_playlists_uuids) == 3

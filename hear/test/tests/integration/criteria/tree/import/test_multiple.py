@@ -23,14 +23,14 @@ class TestMultiple(GenreTestCase):
         rock = genres.get(name="Rock")
         assert rock.parent is None
         punk = genres.get(name="Punk")
-        assert punk.parent == rock
+        assert punk.parent.pk == rock.pk
         assert punk.user == self.test_user1
 
         # Verify Jazz tree
         jazz = genres.get(name="Jazz")
         assert jazz.parent is None
         blues = genres.get(name="Blues")
-        assert blues.parent == jazz
+        assert blues.parent.pk == jazz.pk
         assert blues.user == self.test_user1
 
     def test_import_tree_then_pagination_works(self):
@@ -64,7 +64,7 @@ class TestMultiple(GenreTestCase):
             # Verify children
             child1 = genres.get(name=f"Child {i}-1")
             child2 = genres.get(name=f"Child {i}-2")
-            assert child1.parent == root
-            assert child2.parent == root
+            assert child1.parent.pk == root.pk
+            assert child2.parent.pk == root.pk
             assert child1.user == self.test_user1
             assert child2.user == self.test_user1
