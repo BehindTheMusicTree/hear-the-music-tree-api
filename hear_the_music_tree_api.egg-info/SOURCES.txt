@@ -89,6 +89,9 @@ hear/migrations/0014_rename_uploaded_track_playlist_rel_to_track_playlist_rel.py
 hear/migrations/0015_alter_fingerprintmissingcausecode_code_and_more.py
 hear/migrations/0016_remove_stale_playlist_user_uuid_index.py
 hear/migrations/0017_reparent_uploaded_track_and_playlists_onto_genre_kit.py
+hear/migrations/0018_criteria_side.py
+hear/migrations/0019_alter_criteria_side.py
+hear/migrations/0020_genre_mti.py
 hear/migrations/__init__.py
 hear/model/ContentObjectFields.py
 hear/model/album/Album.py
@@ -762,6 +765,7 @@ hear/test/tests/unit/middleware/test_list_value_validation_middleware_bypass.py
 hear/test/tests/unit/middleware/test_request_logging_middleware.py
 hear/test/tests/unit/serializer/__init__.py
 hear/test/tests/unit/serializer/test_app_serializer.py
+hear/test/tests/unit/serializer/test_criteria_output_field_key.py
 hear/test/tests/unit/serializer/test_input_serializer_inheritance.py
 hear/test/tests/unit/serializer/test_model_serializer_inheritance.py
 hear/test/tests/unit/serializer/field/__init__.py

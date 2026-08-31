@@ -32,7 +32,7 @@ class TestCase(GenreTestCase, ForeignKeyBodyDataTestCase):
         )
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert self.saved_object.parent == genre_rock
+        assert self.saved_object.parent.pk == genre_rock.pk
 
     def test_invalid_uuid_then_400_bad_request(self):
         response = self._post_genre(**{CriteriaInputFields.NAME_PUBLIC: "Punk", CriteriaInputFields.PARENT: "invalid"})

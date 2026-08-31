@@ -53,7 +53,7 @@ class TestCase(AppTestCase):
         assert response.status_code == status.HTTP_200_OK
 
         track.refresh_from_db()
-        assert track.genre == rock_genre
+        assert track.genre.pk == rock_genre.pk
 
         track_playlists = [p.uuid for p in track.playlists.all()]
         assert rock_playlist.playlist.uuid in track_playlists
@@ -69,7 +69,7 @@ class TestCase(AppTestCase):
         assert response.status_code == status.HTTP_200_OK
 
         track.refresh_from_db()
-        assert track.genre == jazz_genre
+        assert track.genre.pk == jazz_genre.pk
 
         track_playlists = [p.uuid for p in track.playlists.all()]
         assert rock_playlist.playlist.uuid not in track_playlists

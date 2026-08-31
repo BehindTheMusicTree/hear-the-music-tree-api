@@ -28,7 +28,7 @@ class TestCase(ForeignKeyBodyDataTestCase, UploadedTrackTestCase):
 
         assert response.status_code == status.HTTP_201_CREATED
         assert self.saved_object
-        assert self.saved_object.genre == genre
+        assert self.saved_object.genre.pk == genre.pk
 
     def test_empty_then_none(self):
         response = self._post_uploaded_track(

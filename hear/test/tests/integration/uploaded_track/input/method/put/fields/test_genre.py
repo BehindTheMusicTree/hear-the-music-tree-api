@@ -19,7 +19,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
 
         assert response.status_code == status.HTTP_200_OK
         updated_uploaded_track = UploadedTrack.objects.get(uuid=uploaded_track.uuid)
-        assert updated_uploaded_track.genre == rap_criteria
+        assert updated_uploaded_track.genre.pk == rap_criteria.pk
 
     def test_ok_when_updating_to_not_none(self):
         rap_criteria = self.model_fixture_factory.create_genre(name="Rap")
@@ -33,7 +33,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
         )
 
         assert response.status_code == status.HTTP_200_OK
-        assert self.saved_object.genre == rock_criteria
+        assert self.saved_object.genre.pk == rock_criteria.pk
 
     def test_empty_then_none(self):
         rap_criteria = self.model_fixture_factory.create_genre(name="Rap")

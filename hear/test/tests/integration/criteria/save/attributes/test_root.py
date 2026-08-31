@@ -12,7 +12,7 @@ class TestCase(GenreTestCase):
         response = self._put_genre(uuid=genre_punk.uuid, **{CriteriaInputFields.PARENT: None})
 
         assert response.status_code == status.HTTP_200_OK
-        assert self.saved_object.root == self.saved_object
+        assert self.saved_object.root.pk == self.saved_object.pk
 
     def test_one_acendant_then_root_is_parent(self):
         rock = self.model_fixture_factory.create_genre(name="Rock")
@@ -20,7 +20,7 @@ class TestCase(GenreTestCase):
         response = self._post_genre(**{CriteriaInputFields.NAME_PUBLIC: "Punk", CriteriaInputFields.PARENT: rock.uuid})
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert self.saved_object.root == rock
+        assert self.saved_object.root.pk == rock.pk
 
     def test_two_acendant_then_root_is_parent_of_parent(self):
         genre_rock = self.model_fixture_factory.create_genre(name="Rock")
@@ -31,7 +31,7 @@ class TestCase(GenreTestCase):
         )
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert self.saved_object.root == genre_rock
+        assert self.saved_object.root.pk == genre_rock.pk
 
     def test_three_acendants_then_root_is_parent_of_parent_of_parent(self):
         genre_rock = self.model_fixture_factory.create_genre(name="Rock")
@@ -46,4 +46,4 @@ class TestCase(GenreTestCase):
         )
 
         assert response.status_code == status.HTTP_201_CREATED
-        assert self.saved_object.root == genre_rock
+        assert self.saved_object.root.pk == genre_rock.pk
