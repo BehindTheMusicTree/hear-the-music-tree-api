@@ -208,7 +208,8 @@ jobs:
           )
           # Hang watchdog: pytest has hung and needed manual cancellation on develop before (see
           # docs/workflows.md). If it's still running after WATCHDOG_DELAY_SECONDS, send SIGQUIT to
-          # the pytest process itself (matched by comm, not the wrapping bash) so PYTHONFAULTHANDLER
+          # the pytest process itself (its comm is the python interpreter, not "pytest" or "bash",
+          # since pytest's console-script entry point is exec'd via its shebang) so PYTHONFAULTHANDLER
           # dumps every thread's Python stack into this step's log, without needing a human to notice
           # the hang live and run `docker kill -s QUIT` before cancelling.
           WATCHDOG_DELAY_SECONDS=600
@@ -216,7 +217,7 @@ jobs:
             sleep "$WATCHDOG_DELAY_SECONDS"
             cid=$("${compose[@]}" ps -q api | tail -n1)
             if [ -n "$cid" ]; then
-              pytest_pid=$(docker top "$cid" -eo pid,comm 2>/dev/null | awk '$2=="pytest" {print $1; exit}')
+              pytest_pid=$(docker top "$cid" -eo pid,comm,args 2>/dev/null | awk '$2 ~ /^python/ && $0 ~ /pytest/ {print $1; exit}')
               if [ -n "$pytest_pid" ]; then
                 echo "::warning::pytest still running after ${WATCHDOG_DELAY_SECONDS}s, sending SIGQUIT (pid $pytest_pid) to dump stacks"
                 kill -QUIT "$pytest_pid" 2>/dev/null || true
