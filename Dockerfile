@@ -33,7 +33,7 @@ RUN apt-get update && \
 
 WORKDIR $PROJECT_DIR
 
-COPY scripts/install-dependencies.sh scripts/install-actionlint.sh scripts/
+COPY scripts/install-dependencies.sh scripts/
 RUN apt update && \
     bash scripts/install-dependencies.sh && \
     apt-get clean && \
@@ -51,6 +51,11 @@ RUN rm -rf /src/hear/test
 FROM base AS dev
 
 COPY . $PROJECT_DIR
+
+RUN apt update && \
+    bash scripts/install-dev-dependencies.sh && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 ARG INSTALL_DEV=true
 RUN pip install --upgrade pip && \
