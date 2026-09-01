@@ -46,6 +46,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      target: dev
       args:
         APP_VERSION: ${APP_VERSION:-2.1.0}
         APP_TITLE: ${APP_TITLE:-TheMusicTreeAPI}

@@ -6,6 +6,9 @@
 .github/
 .pytest_cache/
 venv/
+.venv/
+.mypy_cache/
+.ruff_cache/
 .vscode/
 backup.postman_dump/
 api/test/
