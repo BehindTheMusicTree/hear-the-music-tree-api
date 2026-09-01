@@ -1,3 +1,4 @@
+from hear.model.criteria.Criteria import Criteria
 from hear.serializer.model.criteria.output.CriteriaOutputFieldKey import CriteriaOutputFieldKey
 from hear.serializer.model.criteria.output.detailed import CriteriaDetailedSerializer
 from hear.serializer.model.criteria.output.simple import CriteriaSimpleSerializer
@@ -11,9 +12,13 @@ class TestCriteriaSideSerializer(GenreTestCase):
     `GenreViewSet` and `TagViewSet`). Serializing a genre through the API always passes a
     concrete `Genre` instance (see `AppModelViewSet.get_object`/`get_queryset`, which query
     via `model_class.objects`), so that path never actually exercises the base-`Criteria`
-    resolution -- these tests reproduce it directly by serializing `genre.criteria_ptr`,
-    the base `Criteria` row itself, mirroring the kit's own
-    `test_criteria_simple_serializer_resolves_side_from_genre_mti_subtype`.
+    resolution -- these tests reproduce it directly by serializing the base `Criteria` row
+    itself, mirroring the kit's own `test_criteria_simple_serializer_resolves_side_from_genre_mti_subtype`.
+
+    For the genre case, that base row is reached via `genre.criteria_ptr` (the MTI parent
+    link). `Tag` is a `proxy = True` subclass of `Criteria` rather than an MTI subtype, so it
+    has no `criteria_ptr` -- a tag row is already a base `Criteria` row, refetched here via
+    `Criteria.objects.get(pk=tag.pk)` to get a plain, non-proxy instance.
     """
 
     def test_simple_serializer_base_criteria_ptr_of_genre_then_resolves_side_from_mti_subtype(self):
@@ -27,7 +32,7 @@ class TestCriteriaSideSerializer(GenreTestCase):
     def test_simple_serializer_base_criteria_ptr_of_tag_then_side_is_none(self):
         tag = self.model_fixture_factory.create_tag(name="live")
 
-        data = CriteriaSimpleSerializer(tag.criteria_ptr).data
+        data = CriteriaSimpleSerializer(Criteria.objects.get(pk=tag.pk)).data
 
         assert data[CriteriaOutputFieldKey.SIDE.value] is None
 
@@ -42,6 +47,6 @@ class TestCriteriaSideSerializer(GenreTestCase):
     def test_detailed_serializer_base_criteria_ptr_of_tag_then_side_is_none(self):
         tag = self.model_fixture_factory.create_tag(name="live")
 
-        data = CriteriaDetailedSerializer(tag.criteria_ptr).data
+        data = CriteriaDetailedSerializer(Criteria.objects.get(pk=tag.pk)).data
 
         assert data[CriteriaOutputFieldKey.SIDE.value] is None
