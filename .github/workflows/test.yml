@@ -206,9 +206,29 @@ jobs:
               'bash scripts/init-django-data.sh' \
               "pytest -v --tb=short -x --junitxml=test-results.xml --cov=hear --cov-report=term-missing --cov-fail-under=80 ${pytest_target_q}"
           )
+          # Hang watchdog: pytest has hung and needed manual cancellation on develop before (see
+          # docs/workflows.md). If it's still running after WATCHDOG_DELAY_SECONDS, send SIGQUIT to
+          # the pytest process itself (its comm is the python interpreter, not "pytest" or "bash",
+          # since pytest's console-script entry point is exec'd via its shebang) so PYTHONFAULTHANDLER
+          # dumps every thread's Python stack into this step's log, without needing a human to notice
+          # the hang live and run `docker kill -s QUIT` before cancelling.
+          WATCHDOG_DELAY_SECONDS=600
+          (
+            sleep "$WATCHDOG_DELAY_SECONDS"
+            cid=$("${compose[@]}" ps -q api | tail -n1)
+            if [ -n "$cid" ]; then
+              pytest_pid=$(docker top "$cid" -eo pid,comm,args 2>/dev/null | awk '$2 ~ /^python/ && $0 ~ /pytest/ {print $1; exit}')
+              if [ -n "$pytest_pid" ]; then
+                echo "::warning::pytest still running after ${WATCHDOG_DELAY_SECONDS}s, sending SIGQUIT (pid $pytest_pid) to dump stacks"
+                kill -QUIT "$pytest_pid" 2>/dev/null || true
+              fi
+            fi
+          ) &
+          watchdog_pid=$!
+          trap 'kill "$watchdog_pid" 2>/dev/null || true' EXIT
+
           # Mount workspace so --junitxml=test-results.xml is visible on the runner (base compose has no ./ bind mount).
           # CI_STARTUP_TRACE: verbose Django/pytest startup diagnostics (see docs/workflows.md).
-          # PYTHONFAULTHANDLER: on hang, SIGQUIT dumps Python stacks (docker kill -s QUIT <pytest_pid>).
           # PYTEST_PLUGINS: load startup plugin when bind-mount hides image-local *.egg-info entry points.
           # The thin entrypoint (exec "$@") passes the command straight through; CMD is overridden here with the
           # inner_script so the container runs pytest instead of the default start-server.sh.
