@@ -27,7 +27,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     DB_IS_NEEDED=true
 
 RUN apt-get update && \
-    apt-get install -y gosu && \
+    apt-get install -y gosu git && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
