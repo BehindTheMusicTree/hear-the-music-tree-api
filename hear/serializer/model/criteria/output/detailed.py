@@ -4,6 +4,7 @@ from the_music_tree_api_kit.serializer.field.AppCharField import AppCharField
 from the_music_tree_genre_kit.serializer.model.criteria.output.detailed_tracks import (
     build_criteria_detailed_tracks_fields,
 )
+from the_music_tree_genre_kit.serializer.model.criteria.output.side import CriteriaSideSerializerMixin
 
 from hear.model.criteria.Criteria import Criteria
 from hear.model.criteria.Fields import Fields as ModelFields
@@ -27,7 +28,7 @@ _tracks_fields = build_criteria_detailed_tracks_fields(
 )
 
 
-class CriteriaDetailedSerializer(AppInputSerializer, serializers.ModelSerializer):
+class CriteriaDetailedSerializer(CriteriaSideSerializerMixin, AppInputSerializer, serializers.ModelSerializer):
     uploaded_tracks = _tracks_fields[CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_PUBLIC.value]
     uploaded_tracks_count = _tracks_fields[CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC.value]
     uploaded_tracks_archived_count = _tracks_fields[CriteriaOutputFieldKey.UPLOADED_TRACKS_ARCHIVED_COUNT_PUBLIC.value]
@@ -38,13 +39,6 @@ class CriteriaDetailedSerializer(AppInputSerializer, serializers.ModelSerializer
     children = CriteriaMinimumSerializer(many=True)
     criteria_playlist = CriteriaPlaylistMinimumSerializer()
     name = AppCharField(source=ModelFields.NAME_INTERNAL)
-    # `side` lives only on the concrete `Genre` MTI subtype, not on `Meta.model` (`Criteria`,
-    # shared by both `GenreViewSet` and `TagViewSet`) -- read it defensively rather than
-    # relying on DRF's automatic model-field lookup, which would fail Criteria/Tag instances.
-    side = serializers.SerializerMethodField()
-
-    def get_side(self, obj) -> str | None:
-        return getattr(obj, CriteriaOutputFieldKey.SIDE.value, None)
 
     class Meta:
         model = Criteria
