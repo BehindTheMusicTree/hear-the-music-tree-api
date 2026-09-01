@@ -213,26 +213,44 @@ jobs:
           # dumps every thread's Python stack into this step's log, without needing a human to notice
           # the hang live and run `docker kill -s QUIT` before cancelling.
           WATCHDOG_DELAY_SECONDS=600
+          RUN_CONTAINER_NAME="ci-pytest-run-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
           (
             sleep "$WATCHDOG_DELAY_SECONDS"
-            cid=$("${compose[@]}" ps -q api | tail -n1)
-            if [ -n "$cid" ]; then
-              pytest_pid=$(docker top "$cid" -eo pid,comm,args 2>/dev/null | awk '$2 ~ /^python/ && $0 ~ /pytest/ {print $1; exit}')
-              if [ -n "$pytest_pid" ]; then
-                echo "::warning::pytest still running after ${WATCHDOG_DELAY_SECONDS}s, sending SIGQUIT (pid $pytest_pid) to dump stacks"
-                kill -QUIT "$pytest_pid" 2>/dev/null || true
-              fi
+            pytest_pid=$(docker top "$RUN_CONTAINER_NAME" -eo pid,comm,args 2>/dev/null | awk '$2 ~ /^python/ && $0 ~ /pytest/ {print $1; exit}')
+            if [ -n "$pytest_pid" ]; then
+              echo "::warning::pytest still running after ${WATCHDOG_DELAY_SECONDS}s, sending SIGQUIT (pid $pytest_pid) to dump stacks"
+              kill -QUIT "$pytest_pid" 2>/dev/null || true
+            else
+              echo "::warning::watchdog could not find pytest pid in container $RUN_CONTAINER_NAME"
             fi
           ) &
           watchdog_pid=$!
-          trap 'kill "$watchdog_pid" 2>/dev/null || true' EXIT
+
+          # DB activity monitor: dump pg_stat_activity/pg_locks every 15s for the whole pytest
+          # step, so a hang shows exactly what's blocked without waiting on WATCHDOG_DELAY_SECONDS.
+          (
+            while true; do
+              sleep 15
+              echo "::group::pg_stat_activity $(date -u +%FT%TZ)"
+              "${compose[@]}" exec -T db psql -U postgres -d htmt_api -c \
+                "SELECT pid, state, wait_event_type, wait_event, now()-query_start AS duration, left(query,200) AS query FROM pg_stat_activity WHERE datname='htmt_api' ORDER BY query_start;" 2>&1 || true
+              echo "::endgroup::"
+              echo "::group::pg_locks (blocked) $(date -u +%FT%TZ)"
+              "${compose[@]}" exec -T db psql -U postgres -d htmt_api -c \
+                "SELECT pid, granted, mode, locktype, relation::regclass FROM pg_locks WHERE NOT granted OR pid IN (SELECT pid FROM pg_locks WHERE NOT granted);" 2>&1 || true
+              echo "::endgroup::"
+            done
+          ) &
+          db_monitor_pid=$!
+
+          trap 'kill "$watchdog_pid" "$db_monitor_pid" 2>/dev/null || true' EXIT
 
           # Mount workspace so --junitxml=test-results.xml is visible on the runner (base compose has no ./ bind mount).
           # CI_STARTUP_TRACE: verbose Django/pytest startup diagnostics (see docs/workflows.md).
           # PYTEST_PLUGINS: load startup plugin when bind-mount hides image-local *.egg-info entry points.
           # The thin entrypoint (exec "$@") passes the command straight through; CMD is overridden here with the
           # inner_script so the container runs pytest instead of the default start-server.sh.
-          "${compose[@]}" run --rm -T \
+          "${compose[@]}" run --rm -T --name "$RUN_CONTAINER_NAME" \
             -e CI_STARTUP_TRACE=1 \
             -e PYTHONFAULTHANDLER=1 \
             -e PYTEST_PLUGINS=hear.ci_pytest_startup_plugin \
