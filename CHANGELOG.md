@@ -64,6 +64,12 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Added
+
+- **Dev tooling**: Added a `launch` Claude Code skill (`.claude/skills/launch/`) documenting how
+  to start the local Docker Compose dev stack (`db`, `afp`, `api`), including the GHCR auth step
+  required to pull the `afp` image.
+
 ### Fixed
 
 - **`side` resolved incorrectly (silently wrong/omitted) on base-`Criteria`-typed serializers**: `hear/serializer/model/criteria/output/simple.py`'s `CriteriaSimpleSerializer` and `hear/serializer/model/criteria/output/detailed.py`'s `CriteriaDetailedSerializer` both hand-rolled a `get_side()` that read `side` directly off the serialized object — but these serializers' `Meta.model` is the shared base `Criteria` table (not the concrete `Genre` MTI subtype), so any instance actually typed as base `Criteria` (e.g. reached via `criteria_ptr`) has no `side` attribute at all; `getattr(obj, "side", None)` silently returned `None` instead of resolving it via the `genre` reverse one-to-one accessor. Repinned `the-music-tree-genre-kit` to `v0.14.1`, which adds `CriteriaSideSerializerMixin` (`the_music_tree_genre_kit.serializer.model.criteria.output.side`) resolving `side` correctly via `criteria_ptr.genre.side`, and fixes `build_criteria_simple_serializer` to use it automatically. `CriteriaSimpleSerializer` now just aliases the kit's `build_criteria_simple_serializer(Criteria)` output (no local override); `CriteriaDetailedSerializer` now mixes in `CriteriaSideSerializerMixin` directly. Added `hear/test/tests/unit/serializer/test_criteria_side_serializer.py`, reproducing the bug the way the existing integration test never did (that test only ever serializes concrete `Genre` instances via the API, which already have `side` natively) by serializing `genre.criteria_ptr` — the base `Criteria` row — through both serializers.
