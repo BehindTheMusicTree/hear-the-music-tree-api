@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 
 from rest_framework import status
@@ -13,6 +14,7 @@ class TestCase(UploadedTrackTestCase):
         assert response.status_code == status.HTTP_201_CREATED
         assert (
             Path(self.saved_object.track_file.file.name)
-            == Path(self.test_user1.lib_path_relative_to_media) / UploadedTrackTestFilename.METADATA_NONE_MP3
+            == Path(self.test_user1.lib_path_relative_to_media)
+            / os.path.basename(UploadedTrackTestFilename.METADATA_NONE_MP3.value)
         )
         assert self.test_user1.does_track_filename_exist_in_lib(UploadedTrackTestFilename.METADATA_NONE_MP3.value)
