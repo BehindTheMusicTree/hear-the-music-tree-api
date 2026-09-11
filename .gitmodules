@@ -1,0 +1,3 @@
+[submodule "hear/test/utils/uploaded_track/files/shared"]
+	path = hear/test/utils/uploaded_track/files/shared
+	url = https://github.com/BehindTheMusicTree/audio-test-fixtures

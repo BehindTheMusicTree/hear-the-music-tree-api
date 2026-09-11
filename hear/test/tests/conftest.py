@@ -245,7 +245,7 @@ def pytest_sessionstart(session: Session) -> None:
             f"ffprobe output: {err or result.returncode}",
             returncode=2,
         )
-    wav_fixture = Path(__file__).parent.parent / "utils" / "uploaded_track" / "files" / "duration=472s.wav"
+    wav_fixture = Path(__file__).parent.parent / "utils" / "uploaded_track" / "files" / "shared" / "duration=472s.wav"
     if wav_fixture.exists():
         _pytest_log(f"sessionstart: probing WAV fixture ({wav_fixture.name}, timeout 30s)")
         probe_result = subprocess.run(
