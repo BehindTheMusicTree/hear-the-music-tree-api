@@ -766,6 +766,7 @@ hear/test/tests/unit/middleware/test_request_logging_middleware.py
 hear/test/tests/unit/serializer/__init__.py
 hear/test/tests/unit/serializer/test_app_serializer.py
 hear/test/tests/unit/serializer/test_criteria_output_field_key.py
+hear/test/tests/unit/serializer/test_criteria_side_serializer.py
 hear/test/tests/unit/serializer/test_input_serializer_inheritance.py
 hear/test/tests/unit/serializer/test_model_serializer_inheritance.py
 hear/test/tests/unit/serializer/field/__init__.py
