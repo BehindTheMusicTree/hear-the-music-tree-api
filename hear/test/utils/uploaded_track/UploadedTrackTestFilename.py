@@ -74,8 +74,8 @@ class UploadedTrackTestFilename(StrEnum):
     # ============================================================================
     # DURATION - Duration handling and edge cases
     # ============================================================================
-    DURATION_LESS_THAN_1_SEC_MP3 = "shared/duration < 1 sec.mp3"
-    DURATION_LESS_THAN_1_SEC_FLAC = "shared/duration < 1 sec.flac"
+    DURATION_LESS_THAN_1_SEC_MP3 = "shared/duration=less than 1s.mp3"
+    DURATION_LESS_THAN_1_SEC_FLAC = "shared/duration=less than 1s.flac"
     DURATION_LESS_THAN_1_SEC_WAV = "duration < 1 sec.wav"
     DURATION_1S_WAV = "duration=1s.wav"
     DURATION_1S_ISSUE_READING_FROM_MUTAGEN_AND_TYNITAG_WAV = "duration=1s issue reading from mutagen and tynitag.wav"
