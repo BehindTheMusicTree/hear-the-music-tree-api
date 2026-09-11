@@ -78,7 +78,7 @@ class User(AbstractUser, BaseModel):  # type: ignore[django-manager-missing]
         return all_uploaded_tracks_mixin
 
     def does_track_filename_exist_in_lib(self, test_uploaded_track_filename: str):
-        return os.path.isfile(Path(self.lib_abs_path) / test_uploaded_track_filename)
+        return os.path.isfile(Path(self.lib_abs_path) / os.path.basename(test_uploaded_track_filename))
 
     def save(self, *args, **kwargs):
         if self.is_system:
