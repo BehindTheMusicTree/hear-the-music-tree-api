@@ -64,6 +64,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v3.0.0] - 2026-09-23
+
 ### Improved
 
 - **`CriteriaManager._on_bulk_created`**: `hear/model/criteria/CriteriaManager.py` now overrides the kit's `_on_bulk_created` hook to call `CriteriaPlaylist.objects.bulk_create_for_criteria(instances)`, bulk-creating one `CriteriaPlaylist` row per criteria node after `import_criteria_tree`'s bulk insert instead of one `.create()` per node. Repinned `the-music-tree-genre-kit` to `v0.20.0` (adds `_on_bulk_created`/`bulk_create_for_criteria`), which also pulls in the kit's `v0.15.0` `summary` field on `AbstractCriteria` that this repo had never migrated for (it was still pinned to `v0.14.2`, predating that field); added `hear/migrations/0021_criteria_summary.py` and mirrored the new field into `hear/serializer/model/criteria/output/CriteriaOutputFieldKey.py`'s `SUMMARY` member (not yet exposed in any serializer's `Meta.fields`, per this repo's existing kit-enum-mirroring test).
