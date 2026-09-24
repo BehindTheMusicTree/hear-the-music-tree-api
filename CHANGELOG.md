@@ -64,6 +64,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v3.1.0] - 2026-09-24
+
 ### Added
 
 - **Agent rules**: Moved `.cursor/rules/*.mdc` and `.cursorrules` to `.claude/rules/*.md` so Claude Code loads them
