@@ -28,12 +28,6 @@ def _git_root() -> Path:
     return Path(p.stdout.strip())
 
 
-def _read_version(root: Path, explicit: str | None) -> str:
-    if explicit:
-        return explicit.removeprefix("v")
-    return (root / "STANDARDS_VERSION").read_text(encoding="utf-8").strip().removeprefix("v")
-
-
 def _extract_changelog_body(changelog_text: str, version: str) -> str | None:
     # Tags are vX.Y.Z; CHANGELOG may use ## [X.Y.Z] or ## [vX.Y.Z].
     bracket_versions = [version]
@@ -66,8 +60,7 @@ def main() -> None:
     )
     parser.add_argument(
         "version",
-        nargs="?",
-        help="SemVer without v (default: STANDARDS_VERSION)",
+        help="SemVer, with or without leading v",
     )
     parser.add_argument(
         "--draft",
@@ -82,7 +75,7 @@ def main() -> None:
     args = parser.parse_args()
 
     root = _git_root()
-    ver = _read_version(root, args.version)
+    ver = args.version.removeprefix("v")
     tag = f"v{ver}"
 
     changelog_path = root / "CHANGELOG.md"
