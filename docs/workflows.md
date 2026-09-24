@@ -118,7 +118,7 @@ Collects Django static files and commits/pushes them back to the repo.
 
 - **Callable** via `workflow_call` (used by Publish)
 
-**Jobs:** **check-vars-and-secrets** (Check vars and secrets) – determines version from git tags and validates required env vars and secrets; **collect-and-push-static-files** (Static files) – Checkout → set up Python 3.14 → install deps → setup filesystem → `manage.py collectstatic --noinput` with version from job 1 → git config → commit and push changes → output `collect_static_files_commit_hash` and `app_version` for downstream workflows.
+**Jobs:** **check-vars-and-secrets** (Check vars and secrets) – determines version from git tags and validates required env vars and secrets; **collect-and-push-static-files** (Static files) – Checkout → set up Python 3.14 → install deps → setup filesystem → `manage.py collectstatic --noinput` → git config → commit and push changes → output `collect_static_files_commit_hash` for downstream workflows.
 
 **Environment:** `collect_static`. Outputs are used by Publish so Build uses the commit that includes collected static files and the correct version.
 

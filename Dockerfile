@@ -4,13 +4,12 @@
 # so the full python:3.14-bookworm image's ~1GB of pre-installed build tooling is dead weight.
 FROM python:3.14-slim-bookworm AS base
 
-ARG APP_VERSION
 ARG APP_TITLE
 ARG API_DIR_NAME
 ARG STATIC_FILES_URL=/static/
 ARG APP_NAME=htmt-api
 
-RUN for var in APP_VERSION APP_TITLE API_DIR_NAME; do \
+RUN for var in APP_TITLE API_DIR_NAME; do \
     eval "value=\$$var"; \
     if [ -z "$value" ]; then \
         echo "ERROR: The $var argument is not provided" >&2; \
@@ -22,7 +21,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PROJECT_DIR=/home/app/ \
     API_DIR_NAME=$API_DIR_NAME \
-    APP_VERSION=$APP_VERSION \
     APP_TITLE=$APP_TITLE \
     DB_IS_NEEDED=true
 
