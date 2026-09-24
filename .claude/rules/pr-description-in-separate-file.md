@@ -1,8 +1,7 @@
 ---
 description: PR descriptions must be written to .github/pr-descriptions/ as the primary deliverable
-globs:
-alwaysApply: true
 ---
+
 # PR Description in Separate File
 
 When creating Pull Requests **or when the user asks for a PR description** (including phrases like "PR description", "pr desc", "draft PR", or "PR body"), **write the full description to a new markdown file** under `.github/pr-descriptions/` as the primary deliverable. Do not satisfy the request with only chat text: create or update the file, then you may briefly confirm the path in the reply.
@@ -59,7 +58,9 @@ Instead of writing the PR description directly in GitHub:
 
 ```markdown
 # Bad - Writing directly in GitHub PR
+
 ## Description
+
 This PR adds...
 ```
 
@@ -67,7 +68,9 @@ Create a file:
 
 ```markdown
 # Good - Separate file: .github/pr-descriptions/my-pr.md
+
 ## Description
+
 This PR adds...
 ```
 
@@ -76,6 +79,7 @@ Then copy the content from the file when creating the GitHub PR.
 ## File Location
 
 All PR description files should be placed in:
+
 ```
 .github/pr-descriptions/
 ```

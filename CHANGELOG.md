@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 All contributors (including maintainers) should update `CHANGELOG.md` when creating PRs:
 
 1. **Add entries to the `[Unreleased]` section** - Add your changes under the appropriate category (Added, Changed, Improved, Deprecated, Removed, Fixed, Documentation, Performance, CI)
-2. **Follow the changelog format** - See examples below and `.cursor/rules/changelog-best-practices.mdc` for detailed guidelines
+2. **Follow the changelog format** - See examples below and `.claude/rules/changelog-best-practices.md` for detailed guidelines
 3. **Group related changes** - Similar changes should be grouped together
 4. **Be descriptive** - Write clear, user-focused descriptions of what changed
 5. **Mention tests when relevant** - Tests should be mentioned within the related feature or fix entry, not as standalone entries
@@ -66,6 +66,11 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Added
 
+- **Agent rules**: Moved `.cursor/rules/*.mdc` and `.cursorrules` to `.claude/rules/*.md` so Claude Code loads them
+  natively (`globs` → `paths`). The OpenAPI validation rule now targets `hear/view/**/*.py`; its old `api/view/` glob
+  matched nothing.
+- **Knowledge graph**: Local `graphify` tooling (CLAUDE.md section, `.claude/settings.json` PreToolUse hooks,
+  post-commit/post-checkout git hooks). Output in `graphify-out/` is gitignored, dev-only.
 - **Dev tooling**: Added a `launch` Claude Code skill (`.claude/skills/launch/`) documenting how
   to start the local Docker Compose dev stack (`db`, `afp`, `api`), including the GHCR auth step
   required to pull the `afp` image.

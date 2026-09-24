@@ -1,8 +1,3 @@
----
-description:
-globs:
-alwaysApply: true
----
 # No Useless Comments
 
 Comments should only be added when they provide additional context or explain complex logic that cannot be understood from the code itself. Avoid comments that:
@@ -12,12 +7,14 @@ Comments should only be added when they provide additional context or explain co
 3. Don't add any value beyond what's already clear from the code
 
 Good comments:
+
 - Explain complex business logic
 - Document non-obvious edge cases
 - Provide context for why certain decisions were made
 - Explain performance considerations
 
 Bad comments:
+
 - "Verify Metal branch" (redundant with code)
 - "Check root" (obvious from code)
 - "Get the genre" (redundant with method name)

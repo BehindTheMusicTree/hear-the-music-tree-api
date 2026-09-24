@@ -55,3 +55,6 @@ analysis/
 # =============================================================================
 .claude/worktrees/
 .local/
+
+# graphify
+graphify-out/
