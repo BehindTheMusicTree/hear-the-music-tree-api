@@ -107,7 +107,7 @@ line_length = 120
 max-line-length = 120
 
 [tool.ruff]
-# Shared rule set in baselines/ruff.toml (digest-checked by verify-standards).
+# Shared rule set in baselines/ruff.toml (managed by copier update).
 extend = "baselines/ruff.toml"
 
 [tool.ruff.lint.per-file-ignores]
@@ -117,7 +117,6 @@ extend = "baselines/ruff.toml"
 ".pre-commit-hooks/**" = ["PLR2004"]
 "scripts/prepare_release_bump.py" = ["TRY003", "EM101", "EM102", "PLR2004", "DTZ011", "RUF005", "T201", "I001"]
 "scripts/fix_changelog_after_bump.py" = ["T201", "I001"]
-"scripts/check_lint_baseline.py" = ["I001"]
 
 # Same plugin layout as audiometa-style projects; strictness relaxed for gradual Django typing.
 [tool.mypy]

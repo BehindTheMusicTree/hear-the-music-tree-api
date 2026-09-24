@@ -1,4 +1,4 @@
-# Vendored Ruff baseline (digest in DIGESTS). Per-file ignores stay in pyproject.toml.
+# Ruff baseline (managed by copier; see .copier-answers.yml). Per-file ignores stay in pyproject.toml.
 
 line-length = 120
 target-version = "py313"
