@@ -1,0 +1,51 @@
+# Pre-PR Checklist
+
+Before submitting a Pull Request, ensure all checks are completed. This checklist helps maintain code quality and consistency.
+
+## Code Quality
+
+- ✅ Follow code style standards in `code-style.md`
+- ✅ Code follows Django best practices
+- ✅ Type hints are used where appropriate
+- ✅ No debug statements or commented-out code
+- ✅ One class per file (see `one-class-per-file.md`)
+- ✅ Use field name constants from `Fields.py` files (see `field-name-constants.md`)
+- ✅ Private resource filtering includes user in query (see `private-resource-filtering.md`)
+- ✅ String enums use `StrEnum`, not `(str, Enum)` (see `.claude/rules/strenum-string-enums.md`, [python-project-standards development baseline](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md) → [string enums](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/string-enums.md), `scripts/check_prefer_strenum.py`, pre-commit / CI `pre-commit` job)
+
+## Tests
+
+- ✅ All tests pass: `docker compose exec api pytest` (Compose stack running; host venv / local `pip install -e ".[dev]"` is not supported)
+- ✅ New features have corresponding tests
+- ✅ Bug fixes include regression tests
+- ✅ Tests follow naming convention: `test_{scenario}_then_{expected_result}` (see `test-naming-convention.md`)
+- ✅ Each test focuses on a single scenario (see `divide-test-cases.md`)
+- ✅ Use `assert` instead of `assertEqual` (see `use-assert-not-assertequal.md`)
+
+## Documentation
+
+- ✅ Update docstrings for new functions/classes (only when needed - see `no-useless-comments.md`)
+- ✅ Update README or other documentation if adding new features or changing behavior
+- ✅ When adding or changing validation that returns 400, document in OpenAPI and in the endpoint doc (e.g. `docs/api/*.md`) per `openapi-validation-documentation.md`
+- ✅ Add/update type hints where appropriate
+- ✅ Update `CHANGELOG.md` with changes in the `[Unreleased]` section
+
+## Git Hygiene
+
+- ✅ Commit messages follow the commit message convention (see `commit-message-convention.md`)
+- ✅ Branch is up to date with target branch (`develop` for `feature/*`, `chore/*`, `dependabot/*`, `release/*`; `main` for `hotfix/*`, `release/*`)
+- ✅ Branch follows naming convention for PRs to `develop`: `feature/`, `chore/`, `dependabot/`, `release/`; for PRs to `main`: `hotfix/`, `release/` (see `git-flow-workflow.md` and CONTRIBUTING.md **Branch Protection**)
+- ✅ No accidental commits (large files, secrets, personal configs)
+
+## Branch Target
+
+- ✅ `feature/*`, `chore/*`, `dependabot/*`, and `release/*` (when merging into `develop`) target the `develop` branch
+- ✅ Hotfix branches target `main` branch
+- ✅ Release branches target both `main` and `develop` (maintainers only)
+
+## Quick Pre-PR Command
+
+```bash
+# Run all checks at once (Docker dev stack)
+docker compose exec api pytest && git status
+```

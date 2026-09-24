@@ -1,7 +1,7 @@
 ---
 description: Ensure changelog entries are added in the real section, not examples
-alwaysApply: true
 ---
+
 # Changelog Entry Placement and De-duplication
 
 When adding or updating entries in `CHANGELOG.md`:

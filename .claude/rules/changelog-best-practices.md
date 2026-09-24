@@ -1,8 +1,3 @@
----
-description:
-globs:
-alwaysApply: true
----
 # Changelog Best Practices
 
 All contributors must update `CHANGELOG.md` when creating PRs. Follow these guidelines to ensure consistent and useful changelog entries.
@@ -29,43 +24,51 @@ All contributors must update `CHANGELOG.md` when creating PRs. Follow these guid
 ## Categories
 
 ### Added
+
 - New features, endpoints, functionality
 - New dependencies or integrations
 - New configuration options
 
 ### Changed
+
 - Changes to existing functionality
 - API changes (non-breaking)
 - Dependency updates
 - Configuration changes
 
 ### Fixed
+
 - Bug fixes
 - Security fixes
 - Error handling improvements
 
 ### Documentation
+
 - Documentation additions or updates
 - README changes
 - Contributing guide updates
 - Code comments and docstrings (only if significant)
 
 ### Performance
+
 - Performance improvements
 - Optimization changes
 - Caching improvements
 
 ### CI
+
 - CI/CD pipeline changes
 - GitHub Actions workflow updates
 - Automation improvements
 - Branch protection rules
 
 ### Deprecated
+
 - Features marked for removal
 - Deprecated API endpoints
 
 ### Removed
+
 - Removed features or functionality
 - Removed dependencies
 
@@ -112,17 +115,23 @@ All contributors must update `CHANGELOG.md` when creating PRs. Follow these guid
 
 ```markdown
 # Bad - Too vague
+
 - Fixed bug
 
 # Bad - Test as standalone entry
+
 ### Test
+
 - Added tests for track upload
 
 # Bad - Raw git log style
+
 - commit abc123: update dependencies
 
 # Bad - Wrong category
+
 ### Added
+
 - Updated README.md (should be Documentation)
 ```
 
@@ -142,6 +151,7 @@ Documentation changes should be grouped under the **Documentation** category, no
 Follow **CONTRIBUTING.md §7 (Releasing for maintainers)** (Git Flow: `release/*` branch). Maintainers **must run** **`python3 scripts/prepare_release_bump.py`** `patch`|`minor`|`major` before creating/pushing a `release/*` branch. The script applies the `## [Unreleased]  <!-- release -->` marker (see `[tool.bumpversion]` in `pyproject.toml`), runs **bump-my-version**, **`scripts/fix_changelog_after_bump.py`**, and inserts an empty `## [Unreleased]` for the next cycle. Contributors use plain `## [Unreleased]` until the maintainer runs the script.
 
 During releases, maintainers also:
+
 1. Review and consolidate entries moved under the new version
 2. Ensure all entries follow the format guidelines
 3. Keep `VERSION`, `package.json`, `schema.yml`, and tags aligned (use `v` prefix on git tags)
@@ -149,6 +159,7 @@ During releases, maintainers also:
 ## Checklist
 
 Before submitting a PR, ensure:
+
 - ✅ All changes are documented in `CHANGELOG.md` under `[Unreleased]`
 - ✅ Entries are in the correct category
 - ✅ Entries follow the format guidelines

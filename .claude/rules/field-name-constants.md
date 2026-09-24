@@ -1,14 +1,9 @@
----
-description:
-globs:
-alwaysApply: true
----
-
 # Field Name Constants
 
 Never use string literals for field names. Instead, use constants defined in a `Fields.py` file located in the same directory as the model/serializer it describes.
 
 Good examples:
+
 ```python
 # Fields.py
 from typing import TypedDict
@@ -45,6 +40,7 @@ def get_genre(self, request: Request) -> Response:
 ```
 
 Bad examples:
+
 ```python
 # Using string literals
 assert result["name"] == "Rock"  # Bad
@@ -59,6 +55,7 @@ class Fields:  # Bad - missing type hints
 ```
 
 Guidelines:
+
 1. Create a `Fields.py` file in the same directory as your model/serializer
 2. Define a `Fields` class containing all field name constants with type hints
 3. Use TypedDict for complex nested structures
@@ -68,6 +65,7 @@ Guidelines:
 7. Use UPPER_CASE for constant names
 
 Benefits:
+
 - Prevents typos in field names
 - Enables IDE autocompletion and type checking
 - Makes refactoring easier
