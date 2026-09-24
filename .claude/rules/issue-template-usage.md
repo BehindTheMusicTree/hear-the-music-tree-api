@@ -1,8 +1,3 @@
----
-description:
-globs:
-alwaysApply: true
----
 # Issue Template Usage
 
 When creating issues, always use the appropriate template from `.github/ISSUE_TEMPLATE/`.
@@ -10,6 +5,7 @@ When creating issues, always use the appropriate template from `.github/ISSUE_TE
 ## Available Templates
 
 1. **Bug Report** (`.github/ISSUE_TEMPLATE/bug_report.yml`)
+
    - Use for reporting bugs or unexpected behavior
    - Automatically adds `bug` label
    - Includes fields for: component, description, steps to reproduce, error response, request details, severity
@@ -22,6 +18,7 @@ When creating issues, always use the appropriate template from `.github/ISSUE_TE
 ## Component Labels
 
 When selecting a component in issue templates, choose from:
+
 - Track, Artist, Album, Genre, Tag, Playlist, Play, User
 - Spotify Integration, MusicBrainz Integration, Audio Fingerprinting
 - Filtering/Search, Middleware, Serializer, Model, View/API Endpoint
@@ -30,6 +27,7 @@ When selecting a component in issue templates, choose from:
 ## Bug Report Guidelines
 
 For bug reports, include:
+
 - Clear description of the bug
 - Steps to reproduce
 - Expected vs actual behavior
@@ -41,6 +39,7 @@ For bug reports, include:
 ## Feature Request Guidelines
 
 For feature requests, include:
+
 - Problem statement
 - Proposed solution
 - Alternatives considered

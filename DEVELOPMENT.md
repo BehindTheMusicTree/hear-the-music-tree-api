@@ -4,7 +4,7 @@ This document outlines the coding standards and best practices for developing th
 
 Organization-wide Python tooling, CI adoption, and shared style baselines are documented in **[BehindTheMusicTree/python-project-standards — Development baseline](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md)**. This file focuses on conventions specific to this API (Django, DRF, project layout).
 
-This repository tracks adopted policy in root [**`STANDARDS_VERSION`**](STANDARDS_VERSION) (**`4.3.1`**) and vendors **Ruff / Mypy baselines** under [**`baselines/`**](baselines/) (digest-checked by **`verify-python-project-standards`** via [`scripts/check_lint_baseline.py`](scripts/check_lint_baseline.py), including **`baselines/expected-mypy.json`** in **`DIGESTS`**); see [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md). Cursor [**`changelog-alignment.mdc`**](.cursor/rules/changelog-alignment.mdc) mirrors org **`templates/cursor-rules/`** so agents keep **`CHANGELOG.md`** in step with substantive edits.
+This repository tracks adopted policy in root [**`STANDARDS_VERSION`**](STANDARDS_VERSION) (**`4.3.1`**) and vendors **Ruff / Mypy baselines** under [**`baselines/`**](baselines/) (digest-checked by **`verify-python-project-standards`** via [`scripts/check_lint_baseline.py`](scripts/check_lint_baseline.py), including **`baselines/expected-mypy.json`** in **`DIGESTS`**); see [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md). [**`changelog-alignment.md`**](.claude/rules/changelog-alignment.md) mirrors org **`templates/cursor-rules/`** so agents keep **`CHANGELOG.md`** in step with substantive edits.
 
 For information about system architecture, patterns, and design decisions, see [Architecture documentation](docs/architecture.md).
 
@@ -46,7 +46,7 @@ Follow these code quality standards when developing:
 
 All Python files must follow the project's naming conventions:
 
-- **One class per file** - Each file must contain exactly one class (see [One Class Per File](.cursor/rules/one-class-per-file.mdc))
+- **One class per file** - Each file must contain exactly one class (see [One Class Per File](.claude/rules/one-class-per-file.md))
 
 - **Regular classes** (Models, Managers, etc.):
 
@@ -115,7 +115,7 @@ assert result["name"] == "Rock"  # Bad
 assert result["parent"] is None  # Bad
 ```
 
-See [Field Name Constants](.cursor/rules/field-name-constants.mdc) for detailed guidelines.
+See [Field Name Constants](.claude/rules/field-name-constants.md) for detailed guidelines.
 
 #### Private Fields
 
@@ -159,7 +159,7 @@ def get_genre(self, name: str) -> Genre:
     return Genre.objects.get(name=name)
 ```
 
-See [No Useless Comments](.cursor/rules/no-useless-comments.mdc) for detailed guidelines.
+See [No Useless Comments](.claude/rules/no-useless-comments.md) for detailed guidelines.
 
 ### Type Checking
 
@@ -187,7 +187,7 @@ def get_genres(user: User, name: str | None = None) -> list[Genre]:
 
 For detailed information about error handling architecture, patterns, and examples, see [Architecture documentation](docs/architecture.md#error-handling).
 
-See [Use Custom Validation Exception](.cursor/rules/use-custome-validation-exception.mdc) for detailed guidelines.
+See [Use Custom Validation Exception](.claude/rules/use-custome-validation-exception.md) for detailed guidelines.
 
 ## Architecture
 
@@ -249,14 +249,14 @@ For detailed documentation on external service integrations, see:
 
 ### Code Style Reference
 
-For quick reference on code style conventions, see [code-style.md](code-style.md). For testing guidelines, see [Testing Guidelines](testing.md). Organization-wide Python baselines are summarized in the **[Development baseline](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md)** ([python-project-standards](https://github.com/BehindTheMusicTree/python-project-standards)). For detailed guidelines, refer to the Cursor rules in `.cursor/rules/` (org baselines such as [strenum-string-enums](.cursor/rules/strenum-string-enums.mdc) come from [python-project-standards `templates/cursor-rules/`](https://github.com/BehindTheMusicTree/python-project-standards/tree/main/templates/cursor-rules); copy or diff when bumping standards):
+For quick reference on code style conventions, see [code-style.md](code-style.md). For testing guidelines, see [Testing Guidelines](testing.md). Organization-wide Python baselines are summarized in the **[Development baseline](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md)** ([python-project-standards](https://github.com/BehindTheMusicTree/python-project-standards)). For detailed guidelines, refer to the rules in `.claude/rules/` (org baselines such as [strenum-string-enums](.claude/rules/strenum-string-enums.md) come from [python-project-standards `templates/cursor-rules/`](https://github.com/BehindTheMusicTree/python-project-standards/tree/main/templates/cursor-rules); copy or diff when bumping standards):
 
-- [One Class Per File](.cursor/rules/one-class-per-file.mdc)
-- [Field Name Constants](.cursor/rules/field-name-constants.mdc)
-- [No Useless Comments](.cursor/rules/no-useless-comments.mdc)
-- [Private Resource Filtering](.cursor/rules/private-resource-filtering.mdc)
-- [Use Custom Validation Exception](.cursor/rules/use-custome-validation-exception.mdc)
-- [Test Structure](.cursor/rules/test-structure.mdc)
-- [Test Naming Convention](.cursor/rules/test-naming-convention.mdc)
-- [Divide Test Cases](.cursor/rules/divide-test-cases.mdc)
-- [Use assert Instead of assertEqual](.cursor/rules/use-assert-not-assertequal.mdc)
+- [One Class Per File](.claude/rules/one-class-per-file.md)
+- [Field Name Constants](.claude/rules/field-name-constants.md)
+- [No Useless Comments](.claude/rules/no-useless-comments.md)
+- [Private Resource Filtering](.claude/rules/private-resource-filtering.md)
+- [Use Custom Validation Exception](.claude/rules/use-custome-validation-exception.md)
+- [Test Structure](.claude/rules/test-structure.md)
+- [Test Naming Convention](.claude/rules/test-naming-convention.md)
+- [Divide Test Cases](.claude/rules/divide-test-cases.md)
+- [Use assert Instead of assertEqual](.claude/rules/use-assert-not-assertequal.md)

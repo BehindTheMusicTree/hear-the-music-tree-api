@@ -1,8 +1,8 @@
 ---
-description:
-globs:
-alwaysApply: false
+paths:
+  - "**/*.py"
 ---
+
 # Use | None Instead of Optional
 
 Always use `| None` instead of `Optional` for type hints in Python.

@@ -1,8 +1,3 @@
----
-description:
-globs:
-alwaysApply: true
----
 # Private Resource Filtering
 
 When filtering private resources, always include the user in the query to ensure proper access control and take advantage of database indexing.
@@ -68,6 +63,7 @@ def get_genres(self) -> QuerySet:
 ## Database Indexing
 
 Example of proper indexing:
+
 ```python
 # Fields.py
 class Fields:

@@ -1,7 +1,3 @@
----
-alwaysApply: true
----
-
 # String enumerations (`StrEnum`)
 
 For enumerations whose members are **strings** (API keys, serializer field keys, error codes, filter keys, etc.), subclass **`enum.StrEnum`**. Do **not** use **`class Foo(str, Enum)`**.

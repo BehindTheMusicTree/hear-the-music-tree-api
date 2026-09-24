@@ -1,8 +1,3 @@
----
-description:
-globs:
-alwaysApply: true
----
 # Commit Message Convention
 
 All commit messages must follow the Conventional Commits format: `<type>(<scope>): <summary>`
@@ -29,6 +24,7 @@ All commit messages must follow the Conventional Commits format: `<type>(<scope>
 ## Examples
 
 Good:
+
 - `feat(track): add audio fingerprint support`
 - `fix(genre): handle duplicate genre names`
 - `docs: update API documentation`
@@ -37,6 +33,7 @@ Good:
 - `fix(#482): handle null search values`
 
 Bad:
+
 - `Added audio fingerprint` (missing type)
 - `feat: Add audio fingerprint` (wrong mood, should be "add")
 - `FEAT(track): Add audio fingerprint` (uppercase type)

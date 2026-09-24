@@ -1,8 +1,3 @@
----
-description:
-globs:
-alwaysApply: true
----
 # One Class Per File
 
 Each Python file should contain exactly one class, and the file name should follow the class name convention.
@@ -10,6 +5,7 @@ Each Python file should contain exactly one class, and the file name should foll
 ## File Naming Rules
 
 1. For regular classes:
+
    - Use PascalCase (camelCase with first letter capitalized)
    - File name must match the class name exactly
    - Example: `Genre.py` for `class Genre`
@@ -22,6 +18,7 @@ Each Python file should contain exactly one class, and the file name should foll
 ## Examples
 
 Good examples:
+
 ```
 # Genre.py
 class Genre(models.Model):
@@ -41,6 +38,7 @@ class GenreTree:
 ```
 
 Bad examples:
+
 ```
 # genre_model.py (Bad - should be Genre.py)
 class Genre(models.Model):
