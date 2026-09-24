@@ -64,6 +64,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Changed
+
+- **URL version decoupled from release version**: the API URL prefix is now the constant `API_VERSION = "v2"` in `hear/settings.py` instead of the major of the `APP_VERSION` env var, so a release major bump no longer silently changes every URL. `APP_VERSION` is now read from `pyproject.toml` `[project].version` (fails fast if missing) instead of a Docker build arg / env var; `APP_VERSION` was removed from the `Dockerfile` args, `docker-compose.yml`, env examples, `test.yml`, and the `static-files.yml` `app_version` input. `/health/` now also returns `commit` (from the `GIT_COMMIT` env var, set in the image from the new `SOURCE_COMMIT` build arg; `null` when absent). Tests cover the pyproject-sourced version, the `v2/` prefix, and both health fields.
+
 ### Fixed
 
 - **Worker deploys rolling back as unhealthy**: `Dockerfile`'s `dev`/`runtime` stages unconditionally bake in a `HEALTHCHECK` that curls `/health/`, but the `worker` Coolify app overrides the entrypoint to `sleep infinity` and never serves HTTP — so its deploys were always marked unhealthy and rolled back. `HEALTHCHECK` can't be made conditional at build time, so the check now always runs but no-ops to success unless the new `HEALTHCHECK_ENABLED` build arg (default `true`) is explicitly set to something else; `worker`'s Coolify config sets it to `false`.

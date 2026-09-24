@@ -33,7 +33,7 @@ Versions follow semantic versioning with a `v` prefix:
 
 ## API URL path prefix
 
-The API URL path prefix uses the **major version only** (e.g. `v1/`). It is derived from `APP_VERSION` at runtime: for `APP_VERSION=1.2.3`, the prefix is `v1/`. This keeps client URLs stable across minor and patch releases; only a new major version would change the path prefix.
+The API URL path prefix is the API contract version `API_VERSION` (currently `v2/`), a constant in `hear/settings.py` that is independent of the release version: a release major bump does not change client URLs. The release version (`APP_VERSION`, exposed by `/health/` and the OpenAPI `info.version`) is read from `pyproject.toml` `[project].version`; the build commit is exposed as `commit` by `/health/` from the `GIT_COMMIT` env var (set in the image from the `SOURCE_COMMIT` build arg, `null` when absent).
 
 ## Pre-Release Versions
 

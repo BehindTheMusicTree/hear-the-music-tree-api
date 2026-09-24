@@ -211,7 +211,6 @@ Create a copy of the file `env/dev/.env.dev.template` as `.env` and set the valu
 The docker build requires the following environment variables:
 
 - `APP_NAME`
-- `APP_VERSION`
 - `FILE_UPLOAD_ENABLED`
 - `LIBRARIES_DIR_INTERNAL` (local/internal path mode) or `LIBRARIES_DIR_EXTERNAL` (server/external path mode)
 - `STATIC_FILES`

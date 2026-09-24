@@ -2,7 +2,7 @@
 
 This index lists all API resources with their base URLs, authentication requirements, and links to detailed documentation.
 
-The path prefix is the **major version** only (e.g. `v1`), derived from `APP_VERSION`. Example: with `APP_VERSION=1.2.3`, use `v1/` in paths.
+The path prefix is `v2`, the fixed API contract version (`API_VERSION` in `hear/settings.py`), independent of the release version.
 
 | Resource                              | Base URL                                                              | Authentication | Permissions                                    | Link                                                   |
 | ------------------------------------- | --------------------------------------------------------------------- | -------------- | ---------------------------------------------- | ------------------------------------------------------ |

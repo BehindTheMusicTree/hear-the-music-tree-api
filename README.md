@@ -203,7 +203,7 @@ Deployment note:
 
 #### Base URL
 
-The API base URL follows the pattern: `v{major}/` (e.g. `v1/`). Only the major version is used in the path; it is derived from the `APP_VERSION` environment variable (e.g. `1.2.3` → `v1/`).
+The API base URL prefix is `v2/`, the API contract version (`API_VERSION` in `hear/settings.py`). It is independent of the release version, which is read from `pyproject.toml` and reported (with the build commit from the `GIT_COMMIT` env var, set from the `SOURCE_COMMIT` Docker build arg) by `GET /health/`.
 
 > **Note**: Since the API is currently undergoing server migration and is not available online, all examples in this documentation use `http://localhost:8000` as the base URL. When running locally, replace this with your local server address if different.
 
@@ -215,7 +215,7 @@ The API provides interactive documentation using OpenAPI (OAS 3.x):
 - **ReDoc**: `http://localhost:8000/schema/redoc/` — Alternative API documentation with a readable layout
 - **OpenAPI Schema**: `http://localhost:8000/schema/` — Raw OpenAPI schema (JSON or YAML via content negotiation) for code generation and tooling
 
-**How the schema is generated**: The schema is produced at runtime by [drf-spectacular](https://drf-spectacular.readthedocs.io/), which introspects Django REST Framework views and serializers. The OpenAPI **title** (shown in Swagger/ReDoc) is set via the `OPENAPI_TITLE` env var, defaulting to `APP_NAME`; the **version** (in `info.version`) is taken from `APP_VERSION` so it matches the API app version. The project uses a custom schema class (`hear.view.schema.AppAutoSchema`) so that Django `GeneratedField` and `DecimalField` (e.g. on `TrackFile`) are mapped correctly; otherwise schema generation would raise when visiting `/schema/` or `/docs/`. The schema always reflects the current API; no separate hand-written spec is required for the served docs.
+**How the schema is generated**: The schema is produced at runtime by [drf-spectacular](https://drf-spectacular.readthedocs.io/), which introspects Django REST Framework views and serializers. The OpenAPI **title** (shown in Swagger/ReDoc) is set via the `OPENAPI_TITLE` env var, defaulting to `APP_NAME`; the **version** (in `info.version`) is taken from `pyproject.toml` `[project].version` so it matches the release version. The project uses a custom schema class (`hear.view.schema.AppAutoSchema`) so that Django `GeneratedField` and `DecimalField` (e.g. on `TrackFile`) are mapped correctly; otherwise schema generation would raise when visiting `/schema/` or `/docs/`. The schema always reflects the current API; no separate hand-written spec is required for the served docs.
 
 > **Quick Access**: When running the development server locally, visit [http://localhost:8000/api/docs/](http://localhost:8000/api/docs/) to explore the API interactively.
 

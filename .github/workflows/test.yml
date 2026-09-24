@@ -15,7 +15,6 @@ env:
   CONTAINER_ROOT_DIR: /home/app/
   ENV: ci_test
 
-  APP_VERSION: 'test'
   FILE_UPLOAD_ENABLED: true
   TMP_UPLOADED_FILES: /tmp/ci-uploaded/
   METADATA_SESSION_DIR: /tmp/ci-metadata-sessions/
