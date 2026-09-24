@@ -64,6 +64,12 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Added
+
+- **Dev tooling**: Added a `launch` Claude Code skill (`.claude/skills/launch/`) documenting how
+  to start the local Docker Compose dev stack (`db`, `afp`, `api`), including the GHCR auth step
+  required to pull the `afp` image.
+
 ### Fixed
 
 - **Worker deploys rolling back as unhealthy**: `Dockerfile`'s `dev`/`runtime` stages unconditionally bake in a `HEALTHCHECK` that curls `/health/`, but the `worker` Coolify app overrides the entrypoint to `sleep infinity` and never serves HTTP — so its deploys were always marked unhealthy and rolled back. `HEALTHCHECK` can't be made conditional at build time, so the check now always runs but no-ops to success unless the new `HEALTHCHECK_ENABLED` build arg (default `true`) is explicitly set to something else; `worker`'s Coolify config sets it to `false`.
