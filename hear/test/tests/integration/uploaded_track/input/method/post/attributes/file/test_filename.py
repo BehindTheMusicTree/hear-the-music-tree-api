@@ -1,3 +1,5 @@
+import os
+
 from rest_framework import status
 
 from hear import settings
@@ -26,8 +28,10 @@ class TestCase(UploadedTrackTestCase):
         response = self._post_uploaded_track(UploadedTrackTestFilename.METADATA_NONE_MP3)
         track2 = self.saved_object
 
+        expected_filename = os.path.basename(UploadedTrackTestFilename.METADATA_NONE_MP3.value)
+
         assert response.status_code == status.HTTP_201_CREATED
         assert track1.track_file
-        assert track1.track_file.filename == UploadedTrackTestFilename.METADATA_NONE_MP3
-        assert track2.track_file.filename.startswith(UploadedTrackTestFilename.METADATA_NONE_MP3[:-4])
+        assert track1.track_file.filename == expected_filename
+        assert track2.track_file.filename.startswith(expected_filename[:-4])
         assert track2.track_file.filename.endswith(".mp3")

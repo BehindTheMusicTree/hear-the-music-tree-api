@@ -25,6 +25,11 @@ class CriteriaManager(AbstractCriteriaManager[T]):
 
         CriteriaPlaylist.objects.create(user=instance.user, criteria=instance, type=instance.type)
 
+    def _on_bulk_created(self, instances: list[T]) -> None:
+        from hear.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
+
+        CriteriaPlaylist.objects.bulk_create_for_criteria(instances)
+
     def _on_parent_changed(
         self, instance: T, *, old_parent: Criteria | None, old_root: Criteria, root_changed: bool
     ) -> None:

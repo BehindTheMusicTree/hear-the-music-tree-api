@@ -139,6 +139,12 @@ cd the-music-tree-api
    cd the-music-tree-api
    ```
 
+   **Shared test fixtures:** the shared upload test fixtures live in a git submodule
+   (`api/test/utils/uploaded_track/files/shared`, backed by
+   [`audio-test-fixtures`](https://github.com/BehindTheMusicTree/audio-test-fixtures)). Run
+   `git submodule update --init` to pull them (or clone with `--recurse-submodules` from the
+   start), otherwise fixture-dependent tests will fail with missing files.
+
 2. Set up environment variables:
 
    Create a copy of the file `env/dev/.env.dev.template` as `.env` and set the required values. See the [Environment Variables](#environment-variables) section below for details on all required variables.

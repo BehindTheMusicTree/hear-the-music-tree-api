@@ -12,6 +12,7 @@ class CriteriaOutputFieldKey(StrEnum):
     UPLOADED_TRACKS_ARCHIVED_COUNT_PUBLIC = "uploaded_tracks_archived_count"
     UPLOADED_TRACKS_TITLE = "title"
     SIDE = "side"
+    SUMMARY = "summary"
     ROOT = "root"
     PARENT = "parent"
     ASCENDANTS = "ascendants"

@@ -141,6 +141,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5.0.1
+        with:
+          submodules: true
 
       - name: GHCR image namespace for Compose (lowercase)
         shell: bash
