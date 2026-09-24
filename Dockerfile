@@ -8,7 +8,6 @@ ARG APP_TITLE
 ARG API_DIR_NAME
 ARG STATIC_FILES_URL=/static/
 ARG APP_NAME=htmt-api
-ARG SOURCE_COMMIT
 
 RUN for var in APP_TITLE API_DIR_NAME; do \
     eval "value=\$$var"; \
@@ -23,8 +22,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PROJECT_DIR=/home/app/ \
     API_DIR_NAME=$API_DIR_NAME \
     APP_TITLE=$APP_TITLE \
-    DB_IS_NEEDED=true \
-    GIT_COMMIT=$SOURCE_COMMIT
+    DB_IS_NEEDED=true
 
 RUN apt-get update && \
     apt-get install -y gosu git && \

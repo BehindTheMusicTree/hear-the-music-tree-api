@@ -203,7 +203,7 @@ Deployment note:
 
 #### Base URL
 
-The API base URL prefix is `v2/`, the API contract version (`API_VERSION` in `hear/settings.py`). It is independent of the release version, which is read from `pyproject.toml` and reported (with the build commit from the `GIT_COMMIT` env var, set from the `SOURCE_COMMIT` Docker build arg) by `GET /health/`.
+The API base URL prefix is `v2/`, the API contract version (`API_VERSION` in `hear/settings.py`). It is independent of the release version, which is read from `pyproject.toml` and reported (with the build commit from the `SOURCE_COMMIT` env var Coolify injects at runtime) by `GET /health/`.
 
 > **Note**: Since the API is currently undergoing server migration and is not available online, all examples in this documentation use `http://localhost:8000` as the base URL. When running locally, replace this with your local server address if different.
 

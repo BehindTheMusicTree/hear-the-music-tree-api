@@ -876,7 +876,7 @@ with open(BASE_DIR / "pyproject.toml", "rb") as pyproject_file:
 APP_ENV_FILE_RELATIVE_PATH = os.getenv("ENV_FILE", "env/.env")
 APP_ENV_FILE = BASE_DIR / APP_ENV_FILE_RELATIVE_PATH
 load_env_vars_from_file_if_exists(APP_ENV_FILE)
-GIT_COMMIT = load_optional_str_env_var("GIT_COMMIT") or None
+GIT_COMMIT = load_optional_str_env_var("SOURCE_COMMIT") or None
 
 ENV = load_required_str_env_var("ENV")
 APP_NAME = load_required_str_env_var("APP_NAME")

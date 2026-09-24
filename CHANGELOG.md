@@ -66,7 +66,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Changed
 
-- **URL version decoupled from release version**: the API URL prefix is now the constant `API_VERSION = "v2"` in `hear/settings.py` instead of the major of the `APP_VERSION` env var, so a release major bump no longer silently changes every URL. `APP_VERSION` is now read from `pyproject.toml` `[project].version` (fails fast if missing) instead of a Docker build arg / env var; `APP_VERSION` was removed from the `Dockerfile` args, `docker-compose.yml`, env examples, `test.yml`, and the `static-files.yml` `app_version` input. `/health/` now also returns `commit` (from the `GIT_COMMIT` env var, set in the image from the new `SOURCE_COMMIT` build arg; `null` when absent). Tests cover the pyproject-sourced version, the `v2/` prefix, and both health fields.
+- **URL version decoupled from release version**: the API URL prefix is now the constant `API_VERSION = "v2"` in `hear/settings.py` instead of the major of the `APP_VERSION` env var, so a release major bump no longer silently changes every URL. `APP_VERSION` is now read from `pyproject.toml` `[project].version` (fails fast if missing) instead of a Docker build arg / env var; `APP_VERSION` was removed from the `Dockerfile` args, `docker-compose.yml`, env examples, `test.yml`, and the `static-files.yml` `app_version` input. `/health/` now also returns `commit` (from the `SOURCE_COMMIT` env var Coolify injects at runtime; `null` when absent). Tests cover the pyproject-sourced version, the `v2/` prefix, and both health fields.
 
 ### Fixed
 
