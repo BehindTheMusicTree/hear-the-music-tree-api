@@ -64,13 +64,19 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Added
+
+- **Dev tooling**: Added a `launch` Claude Code skill (`.claude/skills/launch/`) documenting how
+  to start the local Docker Compose dev stack (`db`, `afp`, `api`), including the GHCR auth step
+  required to pull the `afp` image.
+
 ### Changed
 
 - **URL version decoupled from release version**: the API URL prefix is now the constant `API_VERSION = "v2"` in `hear/settings.py` instead of the major of the `APP_VERSION` env var, so a release major bump no longer silently changes every URL. `APP_VERSION` is now read from `pyproject.toml` `[project].version` (fails fast if missing) instead of a Docker build arg / env var; `APP_VERSION` was removed from the `Dockerfile` args, `docker-compose.yml`, env examples, `test.yml`, and the `static-files.yml` `app_version` input. `/health/` now also returns `commit` (from the `SOURCE_COMMIT` env var Coolify injects at runtime; `null` when absent). Tests cover the pyproject-sourced version, the `v2/` prefix, and both health fields.
 
 ### Fixed
 
-- **Worker deploys rolling back as unhealthy**: `Dockerfile`'s `dev`/`runtime` stages unconditionally bake in a `HEALTHCHECK` that curls `/health/`, but the `worker` Coolify app overrides the entrypoint to `sleep infinity` and never serves HTTP — so its deploys were always marked unhealthy and rolled back. `HEALTHCHECK` can't be made conditional at build time, so the check now always runs but no-ops to success unless the new `HEALTHCHECK_ENABLED` build arg (default `true`) is explicitly set to something else; `worker`'s Coolify config sets it to `false`.
+- **Worker deploys rolling back as unhealthy**: `Dockerfile`'s `dev`/`runtime` stages unconditionally bake in a `HEALTHCHECK` that curls `/health/`, but the `worker` Coolify app overrides the entrypoint to `sleep infinity` and never serves HTTP — so its deploys were always marked unhealthy and rolled back. The `HEALTHCHECK` is removed from the image; health checks are defined per service instead (Coolify's own check on `/health/` for `htmt-api`, `docker-compose.yml` locally). This replaces the short-lived `HEALTHCHECK_ENABLED` build arg, which never reached the container at runtime and so turned the check into a no-op for every service, `htmt-api` included.
 
 ### Improved
 
