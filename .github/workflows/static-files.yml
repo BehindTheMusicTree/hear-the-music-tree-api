@@ -26,7 +26,7 @@ jobs:
       name: collect_static
     env:
       API_DIR_NAME: ${{ vars.API_DIR_NAME }}
-      # Django branch for collectstatic (api/settings.py); not read from GitHub Variables.
+      # Django branch for collectstatic (hear/settings.py); not read from GitHub Variables.
       ENV: collect_static
       APP_NAME: ${{ vars.HTMT_API_APP_NAME }}
       APP_TITLE: ${{ vars.APP_TITLE }}

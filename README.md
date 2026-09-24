@@ -27,9 +27,7 @@
     - [Music Metadata](#music-metadata)
     - [Audio metadata (read raw)](#audio-metadata-read-raw)
     - [Genres (me)](#genres-me)
-    - [Reference Genres](#reference-genres)
     - [Tags (me)](#tags-me)
-    - [Reference Tags](#reference-tags)
     - [Playlists](#playlists)
     - [Play History](#play-history)
     - [Search](#search)
@@ -41,7 +39,6 @@
 - [Technical Details](#technical-details)
   - [Audio Metadata Handling](#audio-metadata-handling)
   - [MusicBrainz Integration](#musicbrainz-integration)
-  - [Shared Reference Data (TMTA System User)](#shared-reference-data-tmta-system-user)
 - [Contributing](#contributing)
 - [License](#license)
 - [Acknowledgements](#acknowledgements)
@@ -218,7 +215,7 @@ The API provides interactive documentation using OpenAPI (OAS 3.x):
 - **ReDoc**: `http://localhost:8000/schema/redoc/` — Alternative API documentation with a readable layout
 - **OpenAPI Schema**: `http://localhost:8000/schema/` — Raw OpenAPI schema (JSON or YAML via content negotiation) for code generation and tooling
 
-**How the schema is generated**: The schema is produced at runtime by [drf-spectacular](https://drf-spectacular.readthedocs.io/), which introspects Django REST Framework views and serializers. The OpenAPI **title** (shown in Swagger/ReDoc) is set via the `OPENAPI_TITLE` env var, defaulting to `APP_NAME`; the **version** (in `info.version`) is taken from `APP_VERSION` so it matches the API app version. The project uses a custom schema class (`api.view.schema.AppAutoSchema`) so that Django `GeneratedField` and `DecimalField` (e.g. on `TrackFile`) are mapped correctly; otherwise schema generation would raise when visiting `/schema/` or `/docs/`. The schema always reflects the current API; no separate hand-written spec is required for the served docs.
+**How the schema is generated**: The schema is produced at runtime by [drf-spectacular](https://drf-spectacular.readthedocs.io/), which introspects Django REST Framework views and serializers. The OpenAPI **title** (shown in Swagger/ReDoc) is set via the `OPENAPI_TITLE` env var, defaulting to `APP_NAME`; the **version** (in `info.version`) is taken from `APP_VERSION` so it matches the API app version. The project uses a custom schema class (`hear.view.schema.AppAutoSchema`) so that Django `GeneratedField` and `DecimalField` (e.g. on `TrackFile`) are mapped correctly; otherwise schema generation would raise when visiting `/schema/` or `/docs/`. The schema always reflects the current API; no separate hand-written spec is required for the served docs.
 
 > **Quick Access**: When running the development server locally, visit [http://localhost:8000/api/docs/](http://localhost:8000/api/docs/) to explore the API interactively.
 
@@ -350,7 +347,7 @@ After Spotify authentication, use the returned `accessToken` as a JWT Bearer tok
 Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGc...
 ```
 
-**Note**: For detailed setup instructions and Spotify API configuration, see the [Spotify Integration documentation](api/utils/spotify_api/README.md).
+**Note**: For detailed setup instructions and Spotify API configuration, see the [Spotify Integration documentation](hear/utils/spotify_api/README.md).
 
 #### Google Authentication
 
@@ -393,18 +390,16 @@ All endpoints are prefixed with the API base URL (`{version}/`). Most endpoints 
 
 ### Library Management
 
-| Method   | Endpoint                           | Description                                  | Auth Required |
-| -------- | ---------------------------------- | -------------------------------------------- | ------------- |
-| `GET`    | `me/library/uploaded/`             | List user's uploaded tracks                  | 🔒            |
-| `POST`   | `me/library/uploaded/`             | Upload a new track                           | 🔒            |
-| `GET`    | `me/library/uploaded/{id}/`        | Retrieve a specific uploaded track           | 🔒            |
-| `PUT`    | `me/library/uploaded/{id}/`        | Update an uploaded track                     | 🔒            |
-| `DELETE` | `me/library/uploaded/{id}/`        | Delete an uploaded track                     | 🔒            |
-| `GET`    | `reference/library/uploaded/`      | List reference uploaded tracks               | 🔓            |
-| `GET`    | `reference/library/uploaded/{id}/` | Retrieve a specific reference uploaded track | 🔓            |
-| `GET`    | `me/library/spotify/`              | List user's Spotify library tracks           | 🔒            |
-| `GET`    | `me/library/spotify/{id}/`         | Retrieve a specific Spotify track            | 🔒            |
-| `GET`    | `all-tracks/`                      | Get all tracks (uploaded and Spotify)        | 🔒            |
+| Method   | Endpoint                    | Description                           | Auth Required |
+| -------- | --------------------------- | ------------------------------------- | ------------- |
+| `GET`    | `me/library/uploaded/`      | List user's uploaded tracks           | 🔒            |
+| `POST`   | `me/library/uploaded/`      | Upload a new track                    | 🔒            |
+| `GET`    | `me/library/uploaded/{id}/` | Retrieve a specific uploaded track    | 🔒            |
+| `PUT`    | `me/library/uploaded/{id}/` | Update an uploaded track              | 🔒            |
+| `DELETE` | `me/library/uploaded/{id}/` | Delete an uploaded track              | 🔒            |
+| `GET`    | `me/library/spotify/`       | List user's Spotify library tracks    | 🔒            |
+| `GET`    | `me/library/spotify/{id}/`  | Retrieve a specific Spotify track     | 🔒            |
+| `GET`    | `all-tracks/`               | Get all tracks (uploaded and Spotify) | 🔒            |
 
 ### Music Metadata
 
@@ -443,18 +438,6 @@ All endpoints are prefixed with the API base URL (`{version}/`). Most endpoints 
 | `GET`    | `me/genres/tree/`        | Get genres tree           | 🔒            |
 | `POST`   | `me/genres/tree/import/` | Import genres tree        | 🔒            |
 
-### Reference Genres
-
-| Method   | Endpoint                        | Description                  | Auth Required |
-| -------- | ------------------------------- | ---------------------------- | ------------- |
-| `GET`    | `reference/genres/`             | List reference genres        | 🔓            |
-| `POST`   | `reference/genres/`             | Create a reference genre     | 🔓            |
-| `GET`    | `reference/genres/{id}/`        | Retrieve a reference genre   | 🔓            |
-| `PUT`    | `reference/genres/{id}/`        | Update a reference genre     | 🔓            |
-| `DELETE` | `reference/genres/{id}/`        | Delete a reference genre     | 🔓            |
-| `GET`    | `reference/genres/tree/`        | Get reference genres tree    | 🔓            |
-| `POST`   | `reference/genres/tree/import/` | Import reference genres tree | 🔓            |
-
 ### Tags (me)
 
 | Method   | Endpoint               | Description             | Auth Required |
@@ -467,40 +450,20 @@ All endpoints are prefixed with the API base URL (`{version}/`). Most endpoints 
 | `GET`    | `me/tags/tree/`        | Get tags tree           | 🔒            |
 | `POST`   | `me/tags/tree/import/` | Import tags tree        | 🔒            |
 
-### Reference Tags
-
-| Method   | Endpoint                      | Description                | Auth Required |
-| -------- | ----------------------------- | -------------------------- | ------------- |
-| `GET`    | `reference/tags/`             | List reference tags        | 🔓            |
-| `POST`   | `reference/tags/`             | Create a reference tag     | 🔓            |
-| `GET`    | `reference/tags/{id}/`        | Retrieve a reference tag   | 🔓            |
-| `PUT`    | `reference/tags/{id}/`        | Update a reference tag     | 🔓            |
-| `DELETE` | `reference/tags/{id}/`        | Delete a reference tag     | 🔓            |
-| `GET`    | `reference/tags/tree/`        | Get reference tags tree    | 🔓            |
-| `POST`   | `reference/tags/tree/import/` | Import reference tags tree | 🔓            |
-
 ### Playlists
 
-| Method | Endpoint                           | Description                          | Auth Required |
-| ------ | ---------------------------------- | ------------------------------------ | ------------- |
-| `GET`  | `me/playlists/`                    | List my playlists                    | 🔒            |
-| `GET`  | `me/playlists/{id}/`               | Retrieve a specific playlist         | 🔒            |
-| `GET`  | `reference/playlists/`             | List reference playlists             | 🔓            |
-| `GET`  | `reference/playlists/{id}/`        | Retrieve a reference playlist        | 🔓            |
-| `GET`  | `me/manual-playlists/`             | List my manual playlists             | 🔒            |
-| `POST` | `me/manual-playlists/`             | Create a manual playlist             | 🔒            |
-| `GET`  | `me/manual-playlists/{id}/`        | Retrieve a manual playlist           | 🔒            |
-| `PUT`  | `me/manual-playlists/{id}/`        | Update a manual playlist             | 🔒            |
-| `GET`  | `reference/manual-playlists/`      | List reference manual playlists      | 🔓            |
-| `GET`  | `reference/manual-playlists/{id}/` | Retrieve a reference manual playlist | 🔓            |
-| `GET`  | `me/genre-playlists/`              | List my genre-based playlists        | 🔒            |
-| `GET`  | `me/genre-playlists/{id}/`         | Retrieve a genre playlist            | 🔒            |
-| `GET`  | `reference/genre-playlists/`       | List reference genre playlists       | 🔓            |
-| `GET`  | `reference/genre-playlists/{id}/`  | Retrieve a reference genre playlist  | 🔓            |
-| `GET`  | `me/tag-playlists/`                | List my tag-based playlists          | 🔒            |
-| `GET`  | `me/tag-playlists/{id}/`           | Retrieve a tag playlist              | 🔒            |
-| `GET`  | `reference/tag-playlists/`         | List reference tag playlists         | 🔓            |
-| `GET`  | `reference/tag-playlists/{id}/`    | Retrieve a reference tag playlist    | 🔓            |
+| Method | Endpoint                    | Description                   | Auth Required |
+| ------ | --------------------------- | ----------------------------- | ------------- |
+| `GET`  | `me/playlists/`             | List my playlists             | 🔒            |
+| `GET`  | `me/playlists/{id}/`        | Retrieve a specific playlist  | 🔒            |
+| `GET`  | `me/manual-playlists/`      | List my manual playlists      | 🔒            |
+| `POST` | `me/manual-playlists/`      | Create a manual playlist      | 🔒            |
+| `GET`  | `me/manual-playlists/{id}/` | Retrieve a manual playlist    | 🔒            |
+| `PUT`  | `me/manual-playlists/{id}/` | Update a manual playlist      | 🔒            |
+| `GET`  | `me/genre-playlists/`       | List my genre-based playlists | 🔒            |
+| `GET`  | `me/genre-playlists/{id}/`  | Retrieve a genre playlist     | 🔒            |
+| `GET`  | `me/tag-playlists/`         | List my tag-based playlists   | 🔒            |
+| `GET`  | `me/tag-playlists/{id}/`    | Retrieve a tag playlist       | 🔒            |
 
 ### Play History
 
@@ -643,7 +606,7 @@ When uploading tracks, the API automatically:
 3. Retrieves metadata from MusicBrainz
 4. Populates track, artist, and album information
 
-For more details, see the [MusicBrainz Integration documentation](api/utils/musicbrainz/README.md).
+For more details, see the [MusicBrainz Integration documentation](hear/utils/musicbrainz/README.md).
 
 ### Error Handling
 
@@ -683,17 +646,11 @@ For validation errors:
 
 ### Audio Metadata Handling
 
-The HearTheMusicTree API uses [`audiometa-python`](https://github.com/your-username/audiometa-python) for reading and writing audio metadata. The implementation is format-agnostic and handles multiple metadata formats (ID3v1, ID3v2, Vorbis, RIFF) automatically. For more details, see the [Audio Metadata Handling documentation](api/utils/audiometa_adapter/README.md).
+The HearTheMusicTree API uses [`audiometa-python`](https://github.com/your-username/audiometa-python) for reading and writing audio metadata. The implementation is format-agnostic and handles multiple metadata formats (ID3v1, ID3v2, Vorbis, RIFF) automatically. For more details, see the [Audio Metadata Handling documentation](hear/utils/audiometa_adapter/README.md).
 
 ### MusicBrainz Integration
 
-The HearTheMusicTree API integrates with MusicBrainz through the AcoustID fingerprinting service to automatically identify audio tracks and retrieve metadata such as title, artist, and release date. Audio files are fingerprinted using Chromaprint and matched against the MusicBrainz database. For more details, see the [MusicBrainz Integration documentation](api/utils/musicbrainz/README.md).
-
-### Shared Reference Data (TMTA System User)
-
-HearTheMusicTree uses a dedicated **TMTA system user** (username: `tmta`) to manage shared reference data visible to all users.
-
-> **Note:** TMTA stands for "TheMusicTreeAPI" — the authoritative source for genre hierarchies and metadata in the BehindTheMusicTree ecosystem.
+The HearTheMusicTree API integrates with MusicBrainz through the AcoustID fingerprinting service to automatically identify audio tracks and retrieve metadata such as title, artist, and release date. Audio files are fingerprinted using Chromaprint and matched against the MusicBrainz database. For more details, see the [MusicBrainz Integration documentation](hear/utils/musicbrainz/README.md).
 
 ## Contributing
 

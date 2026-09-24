@@ -1,0 +1,26 @@
+from enum import StrEnum
+
+
+class UploadedTrackFieldKey(StrEnum):
+    USER = "user"
+    UUID = "uuid"
+    CREATED_ON = "created_on"
+    UPDATED_ON = "updated_on"
+    PLAY_COUNT = "play_count"
+    TRACK_FILE_INTERNAL = "track_file"
+    TRACK_FILE_PUBLIC = "file"
+    TRACK_FILE_FINGERPRINT_MUST_BE_UNIQUE = "track_file_fingerprint_must_be_unique"
+    TITLE = "title"
+    FILE = "file"
+    ARTISTS = "artists"
+    ALBUM = "album"
+    TRACK_NUMBER = "track_number"
+    GENRE = "genre"
+    RATING = "rating"
+    PLAYLISTS = "playlists"
+    TRACK_PLAYLIST_RELS = "track_playlist_rels"
+    LANGUAGE = "language"
+    PLAYLISTS_PUBLIC = "playlists"
+    ARCHIVED = "archived"
+    RELATIVE_URL = "relative_url"
+    UPLOADED_TRACK_RELATED_NAME = "uploadedtrack"

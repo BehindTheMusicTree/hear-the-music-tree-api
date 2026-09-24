@@ -63,8 +63,8 @@ repos:
         name: Check for assert statements in production code
         entry: bash -c '.pre-commit-hooks/no-assert.sh "$@"' --
         language: system
-        files: ^api/.*\.py$
-        exclude: ^(api/test/|scripts/)
+        files: ^hear/.*\.py$
+        exclude: ^(hear/test/|scripts/)
 
   - repo: local
     hooks:
@@ -73,7 +73,7 @@ repos:
         entry: bash -c 'if command -v python3 >/dev/null 2>&1; then python3 scripts/check_prefer_strenum.py; elif command -v python >/dev/null 2>&1; then python scripts/check_prefer_strenum.py; else echo "python interpreter not found on PATH" >&2; exit 1; fi'
         language: system
         types_or: [python]
-        files: ^api/.*\.py$
+        files: ^hear/.*\.py$
 
   - repo: local
     hooks:
@@ -81,30 +81,30 @@ repos:
         name: ruff-format
         entry: bash -c '.pre-commit-hooks/tool-wrapper.sh ruff format --line-length=120 "$@"' --
         language: system
-        files: ^(api/|\.pre-commit-hooks/|scripts/).*\.py$
+        files: ^(hear/|\.pre-commit-hooks/|scripts/).*\.py$
       - id: ruff
         name: ruff
         entry: bash -c '.pre-commit-hooks/tool-wrapper.sh ruff check --fix --line-length=120 "$@"' --
         language: system
-        files: ^(api/|\.pre-commit-hooks/|scripts/).*\.py$
+        files: ^(hear/|\.pre-commit-hooks/|scripts/).*\.py$
       - id: mypy
         name: mypy
-        entry: bash -c '.pre-commit-hooks/tool-wrapper.sh mypy --config-file=pyproject.toml api'
+        entry: bash -c '.pre-commit-hooks/tool-wrapper.sh mypy --config-file=pyproject.toml hear'
         language: system
-        files: ^api/.*\.py$
+        files: ^hear/.*\.py$
         pass_filenames: false
       - id: pydocstringformatter
         name: pydocstringformatter
         entry: bash -c '.pre-commit-hooks/tool-wrapper.sh pydocstringformatter --write --max-line-length=120 --no-split-summary-body --no-final-period --linewrap-full-docstring "$@"' --
         language: system
-        files: ^api/.*\.py$
-        exclude: ^(api/test/|api/migrations/)
+        files: ^hear/.*\.py$
+        exclude: ^(hear/test/|hear/migrations/)
         pass_filenames: true
       - id: fix-long-comments
         name: Fix long comment lines
         entry: bash -c '.pre-commit-hooks/fix-long-comments.py "$@"' --
         language: system
-        files: ^api/.*\.py$
+        files: ^hear/.*\.py$
         exclude: ^scripts/
 
   - repo: https://github.com/pre-commit/mirrors-prettier

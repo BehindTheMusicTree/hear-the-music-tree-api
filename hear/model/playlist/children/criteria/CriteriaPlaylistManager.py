@@ -1,0 +1,5 @@
+from the_music_tree_genre_kit.criteria.playlist.AbstractCriteriaPlaylistManager import AbstractCriteriaPlaylistManager
+
+
+class CriteriaPlaylistManager(AbstractCriteriaPlaylistManager):
+    pass

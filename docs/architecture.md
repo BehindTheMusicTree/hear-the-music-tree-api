@@ -97,32 +97,31 @@ When duplicate fields are detected, the API returns:
 
 Duplicate field detection is handled by `DuplicateFieldsMiddleware` before request data reaches the serializer. For PUT/PATCH requests, the middleware manually parses multipart data since Django doesn't populate `request.POST` for these methods.
 
-See `api.middleware.duplicate_fields.middleware.DuplicateFieldsMiddleware` for implementation details.
+See `hear.middleware.duplicate_fields.middleware.DuplicateFieldsMiddleware` for implementation details.
 
 ### API URL Design
 
 **Scope as path segment**
 
-URLs use **hierarchy for scope or context**, not compound resource names. When the same logical resource is exposed in different contexts (e.g. current user vs system/reference), the context is a path segment and the resource name stays the same.
+URLs use **hierarchy for scope or context**, not compound resource names. When the same logical resource is exposed in different contexts (e.g. current user vs another scope), the context is a path segment and the resource name stays the same.
 
-- **Preferred:** `/{scope}/{resource}/` — e.g. `reference/genres/`, `reference/genre-playlists/`, `me/playlists/`
-- **Avoid:** `/{scope-resource}/` — e.g. `reference-genres/` (scope glued to resource name)
+- **Preferred:** `/{scope}/{resource}/` — e.g. `me/genres/`, `me/genre-playlists/`, `me/playlists/`
+- **Avoid:** `/{scope-resource}/` — e.g. `me-genres/` (scope glued to resource name)
 
-This follows common practice (e.g. Spotify’s `/v1/me/playlists`, Google/Microsoft REST guidance) and keeps the API consistent and extensible: all reference data lives under `reference/`, and the resource name (`genres`, `playlists`) is unchanged.
+This follows common practice (e.g. Spotify’s `/v1/me/playlists`, Google/Microsoft REST guidance) and keeps the API consistent and extensible: the resource name (`genres`, `playlists`) is unchanged across scopes.
 
 **Rules:**
 
-- Use a **path segment for scope** when the same resource exists in multiple contexts (e.g. user-owned vs reference/public).
+- Use a **path segment for scope** when the same resource could exist in multiple contexts (e.g. user-owned vs another scope).
 - Keep **resource names as nouns** (plural for collections): `genres`, `playlists`, `tags`.
-- Use **hierarchy for real parent-child relationships** (e.g. `/users/{id}/playlists`), and for scope when the same resource is scoped (e.g. `/reference/genres`).
+- Use **hierarchy for real parent-child relationships** (e.g. `/users/{id}/playlists`), and for scope when the same resource is scoped (e.g. `/me/genres`).
 
 **Examples:**
 
-| Purpose            | URL pattern                                        | Example                    |
-| ------------------ | -------------------------------------------------- | -------------------------- |
-| User’s resource    | `/{resource}/` or `/{scope}/{resource}/`           | `genres/`, `me/genres/`    |
-| Reference (system) | `reference/{resource}/`                            | `reference/genres/`        |
-| Resource by ID     | `/{resource}/{id}/` or `/{scope}/{resource}/{id}/` | `reference/genres/{uuid}/` |
+| Purpose         | URL pattern                                        | Example                 |
+| --------------- | -------------------------------------------------- | ----------------------- |
+| User’s resource | `/{resource}/` or `/{scope}/{resource}/`           | `genres/`, `me/genres/` |
+| Resource by ID  | `/{resource}/{id}/` or `/{scope}/{resource}/{id}/` | `me/genres/{uuid}/`     |
 
 ## Core Architectural Patterns
 
@@ -152,7 +151,7 @@ The application uses a hierarchical model structure with base classes for common
 
 ```python
 # Genre.py
-from api.model.genre.Fields import Fields
+from hear.model.genre.Fields import Fields
 
 class Genre(PrivateStandardResource):
     name = models.CharField(max_length=100)
@@ -261,10 +260,10 @@ All custom field classes should inherit from `AppField` (not DRF's `Field` direc
 
 ```python
 # genre.py
-from api.model.genre.Fields import Fields
-from api.serializer.AppInputSerializer import AppInputSerializer
-from api.serializer.field.AppCharField import AppCharField
-from api.serializer.field.AppListField import AppListField
+from hear.model.genre.Fields import Fields
+from hear.serializer.AppInputSerializer import AppInputSerializer
+from hear.serializer.field.AppCharField import AppCharField
+from hear.serializer.field.AppListField import AppListField
 
 class GenreSerializer(AppInputSerializer):
     name = AppCharField()
@@ -276,7 +275,7 @@ class GenreSerializer(AppInputSerializer):
 
 ```python
 # Custom field example
-from api.serializer.field.AppField import AppField
+from hear.serializer.field.AppField import AppField
 from rest_framework import serializers
 
 class AppCharField(AppField, serializers.CharField):
@@ -433,9 +432,9 @@ class GenreFilterSet(AppFilterSet):
 **Good example:**
 
 ```python
-from api.exception.validation.app.AppValidationException import AppValidationException
-from api.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
-from api.model.genre.Fields import Fields
+from hear.exception.validation.app.AppValidationException import AppValidationException
+from hear.exception.validation.FieldValidationErrorCode import FieldValidationErrorCode
+from hear.model.genre.Fields import Fields
 
 def validate_genre_name(self, name: str, user: User) -> None:
     if not name:

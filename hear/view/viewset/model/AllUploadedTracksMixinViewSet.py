@@ -1,0 +1,38 @@
+from drf_spectacular.utils import extend_schema
+from rest_framework.exceptions import APIException
+from the_music_tree_api_kit.serializer.SerializerType import SerializerType
+from the_music_tree_api_kit.view.viewset.model.AppModelViewSet import AppModelViewSet
+
+from hear.model.all_uploaded_tracks_mixin.AllUploadedTracksMixin import AllUploadedTracksMixin
+from hear.model.user.User import User
+from hear.serializer.model.uploaded_track.output.minimum import UploadedTrackMinimumSerializer
+
+
+class AllUploadedTracksViewSet(AppModelViewSet[AllUploadedTracksMixin]):
+    def __init__(self, **kwargs):
+        super().__init__(
+            model_class=AllUploadedTracksMixin, simple_serializer_class=UploadedTrackMinimumSerializer, **kwargs
+        )
+
+    def get_object(self):
+        user = self.request.user
+        if not isinstance(user, User):
+            raise ValueError("User is not instance of User")
+        return user.all_uploaded_tracks_mixin
+
+    @extend_schema(responses=UploadedTrackMinimumSerializer(many=True))
+    def list(self, args, **kwargs):
+        # Validate filters
+        dummy_qs = self.get_queryset()
+        self.filter_queryset(dummy_qs)
+
+        allUploadedTracksMixin = self.get_object()
+        page = self.paginate_queryset(allUploadedTracksMixin.uploaded_tracks_not_archived_sorted)
+
+        if page is not None:
+            serializer = self._require_serializer(SerializerType.SIMPLE)(page, many=True)
+            data = list(serializer.data)
+        else:
+            data = []
+
+        return self.get_paginated_response(data)

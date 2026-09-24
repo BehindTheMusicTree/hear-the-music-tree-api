@@ -102,13 +102,13 @@ main (){
     log_with_script_prefixe "Starting Gunicorn..."
     if gunicorn_logs_to_stdout; then
         log_with_script_prefixe "Gunicorn access and error logs: stdout/stderr (GUNICORN_STDOUT_LOGS)."
-        exec gunicorn api.wsgi:application \
+        exec gunicorn hear.wsgi:application \
             --bind "0.0.0.0:${APP_PORT}" \
             --access-logfile=- \
             --error-logfile=- \
             --log-level=info 2>&1
     else
-        exec gunicorn api.wsgi:application \
+        exec gunicorn hear.wsgi:application \
             --bind "0.0.0.0:${APP_PORT}" \
             --error-logfile="${GUNICORN_LOG_DIR}${GUNICORN_LOG_ERROR_FILENAME}" \
             --access-logfile="${GUNICORN_LOG_DIR}${GUNICORN_LOG_ACCESS_FILENAME}" \
