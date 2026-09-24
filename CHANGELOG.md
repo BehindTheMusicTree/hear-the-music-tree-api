@@ -64,6 +64,12 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v3.0.1] - 2026-09-24
+
+### Fixed
+
+- **Worker deploys rolling back as unhealthy**: `Dockerfile`'s `dev`/`runtime` stages unconditionally baked in a `HEALTHCHECK` that curls `/health/`, but the `worker` Coolify app overrides the entrypoint to `sleep infinity` and never serves HTTP — so its deploys were always marked unhealthy and rolled back. The `HEALTHCHECK` is removed from the image; health checks are defined per service instead (Coolify's own check on `/health/` for `htmt-api`, `docker-compose.yml` locally).
+
 ## [v3.0.0] - 2026-09-23
 
 ### Improved
