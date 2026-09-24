@@ -72,7 +72,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Fixed
 
-- **Worker deploys rolling back as unhealthy**: `Dockerfile`'s `dev`/`runtime` stages unconditionally bake in a `HEALTHCHECK` that curls `/health/`, but the `worker` Coolify app overrides the entrypoint to `sleep infinity` and never serves HTTP — so its deploys were always marked unhealthy and rolled back. `HEALTHCHECK` can't be made conditional at build time, so the check now always runs but no-ops to success unless the new `HEALTHCHECK_ENABLED` build arg (default `true`) is explicitly set to something else; `worker`'s Coolify config sets it to `false`.
+- **Worker deploys rolling back as unhealthy**: `Dockerfile`'s `dev`/`runtime` stages unconditionally bake in a `HEALTHCHECK` that curls `/health/`, but the `worker` Coolify app overrides the entrypoint to `sleep infinity` and never serves HTTP — so its deploys were always marked unhealthy and rolled back. The `HEALTHCHECK` is removed from the image; health checks are defined per service instead (Coolify's own check on `/health/` for `htmt-api`, `docker-compose.yml` locally). This replaces the short-lived `HEALTHCHECK_ENABLED` build arg, which never reached the container at runtime and so turned the check into a no-op for every service, `htmt-api` included.
 
 ### Improved
 

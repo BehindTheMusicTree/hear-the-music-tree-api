@@ -67,14 +67,8 @@ RUN pip install --upgrade pip && \
 
 RUN chmod +x scripts/entrypoint.sh scripts/start-server.sh
 
-# Disable for images whose CMD/entrypoint is overridden to run something that isn't the HTTP
-# server (e.g. the worker placeholder, which runs `sleep infinity` via a Coolify entrypoint
-# override) — HEALTHCHECK itself can't be made conditional at build time, so the check always
-# runs but no-ops to success when unset.
-ARG HEALTHCHECK_ENABLED=true
-HEALTHCHECK --interval=5s --timeout=3s --start-period=30s --retries=10 \
-    CMD [ "$HEALTHCHECK_ENABLED" != "true" ] || curl -f "http://127.0.0.1:${APP_PORT:-8000}/health/"
-
+# No HEALTHCHECK here on purpose: this image also runs non-HTTP roles (the Coolify `worker`),
+# so health checks are defined per service instead (Coolify app config, docker-compose.yml).
 ENTRYPOINT ["bash", "scripts/entrypoint.sh"]
 CMD ["bash", "scripts/start-server.sh"]
 
@@ -87,10 +81,6 @@ COPY --from=trimmed-src /src $PROJECT_DIR
 RUN pip install --upgrade pip && pip install .
 
 RUN chmod +x scripts/entrypoint.sh scripts/start-server.sh
-
-ARG HEALTHCHECK_ENABLED=true
-HEALTHCHECK --interval=5s --timeout=3s --start-period=30s --retries=10 \
-    CMD [ "$HEALTHCHECK_ENABLED" != "true" ] || curl -f "http://127.0.0.1:${APP_PORT:-8000}/health/"
 
 ENTRYPOINT ["bash", "scripts/entrypoint.sh"]
 CMD ["bash", "scripts/start-server.sh"]
