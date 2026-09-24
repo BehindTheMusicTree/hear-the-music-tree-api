@@ -68,7 +68,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Agent rules**: Moved `.cursor/rules/*.mdc` and `.cursorrules` to `.claude/rules/*.md` so Claude Code loads them
   natively (`globs` → `paths`). The OpenAPI validation rule now targets `hear/view/**/*.py`; its old `api/view/` glob
-  matched nothing.
+  matched nothing. Dropped the duplicate `focused-tests` and `comments` rules (covered by `divide-test-cases` and
+  `no-useless-comments`).
 - **Knowledge graph**: Local `graphify` tooling (CLAUDE.md section, `.claude/settings.json` PreToolUse hooks,
   post-commit/post-checkout git hooks). Output in `graphify-out/` is gitignored, dev-only.
 - **Dev tooling**: Added a `launch` Claude Code skill (`.claude/skills/launch/`) documenting how
