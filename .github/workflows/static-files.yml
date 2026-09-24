@@ -2,11 +2,6 @@ name: Static Files
 
 on:
   workflow_call:
-    inputs:
-      app_version:
-        description: 'App version to use'
-        required: true
-        type: string
     outputs:
       collect_static_files_commit_hash:
         description: 'Commit hash after collecting and pushing static files'
@@ -114,7 +109,6 @@ jobs:
 
       - name: Collect static files
         env:
-          APP_VERSION: ${{ inputs.app_version }}
           STATIC_FILES_URL: ${{ vars.STATIC_FILES_URL }}
         run: python manage.py collectstatic --noinput
 

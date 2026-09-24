@@ -1,8 +1,3 @@
----
-description:
-globs:
-alwaysApply: true
----
 # Issue Description in Separate File
 
 When creating GitHub issues, always provide the issue description in a separate markdown file located in `.github/ISSUES/` directory, rather than writing it directly in the issue body.
@@ -43,7 +38,9 @@ Instead of writing the issue description directly in GitHub:
 
 ```markdown
 # Bad - Writing directly in GitHub issue
+
 ## Description
+
 This is the issue description...
 ```
 
@@ -51,7 +48,9 @@ Create a file:
 
 ```markdown
 # Good - Separate file: .github/ISSUES/my-issue.md
+
 ## Description
+
 This is the issue description...
 ```
 
@@ -60,6 +59,7 @@ Then reference or copy from the file when creating the GitHub issue.
 ## File Location
 
 All issue description files should be placed in:
+
 ```
 .github/ISSUES/
 ```

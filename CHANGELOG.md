@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 All contributors (including maintainers) should update `CHANGELOG.md` when creating PRs:
 
 1. **Add entries to the `[Unreleased]` section** - Add your changes under the appropriate category (Added, Changed, Improved, Deprecated, Removed, Fixed, Documentation, Performance, CI)
-2. **Follow the changelog format** - See examples below and `.cursor/rules/changelog-best-practices.mdc` for detailed guidelines
+2. **Follow the changelog format** - See examples below and `.claude/rules/changelog-best-practices.md` for detailed guidelines
 3. **Group related changes** - Similar changes should be grouped together
 4. **Be descriptive** - Write clear, user-focused descriptions of what changed
 5. **Mention tests when relevant** - Tests should be mentioned within the related feature or fix entry, not as standalone entries
@@ -63,6 +63,24 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 **Note:** During releases, maintainers will move entries from `[Unreleased]` to a versioned section (e.g., `## [0.2.8] - 2025-01-XX`).
 
 ## [Unreleased]
+
+## [v3.1.0] - 2026-09-24
+
+### Added
+
+- **Agent rules**: Moved `.cursor/rules/*.mdc` and `.cursorrules` to `.claude/rules/*.md` so Claude Code loads them
+  natively (`globs` → `paths`). The OpenAPI validation rule now targets `hear/view/**/*.py`; its old `api/view/` glob
+  matched nothing. Dropped the duplicate `focused-tests` and `comments` rules (covered by `divide-test-cases` and
+  `no-useless-comments`).
+- **Knowledge graph**: Local `graphify` tooling (CLAUDE.md section, `.claude/settings.json` PreToolUse hooks,
+  post-commit/post-checkout git hooks). Output in `graphify-out/` is gitignored, dev-only.
+- **Dev tooling**: Added a `launch` Claude Code skill (`.claude/skills/launch/`) documenting how
+  to start the local Docker Compose dev stack (`db`, `afp`, `api`), including the GHCR auth step
+  required to pull the `afp` image.
+
+### Changed
+
+- **URL version decoupled from release version**: the API URL prefix is now the constant `API_VERSION = "v2"` in `hear/settings.py` instead of the major of the `APP_VERSION` env var, so a release major bump no longer silently changes every URL. `APP_VERSION` is now read from `pyproject.toml` `[project].version` (fails fast if missing) instead of a Docker build arg / env var; `APP_VERSION` was removed from the `Dockerfile` args, `docker-compose.yml`, env examples, `test.yml`, and the `static-files.yml` `app_version` input. `/health/` now also returns `commit` (from the `SOURCE_COMMIT` env var Coolify injects at runtime; `null` when absent). Tests cover the pyproject-sourced version, the `v2/` prefix, and both health fields.
 
 ## [v3.0.1] - 2026-09-24
 

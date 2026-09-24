@@ -84,7 +84,7 @@ Body: JSON object with raw metadata and optional technical fields. Keys may be o
 
 ### Versioning
 
-API path prefix uses the major version only (e.g. `v1`), derived from `APP_VERSION`.
+API path prefix is `v2`, the fixed API contract version (`API_VERSION` in `hear/settings.py`), independent of the release version.
 
 ### Notes
 

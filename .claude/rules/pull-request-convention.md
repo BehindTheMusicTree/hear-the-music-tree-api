@@ -1,8 +1,3 @@
----
-description:
-globs:
-alwaysApply: true
----
 # Pull Request Title Convention
 
 PR titles must follow the same format as commit messages: `<type>(<optional-scope>): <short imperative description>`
@@ -29,7 +24,7 @@ PR titles must follow the same format as commit messages: `<type>(<optional-scop
 
 ## Branch Prefixes vs PR Title Types
 
-Branch names use Git Flow prefixes; PR titles use Conventional Commits types — they are not the same. Allowed source branches for PRs to `develop` are `feature/`, `chore/`, `dependabot/`, and `release/` only (no `docs/`, `fix/`, etc.); see `git-flow-workflow.mdc`.
+Branch names use Git Flow prefixes; PR titles use Conventional Commits types — they are not the same. Allowed source branches for PRs to `develop` are `feature/`, `chore/`, `dependabot/`, and `release/` only (no `docs/`, `fix/`, etc.); see `git-flow-workflow.md`.
 
 - Branch `feature/add-flac-support` → PR title: `feat: add flac support` (use `feat`, not `feature`)
 - Branch `chore/update-dependencies` → PR title: `chore: update dependencies` (use `chore`)

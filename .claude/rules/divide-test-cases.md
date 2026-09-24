@@ -1,8 +1,3 @@
----
-description:
-globs:
-alwaysApply: true
----
 # Divide Test Cases
 
 Large test cases that test multiple scenarios should be divided into multiple focused tests, each testing a single scenario.

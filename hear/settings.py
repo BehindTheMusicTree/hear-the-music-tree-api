@@ -2,6 +2,7 @@
 import datetime
 import os
 import sys
+import tomllib
 from pathlib import Path
 from typing import Any
 
@@ -291,10 +292,8 @@ def init_logs_if_needed():
 
 def setup_app_exposure_if_needed():
     global ALLOWED_HOSTS
-    global APP_VERSION
-    APP_VERSION = load_required_str_env_var("APP_VERSION")
     global API_ROOT_BASE
-    API_ROOT_BASE = f"v{APP_VERSION.split('.')[0]}/"
+    API_ROOT_BASE = f"{API_VERSION}/"
     print_django("API_ROOT_BASE: " + API_ROOT_BASE)
 
     global ROOT_URLCONF
@@ -733,7 +732,7 @@ def setup_django_constants():
     SPECTACULAR_SETTINGS = {
         "TITLE": APP_TITLE,
         "DESCRIPTION": "API to handle genre oriented music libraries",
-        "VERSION": os.environ.get("APP_VERSION"),
+        "VERSION": APP_VERSION,
         "SERVE_INCLUDE_SCHEMA": False,
         "SCHEMA_PATH_PREFIX": r"/v[\d.]+",
         "COMPONENT_SPLIT_REQUEST": True,
@@ -869,9 +868,15 @@ def set_secret_key():
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# URL prefix is an API contract, deliberately independent of the release version.
+API_VERSION = "v2"
+with open(BASE_DIR / "pyproject.toml", "rb") as pyproject_file:
+    APP_VERSION: str = tomllib.load(pyproject_file)["project"]["version"]
+
 APP_ENV_FILE_RELATIVE_PATH = os.getenv("ENV_FILE", "env/.env")
 APP_ENV_FILE = BASE_DIR / APP_ENV_FILE_RELATIVE_PATH
 load_env_vars_from_file_if_exists(APP_ENV_FILE)
+GIT_COMMIT = load_optional_str_env_var("SOURCE_COMMIT") or None
 
 ENV = load_required_str_env_var("ENV")
 APP_NAME = load_required_str_env_var("APP_NAME")

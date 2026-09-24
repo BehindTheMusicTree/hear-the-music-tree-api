@@ -92,6 +92,7 @@ hear/migrations/0017_reparent_uploaded_track_and_playlists_onto_genre_kit.py
 hear/migrations/0018_criteria_side.py
 hear/migrations/0019_alter_criteria_side.py
 hear/migrations/0020_genre_mti.py
+hear/migrations/0021_criteria_summary.py
 hear/migrations/__init__.py
 hear/model/ContentObjectFields.py
 hear/model/album/Album.py
@@ -437,8 +438,9 @@ hear/test/tests/integration/criteria/tree/import/validation/__init__.py
 hear/test/tests/integration/criteria/tree/import/validation/test_name.py
 hear/test/tests/integration/criteria/tree/import/validation/test_node_count.py
 hear/test/tests/integration/criteria/tree/import/validation/test_structure.py
-hear/test/tests/integration/criteria/tree/load_example/__init__.py
-hear/test/tests/integration/criteria/tree/load_example/test_with_existing_tracks.py
+hear/test/tests/integration/criteria/tree/load_seed/__init__.py
+hear/test/tests/integration/criteria/tree/load_seed/test_with_existing_tracks.py
+hear/test/tests/integration/health/test_health.py
 hear/test/tests/integration/play/PlayTestCase.py
 hear/test/tests/integration/play/__init__.py
 hear/test/tests/integration/play/test_delete.py
@@ -766,6 +768,7 @@ hear/test/tests/unit/middleware/test_request_logging_middleware.py
 hear/test/tests/unit/serializer/__init__.py
 hear/test/tests/unit/serializer/test_app_serializer.py
 hear/test/tests/unit/serializer/test_criteria_output_field_key.py
+hear/test/tests/unit/serializer/test_criteria_side_serializer.py
 hear/test/tests/unit/serializer/test_input_serializer_inheritance.py
 hear/test/tests/unit/serializer/test_model_serializer_inheritance.py
 hear/test/tests/unit/serializer/field/__init__.py

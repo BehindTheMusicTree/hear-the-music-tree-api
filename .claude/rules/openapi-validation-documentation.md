@@ -1,8 +1,9 @@
 ---
 description: Document validation and error responses in OpenAPI (drf-spectacular) in line with industry practice.
-globs: api/view/**/*.py
-alwaysApply: false
+paths:
+  - "hear/view/**/*.py"
 ---
+
 # OpenAPI Validation and Error Documentation
 
 When documenting endpoints that accept input and can return validation errors (400), follow these practices in **both** OpenAPI (view/schema) and the **endpoint doc** when it exists (`docs/api/*.md`).
