@@ -80,9 +80,13 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **URL version decoupled from release version**: the API URL prefix is now the constant `API_VERSION = "v2"` in `hear/settings.py` instead of the major of the `APP_VERSION` env var, so a release major bump no longer silently changes every URL. `APP_VERSION` is now read from `pyproject.toml` `[project].version` (fails fast if missing) instead of a Docker build arg / env var; `APP_VERSION` was removed from the `Dockerfile` args, `docker-compose.yml`, env examples, `test.yml`, and the `static-files.yml` `app_version` input. `/health/` now also returns `commit` (from the `SOURCE_COMMIT` env var Coolify injects at runtime; `null` when absent). Tests cover the pyproject-sourced version, the `v2/` prefix, and both health fields.
 
+## [v3.0.1] - 2026-09-24
+
 ### Fixed
 
-- **Worker deploys rolling back as unhealthy**: `Dockerfile`'s `dev`/`runtime` stages unconditionally bake in a `HEALTHCHECK` that curls `/health/`, but the `worker` Coolify app overrides the entrypoint to `sleep infinity` and never serves HTTP — so its deploys were always marked unhealthy and rolled back. The `HEALTHCHECK` is removed from the image; health checks are defined per service instead (Coolify's own check on `/health/` for `htmt-api`, `docker-compose.yml` locally). This replaces the short-lived `HEALTHCHECK_ENABLED` build arg, which never reached the container at runtime and so turned the check into a no-op for every service, `htmt-api` included.
+- **Worker deploys rolling back as unhealthy**: `Dockerfile`'s `dev`/`runtime` stages unconditionally baked in a `HEALTHCHECK` that curls `/health/`, but the `worker` Coolify app overrides the entrypoint to `sleep infinity` and never serves HTTP — so its deploys were always marked unhealthy and rolled back. The `HEALTHCHECK` is removed from the image; health checks are defined per service instead (Coolify's own check on `/health/` for `htmt-api`, `docker-compose.yml` locally).
+
+## [v3.0.0] - 2026-09-23
 
 ### Improved
 
