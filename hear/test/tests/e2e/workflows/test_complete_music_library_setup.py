@@ -5,7 +5,7 @@ from the_music_tree_api_kit.utils.data_transformer import to_camel_case
 from hear.model.criteria.children.genre.Genre import Genre
 from hear.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
 from hear.model.uploaded_track.UploadedTrack import UploadedTrack
-from hear.serializer.model.criteria.input.tree_import.Fields import (
+from hear.serializer.model.criteria.input.tree_import import (
     Fields as TreeImportUploadedTrackInputFieldKey,
 )
 from hear.serializer.model.play.input.schema.PostFields import (

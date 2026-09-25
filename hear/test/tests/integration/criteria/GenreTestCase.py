@@ -1,9 +1,31 @@
+import zlib
 from uuid import UUID
 
 from django.urls import reverse
 
 from hear.model.criteria.children.genre.Genre import Genre
+from hear.serializer.model.criteria.input.tree_import import Fields
 from hear.test.utils.AppTestCase import AppTestCase
+
+
+def _set_missing_node_ids(nodes, used_ids=None):
+    """Name-derived Wikidata-style ids keep the pre-0.28 name-matching semantics tests were written against. Ids stay
+    unique so duplicate-name validation, not duplicate-id validation, is what repeated names trip."""
+    if used_ids is None:
+        used_ids = set()
+    if not isinstance(nodes, list):
+        return
+    for node in nodes:
+        if not isinstance(node, dict):
+            continue
+        name = node.get(Fields.NAME_PUBLIC)
+        if Fields.ID not in node and isinstance(name, str) and name:
+            node_id = f"Q{zlib.crc32(name.encode())}"
+            while node_id in used_ids:
+                node_id += "0"
+            node[Fields.ID] = node_id
+        used_ids.add(node.get(Fields.ID))
+        _set_missing_node_ids(node.get(Fields.CHILDREN), used_ids)
 
 
 class GenreTestCase(AppTestCase[Genre]):
@@ -23,9 +45,11 @@ class GenreTestCase(AppTestCase[Genre]):
     def _list_genres(self, **kwargs):
         return self.api_client.get(path=reverse(self.list_endpoint), data=kwargs, handle_response=self._set_results)
 
-    def _get_genres_tree(self):
+    def _get_genres_tree(self, allows_multiple_primary_parents: bool = False):
         return self.api_client.get(
-            path=reverse(self.list_endpoint) + "tree/", handle_response=self._set_error_response_result_if_failure
+            path=reverse(self.list_endpoint) + "tree/",
+            data={Fields.ALLOWS_MULTIPLE_PRIMARY_PARENTS: str(allows_multiple_primary_parents).lower()},
+            handle_response=self._set_error_response_result_if_failure,
         )
 
     def _post_genre(self, **kwargs):
@@ -64,6 +88,9 @@ class GenreTestCase(AppTestCase[Genre]):
         return self.api_client.delete(path=reverse(self.detail_endpoint, kwargs={"pk": uuid}))
 
     def _post_genres_tree_import(self, data=None):
+        if isinstance(data, dict) and Fields.TREE in data:
+            data = {Fields.ALLOWS_MULTIPLE_PRIMARY_PARENTS: False, **data}
+            _set_missing_node_ids(data[Fields.TREE])
         return self.api_client.post(
             path=reverse(self.list_endpoint) + "tree/import/",
             data=data,

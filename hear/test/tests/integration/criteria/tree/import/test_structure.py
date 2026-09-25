@@ -1,7 +1,7 @@
 from rest_framework import status
 
 from hear.model.criteria.children.genre.Genre import Genre
-from hear.serializer.model.criteria.input.tree_import.Fields import Fields
+from hear.serializer.model.criteria.input.tree_import import Fields
 from hear.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 

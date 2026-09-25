@@ -40,11 +40,6 @@ class CriteriaManager(AbstractCriteriaManager[T]):
             instance=instance.criteria_playlist, **{Fields.PARENT: playlist_parent}
         )
 
-        common_criteria = self.get_common_ascendant(instance, old_parent)
-        CriteriaPlaylist.objects.update_ascendants_tracks(
-            instance=instance.criteria_playlist, old_parent=old_parent, common_criteria=common_criteria
-        )
-
         if root_changed:
             CriteriaPlaylist.objects.update_instance_and_children_root(
                 instance=instance.criteria_playlist, root=instance.root.criteria_playlist
