@@ -9,7 +9,6 @@ from typing import Any
 import dj_database_url
 from corsheaders.defaults import default_headers
 from the_music_tree_api_kit.utils.allowed_hosts import add_loopback_hosts
-from the_music_tree_genre_kit.data import DATA_DIR as GENRE_KIT_DATA_DIR
 
 # Third-party imports
 from hear.CiStartupTraceEnabled import CiStartupTraceEnabled
@@ -111,9 +110,6 @@ MUSICBRAINZ_LOOKUP_ENABLED: bool
 MEDIA_ROOT: Path
 MEDIA_URL: str
 LIBRARIES_DIR: Path
-
-# Data
-DATA_DIR: Path
 
 # Spotify
 SPOTIFY_ENABLED: bool
@@ -549,14 +545,6 @@ def setup_afp_connection():
     print_django(f"AFP: {AFP_BASE_URL}/{AFP_POST_ENDPOINT}")
 
 
-def setup_data_dir():
-    global DATA_DIR
-    DATA_DIR = GENRE_KIT_DATA_DIR
-    if not DATA_DIR.exists():
-        raise OSError(f"The data directory {DATA_DIR} does not exist.")
-    print_django(f"DATA_DIR: {DATA_DIR}")
-
-
 def setup_static_files():
     print_django(f"The app is using static files for {STATIC_FILES_STATE}")
 
@@ -894,7 +882,6 @@ if "loaddata" in sys.argv:
     _load_service_feature_flags()
     _load_optional_service_credentials()
     setup_app_constants()
-    setup_data_dir()
     setup_installed_apps_and_caches()
     setup_middlewares()
     setup_django_constants()
@@ -906,7 +893,6 @@ else:
     _load_optional_service_credentials()
     setup_app_exposure_if_needed()
     setup_app_constants()
-    setup_data_dir()
 
     STATIC_FILES = os.getenv("STATIC_FILES")
     if ENV == "collect_static":
