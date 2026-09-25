@@ -9,7 +9,7 @@ from hear.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 class TestOverwrite(GenreTestCase):
     def test_import_new_tree_then_overwrites_existing(self):
-        self.model_fixture_factory.create_genre(name="Old Rock")
+        self.model_fixture_factory.create_genre(name="Old Rock", wikidata_id="Q1")
 
         tree_data = [{Fields.NAME_PUBLIC: "New Rock", Fields.CHILDREN: []}]
         response = self._post_genres_tree_import(data={Fields.TREE: tree_data})

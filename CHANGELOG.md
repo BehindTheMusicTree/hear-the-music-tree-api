@@ -71,6 +71,17 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
   natively (`globs` → `paths`). The OpenAPI validation rule now targets `hear/view/**/*.py`; its old `api/view/` glob
   matched nothing. Dropped the duplicate `focused-tests` and `comments` rules (covered by `divide-test-cases` and
   `no-useless-comments`).
+- **Kit pins**: `the-music-tree-genre-kit` bumped to `v0.27.0` and `the-music-tree-api-kit` to `v0.7.0` (required by it);
+  `CriteriaManager` hooks accept the kit's new `actor` keyword. Genre tree import now merges by wikidata id and only
+  deletes stale genres that carry a `wikidata_id`; the old-genre deletion tests tag their fixtures accordingly.
+- **Genre import flags**: Migration `0022_genre_kit_import_flags` adds `wikidata_id`, `is_manually_edited` and
+  `is_excluded` to `Genre`, required by `the-music-tree-genre-kit` `v0.27.0`'s `AbstractGenreCriteria`.
+
+### Removed
+
+- **Genre seed tree**: `POST /me/genres/tree/load-seed/` is gone (`GenreSeedTreeMixin` was removed from
+  `the-music-tree-genre-kit`), along with the `DATA_DIR` setting and the `genres-tree-load-example` Bruno request.
+  Genre data comes only from the tree import and admins.
 - **Knowledge graph**: Local `graphify` tooling (CLAUDE.md section, `.claude/settings.json` PreToolUse hooks,
   post-commit/post-checkout git hooks). Output in `graphify-out/` is gitignored, dev-only.
 - **Dev tooling**: Added a `launch` Claude Code skill (`.claude/skills/launch/`) documenting how
