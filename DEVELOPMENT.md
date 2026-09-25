@@ -4,7 +4,7 @@ This document outlines the coding standards and best practices for developing th
 
 Organization-wide Python tooling, CI adoption, and shared style baselines are documented in **[BehindTheMusicTree/python-project-standards — Development baseline](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md)**. This file focuses on conventions specific to this API (Django, DRF, project layout).
 
-This repository tracks adopted policy in root [**`STANDARDS_VERSION`**](STANDARDS_VERSION) (**`4.3.1`**) and vendors **Ruff / Mypy baselines** under [**`baselines/`**](baselines/) (digest-checked by **`verify-python-project-standards`** via [`scripts/check_lint_baseline.py`](scripts/check_lint_baseline.py), including **`baselines/expected-mypy.json`** in **`DIGESTS`**); see [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md). [**`changelog-alignment.md`**](.claude/rules/changelog-alignment.md) mirrors org **`templates/cursor-rules/`** so agents keep **`CHANGELOG.md`** in step with substantive edits.
+This repository adopts python-project-standards via Copier: [**`.copier-answers.yml`**](.copier-answers.yml) records the release, and **`copier update`** merges new ones into [`.pre-commit-config.yaml`](.pre-commit-config.yaml) and [**`baselines/ruff.toml`**](baselines/ruff.toml); see [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md). [**`changelog-alignment.md`**](.claude/rules/changelog-alignment.md) keeps **`CHANGELOG.md`** in step with substantive edits.
 
 For information about system architecture, patterns, and design decisions, see [Architecture documentation](docs/architecture.md).
 
@@ -249,7 +249,7 @@ For detailed documentation on external service integrations, see:
 
 ### Code Style Reference
 
-For quick reference on code style conventions, see [code-style.md](code-style.md). For testing guidelines, see [Testing Guidelines](testing.md). Organization-wide Python baselines are summarized in the **[Development baseline](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md)** ([python-project-standards](https://github.com/BehindTheMusicTree/python-project-standards)). For detailed guidelines, refer to the rules in `.claude/rules/` (org baselines such as [strenum-string-enums](.claude/rules/strenum-string-enums.md) come from [python-project-standards `templates/cursor-rules/`](https://github.com/BehindTheMusicTree/python-project-standards/tree/main/templates/cursor-rules); copy or diff when bumping standards):
+For quick reference on code style conventions, see [code-style.md](code-style.md). For testing guidelines, see [Testing Guidelines](testing.md). Organization-wide Python baselines are summarized in the **[Development baseline](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md)** ([python-project-standards](https://github.com/BehindTheMusicTree/python-project-standards)). For detailed guidelines, refer to the rules in `.claude/rules/` (for example [strenum-string-enums](.claude/rules/strenum-string-enums.md)):
 
 - [One Class Per File](.claude/rules/one-class-per-file.md)
 - [Field Name Constants](.claude/rules/field-name-constants.md)

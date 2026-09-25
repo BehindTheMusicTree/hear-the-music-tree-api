@@ -15,13 +15,6 @@ repos:
         pass_filenames: false
         always_run: true
 
-      - id: verify-python-project-standards
-        name: Verify python-project-standards baseline
-        entry: bash scripts/verify-standards.sh
-        language: system
-        pass_filenames: false
-        always_run: true
-
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:

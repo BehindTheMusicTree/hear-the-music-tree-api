@@ -438,8 +438,6 @@ hear/test/tests/integration/criteria/tree/import/validation/__init__.py
 hear/test/tests/integration/criteria/tree/import/validation/test_name.py
 hear/test/tests/integration/criteria/tree/import/validation/test_node_count.py
 hear/test/tests/integration/criteria/tree/import/validation/test_structure.py
-hear/test/tests/integration/criteria/tree/load_seed/__init__.py
-hear/test/tests/integration/criteria/tree/load_seed/test_with_existing_tracks.py
 hear/test/tests/integration/health/test_health.py
 hear/test/tests/integration/play/PlayTestCase.py
 hear/test/tests/integration/play/__init__.py

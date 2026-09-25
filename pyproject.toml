@@ -7,7 +7,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "hear-the-music-tree-api"
-version = "3.1.0"
+version = "4.0.0"
 description = "Django REST API for Hear The Music Tree"
 requires-python = ">=3.14"
 dependencies = [
@@ -54,8 +54,8 @@ dependencies = [
     "shortuuid==1.0.9",
     "simplejson==3.16.0",
     "spotipy==2.23.0",
-    "the-music-tree-api-kit @ git+https://github.com/BehindTheMusicTree/the-music-tree-api-kit.git@v0.5.0",
-    "the-music-tree-genre-kit @ git+https://github.com/BehindTheMusicTree/the-music-tree-genre-kit.git@v0.20.0",
+    "the-music-tree-api-kit @ git+https://github.com/BehindTheMusicTree/the-music-tree-api-kit.git@v0.7.0",
+    "the-music-tree-genre-kit @ git+https://github.com/BehindTheMusicTree/the-music-tree-genre-kit.git@v0.27.0",
     "tinytag==1.10.1",
     "uvicorn==0.20.0",
     "werkzeug==2.2.2",
@@ -107,7 +107,7 @@ line_length = 120
 max-line-length = 120
 
 [tool.ruff]
-# Shared rule set in baselines/ruff.toml (digest-checked by verify-standards).
+# Shared rule set in baselines/ruff.toml (managed by copier update).
 extend = "baselines/ruff.toml"
 
 [tool.ruff.lint.per-file-ignores]
@@ -117,7 +117,6 @@ extend = "baselines/ruff.toml"
 ".pre-commit-hooks/**" = ["PLR2004"]
 "scripts/prepare_release_bump.py" = ["TRY003", "EM101", "EM102", "PLR2004", "DTZ011", "RUF005", "T201", "I001"]
 "scripts/fix_changelog_after_bump.py" = ["T201", "I001"]
-"scripts/check_lint_baseline.py" = ["I001"]
 
 # Same plugin layout as audiometa-style projects; strictness relaxed for gradual Django typing.
 [tool.mypy]
@@ -163,7 +162,7 @@ ignore_missing_imports = true
 # Release bumps (maintainers): `bump-my-version bump patch|minor|major` or `scripts/prepare_release_bump.py`.
 # https://github.com/callowayproject/bump-my-version
 [tool.bumpversion]
-current_version = "3.1.0"
+current_version = "4.0.0"
 commit = false
 tag = false
 parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"

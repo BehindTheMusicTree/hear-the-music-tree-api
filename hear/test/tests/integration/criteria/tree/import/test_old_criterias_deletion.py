@@ -11,7 +11,7 @@ from hear.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 class TestOldCriteriasDeletion(GenreTestCase):
     def test_import_new_tree_then_old_genre_deleted(self):
-        old_genre = self.model_fixture_factory.create_genre(name="Old Rock")
+        old_genre = self.model_fixture_factory.create_genre(name="Old Rock", wikidata_id="Q1")
         self.model_fixture_factory.create_uploaded_track_with_file(
             title="Track 1", use_manager_for_genre_playlist_adding=True
         )
@@ -29,7 +29,7 @@ class TestOldCriteriasDeletion(GenreTestCase):
         assert not Genre.objects.filter(uuid=old_genre.uuid).exists()
 
     def test_import_new_tree_then_old_playlist_deleted(self):
-        old_genre = self.model_fixture_factory.create_genre(name="Old Rock")
+        old_genre = self.model_fixture_factory.create_genre(name="Old Rock", wikidata_id="Q1")
         self.model_fixture_factory.create_uploaded_track_with_file(
             title="Track 1", use_manager_for_genre_playlist_adding=True
         )
@@ -47,7 +47,7 @@ class TestOldCriteriasDeletion(GenreTestCase):
         assert not Playlist.objects.filter(uuid=old_genre.criteria_playlist.uuid).exists()
 
     def test_import_new_tree_then_tracks_moved_to_criterialess_playlist(self):
-        self.model_fixture_factory.create_genre(name="Old Rock")
+        self.model_fixture_factory.create_genre(name="Old Rock", wikidata_id="Q1")
         self.model_fixture_factory.create_uploaded_track_with_file(
             title="Track 1", use_manager_for_genre_playlist_adding=True
         )
@@ -75,7 +75,7 @@ class TestOldCriteriasDeletion(GenreTestCase):
         assert "Track 3" in track_titles
 
     def test_import_new_tree_then_genre_metadata_cleared(self):
-        self.model_fixture_factory.create_genre(name="Old Rock")
+        self.model_fixture_factory.create_genre(name="Old Rock", wikidata_id="Q1")
         self.model_fixture_factory.create_uploaded_track_with_file(
             title="Track 1", use_manager_for_genre_playlist_adding=True
         )
@@ -100,8 +100,8 @@ class TestOldCriteriasDeletion(GenreTestCase):
             assert track.genre is None
 
     def test_import_new_tree_then_multiple_old_criterias_deleted(self):
-        old_genre1 = self.model_fixture_factory.create_genre(name="Old Rock 1")
-        old_genre2 = self.model_fixture_factory.create_genre(name="Old Rock 2")
+        old_genre1 = self.model_fixture_factory.create_genre(name="Old Rock 1", wikidata_id="Q1")
+        old_genre2 = self.model_fixture_factory.create_genre(name="Old Rock 2", wikidata_id="Q2")
 
         track1 = self.model_fixture_factory.create_uploaded_track_with_file(
             title="Track 1", use_manager_for_genre_playlist_adding=True
@@ -144,7 +144,7 @@ class TestOldCriteriasDeletion(GenreTestCase):
         assert new_genre.parent is None
 
     def test_import_new_tree_then_deletes_old(self):
-        self.model_fixture_factory.create_genre(name="Old Rock")
+        self.model_fixture_factory.create_genre(name="Old Rock", wikidata_id="Q1")
 
         tree_data = [{Fields.NAME_PUBLIC: "New Rock", Fields.CHILDREN: []}]
         response = self._post_genres_tree_import(data={Fields.TREE: tree_data})
@@ -158,7 +158,7 @@ class TestOldCriteriasDeletion(GenreTestCase):
         assert new_genre.name == "New Rock"
 
     def test_import_new_tree_with_children_then_deletes_old(self):
-        self.model_fixture_factory.create_genre(name="Old Rock")
+        self.model_fixture_factory.create_genre(name="Old Rock", wikidata_id="Q1")
 
         tree_data = [{Fields.NAME_PUBLIC: "New Rock", Fields.CHILDREN: []}]
         response = self._post_genres_tree_import(data={Fields.TREE: tree_data})
@@ -172,7 +172,7 @@ class TestOldCriteriasDeletion(GenreTestCase):
         assert new_genre.name == "New Rock"
 
     def test_import_new_tree_with_deep_children_then_deletes_old(self):
-        self.model_fixture_factory.create_genre(name="Old Rock")
+        self.model_fixture_factory.create_genre(name="Old Rock", wikidata_id="Q1")
 
         tree_data = [{Fields.NAME_PUBLIC: "New Rock", Fields.CHILDREN: []}]
         response = self._post_genres_tree_import(data={Fields.TREE: tree_data})
@@ -186,7 +186,7 @@ class TestOldCriteriasDeletion(GenreTestCase):
         assert new_genre.name == "New Rock"
 
     def test_import_new_tree_with_multiple_roots_then_deletes_old(self):
-        self.model_fixture_factory.create_genre(name="Old Rock")
+        self.model_fixture_factory.create_genre(name="Old Rock", wikidata_id="Q1")
 
         tree_data = [{Fields.NAME_PUBLIC: "New Rock", Fields.CHILDREN: []}]
         response = self._post_genres_tree_import(data={Fields.TREE: tree_data})
@@ -200,7 +200,7 @@ class TestOldCriteriasDeletion(GenreTestCase):
         assert new_genre.name == "New Rock"
 
     def test_import_new_tree_with_complex_structure_then_deletes_old(self):
-        self.model_fixture_factory.create_genre(name="Old Rock")
+        self.model_fixture_factory.create_genre(name="Old Rock", wikidata_id="Q1")
 
         tree_data = [{Fields.NAME_PUBLIC: "New Rock", Fields.CHILDREN: []}]
         response = self._post_genres_tree_import(data={Fields.TREE: tree_data})
