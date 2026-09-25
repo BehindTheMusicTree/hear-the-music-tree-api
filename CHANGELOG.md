@@ -65,6 +65,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v4.0.0] - 2026-09-25
+
 ### Added
 
 - **Kit pins**: `the-music-tree-genre-kit` bumped to `v0.27.0` and `the-music-tree-api-kit` to `v0.7.0` (required by it);
