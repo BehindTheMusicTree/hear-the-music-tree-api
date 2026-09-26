@@ -71,7 +71,7 @@ class TestCase(UploadedTrackTestCase, PutBodyDataTestCase):
 
     def test_provided_then_update(self):
         genre_name = "rap"
-        uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="lolo")
+        uploaded_track = self.model_fixture_factory.create_uploaded_track_with_file(title="lolo", use_manager_for_genre_playlist_adding=True)
 
         response = self._put_uploaded_track(uploaded_track.uuid, **{UploadedTrackInputFieldKey.GENRE.value: genre_name})
 

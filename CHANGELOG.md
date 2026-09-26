@@ -67,7 +67,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Changed
 
-- **Kit pins (breaking)**: `the-music-tree-genre-kit` bumped to `v0.29.3` (multi-parent criteria).
+- **Kit pins (breaking)**: `the-music-tree-genre-kit` bumped to `v0.29.4` (multi-parent criteria).
   - `POST /me/genres/tree/import/` now requires `allowsMultiplePrimaryParents` and an `id` on every node (`Q<digits>`
     wikidata id or `LOCAL:<slug>`). Nodes are matched by id, and legacy unkeyed pipeline genres are adopted by name.
   - `GET /me/genres/tree/` requires the `allowsMultiplePrimaryParents=true|false` query param.
