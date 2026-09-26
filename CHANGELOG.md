@@ -65,6 +65,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v5.0.0] - 2026-09-26
+
 ### Changed
 
 - **Kit pins (breaking)**: `the-music-tree-genre-kit` bumped to `v0.29.5` (multi-parent criteria).
