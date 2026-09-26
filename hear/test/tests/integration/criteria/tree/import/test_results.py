@@ -1,7 +1,7 @@
 from rest_framework import status
 
 from hear.serializer.model.criteria.input.Fields import Fields as InputFields
-from hear.serializer.model.criteria.input.tree_import.Fields import Fields as TreeImportFields
+from hear.serializer.model.criteria.input.tree_import import Fields as TreeImportFields
 from hear.test.tests.integration.criteria.GenreTestCase import GenreTestCase
 
 

@@ -4,7 +4,7 @@ from rest_framework import status
 from hear.model.criteria.children.genre.Genre import Genre
 from hear.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 from hear.model.uploaded_track.UploadedTrack import UploadedTrack
-from hear.serializer.model.criteria.input.tree_import.Fields import Fields as TreeImportUploadedTrackInputFieldKey
+from hear.serializer.model.criteria.input.tree_import import Fields as TreeImportUploadedTrackInputFieldKey
 from hear.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from hear.test.utils.AppTestCase import AppTestCase
 from hear.test.utils.uploaded_track.UploadedTrackTestFilename import UploadedTrackTestFilename

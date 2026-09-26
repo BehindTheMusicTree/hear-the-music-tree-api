@@ -93,6 +93,10 @@ hear/migrations/0018_criteria_side.py
 hear/migrations/0019_alter_criteria_side.py
 hear/migrations/0020_genre_mti.py
 hear/migrations/0021_criteria_summary.py
+hear/migrations/0022_genre_kit_import_flags.py
+hear/migrations/0023_genre_kit_multi_parent.py
+hear/migrations/0024_genre_source_backfill.py
+hear/migrations/0025_criteria_case_insensitive_unique_name.py
 hear/migrations/__init__.py
 hear/model/ContentObjectFields.py
 hear/model/album/Album.py
@@ -214,7 +218,6 @@ hear/serializer/model/artist/simple.py
 hear/serializer/model/criteria/input/Fields.py
 hear/serializer/model/criteria/input/post.py
 hear/serializer/model/criteria/input/put.py
-hear/serializer/model/criteria/input/tree_import/Fields.py
 hear/serializer/model/criteria/input/tree_import/__init__.py
 hear/serializer/model/criteria/output/CriteriaOutputFieldKey.py
 hear/serializer/model/criteria/output/detailed.py
