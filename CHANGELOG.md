@@ -67,6 +67,12 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [v5.0.0] - 2026-09-26
 
+### Fixed
+
+- **Worker deploys**: the Dockerfile comment no longer contains the uppercase health-check instruction name.
+  Coolify matched it, kept a stale Dockerfile-health-check flag on the `worker` apps, and failed their rolling
+  update on a missing container health status.
+
 ### Changed
 
 - **Kit pins (breaking)**: `the-music-tree-genre-kit` bumped to `v0.29.5` (multi-parent criteria).

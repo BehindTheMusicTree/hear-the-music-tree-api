@@ -65,8 +65,10 @@ RUN pip install --upgrade pip && \
 
 RUN chmod +x scripts/entrypoint.sh scripts/start-server.sh
 
-# No HEALTHCHECK here on purpose: this image also runs non-HTTP roles (the Coolify `worker`),
+# No Docker health check here on purpose: this image also runs non-HTTP roles (the Coolify `worker`),
 # so health checks are defined per service instead (Coolify app config, docker-compose.yml).
+# Never spell the Docker instruction in uppercase in this file, even in a comment: Coolify greps for it
+# and then waits on a container health status that never exists, failing the worker's rolling update.
 ENTRYPOINT ["bash", "scripts/entrypoint.sh"]
 CMD ["bash", "scripts/start-server.sh"]
 
