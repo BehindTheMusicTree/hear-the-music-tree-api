@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 
 from django.db import models
+from django.db.models.functions import Lower
 from the_music_tree_genre_kit.criteria.AbstractCriteria import AbstractCriteria
 from the_music_tree_genre_kit.track_mixin.TrackMixin import TrackMixin
 
@@ -32,7 +33,7 @@ class Criteria(AbstractCriteria, TrackMixin):
         verbose_name_plural = "Criterias"
         constraints = [
             models.CheckConstraint(condition=~models.Q(_name=""), name="%(class)s_non_empty_name"),
-            models.UniqueConstraint(fields=[Fields.USER, Fields.NAME_INTERNAL], name="unique_name_per_user"),
+            models.UniqueConstraint(Lower(Fields.NAME_INTERNAL), Fields.USER, name="unique_name_per_user"),
         ]
         indexes = [
             models.Index(fields=[Fields.USER, Fields.NAME_INTERNAL], name="%(class)s_user_name_idx"),

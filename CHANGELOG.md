@@ -65,6 +65,25 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Changed
+
+- **Kit pins (breaking)**: `the-music-tree-genre-kit` bumped to `v0.29.5` (multi-parent criteria).
+  - `POST /me/genres/tree/import/` now requires `allowsMultiplePrimaryParents` and an `id` on every node (`Q<digits>`
+    wikidata id or `LOCAL:<slug>`). Nodes are matched by id, and legacy unkeyed pipeline genres are adopted by name.
+  - `GET /me/genres/tree/` requires the `allowsMultiplePrimaryParents=true|false` query param.
+  - Simple criteria output gains the kit's multi-parent keys.
+  - Stale-delete now only removes `source=pipeline`, non-edited genres. It is capped by the new
+    `CRITERIA_TREE_IMPORT_STALE_DELETE_MAX_FRACTION` setting (`0.5`); above the cap, the import returns a 400.
+  - The tree-import `Fields`/serializer are re-exported from the kit; hear's copy was removed.
+  - `CriteriaManager._on_parent_changed` no longer calls `update_ascendants_tracks`.
+- **Migrations**:
+  - `0023_genre_kit_multi_parent` adds `additional_primary_parents`, `secondary_parents`,
+    `allows_multiple_primary_parents`, `source` and `last_seen_run`.
+  - `0024_genre_source_backfill` backfills `source` (non-edited to `pipeline`, manually edited to `admin`) and
+    deletes no rows.
+  - `0025_criteria_case_insensitive_unique_name` makes `unique_name_per_user` case-insensitive. It fails if a
+    user has names that differ only by case.
+
 ## [v4.0.0] - 2026-09-25
 
 ### Added
