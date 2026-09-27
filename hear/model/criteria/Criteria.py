@@ -27,6 +27,18 @@ class Criteria(AbstractCriteria, TrackMixin):
 
         return UploadedTrack.objects.filter(genre=self)
 
+    @property
+    def uploaded_tracks_not_archived(self) -> models.QuerySet[Track]:
+        return self.tracks.filter(archived=False)
+
+    @property
+    def uploaded_tracks_not_archived_count(self) -> int:
+        return self.uploaded_tracks_not_archived.count()
+
+    @property
+    def uploaded_tracks_archived_count(self) -> int:
+        return self.tracks.filter(archived=True).count()
+
     class Meta:
         db_table = "htmt_api_criteria"
         verbose_name = "Criteria"

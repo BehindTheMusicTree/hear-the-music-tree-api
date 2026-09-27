@@ -4,11 +4,11 @@ from the_music_tree_genre_kit.playlist.Playlist import Playlist
 
 from hear.model.playlist.PlaylistDuration import get_duration_str_in_hour_min_sec
 from hear.serializer.model.playlist.base.output.Fields import Fields as AvailableFields
+from hear.serializer.model.playlist.base.output.UploadedTracksCountsMixin import UploadedTracksCountsMixin
 
 
 class Fields:
     UUID = AvailableFields.UUID
-    UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_INTERNAL = AvailableFields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_INTERNAL
     UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC = AvailableFields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC
     DURATION_STR_IN_HOUR_MIN_SEC = AvailableFields.DURATION_STR_IN_HOUR_MIN_SEC
     NAME = AvailableFields.NAME
@@ -17,9 +17,9 @@ class Fields:
     CREATED_ON = AvailableFields.CREATED_ON
 
 
-class PlaylistSimpleSerializer(serializers.ModelSerializer):
+class PlaylistSimpleSerializer(UploadedTracksCountsMixin, serializers.ModelSerializer):
     type = AppCharField(source=Fields.TYPE_LABEL_INTERNAL)
-    uploaded_tracks_count = serializers.IntegerField(source=Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_INTERNAL)
+    uploaded_tracks_count = serializers.SerializerMethodField()
     duration_str_in_hour_min_sec = serializers.SerializerMethodField()
 
     class Meta:

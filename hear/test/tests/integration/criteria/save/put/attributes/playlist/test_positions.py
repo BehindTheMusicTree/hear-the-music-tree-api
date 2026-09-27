@@ -27,13 +27,13 @@ class TestCase(GenreTestCase):
 
         assert response.status_code == status.HTTP_200_OK
 
-        rock_playlist_tracks_not_archived_dict_by_position = (
-            genre_rock.criteria_playlist.tracks_not_archived_dict_by_position
+        rock_playlist_tracks_dict_by_position = (
+            genre_rock.criteria_playlist.tracks_dict_by_position
         )
-        assert rock_playlist_tracks_not_archived_dict_by_position[1].uuid == uploaded_track_punk_added_fourth.uuid
-        assert rock_playlist_tracks_not_archived_dict_by_position[2].uuid == uploaded_track_punk_added_third.uuid
-        assert rock_playlist_tracks_not_archived_dict_by_position[3].uuid == uploaded_track_rock_added_second.uuid
-        assert rock_playlist_tracks_not_archived_dict_by_position[4].uuid == uploaded_track_rock_added_first.uuid
+        assert rock_playlist_tracks_dict_by_position[1].uuid == uploaded_track_punk_added_fourth.uuid
+        assert rock_playlist_tracks_dict_by_position[2].uuid == uploaded_track_punk_added_third.uuid
+        assert rock_playlist_tracks_dict_by_position[3].uuid == uploaded_track_rock_added_second.uuid
+        assert rock_playlist_tracks_dict_by_position[4].uuid == uploaded_track_rock_added_first.uuid
 
     def test_new_parent_then_tracks_in_same_order_and_added_at_the_beginning_of_parent_of_parent(self) -> None:
         genre_guitare = self.model_fixture_factory.create_genre(name="Guitare")
@@ -104,23 +104,23 @@ class TestCase(GenreTestCase):
             title="Punk song 1", genre=genre_punk, use_manager_for_genre_playlist_adding=True
         )
 
-        rock_playlist_tracks_not_archived_dict_by_position = (
-            genre_rock.criteria_playlist.tracks_not_archived_dict_by_position
+        rock_playlist_tracks_dict_by_position = (
+            genre_rock.criteria_playlist.tracks_dict_by_position
         )
-        assert rock_playlist_tracks_not_archived_dict_by_position[1].uuid == track_punk_added_forth.uuid
-        assert rock_playlist_tracks_not_archived_dict_by_position[2].uuid == track_rock_added_third.uuid
-        assert rock_playlist_tracks_not_archived_dict_by_position[3].uuid == track_punk_added_second.uuid
-        assert rock_playlist_tracks_not_archived_dict_by_position[4].uuid == track_rock_added_first.uuid
+        assert rock_playlist_tracks_dict_by_position[1].uuid == track_punk_added_forth.uuid
+        assert rock_playlist_tracks_dict_by_position[2].uuid == track_rock_added_third.uuid
+        assert rock_playlist_tracks_dict_by_position[3].uuid == track_punk_added_second.uuid
+        assert rock_playlist_tracks_dict_by_position[4].uuid == track_rock_added_first.uuid
 
         response = self._put_genre(uuid=genre_punk.uuid, **{PutFields.PARENT: ""})
 
         assert response.status_code == status.HTTP_200_OK
-        rock_playlist_tracks_not_archived_dict_by_position = (
-            genre_rock.criteria_playlist.tracks_not_archived_dict_by_position
+        rock_playlist_tracks_dict_by_position = (
+            genre_rock.criteria_playlist.tracks_dict_by_position
         )
-        assert len(rock_playlist_tracks_not_archived_dict_by_position) == 2
-        assert rock_playlist_tracks_not_archived_dict_by_position[1].uuid == track_rock_added_third.uuid
-        assert rock_playlist_tracks_not_archived_dict_by_position[2].uuid == track_rock_added_first.uuid
+        assert len(rock_playlist_tracks_dict_by_position) == 2
+        assert rock_playlist_tracks_dict_by_position[1].uuid == track_rock_added_third.uuid
+        assert rock_playlist_tracks_dict_by_position[2].uuid == track_rock_added_first.uuid
 
     def test_new_parent_undirect_ascendant_of_old_parent_then_update_positions_in_criterias_in_between(self) -> None:
         genre_rock = self.model_fixture_factory.create_genre(name="Rock")

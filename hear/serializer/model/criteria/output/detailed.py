@@ -1,9 +1,6 @@
 from rest_framework import serializers
 from the_music_tree_api_kit.serializer.AppInputSerializer import AppInputSerializer
 from the_music_tree_api_kit.serializer.field.AppCharField import AppCharField
-from the_music_tree_genre_kit.serializer.model.criteria.output.detailed_tracks import (
-    build_criteria_detailed_tracks_fields,
-)
 from the_music_tree_genre_kit.serializer.model.criteria.output.side import CriteriaSideSerializerMixin
 
 from hear.model.criteria.Criteria import Criteria
@@ -20,18 +17,11 @@ from hear.serializer.model.uploaded_track.output.simple.simple_without_album_and
 
 from .CriteriaOutputFieldKey import CriteriaOutputFieldKey
 
-_tracks_fields = build_criteria_detailed_tracks_fields(
-    UploadedTrackWithoutAlbumPlaylistGenreSerializer,
-    CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_PUBLIC.value,
-    CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC.value,
-    CriteriaOutputFieldKey.UPLOADED_TRACKS_ARCHIVED_COUNT_PUBLIC.value,
-)
-
 
 class CriteriaDetailedSerializer(CriteriaSideSerializerMixin, AppInputSerializer, serializers.ModelSerializer):
-    uploaded_tracks = _tracks_fields[CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_PUBLIC.value]
-    uploaded_tracks_count = _tracks_fields[CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC.value]
-    uploaded_tracks_archived_count = _tracks_fields[CriteriaOutputFieldKey.UPLOADED_TRACKS_ARCHIVED_COUNT_PUBLIC.value]
+    uploaded_tracks = UploadedTrackWithoutAlbumPlaylistGenreSerializer(source="uploaded_tracks_not_archived", many=True)
+    uploaded_tracks_count = serializers.IntegerField(source="uploaded_tracks_not_archived_count")
+    uploaded_tracks_archived_count = serializers.IntegerField()
     parent = CriteriaMinimumSerializer()
     ascendants = CriteriaLineageRelWithoutDescendantSerializer(source=ModelFields.ASCENDANTS_RELS, many=True)
     descendants = CriteriaLineageRelWithoutAscendantSerializer(source=ModelFields.DESCENDANTS_RELS, many=True)

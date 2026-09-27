@@ -19,6 +19,7 @@ class UploadedTrack(Track):
         Track, on_delete=models.CASCADE, parent_link=True, related_name=Fields.UPLOADED_TRACK_RELATED_NAME.value
     )
     track_file_fingerprint_must_be_unique = models.BooleanField(default=False)
+    archived = models.BooleanField(default=False)
 
     if TYPE_CHECKING:
         track_file: TrackFile
