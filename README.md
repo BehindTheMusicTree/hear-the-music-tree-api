@@ -428,15 +428,16 @@ All endpoints are prefixed with the API base URL (`{version}/`). Most endpoints 
 
 ### Genres (me)
 
-| Method   | Endpoint                 | Description               | Auth Required |
-| -------- | ------------------------ | ------------------------- | ------------- |
-| `GET`    | `me/genres/`             | List genres               | 🔒            |
-| `POST`   | `me/genres/`             | Create a genre            | 🔒            |
-| `GET`    | `me/genres/{id}/`        | Retrieve a specific genre | 🔒            |
-| `PUT`    | `me/genres/{id}/`        | Update a genre            | 🔒            |
-| `DELETE` | `me/genres/{id}/`        | Delete a genre            | 🔒            |
-| `GET`    | `me/genres/tree/`        | Get genres tree           | 🔒            |
-| `POST`   | `me/genres/tree/import/` | Import genres tree        | 🔒            |
+| Method   | Endpoint                   | Description               | Auth Required |
+| -------- | -------------------------- | ------------------------- | ------------- |
+| `GET`    | `me/genres/`               | List genres               | 🔒            |
+| `POST`   | `me/genres/`               | Create a genre            | 🔒            |
+| `GET`    | `me/genres/{id}/`          | Retrieve a specific genre | 🔒            |
+| `GET`    | `me/genres/{id}/overview/` | Retrieve a genre overview | 🔒            |
+| `PUT`    | `me/genres/{id}/`          | Update a genre            | 🔒            |
+| `DELETE` | `me/genres/{id}/`          | Delete a genre            | 🔒            |
+| `GET`    | `me/genres/tree/`          | Get genres tree           | 🔒            |
+| `POST`   | `me/genres/tree/import/`   | Import genres tree        | 🔒            |
 
 ### Tags (me)
 
