@@ -27,9 +27,7 @@ class TestCase(GenreTestCase):
 
         assert response.status_code == status.HTTP_200_OK
 
-        rock_playlist_tracks_dict_by_position = (
-            genre_rock.criteria_playlist.tracks_dict_by_position
-        )
+        rock_playlist_tracks_dict_by_position = genre_rock.criteria_playlist.tracks_dict_by_position
         assert rock_playlist_tracks_dict_by_position[1].uuid == uploaded_track_punk_added_fourth.uuid
         assert rock_playlist_tracks_dict_by_position[2].uuid == uploaded_track_punk_added_third.uuid
         assert rock_playlist_tracks_dict_by_position[3].uuid == uploaded_track_rock_added_second.uuid
@@ -104,9 +102,7 @@ class TestCase(GenreTestCase):
             title="Punk song 1", genre=genre_punk, use_manager_for_genre_playlist_adding=True
         )
 
-        rock_playlist_tracks_dict_by_position = (
-            genre_rock.criteria_playlist.tracks_dict_by_position
-        )
+        rock_playlist_tracks_dict_by_position = genre_rock.criteria_playlist.tracks_dict_by_position
         assert rock_playlist_tracks_dict_by_position[1].uuid == track_punk_added_forth.uuid
         assert rock_playlist_tracks_dict_by_position[2].uuid == track_rock_added_third.uuid
         assert rock_playlist_tracks_dict_by_position[3].uuid == track_punk_added_second.uuid
@@ -115,9 +111,7 @@ class TestCase(GenreTestCase):
         response = self._put_genre(uuid=genre_punk.uuid, **{PutFields.PARENT: ""})
 
         assert response.status_code == status.HTTP_200_OK
-        rock_playlist_tracks_dict_by_position = (
-            genre_rock.criteria_playlist.tracks_dict_by_position
-        )
+        rock_playlist_tracks_dict_by_position = genre_rock.criteria_playlist.tracks_dict_by_position
         assert len(rock_playlist_tracks_dict_by_position) == 2
         assert rock_playlist_tracks_dict_by_position[1].uuid == track_rock_added_third.uuid
         assert rock_playlist_tracks_dict_by_position[2].uuid == track_rock_added_first.uuid
