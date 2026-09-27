@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 "ALTER TABLE htmt_api_uploaded_track ADD COLUMN archived boolean NOT NULL DEFAULT false",
                 "ALTER TABLE htmt_api_uploaded_track ALTER COLUMN archived DROP DEFAULT",
                 "UPDATE htmt_api_uploaded_track u SET archived = t.archived "
-                "FROM the_music_tree_genre_kit_track t WHERE u.track_id = t.id",
+                "FROM the_music_tree_genre_kit_track t WHERE u.track_id = t.uuid",
             ],
             reverse_sql="ALTER TABLE htmt_api_uploaded_track DROP COLUMN archived",
         ),
