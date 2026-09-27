@@ -6,6 +6,7 @@ from the_music_tree_genre_kit.criteria.track_playlist_rel.TrackPlaylistRel impor
 
 from hear.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 from hear.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
+from hear.model.playlist.PlaylistUploadedTracks import get_uploaded_tracks
 from hear.serializer.model.uploaded_track.input.UploadedTrackInputFieldKey import UploadedTrackInputFieldKey
 from hear.test.tests.integration.uploaded_track.UploadedTrackTestCase import UploadedTrackTestCase
 
@@ -28,8 +29,8 @@ class TestCase(UploadedTrackTestCase):
         manual_playlist_updated: ManualPlaylist = ManualPlaylist.objects.get(
             user=self.test_user1, name=manual_playlist.name
         )
-        assert manual_playlist_updated.tracks_archived_count == 2
-        assert manual_playlist_updated.tracks_not_archived_count == 0
+        assert get_uploaded_tracks(manual_playlist_updated, archived=True).count() == 2
+        assert get_uploaded_tracks(manual_playlist_updated, archived=False).count() == 0
 
     def test_archived_uploaded_track_then_criteria_playlist_has_plus_1_archived_uploaded_tracks(self):
         criteria = self.model_fixture_factory.create_genre(name="rock")
@@ -48,8 +49,8 @@ class TestCase(UploadedTrackTestCase):
         assert response.status_code == status.HTTP_200_OK
         assert self.saved_object.genre
         criteria_playlist_saved: CriteriaPlaylist = self.saved_object.genre.criteria_playlist
-        assert criteria_playlist_saved.tracks_archived_count == 2
-        assert criteria_playlist_saved.tracks_not_archived_count == 1
+        assert get_uploaded_tracks(criteria_playlist_saved, archived=True).count() == 2
+        assert get_uploaded_tracks(criteria_playlist_saved, archived=False).count() == 1
 
     def test_archived_uploaded_track_then_decrement_next_positions(self):
         manual_playlist = self.model_fixture_factory.create_manual_playlist(name="teuf")
