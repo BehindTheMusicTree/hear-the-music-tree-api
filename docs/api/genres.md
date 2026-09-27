@@ -20,6 +20,12 @@ Manage genre hierarchies and trees.
 
 `GET {base}{id}/`
 
+#### Overview
+
+`GET {base}{id}/overview/`
+
+Lightweight summary for detail panels, without tracks, lineage or playlist. Response fields: `uuid`, `name`, `summary`, `side`, `uploadedTracksArchivedCount`. Returns `404` for a genre owned by another user.
+
 #### Create
 
 `POST {base}`

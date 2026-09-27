@@ -65,6 +65,16 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v5.1.0] - 2026-09-27
+
+### Added
+
+- **Genre overview endpoint**: `GET /v1/me/genres/{uuid}/overview/` returns a lightweight genre summary (`uuid`, `name`, `summary`, `side`, `uploadedTracksArchivedCount`) for detail panels, without tracks, lineage or playlist. Owner-scoped like retrieve, with a query count that does not grow with the number of tracks.
+
+### Changed
+
+- **Track archiving is now hear-owned**: bumped `the-music-tree-genre-kit` to **v0.31.0**, which drops `Track.archived` and the kit's archive bookkeeping. `UploadedTrack.archived` is a hear column; migration `0026_uploaded_track_archived` copies existing values from the kit table before the kit migration drops it (`run_before`), and also adds the kit's new `Genre.has_name_conflict` column. Archiving/unarchiving a track now shifts its playlist positions in `UploadedTrackManager` (atomic), covered by the existing archive position tests. API response shapes (`uploaded_tracks`, `uploaded_tracks_count`, `uploaded_tracks_archived_count`) are unchanged.
+
 ## [v5.0.0] - 2026-09-26
 
 ### Fixed

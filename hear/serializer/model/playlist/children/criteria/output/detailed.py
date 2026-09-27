@@ -3,6 +3,7 @@ from rest_framework import serializers
 from hear.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
 from hear.model.playlist.PlaylistDuration import get_duration_in_sec, get_duration_str_in_hour_min_sec
 from hear.serializer.model.criteria.output.minimum import CriteriaMinimumSerializer
+from hear.serializer.model.playlist.base.output.UploadedTracksCountsMixin import UploadedTracksCountsMixin
 from hear.serializer.model.playlist.children.criteria.output.minumum import CriteriaPlaylistMinimumSerializer
 from hear.serializer.model.track_playlist_rel.output.without_playlist import (
     TrackPlaylistRelWithoutPlaylist,
@@ -11,12 +12,12 @@ from hear.serializer.model.track_playlist_rel.output.without_playlist import (
 from .Fields import Fields
 
 
-class CriteriaPlaylistDetailedSerializer(serializers.ModelSerializer):
+class CriteriaPlaylistDetailedSerializer(UploadedTracksCountsMixin, serializers.ModelSerializer):
     uploaded_track_playlist_relations = TrackPlaylistRelWithoutPlaylist(
         source=Fields.UPLOADED_TRACK_PLAYLIST_RELS_INTERNAL, many=True
     )
-    uploaded_tracks_count = serializers.IntegerField(source=Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_INTERNAL)
-    uploaded_tracks_archived_count = serializers.IntegerField(source=Fields.UPLOADED_TRACKS_ARCHIVED_COUNT_INTERNAL)
+    uploaded_tracks_count = serializers.SerializerMethodField()
+    uploaded_tracks_archived_count = serializers.SerializerMethodField()
     criteria = CriteriaMinimumSerializer()
     root = CriteriaPlaylistMinimumSerializer()  # type: ignore
     parent = CriteriaPlaylistMinimumSerializer()
