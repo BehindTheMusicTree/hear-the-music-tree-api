@@ -65,6 +65,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v5.1.0] - 2026-09-27
+
 ### Added
 
 - **Genre overview endpoint**: `GET /v1/me/genres/{uuid}/overview/` returns a lightweight genre summary (`uuid`, `name`, `summary`, `side`, `uploadedTracksArchivedCount`) for detail panels, without tracks, lineage or playlist. Owner-scoped like retrieve, with a query count that does not grow with the number of tracks.
