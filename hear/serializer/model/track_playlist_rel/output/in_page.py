@@ -3,26 +3,23 @@ from the_music_tree_api_kit.serializer.EagerLoadingMixin import EagerLoadingMixi
 from the_music_tree_genre_kit.criteria.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
 from hear.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey
-from hear.serializer.model.uploaded_track.output.detailed import UploadedTrackDetailedSerializer
+from hear.serializer.model.uploaded_track.output.without_playlists import UploadedTrackWithoutPlaylistsSerializer
 
 from .Fields import Fields
 
 
-class TrackPlaylistRelWithoutPlaylist(EagerLoadingMixin, serializers.ModelSerializer):
-    track = UploadedTrackDetailedSerializer(
+class TrackPlaylistRelInPageSerializer(EagerLoadingMixin, serializers.ModelSerializer):
+    track = UploadedTrackWithoutPlaylistsSerializer(
         source=f"{Fields.TRACK_INTERNAL}.{UploadedTrackFieldKey.UPLOADED_TRACK_RELATED_NAME.value}"
     )
 
     @classmethod
     def setup_queryset(cls, queryset, prefix=""):
         uploaded_track = f"{prefix}{Fields.TRACK_INTERNAL}__{UploadedTrackFieldKey.UPLOADED_TRACK_RELATED_NAME.value}"
-        return UploadedTrackDetailedSerializer.setup_queryset(
+        return UploadedTrackWithoutPlaylistsSerializer.setup_queryset(
             queryset.select_related(uploaded_track), prefix=f"{uploaded_track}__"
         )
 
     class Meta:
         model = TrackPlaylistRel
-        fields = [
-            Fields.TRACK_PUBLIC,
-            Fields.POSITION,
-        ]
+        fields = [Fields.TRACK_PUBLIC, Fields.POSITION]

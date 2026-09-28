@@ -1,6 +1,7 @@
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from the_music_tree_api_kit.view.viewset.model.AppModelViewSet import AppModelViewSet
+from the_music_tree_genre_kit.view.viewset.playlist.PlaylistTracksActionMixin import PlaylistTracksActionMixin
 
 from hear.filtering.set.playlist.children.manual.ManualPlaylistFilterSet import Fields, ManualPlaylistFilterSet
 from hear.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
@@ -9,9 +10,12 @@ from hear.serializer.model.playlist.children.manual.input.post import ManualPlay
 from hear.serializer.model.playlist.children.manual.input.put import ManualPlaylistPutSerializer
 from hear.serializer.model.playlist.children.manual.output.detailed import ManualPlaylistDetailedSerializer
 from hear.serializer.model.playlist.children.manual.output.simple import ManualPlaylistSimpleSerializer
+from hear.serializer.model.track_playlist_rel.output.in_page import TrackPlaylistRelInPageSerializer
 
 
-class ManualPlaylistViewSet(AppModelViewSet[ManualPlaylist]):
+class ManualPlaylistViewSet(PlaylistTracksActionMixin, AppModelViewSet[ManualPlaylist]):
+    track_playlist_rel_serializer_class = TrackPlaylistRelInPageSerializer
+
     def __init__(self, **kwargs):
         super().__init__(
             model_class=ManualPlaylist,
