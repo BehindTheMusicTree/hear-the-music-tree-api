@@ -65,6 +65,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### CI
+
+- **GHCR image build**: [`build-and-deploy.yml`](.github/workflows/build-and-deploy.yml) builds the `runtime` image on GitHub-hosted runners on push to `develop`/`main`, pushes `ghcr.io/behindthemusictree/htmt-api` (`:staging` on develop, `:prod` on main, `:sha-<short>` always), then triggers the Coolify `htmt-api` deploy for the matching environment. Offloads image builds from the VPS once Coolify deploys the prebuilt image.
+
 ## [v5.2.0] - 2026-09-28
 
 ### Added
@@ -90,10 +94,6 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ### Fixed
 
 - **Plays**: a play whose content was deleted returns `content: null` instead of a 500.
-
-### CI
-
-- **GHCR image build**: [`build-and-deploy.yml`](.github/workflows/build-and-deploy.yml) builds the `runtime` image on GitHub-hosted runners on push to `develop`/`main`, pushes `ghcr.io/behindthemusictree/htmt-api` (`:staging` on develop, `:prod` on main, `:sha-<short>` always), then triggers the Coolify `htmt-api` deploy for the matching environment. Offloads image builds from the VPS once Coolify deploys the prebuilt image.
 
 ## [v5.1.1] - 2026-09-28
 
