@@ -8,7 +8,7 @@ This document describes each GitHub Actions workflow in `.github/workflows/`.
 - [Test](#test)
   - [Debugging pytest hangs after django.setup()](#debugging-pytest-hangs-after-djangosetup)
 - [Publish](#publish)
-- [Build](#build)
+- [Build and deploy](#build-and-deploy)
 - [Sync env to server](#sync-env-to-server)
 - [Static Files](#static-files)
 - [Branch Protection](#branch-protection)
@@ -82,19 +82,17 @@ Single publish workflow: collect static files, build Docker image, set image tag
 
 **Migrations:** Not run by the workflow. The API container entrypoint runs `migrate` after the database is ready.
 
-## Build And Push
+## Build and deploy
 
-**File:** `.github/workflows/build-and-push.yml`
+**File:** `.github/workflows/build-and-deploy.yml`
 
-Builds the app Docker image and pushes it to **GitHub Container Registry** (`ghcr.io`).
+Builds the `runtime` image on a GitHub-hosted runner, pushes it to **GitHub Container Registry**, then triggers the Coolify deploy of **`htmt-api`** for the matching environment.
 
-**Triggers:**
+**Triggers:** **Push** to `develop` (staging) or `main` (production).
 
-- **Callable** via `workflow_call` (optional `commit_hash`; optional `environment`, default `TEST`; used by Publish)
+**Jobs:** **build** – checks **`APP_TITLE`** / **`API_DIR_NAME`** (`scripts/check-workflow-env.sh`), logs in to `ghcr.io` with **`GITHUB_TOKEN`** (`packages: write`), builds with GHA layer cache and pushes **`ghcr.io/behindthemusictree/htmt-api`** tagged **`staging`** (develop) or **`prod`** (main), plus **`sha-<short>`** always; **deploy-staging** / **deploy-prod** – `trigger-coolify-deploy` on Coolify app **`htmt-api`** (health check **`/health/`** against **`SERVER_HOST`**), serialized per branch.
 
-**Jobs:** **build-and-push-to-ghcr** – checkout at ref → login to `ghcr.io` with **`GITHUB_TOKEN`** → build and push image with build-args from repo vars. Uses **environment** (TEST or PROD) for vars. Workflow declares **`permissions: packages: write`**.
-
-**Environment:** Dynamic from caller: **TEST** or **PROD**. Image ref: **`ghcr.io/<GHCR_IMAGE_NAMESPACE>/<HTMT_API_IMAGE_REPO>:<IMAGE_TAG>`** (namespace must match **BehindTheMusicTree/infrastructure** variable **`GHCR_IMAGE_NAMESPACE`**). Remove **`DOCKERHUB_USERNAME`** / **`DOCKERHUB_ACCESS_TOKEN`**; set variable **`GHCR_IMAGE_NAMESPACE`** (lowercase org or user).
+**Variables / secrets:** repo vars **`APP_TITLE`**, **`API_DIR_NAME`**; org vars **`COOLIFY_API_SUBDOMAIN`**, **`DOMAIN_NAME`**, **`SERVER_HOST`**; org secret **`COOLIFY_API_TOKEN`**.
 
 ## Sync env to server
 
