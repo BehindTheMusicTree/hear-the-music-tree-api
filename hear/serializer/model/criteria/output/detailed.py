@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from the_music_tree_api_kit.serializer.AppInputSerializer import AppInputSerializer
+from the_music_tree_api_kit.serializer.EagerLoadingMixin import EagerLoadingMixin
 from the_music_tree_api_kit.serializer.field.AppCharField import AppCharField
 from the_music_tree_genre_kit.serializer.model.criteria.output.side import CriteriaSideSerializerMixin
 
@@ -11,15 +12,13 @@ from hear.serializer.model.criteria_lineage_rel.without_descendant import (
     CriteriaLineageRelWithoutDescendantSerializer,
 )
 from hear.serializer.model.playlist.children.criteria.output.minumum import CriteriaPlaylistMinimumSerializer
-from hear.serializer.model.uploaded_track.output.simple.simple_without_album_and_genre import (
-    UploadedTrackWithoutAlbumPlaylistGenreSerializer,
-)
 
 from .CriteriaOutputFieldKey import CriteriaOutputFieldKey
 
 
-class CriteriaDetailedSerializer(CriteriaSideSerializerMixin, AppInputSerializer, serializers.ModelSerializer):
-    uploaded_tracks = UploadedTrackWithoutAlbumPlaylistGenreSerializer(source="uploaded_tracks_not_archived", many=True)
+class CriteriaDetailedSerializer(
+    EagerLoadingMixin, CriteriaSideSerializerMixin, AppInputSerializer, serializers.ModelSerializer
+):
     uploaded_tracks_count = serializers.IntegerField(source="uploaded_tracks_not_archived_count")
     uploaded_tracks_archived_count = serializers.IntegerField()
     parent = CriteriaMinimumSerializer()
@@ -29,6 +28,16 @@ class CriteriaDetailedSerializer(CriteriaSideSerializerMixin, AppInputSerializer
     children = CriteriaMinimumSerializer(many=True)
     criteria_playlist = CriteriaPlaylistMinimumSerializer()
     name = AppCharField(source=ModelFields.NAME_INTERNAL)
+
+    @classmethod
+    def setup_queryset(cls, queryset, prefix=""):
+        return queryset.select_related(
+            f"{prefix}parent", f"{prefix}root", f"{prefix}criteria_playlist"
+        ).prefetch_related(
+            f"{prefix}{ModelFields.ASCENDANTS_RELS}__ascendant",
+            f"{prefix}{ModelFields.DESCENDANTS_RELS}__descendant",
+            f"{prefix}children",
+        )
 
     class Meta:
         model = Criteria
@@ -42,7 +51,6 @@ class CriteriaDetailedSerializer(CriteriaSideSerializerMixin, AppInputSerializer
             CriteriaOutputFieldKey.ROOT.value,
             CriteriaOutputFieldKey.CHILDREN.value,
             CriteriaOutputFieldKey.CRITERIA_PLAYLIST.value,
-            CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_PUBLIC.value,
             CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC.value,
             CriteriaOutputFieldKey.UPLOADED_TRACKS_ARCHIVED_COUNT_PUBLIC.value,
             CriteriaOutputFieldKey.CREATED_ON.value,

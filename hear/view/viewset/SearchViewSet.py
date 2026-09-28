@@ -99,11 +99,11 @@ class SearchViewSet(ObjectMultipleModelAPIViewSet):
 
         querylist = (
             {
-                "queryset": uploaded_track_fs.qs,
+                "queryset": UploadedTrackDetailedSerializer.setup_queryset(uploaded_track_fs.qs),
                 "serializer_class": UploadedTrackDetailedSerializer,
             },
             {
-                "queryset": manual_playlist_fs.qs,
+                "queryset": ManualPlaylistSimpleSerializer.setup_queryset(manual_playlist_fs.qs),
                 "serializer_class": ManualPlaylistSimpleSerializer,
             },
             {

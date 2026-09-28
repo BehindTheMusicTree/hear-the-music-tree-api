@@ -1,9 +1,18 @@
 from rest_framework import serializers
+from the_music_tree_api_kit.serializer.EagerLoadingMixin import EagerLoadingMixin
 
 from hear.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
-from hear.model.playlist.PlaylistDuration import get_duration_in_sec, get_duration_str_in_hour_min_sec
+from hear.model.playlist.PlaylistDuration import format_duration_in_hour_min_sec
+from hear.model.playlist.PlaylistUploadedTracks import (
+    DURATION_IN_SEC_ANNOTATED,
+    UPLOADED_TRACKS_ARCHIVED_COUNT_ANNOTATED,
+    UPLOADED_TRACKS_COUNT_ANNOTATED,
+)
 from hear.serializer.model.criteria.output.minimum import CriteriaMinimumSerializer
-from hear.serializer.model.playlist.base.output.UploadedTracksCountsMixin import UploadedTracksCountsMixin
+from hear.serializer.model.playlist.base.output.detailed import (
+    annotate_counts_and_duration,
+    prefetch_uploaded_track_playlist_rels,
+)
 from hear.serializer.model.playlist.children.criteria.output.minumum import CriteriaPlaylistMinimumSerializer
 from hear.serializer.model.track_playlist_rel.output.without_playlist import (
     TrackPlaylistRelWithoutPlaylist,
@@ -12,17 +21,23 @@ from hear.serializer.model.track_playlist_rel.output.without_playlist import (
 from .Fields import Fields
 
 
-class CriteriaPlaylistDetailedSerializer(UploadedTracksCountsMixin, serializers.ModelSerializer):
+class CriteriaPlaylistDetailedSerializer(EagerLoadingMixin, serializers.ModelSerializer):
     uploaded_track_playlist_relations = TrackPlaylistRelWithoutPlaylist(
         source=Fields.UPLOADED_TRACK_PLAYLIST_RELS_INTERNAL, many=True
     )
-    uploaded_tracks_count = serializers.SerializerMethodField()
-    uploaded_tracks_archived_count = serializers.SerializerMethodField()
+    uploaded_tracks_count = serializers.IntegerField(source=UPLOADED_TRACKS_COUNT_ANNOTATED)
+    uploaded_tracks_archived_count = serializers.IntegerField(source=UPLOADED_TRACKS_ARCHIVED_COUNT_ANNOTATED)
     criteria = CriteriaMinimumSerializer()
     root = CriteriaPlaylistMinimumSerializer()  # type: ignore
     parent = CriteriaPlaylistMinimumSerializer()
-    duration_in_sec = serializers.SerializerMethodField()
+    duration_in_sec = serializers.IntegerField(source=DURATION_IN_SEC_ANNOTATED)
     duration_str_in_hour_min_sec = serializers.SerializerMethodField()
+
+    @classmethod
+    def setup_queryset(cls, queryset, prefix=""):  # noqa: ARG003 - annotations only apply to the top-level queryset
+        return prefetch_uploaded_track_playlist_rels(annotate_counts_and_duration(queryset)).select_related(
+            Fields.CRITERIA, Fields.PARENT, Fields.ROOT
+        )
 
     class Meta:
         model = CriteriaPlaylist
@@ -41,8 +56,5 @@ class CriteriaPlaylistDetailedSerializer(UploadedTracksCountsMixin, serializers.
             Fields.UPDATED_ON,
         ]
 
-    def get_duration_in_sec(self, obj: CriteriaPlaylist) -> int:
-        return get_duration_in_sec(obj)
-
     def get_duration_str_in_hour_min_sec(self, obj: CriteriaPlaylist) -> str:
-        return get_duration_str_in_hour_min_sec(obj)
+        return format_duration_in_hour_min_sec(getattr(obj, DURATION_IN_SEC_ANNOTATED))

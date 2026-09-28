@@ -5,14 +5,18 @@ from drf_spectacular.utils import (
 )
 from the_music_tree_api_kit.view.viewset.model.AppModelViewSet import AppModelViewSet
 from the_music_tree_genre_kit.playlist.Playlist import Playlist
+from the_music_tree_genre_kit.view.viewset.playlist.PlaylistTracksActionMixin import PlaylistTracksActionMixin
 
 from hear.filtering.set.playlist.Fields import Fields as QueryParamsFields
 from hear.filtering.set.playlist.PlaylistFilterSet import PlaylistFilterSet
 from hear.serializer.model.playlist.base.output.detailed import PlaylistDetailedSerializer
 from hear.serializer.model.playlist.base.output.simple import PlaylistSimpleSerializer
+from hear.serializer.model.track_playlist_rel.output.in_page import TrackPlaylistRelInPageSerializer
 
 
-class PlaylistViewSet(AppModelViewSet[Playlist]):
+class PlaylistViewSet(PlaylistTracksActionMixin, AppModelViewSet[Playlist]):
+    track_playlist_rel_serializer_class = TrackPlaylistRelInPageSerializer
+
     def __init__(self, **kwargs):
         super().__init__(
             model_class=Playlist,
