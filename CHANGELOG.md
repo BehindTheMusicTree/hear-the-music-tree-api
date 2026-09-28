@@ -74,10 +74,6 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Changed
 
-- **Kit pins**: `the-music-tree-genre-kit` bumped to **v0.34.0** (unique `(playlist, track)` rels, tracks action mixin)
-  and `the-music-tree-api-kit` to **v0.8.0** (eager loading on list and detail). Migration `0028_genre_is_unaccepted_root`
-  adds the kit's new `Genre.is_unaccepted_root` column (the pipeline's flag for canonical roots awaiting admin
-  acceptance; hear exposes no endpoint for it).
 - **Plays**: `content` is now the minimum playlist or uploaded-track representation, not the detailed one.
 - **Genre/tag detail**: dropped the unbounded `uploadedTracks` list. The counts remain. Use the criteria playlist's
   tracks page instead.
@@ -92,6 +88,14 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ### Fixed
 
 - **Plays**: a play whose content was deleted returns `content: null` instead of a 500.
+
+## [v5.1.1] - 2026-09-28
+
+### Changed
+
+- **Kit pins**: `the-music-tree-genre-kit` bumped to **v0.34.0** and `the-music-tree-api-kit` to **v0.8.0** (required by
+  it). Migration `0028_genre_is_unaccepted_root` adds the kit's new `Genre.is_unaccepted_root` column (the pipeline's
+  flag for canonical roots awaiting admin acceptance; hear exposes no endpoint for it).
 
 ## [v5.1.0] - 2026-09-27
 
