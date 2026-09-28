@@ -43,7 +43,7 @@ class TestCase(UploadedTrackTestCase):
         assert self.saved_object.album
         album_artists: QuerySet[Artist] = self.saved_object.album.album_artists.all()
         assert album_artists.count() == 3
-        assert [artist.name for artist in album_artists] == ["One", "Two", "Three"]
+        assert {artist.name for artist in album_artists} == {"One", "Two", "Three"}
 
     def test_3_separated_by_comma_then_ok(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.ALBUM_ARTISTS_ONE_TWO_THREE_COMMA_ID3V2)
@@ -52,7 +52,7 @@ class TestCase(UploadedTrackTestCase):
         assert self.saved_object.album
         album_artists: QuerySet[Artist] = self.saved_object.album.album_artists.all()
         assert album_artists.count() == 3
-        assert [artist.name for artist in album_artists] == ["One", "Two", "Three"]
+        assert {artist.name for artist in album_artists} == {"One", "Two", "Three"}
 
     def test_3_separated_by_double_antislash_then_ok(self):
         response = self._post_uploaded_track(
@@ -63,7 +63,7 @@ class TestCase(UploadedTrackTestCase):
         assert self.saved_object.album
         album_artists: QuerySet[Artist] = self.saved_object.album.album_artists.all()
         assert album_artists.count() == 3
-        assert [artist.name for artist in album_artists] == ["One", "Two", "Three"]
+        assert {artist.name for artist in album_artists} == {"One", "Two", "Three"}
 
     def test_3_separated_by_double_slash_then_ok(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.ALBUM_ARTISTS_ONE_TWO_THREE_DOUBLE_SLASH_ID3V2)
@@ -72,7 +72,7 @@ class TestCase(UploadedTrackTestCase):
         assert self.saved_object.album
         album_artists: QuerySet[Artist] = self.saved_object.album.album_artists.all()
         assert album_artists.count() == 3
-        assert [artist.name for artist in album_artists] == ["One", "Two", "Three"]
+        assert {artist.name for artist in album_artists} == {"One", "Two", "Three"}
 
     def test_3_multi_tags_and_slash_then_ok(self):
         response = self._post_uploaded_track(
@@ -92,7 +92,7 @@ class TestCase(UploadedTrackTestCase):
         assert self.saved_object.album
         album_artists: QuerySet[Artist] = self.saved_object.album.album_artists.all()
         assert album_artists.count() == 3
-        assert [artist.name for artist in album_artists] == ["One", "Two", "Three"]
+        assert {artist.name for artist in album_artists} == {"One", "Two", "Three"}
 
     def test_3_separated_by_semicolon_then_ok(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.ALBUM_ARTISTS_ONE_TWO_THREE_SEMICOLON_ID3V2)
@@ -101,7 +101,7 @@ class TestCase(UploadedTrackTestCase):
         assert self.saved_object.album
         album_artists: QuerySet[Artist] = self.saved_object.album.album_artists.all()
         assert album_artists.count() == 3
-        assert [artist.name for artist in album_artists] == ["One", "Two", "Three"]
+        assert {artist.name for artist in album_artists} == {"One", "Two", "Three"}
 
     def test_3_separated_by_slash_then_ok(self):
         response = self._post_uploaded_track(UploadedTrackTestFilename.ALBUM_ARTISTS_ONE_TWO_THREE_SLASH_ID3V2)
@@ -110,4 +110,4 @@ class TestCase(UploadedTrackTestCase):
         assert self.saved_object.album
         album_artists: QuerySet[Artist] = self.saved_object.album.album_artists.all()
         assert album_artists.count() == 3
-        assert [artist.name for artist in album_artists] == ["One", "Two", "Three"]
+        assert {artist.name for artist in album_artists} == {"One", "Two", "Three"}
