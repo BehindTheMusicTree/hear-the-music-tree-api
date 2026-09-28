@@ -65,6 +65,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v5.2.0] - 2026-09-28
+
 ### Added
 
 - **Playlist tracks page**: `GET /me/{playlists|manual-playlists|genre-playlists|tag-playlists}/{uuid}/tracks/` returns a
