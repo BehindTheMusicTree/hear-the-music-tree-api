@@ -6,6 +6,8 @@ from django.db.models.functions import Coalesce
 from the_music_tree_genre_kit.criteria.track_playlist_rel.Fields import Fields as RelFields
 from the_music_tree_genre_kit.criteria.track_playlist_rel.TrackPlaylistRel import TrackPlaylistRel
 
+from hear.model.uploaded_track.UploadedTrackFieldKey import UploadedTrackFieldKey
+
 if TYPE_CHECKING:
     from the_music_tree_genre_kit.playlist.Playlist import Playlist
 
@@ -14,6 +16,7 @@ if TYPE_CHECKING:
 UPLOADED_TRACKS_COUNT_ANNOTATED = "uploaded_tracks_count_annotated"
 UPLOADED_TRACKS_ARCHIVED_COUNT_ANNOTATED = "uploaded_tracks_archived_count_annotated"
 DURATION_IN_SEC_ANNOTATED = "duration_in_sec_annotated"
+_UPLOADED_TRACK = f"{RelFields.TRACK_INTERNAL}__{UploadedTrackFieldKey.UPLOADED_TRACK_RELATED_NAME.value}"
 
 
 def get_uploaded_tracks(playlist: Playlist, archived: bool) -> models.QuerySet[UploadedTrack]:
@@ -26,7 +29,7 @@ def get_uploaded_tracks(playlist: Playlist, archived: bool) -> models.QuerySet[U
 def _uploaded_rels(archived: bool) -> models.QuerySet[TrackPlaylistRel]:
     return (
         TrackPlaylistRel._default_manager.filter(
-            **{RelFields.PLAYLIST: OuterRef("pk"), f"{RelFields.TRACK_INTERNAL}__uploadedtrack__archived": archived}
+            **{RelFields.PLAYLIST: OuterRef("pk"), f"{_UPLOADED_TRACK}__archived": archived}
         )
         .order_by()
         .values(RelFields.PLAYLIST)
@@ -40,7 +43,5 @@ def uploaded_tracks_count_annotation(archived: bool) -> Coalesce:
 
 def duration_in_sec_annotation() -> Coalesce:
     """Summed file duration of the playlist's non-archived uploaded tracks."""
-    total = _uploaded_rels(archived=False).annotate(
-        total=Sum(f"{RelFields.TRACK_INTERNAL}__uploadedtrack__track_file__duration_in_sec")
-    )
+    total = _uploaded_rels(archived=False).annotate(total=Sum(f"{_UPLOADED_TRACK}__track_file__duration_in_sec"))
     return Coalesce(Subquery(total.values("total")), 0)

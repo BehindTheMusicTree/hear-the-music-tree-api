@@ -33,3 +33,19 @@ class TestCase(GenrePlaylistTestCase):
         )
 
         assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    def test_tracks_page_with_archived_track_then_hidden(self):
+        genre = self.model_fixture_factory.create_genre(name="rock")
+        for title in ("kept", "archived"):
+            track = self.model_fixture_factory.create_uploaded_track_with_file(
+                title=title, genre=genre, use_manager_for_genre_playlist_adding=True
+            )
+        track.archived = True
+        track.save(update_fields=["archived"])
+
+        page = self.api_client.get(
+            path=reverse("me-genre-playlist-tracks", kwargs={"pk": genre.criteria_playlist.uuid})
+        ).json()
+
+        assert page[PaginatedResponseFields.OVERALL_TOTAL] == 1
+        assert page[PaginatedResponseFields.RESULTS][0]["track"]["title"] == "kept"

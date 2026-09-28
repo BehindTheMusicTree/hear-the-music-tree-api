@@ -7,8 +7,11 @@ from the_music_tree_api_kit.serializer.field.AppCharField import AppCharField
 from the_music_tree_genre_kit.playlist.Playlist import Playlist
 
 from hear.model.play.Play import Play
+from hear.model.playlist.children.criteria.CriteriaPlaylist import CriteriaPlaylist
+from hear.model.playlist.children.manual.ManualPlaylist import ManualPlaylist
 from hear.model.uploaded_track.UploadedTrack import UploadedTrack
 from hear.serializer.model.playlist.base.output.minimum import PlaylistMinimumSerializer
+from hear.serializer.model.playlist.children.criteria.output.minumum import CriteriaPlaylistMinimumSerializer
 from hear.serializer.model.uploaded_track.output.minimum import UploadedTrackMinimumSerializer
 
 from .Fields import Fields
@@ -23,8 +26,10 @@ class PlayDetailedSerializer(EagerLoadingMixin, serializers.ModelSerializer):
         return queryset.select_related(f"{prefix}{Fields.CONTENT_TYPE}").prefetch_related(
             GenericPrefetch(
                 f"{prefix}{Fields.CONTENT}",
+                # A play's content type is the concrete playlist subtype, so each needs its own queryset.
                 [
-                    PlaylistMinimumSerializer.setup_queryset(Playlist._default_manager.all()),
+                    ManualPlaylist.objects.all(),
+                    CriteriaPlaylistMinimumSerializer.setup_queryset(CriteriaPlaylist.objects.all()),
                     UploadedTrack.objects.prefetch_related("artists"),
                 ],
             )

@@ -16,8 +16,10 @@ class TrackPlaylistRelInPageSerializer(EagerLoadingMixin, serializers.ModelSeria
     @classmethod
     def setup_queryset(cls, queryset, prefix=""):
         uploaded_track = f"{prefix}{Fields.TRACK_INTERNAL}__{UploadedTrackFieldKey.UPLOADED_TRACK_RELATED_NAME.value}"
+        # Archived tracks are hidden, so the page total matches the playlist's uploadedTracksCount.
         return UploadedTrackWithoutPlaylistsSerializer.setup_queryset(
-            queryset.select_related(uploaded_track), prefix=f"{uploaded_track}__"
+            queryset.filter(**{f"{uploaded_track}__archived": False}).select_related(uploaded_track),
+            prefix=f"{uploaded_track}__",
         )
 
     class Meta:

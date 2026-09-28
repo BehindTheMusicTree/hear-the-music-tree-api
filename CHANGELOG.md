@@ -69,7 +69,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - **Playlist tracks page**: `GET /me/{playlists|manual-playlists|genre-playlists|tag-playlists}/{uuid}/tracks/` returns a
   paginated, position-ordered page of `{position, track}`. Its tracks don't carry a nested `playlists` list, so the
-  cost depends on page size, not playlist size.
+  cost depends on page size, not playlist size. Archived tracks are left out, so the total matches
+  `uploadedTracksCount`.
 
 ### Changed
 

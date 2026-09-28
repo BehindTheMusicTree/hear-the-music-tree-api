@@ -34,6 +34,8 @@ class TestCase(AppTestCase[ManualPlaylist]):
             self.model_fixture_factory.create_play(track)
             self.model_fixture_factory.create_play(self.manual_playlist)
             self.model_fixture_factory.create_manual_playlist(name=f"p{self.seeded}")
+            sub_genre = self.model_fixture_factory.create_genre(name=f"g{self.seeded}", parent=self.genre)
+            self.model_fixture_factory.create_play(sub_genre.criteria_playlist)
 
     def _count(self, path: Callable[[], str]) -> int:
         with CaptureQueriesContext(connection) as queries:
