@@ -33,6 +33,14 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ```markdown
 ## [Unreleased]
 
+### Removed
+
+- **BREAKING — Playlist detail**: `uploadedTrackPlaylistRelations` is no longer returned by playlist and criteria-playlist detail endpoints (`me/playlists/{uuid}/`, `me/genre-playlists/{uuid}/`, …); the detail response is metadata only and no longer prefetches every track. Page tracks through the `…/{uuid}/tracks/` sub-resource instead.
+
+### Added
+
+- **Bruno**: `playlist/criteria/genre/tracks` request for the paginated genre-playlist tracks sub-resource.
+
 ### CI
 
 - **python-project-standards v5.1.0 (Copier)**: Adopted via [`.copier-answers.yml`](.copier-answers.yml); `copier update` now merges shared pre-commit/ruff baselines while keeping repo hooks. Removed **`STANDARDS_VERSION`**, `scripts/verify-standards.sh`, `scripts/check_lint_baseline.py`, `baselines/DIGESTS`, `baselines/expected-mypy.json` and the `verify-python-project-standards` hook. [`scripts/publish_github_release.py`](scripts/publish_github_release.py) now requires the version argument (it no longer falls back to `STANDARDS_VERSION`).
