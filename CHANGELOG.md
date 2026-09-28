@@ -65,6 +65,12 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Changed
+
+- **Kit pins**: `the-music-tree-genre-kit` bumped to **v0.34.0** and `the-music-tree-api-kit` to **v0.8.0** (required by
+  it). Migration `0028_genre_is_unaccepted_root` adds the kit's new `Genre.is_unaccepted_root` column (the pipeline's
+  flag for canonical roots awaiting admin acceptance; hear exposes no endpoint for it).
+
 ## [v5.1.0] - 2026-09-27
 
 ### Added
