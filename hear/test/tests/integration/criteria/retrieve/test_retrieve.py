@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from rest_framework import status
 from the_music_tree_api_kit.utils.data_transformer import to_camel_case
 
@@ -26,27 +24,15 @@ class TestCase(GenreTestCase):
         assert response.status_code == status.HTTP_200_OK
         assert self.result[CriteriaOutputFieldKey.SIDE.value] == side
 
-    def test_uploaded_tracks(self):
+    def test_uploaded_tracks_count_without_track_list(self):
         criteria = self.model_fixture_factory.create_genre(name="rock")
-
-        title1 = "stylax"
-        track1_uuid = self.model_fixture_factory.create_uploaded_track_with_file(
-            title=title1, genre=criteria, use_manager_for_genre_playlist_adding=True
-        ).uuid
-
-        title2 = "bien"
-        track2_uuid = self.model_fixture_factory.create_uploaded_track_with_file(
-            title=title2, genre=criteria, use_manager_for_genre_playlist_adding=True
-        ).uuid
+        for title in ("stylax", "bien"):
+            self.model_fixture_factory.create_uploaded_track_with_file(
+                title=title, genre=criteria, use_manager_for_genre_playlist_adding=True
+            )
 
         response = self._retrieve_genre(uuid=criteria.uuid)
 
         assert response.status_code == status.HTTP_200_OK
-        uploaded_tracks = self.result[to_camel_case(CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_PUBLIC.value)]
-        assert len(uploaded_tracks) == 2
-        titles = [track[CriteriaOutputFieldKey.UPLOADED_TRACKS_TITLE.value] for track in uploaded_tracks]
-        assert title1 in titles
-        assert title2 in titles
-        uuids = [UUID(track[CriteriaOutputFieldKey.UUID.value]) for track in uploaded_tracks]
-        assert track1_uuid in uuids
-        assert track2_uuid in uuids
+        assert self.result[to_camel_case(CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC.value)] == 2
+        assert to_camel_case(CriteriaOutputFieldKey.UPLOADED_TRACKS_NOT_ARCHIVED_PUBLIC.value) not in self.result

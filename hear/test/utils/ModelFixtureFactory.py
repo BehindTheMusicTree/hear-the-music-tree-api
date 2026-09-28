@@ -168,7 +168,7 @@ class ModelFixtureFactory:
             PlayFields.CREATED_ON: timezone.make_aware(datetime.now()),
             PlayFields.UPDATED_ON: timezone.make_aware(datetime.now()),
             PlayFields.CONTENT_TYPE: content_type,
-            PlayFields.CONTENT: content.pk,
+            PlayFields.CONTENT_UUID: content.pk,
         }
         model_fields.update(kwargs)
         return G(Play, **model_fields)

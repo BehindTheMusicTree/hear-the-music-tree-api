@@ -65,6 +65,32 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v5.2.0] - 2026-09-28
+
+### Added
+
+- **Playlist tracks page**: `GET /me/{playlists|manual-playlists|genre-playlists|tag-playlists}/{uuid}/tracks/` returns a
+  paginated, position-ordered page of `{position, track}`. Its tracks don't carry a nested `playlists` list, so the
+  cost depends on page size, not playlist size. Archived tracks are left out, so the total matches
+  `uploadedTracksCount`.
+
+### Changed
+
+- **Plays**: `content` is now the minimum playlist or uploaded-track representation, not the detailed one.
+- **Genre/tag detail**: dropped the unbounded `uploadedTracks` list. The counts remain. Use the criteria playlist's
+  tracks page instead.
+
+### Performance
+
+- **Eager loading everywhere**: playlist (base, manual, criteria), uploaded-track, criteria, play and search responses
+  preload their relations. Track counts and playlist durations are SQL annotations instead of per-row queries. The new
+  query-budget tests (`hear/test/tests/integration/perf/`) check that each endpoint's query count stays constant from
+  2 to 12 rows.
+
+### Fixed
+
+- **Plays**: a play whose content was deleted returns `content: null` instead of a 500.
+
 ## [v5.1.1] - 2026-09-28
 
 ### Changed
