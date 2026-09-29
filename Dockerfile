@@ -82,5 +82,10 @@ RUN pip install --upgrade pip && pip install .
 
 RUN chmod +x scripts/entrypoint.sh scripts/start-server.sh
 
+# Last so a new commit doesn't invalidate the cached layers above. Not SOURCE_COMMIT: Coolify
+# overrides that one at runtime (with "HEAD" for image-based apps).
+ARG GIT_COMMIT
+ENV GIT_COMMIT=$GIT_COMMIT
+
 ENTRYPOINT ["bash", "scripts/entrypoint.sh"]
 CMD ["bash", "scripts/start-server.sh"]
