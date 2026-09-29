@@ -33,17 +33,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ```markdown
 ## [Unreleased]
 
-### Removed
-
-- **BREAKING — Playlist detail**: `uploadedTrackPlaylistRelations` is no longer returned by playlist and criteria-playlist detail endpoints (`me/playlists/{uuid}/`, `me/genre-playlists/{uuid}/`, …); the detail response is metadata only and no longer prefetches every track. Page tracks through the `…/{uuid}/tracks/` sub-resource instead.
-
-### Added
-
-- **Bruno**: `playlist/criteria/genre/tracks` request for the paginated genre-playlist tracks sub-resource.
-
 ### CI
 
-- **Retired `.github/workflows/sync-env-to-coolify.yml`**: the remaining 12 Coolify env values (Spotify/Google OAuth client IDs, secrets and redirect URIs, demo/superadmin/tmta accounts, `ACOUSTID_API_KEY`) are now written by `infrastructure`'s `server-setup` from org-level `SPOTIFY_CLIENT_*` / `HTMT_*` vars and secrets, so infra is the single writer and rotations reach Coolify on the next provision. The `STAGING`/`PROD` environment secrets this workflow read are deleted, and the now-unused vars are dropped from `actionlint.yaml`.
 - **python-project-standards v5.1.0 (Copier)**: Adopted via [`.copier-answers.yml`](.copier-answers.yml); `copier update` now merges shared pre-commit/ruff baselines while keeping repo hooks. Removed **`STANDARDS_VERSION`**, `scripts/verify-standards.sh`, `scripts/check_lint_baseline.py`, `baselines/DIGESTS`, `baselines/expected-mypy.json` and the `verify-python-project-standards` hook. [`scripts/publish_github_release.py`](scripts/publish_github_release.py) now requires the version argument (it no longer falls back to `STANDARDS_VERSION`).
 - **python-project-standards v4.1.0 layout**: Vendored [**`baselines/`**](baselines/) (`ruff.toml`, **`DIGESTS`**, **`expected-mypy.json`**), thin **`[tool.ruff] extend`** in [`pyproject.toml`](pyproject.toml), [**`STANDARDS_VERSION`**](STANDARDS_VERSION) **`4.1.0`**, and [**`scripts/check_lint_baseline.py`**](scripts/check_lint_baseline.py) (with [**`verify-standards.sh`**](scripts/verify-standards.sh) invoking it). [**`pre-commit-hooks`**](.pre-commit-config.yaml) **`rev`** bumped to **`v6.0.0`**. Pre-commit still runs **inline** in [`.github/workflows/test.yml`](.github/workflows/test.yml) (no org **`reusable-pre-commit`** job).
 
@@ -74,12 +65,23 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v6.0.0] - 2026-09-30
+
+### Removed
+
+- **BREAKING — Playlist detail**: `uploadedTrackPlaylistRelations` is no longer returned by playlist and criteria-playlist detail endpoints (`me/playlists/{uuid}/`, `me/genre-playlists/{uuid}/`, …); the detail response is metadata only and no longer prefetches every track. Page tracks through the `…/{uuid}/tracks/` sub-resource instead.
+
+### Added
+
+- **Bruno**: `playlist/criteria/genre/tracks` request for the paginated genre-playlist tracks sub-resource.
+
 ### Fixed
 
 - **`/health/` `commit` on image-based deploys**: Coolify sets `SOURCE_COMMIT=HEAD` at runtime for apps deployed from a registry image, so `commit` reported `HEAD`. [`build-and-deploy.yml`](.github/workflows/build-and-deploy.yml) now bakes the commit SHA into the image as `GIT_COMMIT` (Dockerfile build arg), which `hear/settings.py` reads instead of `SOURCE_COMMIT`.
 
 ### CI
 
+- **Retired `.github/workflows/sync-env-to-coolify.yml`**: the remaining 12 Coolify env values (Spotify/Google OAuth client IDs, secrets and redirect URIs, demo/superadmin/tmta accounts, `ACOUSTID_API_KEY`) are now written by `infrastructure`'s `server-setup` from org-level `SPOTIFY_CLIENT_*` / `HTMT_*` vars and secrets, so infra is the single writer and rotations reach Coolify on the next provision. The `STAGING`/`PROD` environment secrets this workflow read are deleted, and the now-unused vars are dropped from `actionlint.yaml`.
 - **Build tag races**: `build-and-deploy.yml` now serializes runs per branch (workflow-level concurrency, replacing the per-deploy-job groups), so a slower older build can no longer overwrite a newer `:staging`/`:prod` tag.
 - **Manual redeploy**: `build-and-deploy.yml` now also runs on `workflow_dispatch`, so a deploy that failed on the image pull can be re-run by hand.
 
