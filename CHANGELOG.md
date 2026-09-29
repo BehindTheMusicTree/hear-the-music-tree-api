@@ -43,6 +43,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### CI
 
+- **Retired `.github/workflows/sync-env-to-coolify.yml`**: the remaining 12 Coolify env values (Spotify/Google OAuth client IDs, secrets and redirect URIs, demo/superadmin/tmta accounts, `ACOUSTID_API_KEY`) are now written by `infrastructure`'s `server-setup` from org-level `SPOTIFY_CLIENT_*` / `HTMT_*` vars and secrets, so infra is the single writer and rotations reach Coolify on the next provision. The `STAGING`/`PROD` environment secrets this workflow read are deleted, and the now-unused vars are dropped from `actionlint.yaml`.
 - **python-project-standards v5.1.0 (Copier)**: Adopted via [`.copier-answers.yml`](.copier-answers.yml); `copier update` now merges shared pre-commit/ruff baselines while keeping repo hooks. Removed **`STANDARDS_VERSION`**, `scripts/verify-standards.sh`, `scripts/check_lint_baseline.py`, `baselines/DIGESTS`, `baselines/expected-mypy.json` and the `verify-python-project-standards` hook. [`scripts/publish_github_release.py`](scripts/publish_github_release.py) now requires the version argument (it no longer falls back to `STANDARDS_VERSION`).
 - **python-project-standards v4.1.0 layout**: Vendored [**`baselines/`**](baselines/) (`ruff.toml`, **`DIGESTS`**, **`expected-mypy.json`**), thin **`[tool.ruff] extend`** in [`pyproject.toml`](pyproject.toml), [**`STANDARDS_VERSION`**](STANDARDS_VERSION) **`4.1.0`**, and [**`scripts/check_lint_baseline.py`**](scripts/check_lint_baseline.py) (with [**`verify-standards.sh`**](scripts/verify-standards.sh) invoking it). [**`pre-commit-hooks`**](.pre-commit-config.yaml) **`rev`** bumped to **`v6.0.0`**. Pre-commit still runs **inline** in [`.github/workflows/test.yml`](.github/workflows/test.yml) (no org **`reusable-pre-commit`** job).
 
@@ -72,6 +73,12 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 **Note:** During releases, maintainers will move entries from `[Unreleased]` to a versioned section (e.g., `## [0.2.8] - 2025-01-XX`).
 
 ## [Unreleased]
+
+## [v5.2.1] - 2026-09-28
+
+### CI
+
+- **GHCR image build**: [`build-and-deploy.yml`](.github/workflows/build-and-deploy.yml) builds the `runtime` image on GitHub-hosted runners on push to `develop`/`main`, pushes `ghcr.io/behindthemusictree/htmt-api` (`:staging` on develop, `:prod` on main, `:sha-<short>` always), then triggers the Coolify `htmt-api` deploy for the matching environment. Offloads image builds from the VPS once Coolify deploys the prebuilt image.
 
 ## [v5.2.0] - 2026-09-28
 
