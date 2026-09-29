@@ -66,6 +66,15 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Fixed
+
+- **`/health/` `commit` on image-based deploys**: Coolify sets `SOURCE_COMMIT=HEAD` at runtime for apps deployed from a registry image, so `commit` reported `HEAD`. [`build-and-deploy.yml`](.github/workflows/build-and-deploy.yml) now bakes the commit SHA into the image as `GIT_COMMIT` (Dockerfile build arg), which `hear/settings.py` reads instead of `SOURCE_COMMIT`.
+
+### CI
+
+- **Build tag races**: `build-and-deploy.yml` now serializes runs per branch (workflow-level concurrency, replacing the per-deploy-job groups), so a slower older build can no longer overwrite a newer `:staging`/`:prod` tag.
+- **Manual redeploy**: `build-and-deploy.yml` now also runs on `workflow_dispatch`, so a deploy that failed on the image pull can be re-run by hand.
+
 ## [v5.2.1] - 2026-09-28
 
 ### CI
