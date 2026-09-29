@@ -1,0 +1,11 @@
+meta {
+  name: Bro-country
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{BASE_URL}}me/genre-playlists/{{genreBroCountryPlaylistUuid}}/tracks/?pageSize=100
+  body: json
+  auth: inherit
+}

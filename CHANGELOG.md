@@ -65,6 +65,26 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v6.0.0] - 2026-09-30
+
+### Removed
+
+- **BREAKING — Playlist detail**: `uploadedTrackPlaylistRelations` is no longer returned by playlist and criteria-playlist detail endpoints (`me/playlists/{uuid}/`, `me/genre-playlists/{uuid}/`, …); the detail response is metadata only and no longer prefetches every track. Page tracks through the `…/{uuid}/tracks/` sub-resource instead.
+
+### Added
+
+- **Bruno**: `playlist/criteria/genre/tracks` request for the paginated genre-playlist tracks sub-resource.
+
+### Fixed
+
+- **`/health/` `commit` on image-based deploys**: Coolify sets `SOURCE_COMMIT=HEAD` at runtime for apps deployed from a registry image, so `commit` reported `HEAD`. [`build-and-deploy.yml`](.github/workflows/build-and-deploy.yml) now bakes the commit SHA into the image as `GIT_COMMIT` (Dockerfile build arg), which `hear/settings.py` reads instead of `SOURCE_COMMIT`.
+
+### CI
+
+- **Retired `.github/workflows/sync-env-to-coolify.yml`**: the remaining 12 Coolify env values (Spotify/Google OAuth client IDs, secrets and redirect URIs, demo/superadmin/tmta accounts, `ACOUSTID_API_KEY`) are now written by `infrastructure`'s `server-setup` from org-level `SPOTIFY_CLIENT_*` / `HTMT_*` vars and secrets, so infra is the single writer and rotations reach Coolify on the next provision. The `STAGING`/`PROD` environment secrets this workflow read are deleted, and the now-unused vars are dropped from `actionlint.yaml`.
+- **Build tag races**: `build-and-deploy.yml` now serializes runs per branch (workflow-level concurrency, replacing the per-deploy-job groups), so a slower older build can no longer overwrite a newer `:staging`/`:prod` tag.
+- **Manual redeploy**: `build-and-deploy.yml` now also runs on `workflow_dispatch`, so a deploy that failed on the image pull can be re-run by hand.
+
 ## [v5.2.1] - 2026-09-28
 
 ### CI
@@ -96,6 +116,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ### Fixed
 
 - **Plays**: a play whose content was deleted returns `content: null` instead of a 500.
+
+### CI
+
+- **GHCR image build**: [`build-and-deploy.yml`](.github/workflows/build-and-deploy.yml) builds the `runtime` image on GitHub-hosted runners on push to `develop`/`main`, pushes `ghcr.io/behindthemusictree/htmt-api` (`:staging` on develop, `:prod` on main, `:sha-<short>` always), then triggers the Coolify `htmt-api` deploy for the matching environment. Offloads image builds from the VPS once Coolify deploys the prebuilt image.
 
 ## [v5.1.1] - 2026-09-28
 
