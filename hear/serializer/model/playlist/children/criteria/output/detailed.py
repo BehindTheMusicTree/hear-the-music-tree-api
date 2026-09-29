@@ -9,22 +9,13 @@ from hear.model.playlist.PlaylistUploadedTracks import (
     UPLOADED_TRACKS_COUNT_ANNOTATED,
 )
 from hear.serializer.model.criteria.output.minimum import CriteriaMinimumSerializer
-from hear.serializer.model.playlist.base.output.detailed import (
-    annotate_counts_and_duration,
-    prefetch_uploaded_track_playlist_rels,
-)
+from hear.serializer.model.playlist.base.output.detailed import annotate_counts_and_duration
 from hear.serializer.model.playlist.children.criteria.output.minumum import CriteriaPlaylistMinimumSerializer
-from hear.serializer.model.track_playlist_rel.output.without_playlist import (
-    TrackPlaylistRelWithoutPlaylist,
-)
 
 from .Fields import Fields
 
 
 class CriteriaPlaylistDetailedSerializer(EagerLoadingMixin, serializers.ModelSerializer):
-    uploaded_track_playlist_relations = TrackPlaylistRelWithoutPlaylist(
-        source=Fields.UPLOADED_TRACK_PLAYLIST_RELS_INTERNAL, many=True
-    )
     uploaded_tracks_count = serializers.IntegerField(source=UPLOADED_TRACKS_COUNT_ANNOTATED)
     uploaded_tracks_archived_count = serializers.IntegerField(source=UPLOADED_TRACKS_ARCHIVED_COUNT_ANNOTATED)
     criteria = CriteriaMinimumSerializer()
@@ -35,16 +26,13 @@ class CriteriaPlaylistDetailedSerializer(EagerLoadingMixin, serializers.ModelSer
 
     @classmethod
     def setup_queryset(cls, queryset, prefix=""):  # noqa: ARG003 - annotations only apply to the top-level queryset
-        return prefetch_uploaded_track_playlist_rels(annotate_counts_and_duration(queryset)).select_related(
-            Fields.CRITERIA, Fields.PARENT, Fields.ROOT
-        )
+        return annotate_counts_and_duration(queryset).select_related(Fields.CRITERIA, Fields.PARENT, Fields.ROOT)
 
     class Meta:
         model = CriteriaPlaylist
         fields = [
             Fields.UUID,
             Fields.NAME,
-            Fields.UPLOADED_TRACK_PLAYLIST_RELS_PUBLIC,
             Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC,
             Fields.DURATION_IN_SEC,
             Fields.DURATION_STR_IN_HOUR_MIN_SEC,

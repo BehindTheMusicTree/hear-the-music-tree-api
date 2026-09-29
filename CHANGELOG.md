@@ -33,6 +33,14 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ```markdown
 ## [Unreleased]
 
+### Removed
+
+- **BREAKING — Playlist detail**: `uploadedTrackPlaylistRelations` is no longer returned by playlist and criteria-playlist detail endpoints (`me/playlists/{uuid}/`, `me/genre-playlists/{uuid}/`, …); the detail response is metadata only and no longer prefetches every track. Page tracks through the `…/{uuid}/tracks/` sub-resource instead.
+
+### Added
+
+- **Bruno**: `playlist/criteria/genre/tracks` request for the paginated genre-playlist tracks sub-resource.
+
 ### CI
 
 - **Retired `.github/workflows/sync-env-to-coolify.yml`**: the remaining 12 Coolify env values (Spotify/Google OAuth client IDs, secrets and redirect URIs, demo/superadmin/tmta accounts, `ACOUSTID_API_KEY`) are now written by `infrastructure`'s `server-setup` from org-level `SPOTIFY_CLIENT_*` / `HTMT_*` vars and secrets, so infra is the single writer and rotations reach Coolify on the next provision. The `STAGING`/`PROD` environment secrets this workflow read are deleted, and the now-unused vars are dropped from `actionlint.yaml`.
