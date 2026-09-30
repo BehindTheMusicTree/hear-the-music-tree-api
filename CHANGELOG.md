@@ -65,6 +65,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v6.1.0] - 2026-09-30
+
 ### Added
 
 - **Genre-playlist tree scope filter**: `me/genre-playlists/` list accepts `?allows_multiple_primary_parents=` (camelCase `allowsMultiplePrimaryParents`), so `false` returns only the canonical genre tree. Clients on app-kit 8.0.2+ send it and previously got a `400 invalid_filter`. Test included.
