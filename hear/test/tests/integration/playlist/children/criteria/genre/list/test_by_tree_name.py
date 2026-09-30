@@ -31,7 +31,7 @@ class TestCase(GenrePlaylistTestCase):
         assert response.status_code == status.HTTP_200_OK
         assert self._result_names() == {self.genre_italian_prog.name}
 
-    def test_bogus_then_400(self):
+    def test_invalid_tree_name_then_400_bad_request(self):
         response = self._list_genre_playlists(**{FilterFields.TREE_NAME: "bogus"})
 
         assert response.status_code == status.HTTP_400_BAD_REQUEST

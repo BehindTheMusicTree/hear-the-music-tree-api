@@ -34,8 +34,8 @@ Manage tag hierarchies and trees.
 
 #### Tree
 
-`GET {base}tree/`
+`GET {base}tree/?treeName=canonical|regional` — `treeName` is required; missing or any other value returns `400`.
 
 #### Import Tree
 
-`POST {base}tree/import/`
+`POST {base}tree/import/` — body requires `treeName` (`canonical` | `regional`) alongside `tree`; the import only matches, stamps and stale-deletes criteria in that tree.
