@@ -28,6 +28,11 @@ class CriteriaPlaylistViewSet(PlaylistTracksActionMixin, AppModelViewSet[Criteri
         parameters=[
             OpenApiParameter(name=FilterFields.NAME_PUBLIC, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
             OpenApiParameter(name=FilterFields.PARENT, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
+            OpenApiParameter(
+                name=FilterFields.ALLOWS_MULTIPLE_PRIMARY_PARENTS,
+                type=OpenApiTypes.BOOL,
+                location=OpenApiParameter.QUERY,
+            ),
         ]
     )
     def list(self, *args, **kwargs):

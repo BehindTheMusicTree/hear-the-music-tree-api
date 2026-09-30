@@ -17,7 +17,7 @@ class CriteriaPlaylistFilterSet(PrivateUniqueResourceFilterSet):
     )
     parent = ForeignKeyFilter()
     allows_multiple_primary_parents = BooleanFilter(
-        field_name=f"{ModelFields.CRITERIA}__allows_multiple_primary_parents"
+        field_name=f"{ModelFields.CRITERIA}__{Fields.ALLOWS_MULTIPLE_PRIMARY_PARENTS}"
     )
 
     class Meta:
@@ -25,6 +25,6 @@ class CriteriaPlaylistFilterSet(PrivateUniqueResourceFilterSet):
         fields = [
             Fields.NAME_PUBLIC,
             Fields.PARENT,
-            "allows_multiple_primary_parents",
+            Fields.ALLOWS_MULTIPLE_PRIMARY_PARENTS,
             *PrivateUniqueResourceFilterSet.get_date_fields(),
         ]
