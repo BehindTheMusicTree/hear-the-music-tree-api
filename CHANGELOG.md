@@ -67,8 +67,9 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Changed
 
-- **BREAKING — criteria tree identified by `tree_name`** (genre-kit v0.35.0): a criteria's tree is now a named `tree_name` (`canonical` | `regional`) instead of the `allows_multiple_primary_parents` flag, which is now derived from it. `GET /me/genres/tree/` requires `?treeName=`, `POST /me/genres/tree/import/` requires `treeName` instead of `allowsMultiplePrimaryParents`, and criteria output emits `treeName`. Migration `0029` backfills existing regional criteria (`allows_multiple_primary_parents=True` → `regional`) before dropping the old column.
+- **BREAKING — criteria tree identified by `tree_name`** (genre-kit v0.35.1, api-kit v0.9.0): a criteria's tree is now a named `tree_name` (`canonical` | `regional`) instead of the `allows_multiple_primary_parents` flag, which is now derived from it. `GET /me/genres/tree/` requires `?treeName=`, `POST /me/genres/tree/import/` requires `treeName` instead of `allowsMultiplePrimaryParents`, and criteria output emits `treeName`. Migration `0029` backfills existing regional criteria (`allows_multiple_primary_parents=True` → `regional`) before dropping the old column.
 - **BREAKING — criteria-playlist tree filter**: `me/genre-playlists/` and `me/tag-playlists/` list replace `?allowsMultiplePrimaryParents=` with `?treeName=canonical|regional`. `canonical` also returns Genreless/Tagless playlists (no criteria); any other value is a `400 invalid_filter`. Tests included.
+- **BREAKING — strict boolean filters**: `me/library/spotify/` `explicit` and `isRemoved` filters now only accept `true`/`false`/`1`/`0` (api-kit `StrictBooleanFilter`); anything else is a `400 invalid_filter` instead of being ignored.
 
 ## [v6.1.0] - 2026-09-30
 
