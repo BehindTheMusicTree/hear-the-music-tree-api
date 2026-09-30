@@ -19,6 +19,6 @@ class CriteriaOutputFieldKey(StrEnum):
     DESCENDANTS = "descendants"
     CHILDREN = "children"
     CRITERIA_PLAYLIST = "criteria_playlist"
-    ALLOWS_MULTIPLE_PRIMARY_PARENTS = "allows_multiple_primary_parents"
+    TREE_NAME = "tree_name"
     PRIMARY_PARENTS = "primary_parents"
     SECONDARY_PARENTS = "secondary_parents"

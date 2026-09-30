@@ -1,4 +1,5 @@
-from django_filters import BooleanFilter, DateTimeFilter, NumberFilter
+from django_filters import DateTimeFilter, NumberFilter
+from the_music_tree_api_kit.filtering.filter.StrictBooleanFilter import StrictBooleanFilter
 
 from hear.filtering.filter.char.NonEmptiableCharFilter import NonEmptiableCharFilter
 from hear.filtering.filter.char.RelatedObjectCharFilter import RelatedObjectCharFilter
@@ -22,13 +23,13 @@ class SpotifyLibTrackFilterSet(PrivateUniqueResourceFilterSet):
     duration_sec_max = NumberFilter(method="filter_duration_sec_max")
     popularity_min = NumberFilter(field_name=ModelFields.POPULARITY, lookup_expr="gte")
     popularity_max = NumberFilter(field_name=ModelFields.POPULARITY, lookup_expr="lte")
-    explicit = BooleanFilter(field_name=ModelFields.EXPLICIT)
+    explicit = StrictBooleanFilter(field_name=ModelFields.EXPLICIT)
     last_synced_at = DateTimeFilter(field_name=ModelFields.LAST_SYNCED_AT)
     last_synced_at_gt = DateTimeFilter(field_name=ModelFields.LAST_SYNCED_AT, lookup_expr="gt")
     last_synced_at_lt = DateTimeFilter(field_name=ModelFields.LAST_SYNCED_AT, lookup_expr="lt")
     last_synced_at_gte = DateTimeFilter(field_name=ModelFields.LAST_SYNCED_AT, lookup_expr="gte")
     last_synced_at_lte = DateTimeFilter(field_name=ModelFields.LAST_SYNCED_AT, lookup_expr="lte")
-    is_removed = BooleanFilter(field_name=ModelFields.IS_REMOVED)
+    is_removed = StrictBooleanFilter(field_name=ModelFields.IS_REMOVED)
 
     def filter_duration_sec_min(self, queryset, name, value):
         return queryset.filter(**{f"{ModelFields.DURATION_MS}__gte": value * 1000})
