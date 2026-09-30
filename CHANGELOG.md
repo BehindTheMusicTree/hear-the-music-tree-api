@@ -65,6 +65,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v7.0.0] - 2026-09-30
+
 ### Changed
 
 - **BREAKING — criteria tree identified by `tree_name`** (genre-kit v0.35.1, api-kit v0.9.0): a criteria's tree is now a named `tree_name` (`canonical` | `regional`) instead of the `allows_multiple_primary_parents` flag, which is now derived from it. `GET /me/genres/tree/` and `GET /me/tags/tree/` require `?treeName=`, `POST /me/genres/tree/import/` and `POST /me/tags/tree/import/` require `treeName` instead of `allowsMultiplePrimaryParents`, and criteria output emits `treeName`. Migration `0029` backfills existing regional criteria (`allows_multiple_primary_parents=True` → `regional`) before dropping the old column.
