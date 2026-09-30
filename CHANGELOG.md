@@ -65,6 +65,16 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v6.1.0] - 2026-09-30
+
+### Added
+
+- **Genre-playlist tree scope filter**: `me/genre-playlists/` list accepts `?allows_multiple_primary_parents=` (camelCase `allowsMultiplePrimaryParents`), so `false` returns only the canonical genre tree. Clients on app-kit 8.0.2+ send it and previously got a `400 invalid_filter`. Test included.
+
+### Performance
+
+- **Slimmer runtime Docker image**: Multi-stage build with a static ffmpeg/ffprobe, `--no-install-recommends` apt packages and a venv built in a separate stage, so git and pip caches no longer ship; the image drops from about 979 MB to about 580 MB. `.claude/` and `graphify-out/` are now excluded from the build context.
+
 ## [v6.0.0] - 2026-09-30
 
 ### Removed
