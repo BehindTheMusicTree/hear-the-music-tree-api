@@ -2,6 +2,7 @@ import zlib
 from uuid import UUID
 
 from django.urls import reverse
+from the_music_tree_genre_kit.criteria.CriteriaTreeName import CriteriaTreeName
 
 from hear.model.criteria.children.genre.Genre import Genre
 from hear.serializer.model.criteria.input.tree_import import Fields
@@ -51,10 +52,10 @@ class GenreTestCase(AppTestCase[Genre]):
     def _list_genres(self, **kwargs):
         return self.api_client.get(path=reverse(self.list_endpoint), data=kwargs, handle_response=self._set_results)
 
-    def _get_genres_tree(self, allows_multiple_primary_parents: bool = False):
+    def _get_genres_tree(self, tree_name: str = CriteriaTreeName.CANONICAL):
         return self.api_client.get(
             path=reverse(self.list_endpoint) + "tree/",
-            data={Fields.ALLOWS_MULTIPLE_PRIMARY_PARENTS: str(allows_multiple_primary_parents).lower()},
+            data={Fields.TREE_NAME: tree_name},
             handle_response=self._set_error_response_result_if_failure,
         )
 
@@ -95,7 +96,7 @@ class GenreTestCase(AppTestCase[Genre]):
 
     def _post_genres_tree_import(self, data=None):
         if isinstance(data, dict) and Fields.TREE in data:
-            data = {Fields.ALLOWS_MULTIPLE_PRIMARY_PARENTS: False, **data}
+            data = {Fields.TREE_NAME: CriteriaTreeName.CANONICAL, **data}
             _set_missing_node_ids(data[Fields.TREE])
         return self.api_client.post(
             path=reverse(self.list_endpoint) + "tree/import/",

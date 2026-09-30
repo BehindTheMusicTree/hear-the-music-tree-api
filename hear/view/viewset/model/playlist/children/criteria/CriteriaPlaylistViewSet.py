@@ -1,6 +1,7 @@
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import OpenApiParameter, extend_schema
 from the_music_tree_api_kit.view.viewset.model.AppModelViewSet import AppModelViewSet
+from the_music_tree_genre_kit.criteria.CriteriaTreeName import CriteriaTreeName
 from the_music_tree_genre_kit.view.viewset.playlist.PlaylistTracksActionMixin import PlaylistTracksActionMixin
 
 from hear.filtering.set.playlist.children.criteria.CriteriaPlaylistFilterSet import CriteriaPlaylistFilterSet
@@ -29,9 +30,11 @@ class CriteriaPlaylistViewSet(PlaylistTracksActionMixin, AppModelViewSet[Criteri
             OpenApiParameter(name=FilterFields.NAME_PUBLIC, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
             OpenApiParameter(name=FilterFields.PARENT, type=OpenApiTypes.STR, location=OpenApiParameter.QUERY),
             OpenApiParameter(
-                name=FilterFields.ALLOWS_MULTIPLE_PRIMARY_PARENTS,
-                type=OpenApiTypes.BOOL,
+                name=FilterFields.TREE_NAME,
+                type=OpenApiTypes.STR,
                 location=OpenApiParameter.QUERY,
+                enum=CriteriaTreeName.values,
+                description="Genreless/Tagless playlists are listed under canonical.",
             ),
         ]
     )

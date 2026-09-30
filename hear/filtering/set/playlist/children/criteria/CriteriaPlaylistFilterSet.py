@@ -1,4 +1,6 @@
-from django_filters import BooleanFilter
+from django.db.models import Q
+from django_filters import ChoiceFilter
+from the_music_tree_genre_kit.criteria.CriteriaTreeName import CriteriaTreeName
 
 from hear.filtering.filter.char.CriteriaNameFilter import CriteriaNameFilter
 from hear.filtering.filter.foreign_key.ForeignKeyFilter import ForeignKeyFilter
@@ -16,15 +18,19 @@ class CriteriaPlaylistFilterSet(PrivateUniqueResourceFilterSet):
         lookup_expr="icontains",
     )
     parent = ForeignKeyFilter()
-    allows_multiple_primary_parents = BooleanFilter(
-        field_name=f"{ModelFields.CRITERIA}__{Fields.ALLOWS_MULTIPLE_PRIMARY_PARENTS}"
-    )
+    tree_name = ChoiceFilter(choices=CriteriaTreeName.choices, method="filter_tree_name")
 
     class Meta:
         model = CriteriaPlaylist
         fields = [
             Fields.NAME_PUBLIC,
             Fields.PARENT,
-            Fields.ALLOWS_MULTIPLE_PRIMARY_PARENTS,
+            Fields.TREE_NAME,
             *PrivateUniqueResourceFilterSet.get_date_fields(),
         ]
+
+    def filter_tree_name(self, queryset, name, value):
+        in_tree = Q(**{f"{ModelFields.CRITERIA}__{Fields.TREE_NAME}": value})
+        if value == CriteriaTreeName.CANONICAL:
+            in_tree |= Q(**{f"{ModelFields.CRITERIA}__isnull": True})
+        return queryset.filter(in_tree)
