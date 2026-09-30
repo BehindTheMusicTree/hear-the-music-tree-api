@@ -65,6 +65,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Removed
+
+- **Build artifacts**: Untracked `hear_the_music_tree_api.egg-info/` and added `*.egg-info/` to `.gitignore`, so `pip install -e` no longer leaves a dirty working tree.
+
 ## [v6.1.0] - 2026-09-30
 
 ### Added

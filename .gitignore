@@ -58,3 +58,6 @@ analysis/
 
 # graphify
 graphify-out/
+
+# Python build metadata
+*.egg-info/
