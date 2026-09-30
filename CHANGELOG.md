@@ -72,6 +72,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **BREAKING — strict boolean filters**: `me/library/spotify/` `explicit` and `isRemoved` filters now only accept `true`/`false`/`1`/`0` (api-kit `StrictBooleanFilter`); anything else is a `400 invalid_filter` instead of being ignored. Tests included.
 - **BREAKING — filter error code**: every list endpoint now reports an invalid filter value (number, date, choice, boolean) as `400 invalid_filter` / `invalid_filters` instead of django-filter's generic `invalid` code (api-kit v0.9.0).
 
+### Removed
+
+- **Build artifacts**: Untracked `hear_the_music_tree_api.egg-info/` and added `*.egg-info/` to `.gitignore`, so `pip install -e` no longer leaves a dirty working tree.
+
 ## [v6.1.0] - 2026-09-30
 
 ### Added
