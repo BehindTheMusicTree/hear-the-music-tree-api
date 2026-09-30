@@ -44,3 +44,13 @@ class TestCase(SpotifyLibTrackTestCase):
         assert response.status_code == status.HTTP_200_OK
         assert self.results_overall_total == 1
         assert self.results[0][SpotifyLibTrackFields.NAME] == track2.name
+
+    def test_explicit_non_boolean_then_400_bad_request(self):
+        response = self._list_spotify_lib_tracks(explicit="yes")
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+
+    def test_is_removed_non_boolean_then_400_bad_request(self):
+        response = self._list_spotify_lib_tracks(is_removed="maybe")
+
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
