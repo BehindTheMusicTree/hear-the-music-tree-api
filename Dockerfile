@@ -24,18 +24,16 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     APP_TITLE=$APP_TITLE \
     DB_IS_NEEDED=true
 
+# audiometa shells out to flac/ffprobe/ffmpeg; pg_isready and curl serve the startup and health scripts.
 RUN apt-get update && \
-    apt-get install -y gosu git && \
+    apt-get install -y --no-install-recommends flac postgresql-client curl && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# Static ffmpeg/ffprobe: Debian's ffmpeg package drags in ~440MB of codec/device libraries.
+COPY --from=mwader/static-ffmpeg:7.1 /ffmpeg /ffprobe /usr/local/bin/
 
 WORKDIR $PROJECT_DIR
-
-COPY scripts/install-dependencies.sh scripts/
-RUN apt update && \
-    bash scripts/install-dependencies.sh && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
 
 # Trims test fixtures out of the source tree before it reaches the runtime stage below.
 # A plain COPY + RUN rm wouldn't shrink anything (the deleted files stay in the earlier
@@ -50,7 +48,9 @@ FROM base AS dev
 
 COPY . $PROJECT_DIR
 
+# git: pip clones the kits over git+https.
 RUN apt update && \
+    apt-get install -y --no-install-recommends git && \
     bash scripts/install-dev-dependencies.sh && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
@@ -72,13 +72,25 @@ RUN chmod +x scripts/entrypoint.sh scripts/start-server.sh
 ENTRYPOINT ["bash", "scripts/entrypoint.sh"]
 CMD ["bash", "scripts/start-server.sh"]
 
+# Builds the runtime venv, so git and pip's cache never reach the runtime image.
+FROM base AS builder
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends git && \
+    rm -rf /var/lib/apt/lists/*
+
+COPY --from=trimmed-src /src $PROJECT_DIR
+
+RUN python -m venv /opt/venv && /opt/venv/bin/pip install --no-cache-dir .
+
 # Runtime image (default final stage): no test fixtures, no dev tooling.
 # This is what a plain `docker build .` (e.g. production deploys) produces.
 FROM base AS runtime
 
-COPY --from=trimmed-src /src $PROJECT_DIR
+ENV PATH="/opt/venv/bin:$PATH"
 
-RUN pip install --upgrade pip && pip install .
+COPY --from=builder /opt/venv /opt/venv
+COPY --from=trimmed-src /src $PROJECT_DIR
 
 RUN chmod +x scripts/entrypoint.sh scripts/start-server.sh
 
