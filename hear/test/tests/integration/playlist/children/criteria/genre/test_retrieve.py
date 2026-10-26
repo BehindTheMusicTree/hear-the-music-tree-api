@@ -23,5 +23,5 @@ class TestCase(GenrePlaylistTestCase):
         response = self._retrieve_genre_playlist(uuid=rock_playlist.uuid)
 
         assert response.status_code == status.HTTP_200_OK
-        assert self.result[RietrieveFields.TRACKS_COUNT_PUBLIC] == 0
-        assert "uploaded_tracks_count" not in self.result
+        assert self.result["tracksCount"] == 0
+        assert "uploadedTracksCount" not in self.result
