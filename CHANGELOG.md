@@ -33,6 +33,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ```markdown
 ## [Unreleased]
 
+### Documentation
+
+- `CLAUDE.md` points to the shared track / song / recording glossary.
+
 ### Security
 
 - Bumped `Django` to 5.2.18 and `djangorestframework` to 3.18.3, enabled by the kits relaxing their exact pins; repinned `the-music-tree-api-kit` v0.10.3 and `the-music-tree-genre-kit` v0.46.2.
