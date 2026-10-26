@@ -16,7 +16,7 @@ from .Fields import Fields
 
 
 class CriteriaPlaylistDetailedSerializer(EagerLoadingMixin, serializers.ModelSerializer):
-    uploaded_tracks_count = serializers.IntegerField(source=UPLOADED_TRACKS_COUNT_ANNOTATED)
+    tracks_count = serializers.IntegerField(source=UPLOADED_TRACKS_COUNT_ANNOTATED)
     uploaded_tracks_archived_count = serializers.IntegerField(source=UPLOADED_TRACKS_ARCHIVED_COUNT_ANNOTATED)
     criteria = CriteriaMinimumSerializer()
     root = CriteriaPlaylistMinimumSerializer()  # type: ignore
@@ -37,7 +37,7 @@ class CriteriaPlaylistDetailedSerializer(EagerLoadingMixin, serializers.ModelSer
         fields = [
             Fields.UUID,
             Fields.NAME,
-            Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC,
+            Fields.TRACKS_COUNT_PUBLIC,
             Fields.DURATION_IN_SEC,
             Fields.DURATION_STR_IN_HOUR_MIN_SEC,
             Fields.UPLOADED_TRACKS_ARCHIVED_COUNT_PUBLIC,
