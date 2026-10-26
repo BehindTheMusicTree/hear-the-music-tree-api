@@ -90,7 +90,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Added
 
-- **Genre playlists**: list and detail responses now include `isUnacceptedRoot` per genre, matching `app-kit`'s `CriteriaPlaylistSimpleSchema`.
+- **Genre playlists**: list responses now include `isUnacceptedRoot` per genre, matching `app-kit`'s `CriteriaPlaylistSimpleSchema`.
 
 ### Changed
 
