@@ -88,6 +88,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v8.0.0] - 2026-10-27
+
 ### Added
 
 - **Genre playlists**: list responses now include `isUnacceptedRoot` per genre, matching `app-kit`'s `CriteriaPlaylistSimpleSchema`.
