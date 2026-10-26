@@ -88,6 +88,14 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Added
+
+- **Genre playlists**: list and detail responses now include `isUnacceptedRoot` per genre, matching `app-kit`'s `CriteriaPlaylistSimpleSchema`.
+
+### Changed
+
+- **BREAKING —** genre and tag playlist list/detail responses return `tracksCount` instead of `uploadedTracksCount` (same non-archived subtree total), as `app-kit` requires. Manual, album, artist and base playlist responses are unchanged.
+
 ## [v7.0.0] - 2026-09-30
 
 ### Changed
