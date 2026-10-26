@@ -17,11 +17,13 @@ class TestCase(GenrePlaylistTestCase):
         genre = self.model_fixture_factory.create_genre(name="Rock")
         genre.is_unaccepted_root = True
         genre.save()
+        genre.refresh_from_db()
+        assert genre.is_unaccepted_root is True
 
         response = self._list_genre_playlists()
 
         assert response.status_code == status.HTTP_200_OK
-        assert self._rock()["isUnacceptedRoot"] is True
+        assert self._rock()["isUnacceptedRoot"] is True, self._rock()
 
     def test_regular_genre_then_is_unaccepted_root_false(self):
         self.model_fixture_factory.create_genre(name="Rock")
