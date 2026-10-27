@@ -33,6 +33,14 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ```markdown
 ## [Unreleased]
 
+### Changed
+
+- Repinned `the-music-tree-api-kit` v0.11.0 and `the-music-tree-genre-kit` v0.51.1; migration `0031` adds the `description`, `is_umbrella` and `summary_source_url` genre fields.
+
+### Fixed
+
+- Spotify library `full_sync` now persists `last_synced_at` and `is_removed` on unchanged existing tracks (covered by a regression test), following the api-kit fix to full-field saves.
+
 ### Documentation
 
 - `CLAUDE.md` points to the shared track / song / recording glossary.
