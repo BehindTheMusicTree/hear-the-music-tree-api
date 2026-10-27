@@ -33,10 +33,32 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ```markdown
 ## [Unreleased]
 
+### Documentation
+
+- `CLAUDE.md` points to the shared track / song / recording glossary.
+
+### Security
+
+- Bumped `Django` to 5.2.18 and `djangorestframework` to 3.18.3, enabled by the kits relaxing their exact pins; repinned `the-music-tree-api-kit` v0.10.3 and `the-music-tree-genre-kit` v0.46.2.
+
+### Security
+
+- Bumped `PyJWT` 2.15.0, `djangorestframework-simplejwt` 5.5.1, `Markdown` 3.8.1, `werkzeug` 3.1.9, `certifi`, `gunicorn` 23.0.0, `httplib2` 0.32.0, `oauthlib` 4.0.0, `pyOpenSSL` 26.4.0, `requests` 2.33.0, `setuptools` 83.0.0, `spotipy` 2.25.2, `tinytag` 2.2.1, `python-dotenv` 1.2.2, `pytest` 9.0.3 and the locked `cryptography`, `urllib3`, `sqlparse`, `virtualenv`, `picomatch` to clear Dependabot alerts. `Django` and `djangorestframework` stay pinned by `the-music-tree-api-kit` (exact pins).
+- Added `.github/dependabot.yml` targeting `develop`.
+
+### Improved
+
+- Bumped `the-music-tree-genre-kit` to v0.43.2: playlist track counts use an index-only `Count("*")`.
+
 ### CI
 
+- Deploys: bumped `trigger-coolify-deploy` to v4.4.0 — a Coolify deployment stuck past an hour is cancelled (its build container force-stopped over SSH) instead of blocking every later deploy, and a failed or cancelled deploy posts an alert to the env's Discord status-alerts channel
 - **python-project-standards v5.1.0 (Copier)**: Adopted via [`.copier-answers.yml`](.copier-answers.yml); `copier update` now merges shared pre-commit/ruff baselines while keeping repo hooks. Removed **`STANDARDS_VERSION`**, `scripts/verify-standards.sh`, `scripts/check_lint_baseline.py`, `baselines/DIGESTS`, `baselines/expected-mypy.json` and the `verify-python-project-standards` hook. [`scripts/publish_github_release.py`](scripts/publish_github_release.py) now requires the version argument (it no longer falls back to `STANDARDS_VERSION`).
 - **python-project-standards v4.1.0 layout**: Vendored [**`baselines/`**](baselines/) (`ruff.toml`, **`DIGESTS`**, **`expected-mypy.json`**), thin **`[tool.ruff] extend`** in [`pyproject.toml`](pyproject.toml), [**`STANDARDS_VERSION`**](STANDARDS_VERSION) **`4.1.0`**, and [**`scripts/check_lint_baseline.py`**](scripts/check_lint_baseline.py) (with [**`verify-standards.sh`**](scripts/verify-standards.sh) invoking it). [**`pre-commit-hooks`**](.pre-commit-config.yaml) **`rev`** bumped to **`v6.0.0`**. Pre-commit still runs **inline** in [`.github/workflows/test.yml`](.github/workflows/test.yml) (no org **`reusable-pre-commit`** job).
+
+### Changed
+
+- **Filtering**: shared filters and filtersets now come from `the-music-tree-api-kit` v0.10.1 (generic char/foreign-key filters, `PrivateUniqueResourceFilterSet`) and `the-music-tree-genre-kit` v0.43.1 (criteria and playlist filtersets); `hear/filtering` keeps only album, artist, play, search, spotify and uploaded-track. Query params unchanged.
 
 ### Added
 
@@ -54,6 +76,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
   - Includes regression tests to prevent future occurrences
   - Improved error messages for better user feedback
 - **Spotify library sync**: Fixed Spotify library sync
+- **Genre tree**: Genre playlists' parent and root are now derived from their genre instead of stored, so a genre moved by a tree import no longer shows under its old parent (genre-kit 0.42.0; migration `0030` drops `criteriaplaylist.parent`/`root`). `TRACK_TITLE_LEN_MAX` raised to 2048 as genre-kit 0.39 requires
 
 ### CI
 
@@ -64,6 +87,16 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 **Note:** During releases, maintainers will move entries from `[Unreleased]` to a versioned section (e.g., `## [0.2.8] - 2025-01-XX`).
 
 ## [Unreleased]
+
+## [v8.0.0] - 2026-10-27
+
+### Added
+
+- **Genre playlists**: list responses now include `isUnacceptedRoot` per genre, matching `app-kit`'s `CriteriaPlaylistSimpleSchema`.
+
+### Changed
+
+- **BREAKING —** genre and tag playlist list/detail responses return `tracksCount` instead of `uploadedTracksCount` (same non-archived subtree total), as `app-kit` requires. Manual, album, artist and base playlist responses are unchanged.
 
 ## [v7.0.0] - 2026-09-30
 

@@ -74,13 +74,17 @@ jobs:
     environment: STAGING
     steps:
       - name: Trigger htmt-api deploy
-        uses: BehindTheMusicTree/github-workflows/.github/actions/trigger-coolify-deploy@v4.3.4
+        uses: BehindTheMusicTree/github-workflows/.github/actions/trigger-coolify-deploy@v4.4.0
         with:
           app_name: htmt-api
           coolify_environment: staging
           coolify_subdomain: ${{ vars.COOLIFY_API_SUBDOMAIN }}
           domain: ${{ vars.DOMAIN_NAME }}
           coolify_api_token: ${{ secrets.COOLIFY_API_TOKEN }}
+          server_host: ${{ vars.SERVER_HOST }}
+          server_deploy_username: ${{ secrets.SERVER_DEPLOY_USERNAME }}
+          server_deploy_ssh_private_key: ${{ secrets.SERVER_DEPLOY_SSH_PRIVATE_KEY }}
+          discord_webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL_STATUS_ALERTS }}
           health_check_path: /health/
           health_check_origin_ip: ${{ vars.SERVER_HOST }}
 
@@ -92,12 +96,16 @@ jobs:
     environment: PROD
     steps:
       - name: Trigger htmt-api deploy
-        uses: BehindTheMusicTree/github-workflows/.github/actions/trigger-coolify-deploy@v4.3.4
+        uses: BehindTheMusicTree/github-workflows/.github/actions/trigger-coolify-deploy@v4.4.0
         with:
           app_name: htmt-api
           coolify_environment: production
           coolify_subdomain: ${{ vars.COOLIFY_API_SUBDOMAIN }}
           domain: ${{ vars.DOMAIN_NAME }}
           coolify_api_token: ${{ secrets.COOLIFY_API_TOKEN }}
+          server_host: ${{ vars.SERVER_HOST }}
+          server_deploy_username: ${{ secrets.SERVER_DEPLOY_USERNAME }}
+          server_deploy_ssh_private_key: ${{ secrets.SERVER_DEPLOY_SSH_PRIVATE_KEY }}
+          discord_webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL_STATUS_ALERTS_PROD }}
           health_check_path: /health/
           health_check_origin_ip: ${{ vars.SERVER_HOST }}

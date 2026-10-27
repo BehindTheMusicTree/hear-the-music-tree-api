@@ -12,7 +12,8 @@ from hear.serializer.model.playlist.children.criteria.output.minumum import Crit
 class Fields:
     UUID = AvailableFields.UUID
     NAME = AvailableFields.NAME
-    UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC = AvailableFields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC
+    TRACKS_COUNT_PUBLIC = AvailableFields.TRACKS_COUNT_PUBLIC
+    IS_UNACCEPTED_ROOT = AvailableFields.IS_UNACCEPTED_ROOT
     DURATION_STR_IN_HOUR_MIN_SEC = AvailableFields.DURATION_STR_IN_HOUR_MIN_SEC
     CRITERIA = AvailableFields.CRITERIA
     PARENT = AvailableFields.PARENT
@@ -25,16 +26,26 @@ class CriteriaPlaylistSimpleSerializer(EagerLoadingMixin, serializers.ModelSeria
     criteria = CriteriaSimpleSerializer()
     parent = CriteriaPlaylistMinimumSerializer()
     root = CriteriaPlaylistMinimumSerializer()  # type: ignore
-    uploaded_tracks_count = serializers.IntegerField(source=UPLOADED_TRACKS_COUNT_ANNOTATED)
+    tracks_count = serializers.IntegerField(source=UPLOADED_TRACKS_COUNT_ANNOTATED)
+    is_unaccepted_root = serializers.SerializerMethodField()
 
     @classmethod
     def setup_queryset(cls, queryset, prefix=""):  # noqa: ARG003 - annotations only apply to the top-level queryset
-        queryset = queryset.select_related(Fields.CRITERIA, Fields.PARENT, Fields.ROOT).annotate(
-            **{UPLOADED_TRACKS_COUNT_ANNOTATED: uploaded_tracks_count_annotation(archived=False)}
-        )
+        queryset = queryset.select_related(
+            Fields.CRITERIA,
+            f"{Fields.CRITERIA}__genre",
+            f"{Fields.CRITERIA}__{Fields.PARENT}__criteria_playlist",
+            f"{Fields.CRITERIA}__{Fields.ROOT}__criteria_playlist",
+        ).annotate(**{UPLOADED_TRACKS_COUNT_ANNOTATED: uploaded_tracks_count_annotation(archived=False)})
         for nested in (Fields.PARENT, Fields.ROOT):
-            queryset = CriteriaPlaylistMinimumSerializer.setup_queryset(queryset, prefix=f"{nested}__")
+            queryset = CriteriaPlaylistMinimumSerializer.setup_queryset(
+                queryset, prefix=f"{Fields.CRITERIA}__{nested}__criteria_playlist__"
+            )
         return CriteriaSimpleSerializer.setup_queryset(queryset, prefix=f"{Fields.CRITERIA}__")
+
+    def get_is_unaccepted_root(self, obj: CriteriaPlaylist) -> bool:
+        genre = getattr(obj.criteria, "genre", None)
+        return bool(genre and genre.is_unaccepted_root)
 
     def to_representation(self, instance):
         if not isinstance(instance, CriteriaPlaylist):
@@ -49,7 +60,8 @@ class CriteriaPlaylistSimpleSerializer(EagerLoadingMixin, serializers.ModelSeria
             Fields.CRITERIA,
             Fields.PARENT,
             Fields.ROOT,
-            Fields.UPLOADED_TRACKS_NOT_ARCHIVED_COUNT_PUBLIC,
+            Fields.TRACKS_COUNT_PUBLIC,
+            Fields.IS_UNACCEPTED_ROOT,
             Fields.CREATED_ON,
             Fields.UPDATED_ON,
         ]

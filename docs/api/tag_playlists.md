@@ -52,7 +52,7 @@ Body:
     {
       "uuid": "uuid",
       "name": "string",
-      "uploaded_tracks_count": 10,
+      "tracks_count": 10,
       "duration_in_sec": 3600,
       "duration_str_in_hour_min_sec": "1:00:00",
       "uploaded_tracks_archived_count": 0,
@@ -106,7 +106,7 @@ Body:
 {
   "uuid": "uuid",
   "name": "string",
-  "uploaded_tracks_count": 10,
+  "tracks_count": 10,
   "duration_in_sec": 3600,
   "duration_str_in_hour_min_sec": "1:00:00",
   "uploaded_tracks_archived_count": 0,
