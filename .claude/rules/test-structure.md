@@ -1,10 +1,15 @@
+---
+paths:
+  - "hear/test/**/*.py"
+---
+
 # Test Structure
 
 Tests must follow the project's testing structure and conventions as specified in CONTRIBUTING.md.
 
 ## Test Location
 
-- Tests are located in `api/test/`
+- Tests are located in `hear/test/`
 
 ## Test Naming Convention
 

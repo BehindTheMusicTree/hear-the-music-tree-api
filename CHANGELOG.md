@@ -98,6 +98,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Changed
 
+- Share scoped agent rules and the launch skill across Claude and Codex, with drift checks.
+
 - Repinned `the-music-tree-genre-kit` v0.52.0; migration `0032` adds the `scene` genre field.
 
 ## [v8.0.0] - 2026-10-27

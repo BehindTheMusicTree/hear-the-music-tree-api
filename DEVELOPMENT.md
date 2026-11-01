@@ -4,7 +4,7 @@ This document outlines the coding standards and best practices for developing th
 
 Organization-wide Python tooling, CI adoption, and shared style baselines are documented in **[BehindTheMusicTree/python-project-standards — Development baseline](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md)**. This file focuses on conventions specific to this API (Django, DRF, project layout).
 
-This repository adopts python-project-standards via Copier: [**`.copier-answers.yml`**](.copier-answers.yml) records the release, and **`copier update`** merges new ones into [`.pre-commit-config.yaml`](.pre-commit-config.yaml) and [**`baselines/ruff.toml`**](baselines/ruff.toml); see [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md). [**`changelog-alignment.md`**](.claude/rules/changelog-alignment.md) keeps **`CHANGELOG.md`** in step with substantive edits.
+This repository adopts python-project-standards via Copier: [**`.copier-answers.yml`**](.copier-answers.yml) records the release, and **`copier update`** merges new ones into [`.pre-commit-config.yaml`](.pre-commit-config.yaml) and [**`baselines/ruff.toml`**](baselines/ruff.toml); see [docs/ci/python-project-standards.md](docs/ci/python-project-standards.md). [**`changelog-alignment.md`**](.agents/rules/changelog-alignment.md) keeps **`CHANGELOG.md`** in step with substantive edits.
 
 For information about system architecture, patterns, and design decisions, see [Architecture documentation](docs/architecture.md).
 
@@ -46,7 +46,7 @@ Follow these code quality standards when developing:
 
 All Python files must follow the project's naming conventions:
 
-- **One class per file** - Each file must contain exactly one class (see [One Class Per File](.claude/rules/one-class-per-file.md))
+- **One class per file** - Each file must contain exactly one class (see [One Class Per File](.agents/rules/one-class-per-file.md))
 
 - **Regular classes** (Models, Managers, etc.):
 
@@ -115,7 +115,7 @@ assert result["name"] == "Rock"  # Bad
 assert result["parent"] is None  # Bad
 ```
 
-See [Field Name Constants](.claude/rules/field-name-constants.md) for detailed guidelines.
+See [Field Name Constants](.agents/rules/field-name-constants.md) for detailed guidelines.
 
 #### Private Fields
 
@@ -159,7 +159,7 @@ def get_genre(self, name: str) -> Genre:
     return Genre.objects.get(name=name)
 ```
 
-See [No Useless Comments](.claude/rules/no-useless-comments.md) for detailed guidelines.
+See [No Useless Comments](.agents/rules/no-useless-comments.md) for detailed guidelines.
 
 ### Type Checking
 
@@ -187,7 +187,7 @@ def get_genres(user: User, name: str | None = None) -> list[Genre]:
 
 For detailed information about error handling architecture, patterns, and examples, see [Architecture documentation](docs/architecture.md#error-handling).
 
-See [Use Custom Validation Exception](.claude/rules/use-custome-validation-exception.md) for detailed guidelines.
+See [Use Custom Validation Exception](.agents/rules/use-custome-validation-exception.md) for detailed guidelines.
 
 ## Architecture
 
@@ -249,14 +249,14 @@ For detailed documentation on external service integrations, see:
 
 ### Code Style Reference
 
-For quick reference on code style conventions, see [code-style.md](code-style.md). For testing guidelines, see [Testing Guidelines](testing.md). Organization-wide Python baselines are summarized in the **[Development baseline](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md)** ([python-project-standards](https://github.com/BehindTheMusicTree/python-project-standards)). For detailed guidelines, refer to the rules in `.claude/rules/` (for example [strenum-string-enums](.claude/rules/strenum-string-enums.md)):
+For quick reference on code style conventions, see [code-style.md](code-style.md). For testing guidelines, see [Testing Guidelines](testing.md). Organization-wide Python baselines are summarized in the **[Development baseline](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md)** ([python-project-standards](https://github.com/BehindTheMusicTree/python-project-standards)). For detailed guidelines, refer to the rules in `.agents/rules/` (for example [strenum-string-enums](.agents/rules/strenum-string-enums.md)):
 
-- [One Class Per File](.claude/rules/one-class-per-file.md)
-- [Field Name Constants](.claude/rules/field-name-constants.md)
-- [No Useless Comments](.claude/rules/no-useless-comments.md)
-- [Private Resource Filtering](.claude/rules/private-resource-filtering.md)
-- [Use Custom Validation Exception](.claude/rules/use-custome-validation-exception.md)
-- [Test Structure](.claude/rules/test-structure.md)
-- [Test Naming Convention](.claude/rules/test-naming-convention.md)
-- [Divide Test Cases](.claude/rules/divide-test-cases.md)
-- [Use assert Instead of assertEqual](.claude/rules/use-assert-not-assertequal.md)
+- [One Class Per File](.agents/rules/one-class-per-file.md)
+- [Field Name Constants](.agents/rules/field-name-constants.md)
+- [No Useless Comments](.agents/rules/no-useless-comments.md)
+- [Private Resource Filtering](.agents/rules/private-resource-filtering.md)
+- [Use Custom Validation Exception](.agents/rules/use-custome-validation-exception.md)
+- [Test Structure](.agents/rules/test-structure.md)
+- [Test Naming Convention](.agents/rules/test-naming-convention.md)
+- [Divide Test Cases](.agents/rules/divide-test-cases.md)
+- [Use assert Instead of assertEqual](.agents/rules/use-assert-not-assertequal.md)

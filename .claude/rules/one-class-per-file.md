@@ -1,3 +1,8 @@
+---
+paths:
+  - "hear/**/*.py"
+---
+
 # One Class Per File
 
 Each Python file should contain exactly one class, and the file name should follow the class name convention.

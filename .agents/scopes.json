@@ -1,0 +1,74 @@
+{
+  "use-pipe-none": {
+    "source": ".agents/rules/use-pipe-none.md",
+    "paths": [
+      "**/*.py"
+    ]
+  },
+  "use-custome-validation-exception": {
+    "source": ".agents/rules/use-custome-validation-exception.md",
+    "paths": [
+      "hear/**/*.py"
+    ]
+  },
+  "openapi-validation-documentation": {
+    "source": ".agents/rules/openapi-validation-documentation.md",
+    "paths": [
+      "hear/view/**/*.py"
+    ]
+  },
+  "strenum-string-enums": {
+    "source": ".agents/rules/strenum-string-enums.md",
+    "paths": [
+      "hear/**/*.py"
+    ]
+  },
+  "test-structure": {
+    "source": ".agents/rules/test-structure.md",
+    "paths": [
+      "hear/test/**/*.py"
+    ]
+  },
+  "no-useless-comments": {
+    "source": ".agents/rules/no-useless-comments.md",
+    "paths": [
+      "hear/**/*.py"
+    ]
+  },
+  "private-resource-filtering": {
+    "source": ".agents/rules/private-resource-filtering.md",
+    "paths": [
+      "hear/**/*.py"
+    ]
+  },
+  "divide-test-cases": {
+    "source": ".agents/rules/divide-test-cases.md",
+    "paths": [
+      "hear/test/**/*.py"
+    ]
+  },
+  "test-naming-convention": {
+    "source": ".agents/rules/test-naming-convention.md",
+    "paths": [
+      "hear/test/**/*.py"
+    ]
+  },
+  "use-assert-not-assertequal": {
+    "source": ".agents/rules/use-assert-not-assertequal.md",
+    "paths": [
+      "hear/test/**/*.py"
+    ]
+  },
+  "field-name-constants": {
+    "source": ".agents/rules/field-name-constants.md",
+    "paths": [
+      "hear/**/*.py"
+    ]
+  },
+  "one-class-per-file": {
+    "source": ".agents/rules/one-class-per-file.md",
+    "paths": [
+      "hear/**/*.py"
+    ]
+  }
+}
