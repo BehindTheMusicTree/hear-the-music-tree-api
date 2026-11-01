@@ -8,7 +8,7 @@ CI runs `pre-commit run --all-files` and Docker-backed pytest on `hear/test/` (s
 
 ## Task-specific guidance
 
-For PR and release work read `CONTRIBUTING.md` and the relevant sources `.agents/rules/git-flow-workflow.md`, `.agents/rules/commit-message-convention.md`, `.agents/rules/pull-request-convention.md`, `.agents/rules/pr-description-in-separate-file.md`, and `.agents/rules/pre-pr-checklist.md`. For changelog work read `.agents/rules/changelog-alignment.md`, `.agents/rules/changelog-best-practices.md`, and `.agents/rules/changelog-entry-placement.md`. For issue work read `.agents/rules/issue-template-usage.md` and `.agents/rules/issue-description-in-separate-file.md`; for dependency changes read `.agents/rules/dependency-pinning.md`.
+Before any substantive repository change, read `.agents/rules/changelog-alignment.md` and update `CHANGELOG.md` as required. For PR and release work read `CONTRIBUTING.md` and the relevant sources `.agents/rules/git-flow-workflow.md`, `.agents/rules/commit-message-convention.md`, `.agents/rules/pull-request-convention.md`, `.agents/rules/pr-description-in-separate-file.md`, and `.agents/rules/pre-pr-checklist.md`. For changelog work also read `.agents/rules/changelog-best-practices.md` and `.agents/rules/changelog-entry-placement.md`. For issue work read `.agents/rules/issue-template-usage.md` and `.agents/rules/issue-description-in-separate-file.md`; for dependency changes read `.agents/rules/dependency-pinning.md`.
 
 ## Scoped project rules
 
