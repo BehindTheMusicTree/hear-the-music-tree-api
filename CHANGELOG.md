@@ -587,7 +587,6 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Changed
 
-
 - **Metadata keys**: `AppMetadataKey` is the single source of truth for metadata field names (literal values). Track input Fields and writable metadata (session-download, file update) use it; `APP_METADATA_WRITABLE_KEYS` and `WritableMetadataFieldsMixin` shared. Genre in metadata is `genres_names` (array of strings) everywhere.
 - **Storage**: `METADATA_SESSION_DIR` and `TMP_UPLOADED_FILES` are independent env-defined paths (not one under the other). Setup-filesystem creates `METADATA_SESSION_DIR` when file upload is enabled. Deploy and CI set both.
 - **Deploy (runtime config)**: Path variables are no longer written into the app .env by the deploy workflow; they are supplied at runtime by the server or Compose environment (12-factor style). Affected: `METADATA_SESSION_DIR_EXTERNAL`, `TMP_UPLOADED_FILES_EXTERNAL`, `MEDIA_DIR_EXTERNAL`, `STATIC_FILES_EXTERNAL`, `DJANGO_LOG_DIR_EXTERNAL`, `GUNICORN_LOG_DIR`. The generated Compose part passes these from the host env into the API container and mounts volumes at those paths; the server must set them (e.g. in a .env next to docker-compose) when starting the stack.
