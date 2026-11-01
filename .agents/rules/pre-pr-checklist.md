@@ -4,14 +4,14 @@ Before submitting a Pull Request, ensure all checks are completed. This checklis
 
 ## Code Quality
 
-- ✅ Follow code style standards in `code-style.md`
+- ✅ Follow code style standards in `DEVELOPMENT.md`
 - ✅ Code follows Django best practices
 - ✅ Type hints are used where appropriate
 - ✅ No debug statements or commented-out code
 - ✅ One class per file (see `one-class-per-file.md`)
 - ✅ Use field name constants from `Fields.py` files (see `field-name-constants.md`)
 - ✅ Private resource filtering includes user in query (see `private-resource-filtering.md`)
-- ✅ String enums use `StrEnum`, not `(str, Enum)` (see `.claude/rules/strenum-string-enums.md`, [python-project-standards development baseline](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md) → [string enums](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/string-enums.md), `scripts/check_prefer_strenum.py`, pre-commit / CI `pre-commit` job)
+- ✅ String enums use `StrEnum`, not `(str, Enum)` (see `.agents/rules/strenum-string-enums.md`, [python-project-standards development baseline](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/development.md) → [string enums](https://github.com/BehindTheMusicTree/python-project-standards/blob/main/docs/string-enums.md), `scripts/check_prefer_strenum.py`, pre-commit / CI `pre-commit` job)
 
 ## Tests
 

@@ -1,3 +1,8 @@
+---
+paths:
+  - "hear/test/**/*.py"
+---
+
 # Test Naming Convention
 
 This rule applies to pytest-style test functions. Test function names must follow the pattern: `test_{scenario}_then_{expected_result}`
@@ -23,7 +28,7 @@ Guidelines:
 5. Keep the name concise but informative
 6. Avoid generic terms like "test", "check", "verify"
 7. Test class names should be descriptive and follow the pattern `Test{Feature}` (e.g., `TestGenreImport`)
-8. Tests are located in `api/test/`
+8. Tests are located in `hear/test/`
 
 Bad examples:
 

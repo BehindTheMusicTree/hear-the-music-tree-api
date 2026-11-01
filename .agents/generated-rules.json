@@ -1,0 +1,14 @@
+{
+  "divide-test-cases": "98f0a44c4cab0668a38831d20a4758be2846c0cc132dd8df841bd90ad1b0ccda",
+  "field-name-constants": "2ec2cc64ec2be7b78df523b09d5774e989dde6602dd7231c2b63872b612ccdd6",
+  "no-useless-comments": "06d838fbbd89fbf49700d8161b74c9ccdb087da2c3d014c2ff114a33f315cd47",
+  "one-class-per-file": "bc5571e518ac81b5f0f40c957d61f8bf0eb16671b037f06453079ffa65c5390f",
+  "openapi-validation-documentation": "642e759caa100ea45ae30eccfdba3ecde857faf3929eff8392d56d484a5bdb0d",
+  "private-resource-filtering": "fdf572511e7e6ad1d159942b7d637597e1a0034f98c2dff3b5021c2c292d61f6",
+  "strenum-string-enums": "ec2228ff560a72d6a9dba2659f17e808a2d3c9de6ac26fda8c9d9fd3e80cc3e7",
+  "test-naming-convention": "6520be1a3fd6ac6e1c75a3decb840f7f7053418bcb34a12332319080e253f469",
+  "test-structure": "9b23c5de15e9c3b6ec0f590af3d0f9d50968c58ee83fd0b2c539e2bc0ce3d17d",
+  "use-assert-not-assertequal": "97b7521ff58dee30fd4e5a561ddc84caa39608f33648eb06c0d6e8e5ff2f1205",
+  "use-custome-validation-exception": "2e6a813d0986a200fd452225bab2a9efa29cce17377db19418774bf9f1831456",
+  "use-pipe-none": "1e835e6c32c90fee3a4f9e1be6b3e70bc7077fa934b820525b9f16a412d163d5"
+}

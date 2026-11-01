@@ -5,7 +5,6 @@ When creating issues, always use the appropriate template from `.github/ISSUE_TE
 ## Available Templates
 
 1. **Bug Report** (`.github/ISSUE_TEMPLATE/bug_report.yml`)
-
    - Use for reporting bugs or unexpected behavior
    - Automatically adds `bug` label
    - Includes fields for: component, description, steps to reproduce, error response, request details, severity
