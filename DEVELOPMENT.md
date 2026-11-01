@@ -49,12 +49,14 @@ All Python files must follow the project's naming conventions:
 - **One class per file** - Each file must contain exactly one class (see [One Class Per File](.agents/rules/one-class-per-file.md))
 
 - **Regular classes** (Models, Managers, etc.):
+
   - Use **PascalCase** for file names
   - File name must match the class name exactly
   - Example: `Genre.py` contains `class Genre(models.Model)`
   - Example: `GenreManager.py` contains `class GenreManager(models.Manager)`
 
 - **Serializer classes**:
+
   - Use **camelCase** (lowercase) for file names
   - File name should be shorter than the class name
   - Example: `genre.py` contains `class GenreSerializer(serializers.ModelSerializer)`

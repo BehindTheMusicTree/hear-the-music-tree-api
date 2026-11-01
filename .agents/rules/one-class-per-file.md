@@ -5,6 +5,7 @@ Each Python file should contain exactly one class, and the file name should foll
 ## File Naming Rules
 
 1. For regular classes:
+
    - Use PascalCase (camelCase with first letter capitalized)
    - File name must match the class name exactly
    - Example: `Genre.py` for `class Genre`
