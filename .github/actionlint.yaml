@@ -21,7 +21,8 @@ config-variables:
   - HTMT_API_SUBDOMAIN
   - GTMT_FRONT_SUBDOMAIN
   - AUDIOMETA_FRONT_SUBDOMAIN
-  - SERVER_HOST
+  - DEPLOY_SSH_HOST
+  - APP_ORIGIN_IP
 
 paths:
   "**/*":
