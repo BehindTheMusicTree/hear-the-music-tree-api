@@ -90,9 +90,9 @@ Builds the `runtime` image on a GitHub-hosted runner, pushes it to **GitHub Cont
 
 **Triggers:** **Push** to `develop` (staging) or `main` (production), or **workflow_dispatch** from either branch (e.g. to redeploy after a failed image pull). Runs are serialized per branch (workflow-level concurrency) so an older build can't overwrite a newer tag.
 
-**Jobs:** **build** – checks **`APP_TITLE`** / **`API_DIR_NAME`** (`scripts/check-workflow-env.sh`), logs in to `ghcr.io` with **`GITHUB_TOKEN`** (`packages: write`), builds with GHA layer cache and pushes **`ghcr.io/behindthemusictree/htmt-api`** tagged **`staging`** (develop) or **`prod`** (main), plus **`sha-<short>`** always, with the commit SHA baked in as **`GIT_COMMIT`** (surfaced by `/health/`); **deploy-staging** / **deploy-prod** – `trigger-coolify-deploy` on Coolify app **`htmt-api`** (health check **`/health/`** against **`SERVER_HOST`**).
+**Jobs:** **build** – checks **`APP_TITLE`** / **`API_DIR_NAME`** (`scripts/check-workflow-env.sh`), logs in to `ghcr.io` with **`GITHUB_TOKEN`** (`packages: write`), builds with GHA layer cache and pushes **`ghcr.io/behindthemusictree/htmt-api`** tagged **`staging`** (develop) or **`prod`** (main), plus **`sha-<short>`** always, with the commit SHA baked in as **`GIT_COMMIT`** (surfaced by `/health/`); **deploy-staging** / **deploy-prod** – `trigger-coolify-deploy` on Coolify app **`htmt-api`** (health check **`/health/`** against **`APP_ORIGIN_IP`**).
 
-**Variables / secrets:** repo vars **`APP_TITLE`**, **`API_DIR_NAME`**; org vars **`COOLIFY_API_SUBDOMAIN`**, **`DOMAIN_NAME`**, **`SERVER_HOST`**; org secret **`COOLIFY_API_TOKEN`**.
+**Variables / secrets:** repo vars **`APP_TITLE`**, **`API_DIR_NAME`**; org vars **`COOLIFY_API_SUBDOMAIN`**, **`DOMAIN_NAME`**, **`DEPLOY_SSH_HOST`**, **`APP_ORIGIN_IP`**; org secret **`COOLIFY_API_TOKEN`**.
 
 ## Sync env to server
 
