@@ -96,6 +96,10 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Documentation
+
+- Remove obsolete deployment workflow guidance.
+
 ## [v8.1.0] - 2026-11-01
 
 ### Changed
@@ -336,7 +340,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### CI
 
-- **Env sync to Coolify** ([`.github/workflows/sync-env-to-coolify.yml`](.github/workflows/sync-env-to-coolify.yml)): Replaced the SSH-based **`sync-env-to-server.yml`** with an API-driven workflow that builds a per-environment (staging/prod) env fragment and pushes it straight to Coolify via the **`sync-env-to-coolify`** composite action from `github-workflows`, so the fragment never leaves the runner or gets persisted as an artifact. DB vars (**`DB_APP_*`**) are no longer synced — **`DATABASE_URL`** is now set by Ansible infrastructure. **`SERVER_HOST`** removed from actionlint config-variables; **`COOLIFY_API_URL`**, **`COOLIFY_SUBDOMAIN`**, **`DOMAIN_NAME`** added.
+- **Env sync to Coolify** ([`.github/workflows/sync-env-to-coolify.yml`](.github/workflows/sync-env-to-coolify.yml)): Replaced the SSH-based **`sync-env-to-server.yml`** with an API-driven workflow that builds a per-environment (staging/prod) env fragment and pushes it straight to Coolify via the **`sync-env-to-coolify`** composite action from `github-workflows`, so the fragment never leaves the runner or gets persisted as an artifact. DB vars (**`DB_APP_*`**) are no longer synced — **`DATABASE_URL`** is now set by Ansible infrastructure. **`COOLIFY_API_URL`**, **`COOLIFY_SUBDOMAIN`**, **`DOMAIN_NAME`** added.
 
 ### CI
 
