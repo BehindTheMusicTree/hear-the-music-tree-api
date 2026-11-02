@@ -1,3 +1,8 @@
+---
+paths:
+  - "hear/**/*.py"
+---
+
 # Use AppValidationException Instead of DRF Validation
 
 Never raise DRF validation exceptions but use `AppValidationException` for consistent error handling across the application.

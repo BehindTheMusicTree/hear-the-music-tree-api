@@ -1,5 +1,4 @@
 ---
-description: Document validation and error responses in OpenAPI (drf-spectacular) in line with industry practice.
 paths:
   - "hear/view/**/*.py"
 ---

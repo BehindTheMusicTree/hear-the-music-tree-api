@@ -33,6 +33,14 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ```markdown
 ## [Unreleased]
 
+### Changed
+
+- Repinned `the-music-tree-api-kit` v0.11.0 and `the-music-tree-genre-kit` v0.51.1; migration `0031` adds the `description`, `is_umbrella` and `summary_source_url` genre fields.
+
+### Fixed
+
+- Spotify library `full_sync` now persists `last_synced_at` and `is_removed` on unchanged existing tracks (covered by a regression test), following the api-kit fix to full-field saves.
+
 ### Documentation
 
 - `CLAUDE.md` points to the shared track / song / recording glossary.
@@ -87,6 +95,16 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 **Note:** During releases, maintainers will move entries from `[Unreleased]` to a versioned section (e.g., `## [0.2.8] - 2025-01-XX`).
 
 ## [Unreleased]
+
+## [v8.1.0] - 2026-11-01
+
+### Changed
+
+- Use explicit deployment SSH and application origin variables in deployment workflows.
+
+- Share scoped agent rules and the launch skill across Claude and Codex, with drift checks.
+
+- Repinned `the-music-tree-genre-kit` v0.52.0; migration `0032` adds the `scene` genre field.
 
 ## [v8.0.0] - 2026-10-27
 

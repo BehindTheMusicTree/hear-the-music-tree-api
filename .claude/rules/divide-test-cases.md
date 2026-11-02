@@ -1,3 +1,8 @@
+---
+paths:
+  - "hear/test/**/*.py"
+---
+
 # Divide Test Cases
 
 Large test cases that test multiple scenarios should be divided into multiple focused tests, each testing a single scenario.
@@ -71,7 +76,7 @@ def test_invalid_input_then_error(self):
 4. Keep test setup and assertions focused on the specific scenario
 5. Avoid testing multiple unrelated conditions in the same test
 6. Use descriptive variable names that reflect the test scenario
-7. Tests are located in `api/test/`
+7. Tests are located in `hear/test/`
 8. Use `assert` instead of `assertEqual`
 
 ## Benefits
