@@ -100,7 +100,6 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 - Remove obsolete deployment workflow guidance.
 
-
 ## [v8.1.0] - 2026-11-01
 
 ### Changed
