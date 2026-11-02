@@ -7,16 +7,14 @@ This document describes each GitHub Actions workflow in `.github/workflows/`.
 - [Overview](#overview)
 - [Test](#test)
   - [Debugging pytest hangs after django.setup()](#debugging-pytest-hangs-after-djangosetup)
-- [Publish](#publish)
 - [Build and deploy](#build-and-deploy)
-- [Sync env to server](#sync-env-to-server)
 - [Static Files](#static-files)
 - [Branch Protection](#branch-protection)
 - [Labeler](#labeler)
 
 ## Overview
 
-Workflows are split by responsibility: tests run on every change; publishing runs on push of version tags (`v*`) (and manual triggers) via a single Publish workflow; branch protection and labeler run on pull requests. Reusable workflows (`test`, `build-and-push`, `static-files`) can be called by others or triggered manually. Workflows that use environment vars or secrets run a **check-vars-and-secrets** job first (script: `scripts/check-workflow-env.sh`) where applicable; it fails if any required value passed to the script is missing (**Test** checks **Variables** only; disposable DB values for pytest are set in the workflow).
+Tests, build and deployment, branch protection, release notes, and labeling use separate workflows.
 
 **Versioning**: Application version is derived from git tags (e.g., `v0.3.4` → `0.3.4`). See [Versioning Strategy](versioning.md) for details.
 
@@ -55,33 +53,6 @@ If the job prints Django lines ending around **`apps.populate() finished`** / **
 
 For local reproduction with the same diagnostics: `CI_STARTUP_TRACE=1 PYTEST_PLUGINS=hear.ci_pytest_startup_plugin PYTHONFAULTHANDLER=1 docker compose exec api pytest hear/test/ …`
 
-## Publish
-
-**File:** `.github/workflows/publish.yml`
-
-Single publish workflow: collect static files, build Docker image, set image tags on server (API, DB, AFP) via shared workflows, then trigger redeployment webhook. Destination and env are chosen from the trigger.
-
-**Triggers:**
-
-- **Push** of version tags (`v*`) → **TEST** if prerelease (version contains `-`, e.g. `v0.2.0-rc1`, `v1.0.0-dev`), **PROD** if release (e.g. `v0.2.0`)
-- **workflow_dispatch** (run from chosen branch; from `main` → **TEST** env, staging, image tag `staging`, app version from `VERSION` + `-staging`)
-- **workflow_call** (from other workflows; uses latest git tag when not on `main` or a tag ref)
-
-**Jobs:**
-
-1. **determine-version** – from ref: tag with `-` → TEST; tag without `-` → PROD; `main` (e.g. manual dispatch) → staging + TEST
-2. **static** – calls `static-files.yml`, commits and pushes collected static files
-3. **build-and-push** – calls `build-and-push.yml` with commit hash and **environment** (TEST or PROD)
-4. **check-pinned-tags** – requires **`AFP_VERSION`** in Settings → Variables (no `latest`) and **`IMAGE_TAGS_POOL_DIR`** / **`BTMT_REDEPLOYMENT_HOOK_ID_BASE`** in the selected GitHub Environment (**STAGING**/**PROD**) or repo/org Variables; DB image is **`postgres:16.4`** (fixed in [`docker-compose.yml`](../docker-compose.yml); publish sets server DB tag **`16.4`**)
-5. **set-image-tags** – calls `BehindTheMusicTree/github-workflows/.github/workflows/set-image-tags-on-server.yml@v2.0.0` once with `stack: btmt` and tags for API, DB, and AFP (`HTMT_API_TAG`, `DB_TAG=16.4`, `AFP_TAG`)
-6. **redeploy-webhook-call** – calls `BehindTheMusicTree/github-workflows/.github/workflows/call-redeployment-webhook.yml@v2.0.0` with **`hook_id_base`** from **`check-pinned-tags`** (**`BTMT_REDEPLOYMENT_HOOK_ID_BASE`**). Caller job is **`uses:`** only—**`environment`** is not allowed on that job shape in the Actions schema, so **`secrets: inherit`** supplies **repo/org** secrets (e.g. **`BTMT_REDEPLOYMENT_WEBHOOK_SECRET_*`**). Environment-only webhook secrets need a repo/org copy or support inside **`call-redeployment-webhook`**.
-
-**Environment:** **TEST** for prerelease/dev tags and for manual runs from `main` (staging). **PROD** for release tags (production). DB and AFP image tags must be pinned in repo variables, and **`IMAGE_TAGS_POOL_DIR`** must be set for **STAGING** and **PROD** (for `set-image-tags-on-server`).
-
-**Versioning:** Manual dispatch from `main` uses `VERSION` file and image tag `staging`. Tag push uses tag version; `workflow_call` without a tag uses latest git tag.
-
-**Migrations:** Not run by the workflow. The API container entrypoint runs `migrate` after the database is ready.
-
 ## Build and deploy
 
 **File:** `.github/workflows/build-and-deploy.yml`
@@ -93,18 +64,6 @@ Builds the `runtime` image on a GitHub-hosted runner, pushes it to **GitHub Cont
 **Jobs:** **build** – checks **`APP_TITLE`** / **`API_DIR_NAME`** (`scripts/check-workflow-env.sh`), logs in to `ghcr.io` with **`GITHUB_TOKEN`** (`packages: write`), builds with GHA layer cache and pushes **`ghcr.io/behindthemusictree/htmt-api`** tagged **`staging`** (develop) or **`prod`** (main), plus **`sha-<short>`** always, with the commit SHA baked in as **`GIT_COMMIT`** (surfaced by `/health/`); **deploy-staging** / **deploy-prod** – `trigger-coolify-deploy` on Coolify app **`htmt-api`** (health check **`/health/`** against **`APP_ORIGIN_IP`**).
 
 **Variables / secrets:** repo vars **`APP_TITLE`**, **`API_DIR_NAME`**; org vars **`COOLIFY_API_SUBDOMAIN`**, **`DOMAIN_NAME`**, **`DEPLOY_SSH_HOST`**, **`APP_ORIGIN_IP`**; org secret **`COOLIFY_API_TOKEN`**.
-
-## Sync env to server
-
-**File:** `.github/workflows/sync-env-to-server.yml`
-
-Manually sync app env vars and secrets for **both STAGING and PROD** in one run. The workflow builds **two** fragments per env: **API** (Django/OAuth/app secrets → **`/tmp/sync-env-<HTMT_API_APP_NAME>-<env>.env`**) and **Postgres** (**`POSTGRES_*`** → **`/tmp/sync-env-<HTMT_API_APP_NAME><DB_APP_NAME_SUFFIX>-<env>.env`**, with **`DB_APP_NAME_SUFFIX`** required and non-empty — must match **BehindTheMusicTree/infrastructure**, often **`_db`**). The shared **`sync-env-to-server`** workflow uploads each fragment; **`redeploy-btmt-containers.sh`** promotes both into **`scripts/sync-env/`**, and **`generate-docker-compose.sh`** loads the API file then the DB file. **`FILE_UPLOAD_ENABLED`**, **`SPOTIFY_ENABLED`**, **`GOOGLE_OAUTH_ENABLED`**, **`MUSICBRAINZ_LOOKUP_ENABLED`**, and **`HTMT_API_AFP_ENABLED`** are **hardcoded `true`** in the API fragment (no GitHub Variables). **Jobs:** **build-api-fragment** / **build-db-fragment** (matrix STAGING + PROD), **sync-api-\***, **sync-db-\***. No `workflow_dispatch` inputs; one run syncs both environments.
-
-**Triggers:** **workflow_dispatch** (Actions → Sync env to server → Run workflow). No inputs.
-
-**Secrets (this repo, per environment):** `DB_APP_DB_NAME`, `DB_APP_USERNAME`, `DB_APP_USER_PASSWORD`, `DB_SUPERUSER_PASSWORD`, `DEMO_PASSWORD`, `DEMO_USERNAME`, `DJANGO_SECRET_KEY`, `GOOGLE_CLIENT_SECRET`, `SPOTIFY_CLIENT_SECRET`, `SUPERADMIN_PASSWORD`, `SUPERADMIN_USERNAME`, `TMTA_USERNAME`, plus deploy secrets `SERVER_DEPLOY_USERNAME`, `SERVER_DEPLOY_SSH_PRIVATE_KEY`.
-
-**Variables (this repo or org, per GitHub Environment):** `SERVER_HOST`, `SYNC_ENV_REMOTE_FILENAME_PREFIX_BASE`, `HTMT_API_APP_NAME`, **`DB_APP_NAME_SUFFIX`** (required, non-empty; must match **BehindTheMusicTree/infrastructure**, e.g. `_db`), `DEMO_EMAIL`, `SUPERADMIN_EMAIL`, `SPOTIFY_CLIENT_ID_STAGING`, `SPOTIFY_CLIENT_ID_PROD`, `GOOGLE_CLIENT_ID_STAGING`, `GOOGLE_CLIENT_ID_PROD`, **`SPOTIFY_SCOPES`** (see `env/dev/.env.dev.example`). The compose-required API booleans above are **not** Variables—they are written as **`true`** in the workflow. Locally and in CI you still set **`FILE_UPLOAD_ENABLED`** in `.env` as needed (see `hear/settings.py` / `TMP_UPLOADED_FILES`).
 
 ## Static Files
 

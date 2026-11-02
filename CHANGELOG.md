@@ -336,7 +336,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### CI
 
-- **Env sync to Coolify** ([`.github/workflows/sync-env-to-coolify.yml`](.github/workflows/sync-env-to-coolify.yml)): Replaced the SSH-based **`sync-env-to-server.yml`** with an API-driven workflow that builds a per-environment (staging/prod) env fragment and pushes it straight to Coolify via the **`sync-env-to-coolify`** composite action from `github-workflows`, so the fragment never leaves the runner or gets persisted as an artifact. DB vars (**`DB_APP_*`**) are no longer synced — **`DATABASE_URL`** is now set by Ansible infrastructure. **`SERVER_HOST`** removed from actionlint config-variables; **`COOLIFY_API_URL`**, **`COOLIFY_SUBDOMAIN`**, **`DOMAIN_NAME`** added.
+- **Env sync to Coolify** ([`.github/workflows/sync-env-to-coolify.yml`](.github/workflows/sync-env-to-coolify.yml)): Replaced the SSH-based **`sync-env-to-server.yml`** with an API-driven workflow that builds a per-environment (staging/prod) env fragment and pushes it straight to Coolify via the **`sync-env-to-coolify`** composite action from `github-workflows`, so the fragment never leaves the runner or gets persisted as an artifact. DB vars (**`DB_APP_*`**) are no longer synced — **`DATABASE_URL`** is now set by Ansible infrastructure. **`COOLIFY_API_URL`**, **`COOLIFY_SUBDOMAIN`**, **`DOMAIN_NAME`** added.
 
 ### CI
 
@@ -563,7 +563,12 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Documentation
 
-- **Release tooling**: `scripts/prepare_release_bump.py` automates the maintainer Note → `bump2version` → `fix_changelog_after_bump.py` → empty `## [Unreleased]` steps. CONTRIBUTING.md §7, docs/versioning.md, and changelog Cursor rule updated accordingly.
+- **Release tooling**: `scripts/prepare_release_bump.py` automates the maintainer Note → `bump2version` → `fix_changelog_after_bump.py` → empty `## [Unreleased]
+
+### Documentation
+
+- Remove obsolete deployment workflow guidance.
+` steps. CONTRIBUTING.md §7, docs/versioning.md, and changelog Cursor rule updated accordingly.
 
 ## [v2.2.1] - 2026-03-17
 
