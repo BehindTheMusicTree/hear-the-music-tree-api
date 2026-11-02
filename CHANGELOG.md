@@ -96,6 +96,11 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+### Documentation
+
+- Remove obsolete deployment workflow guidance.
+
+
 ## [v8.1.0] - 2026-11-01
 
 ### Changed
@@ -563,12 +568,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### Documentation
 
-- **Release tooling**: `scripts/prepare_release_bump.py` automates the maintainer Note → `bump2version` → `fix_changelog_after_bump.py` → empty `## [Unreleased]
-
-### Documentation
-
-- Remove obsolete deployment workflow guidance.
-` steps. CONTRIBUTING.md §7, docs/versioning.md, and changelog Cursor rule updated accordingly.
+- **Release tooling**: `scripts/prepare_release_bump.py` automates the maintainer Note → `bump2version` → `fix_changelog_after_bump.py` → empty `## [Unreleased]` steps. CONTRIBUTING.md §7, docs/versioning.md, and changelog Cursor rule updated accordingly.
 
 ## [v2.2.1] - 2026-03-17
 
