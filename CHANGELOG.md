@@ -96,7 +96,11 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [v8.1.0] - 2026-11-01
+
 ### Changed
+
+- Use explicit deployment SSH and application origin variables in deployment workflows.
 
 - Share scoped agent rules and the launch skill across Claude and Codex, with drift checks.
 
@@ -582,8 +586,6 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 - **FILE_UPLOAD_ENABLED**: Explicit env flag for file upload / media. When `true`, setup-filesystem creates upload temp, metadata session, and media dirs; when `false`, skips them. Env example, CI, and local builds use the flag; deployed stacks get **`true`** from **Sync env to server**.
 
 ### Changed
-
-- Use explicit deployment SSH and application origin variables in deployment workflows.
 
 - **Metadata keys**: `AppMetadataKey` is the single source of truth for metadata field names (literal values). Track input Fields and writable metadata (session-download, file update) use it; `APP_METADATA_WRITABLE_KEYS` and `WritableMetadataFieldsMixin` shared. Genre in metadata is `genres_names` (array of strings) everywhere.
 - **Storage**: `METADATA_SESSION_DIR` and `TMP_UPLOADED_FILES` are independent env-defined paths (not one under the other). Setup-filesystem creates `METADATA_SESSION_DIR` when file upload is enabled. Deploy and CI set both.
