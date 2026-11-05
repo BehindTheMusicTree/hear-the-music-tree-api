@@ -17,10 +17,10 @@ script on the host instead, install that CLI pin (e.g. **pipx**).
 From repository root with the stack running::
 
     docker compose exec api python3 scripts/prepare_release_bump.py patch
-    docker compose exec api python3 scripts/prepare_release_bump.py minor --no-allow-dirty
+    docker compose exec api python3 scripts/prepare_release_bump.py minor
 
-``--no-allow-dirty``: do not pass ``--allow-dirty`` to bump-my-version (default is to
-allow a dirty tree so step 1 can change CHANGELOG.md without a prior commit).
+The initial working tree must be clean. The internal changelog marker requires
+passing ``--allow-dirty`` to bump-my-version after that initial validation.
 """
 
 from __future__ import annotations
@@ -170,7 +170,7 @@ def main() -> None:
     parser.add_argument(
         "--no-allow-dirty",
         action="store_true",
-        help="Omit --allow-dirty (bump-my-version refuses if the working tree is dirty).",
+        help="Unsupported legacy flag; preparation validates a clean tree before editing its marker.",
     )
     args = parser.parse_args()
     if args.no_allow_dirty:
