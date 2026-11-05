@@ -356,7 +356,7 @@ If you had not pushed yet, only steps 1–2 and a new PR are needed. Maintainers
 
 - Only bug fixes and release-related changes go into release branches
 - When ready, merge into both `main` (for production) and `develop` (to keep develop up to date)
-- Tag the release on `main` after merging
+- CI tags the validated version increase on `main` after merging
 
 #### Hotfix Branches (`hotfix/<name>`) _(For Maintainers)_
 
@@ -812,130 +812,29 @@ Releases are created from the `main` branch using **strict Git Flow**.
 
 Quick release process:
 
-1. **Ensure `develop` is ready for release** - All features for the release should be merged into `develop`
+1. Create a `release/*` branch from current `develop`, or `hotfix/*` from current `main`.
+2. On a clean branch with non-empty Unreleased notes, prepare files in the existing Compose dev image:
 
    ```bash
-   git checkout develop
-   git pull origin develop
+   docker compose exec api python3 scripts/prepare_release_bump.py patch   # or minor / major
    ```
 
-2. **Create a release branch from `develop`**
+   The script updates `VERSION`, both JSON/TOML version mirrors, the schema and the dated
+   changelog section. It edits files only: no commit, push, tag or prerelease-tag deletion.
+   The initial clean-tree check precedes its internal temporary changelog marker.
 
-   ```bash
-   git checkout -b release/v0.2.1
-   git push origin release/v0.2.1
-   ```
+3. Review and commit the prepared files, push the branch and open a PR into `main`.
+4. After merge, CI validates the canonical version, mirrors, changelog and exact main commit,
+   creates its annotated tag and publishes the matching GitHub Release. Do not create or push
+   stable release tags locally. Publication retries verify the existing remote tag and release;
+   API failures do not count as missing releases.
+5. After publication, integrate `main` back into `develop` through a PR.
 
-3. **On the release branch, prepare the release:**
-
-   - **Automated (recommended):** from the repository root with the Compose stack running, run the script **inside** the **`api`** dev image (that image installs **`bump-my-version`** at the same pin as [`pyproject.toml`](pyproject.toml) dev dependencies, currently **`bump-my-version==1.3.0`**):
-
-     ```bash
-     docker compose exec api python3 scripts/prepare_release_bump.py patch   # or: minor | major
-     ```
-
-     Local Compose merges [`docker-compose.override.yml`](docker-compose.override.yml), which bind-mounts this repository at **`/home/app`**, so file changes from the script apply to your working tree on disk.
-
-     This sets the live `## [Unreleased]  <!-- release -->` marker (only the heading **after** the maintainer Note—not the fenced example), runs [bump-my-version](https://github.com/callowayproject/bump-my-version), runs `python scripts/fix_changelog_after_bump.py`, and adds an empty `## [Unreleased]` above the new version section. By default it passes `--allow-dirty` so you can commit once at the end; use `--no-allow-dirty` if you need a clean tree.
-
-   - **Manual sequence** (same end state): set the live heading after the Note to `## [Unreleased]  <!-- release -->`, then `bump-my-version bump patch` (or `bump minor` / `bump major`; add `--allow-dirty` if needed), then `python scripts/fix_changelog_after_bump.py`, then ensure an empty `## [Unreleased]` sits above `## [vX.Y.Z] - …`. Release bump file rules live under `[tool.bumpversion]` in [`pyproject.toml`](pyproject.toml); the changelog rule only replaces that one heading line — everything below it until the next `## [` belongs to that release.
-
-   - Review and finalize `CHANGELOG.md`:
-
-     - Review the new version entry and the content that was under `[Unreleased]`
-     - Review and consolidate entries if needed
-
-   - Make any final bug fixes or adjustments on the release branch
-   - Ensure all tests pass: `docker compose exec api pytest`
-
-4. **Merge release branch into `main`** (via PR from `release/*` to `main`, or locally if your process allows):
-
-   ```bash
-   git checkout main
-   git pull origin main
-   git merge --no-ff release/v0.2.1
-   git push origin main
-   ```
-
-5. **Tag the release on `main`**
-
-   ```bash
-   git tag v0.2.1
-   git push origin v0.2.1
-   ```
-
-   **Important:** The tag version must match the version in `VERSION` and `CHANGELOG.md` (use the `v` prefix, e.g. `v2.1.1`).
-
-6. **Clean up pre-release tags**
-
-   Remove all pre-release tags for this version (e.g. `-dev`, `-staging`, `-test`, `-rc`, `-beta`, `-alpha`) from local and remote:
-
-   ```bash
-   ./scripts/remove_prerelease_tags.sh
-   ```
-
-   The script uses the version from the `VERSION` file (same as after a release bump). You can also pass a version explicitly: `./scripts/remove_prerelease_tags.sh 0.2.1`.
-
-   **Note:** Pre-release tags are temporary and should be cleaned up after the release is published to keep the repository clean.
-
-7. **Merge release branch back into `develop`** (to keep develop up to date)
-
-   ```bash
-   git checkout develop
-   git pull origin develop
-   git merge --no-ff release/v0.2.1
-   git push origin develop
-   ```
-
-8. **Delete the release branch** (locally and remotely)
-
-   ```bash
-   git branch -d release/v0.2.1
-   git push origin --delete release/v0.2.1
-   ```
-
-9. **CI/CD will automatically:**
-
-   When you push the version tag (step 5), the `publish.yml` workflow will automatically:
-
-   - Collect and commit static files
-   - Build and push Docker image to GHCR (`ghcr.io`)
-   - Deploy to the test server
-
-   See the [GitHub Actions Workflows](#github-actions-workflows) section above for details on the workflow structure.
-
-**Hotfix Release Process:**
-
-For urgent production fixes:
-
-1. Create hotfix branch from `main`:
-
-   ```bash
-   git checkout main
-   git pull origin main
-   git checkout -b hotfix/critical-bug-fix
-   ```
-
-2. Make the fix and update `CHANGELOG.md` in the `[Unreleased]` section
-
-3. Merge hotfix into `main`:
-
-   ```bash
-   git checkout main
-   git merge --no-ff hotfix/critical-bug-fix
-   git tag v0.2.2  # Increment patch version
-   git push origin main --tags
-   ```
-
-4. Merge hotfix into `develop`:
-
-   ```bash
-   git checkout develop
-   git merge --no-ff hotfix/critical-bug-fix
-   git push origin develop
-   ```
-
-5. Delete the hotfix branch
+The policy uses `[X.Y.Z]` changelog headings and `vX.Y.Z` git tags. The standalone publisher
+supports `--dry-run` previews and refuses actual publication when the CI policy is present.
+App credentials and tag rulesets are activated separately after this contract reaches `main`;
+initial activation never publishes the existing version. This migration changes no deployment
+workflow and performs no release or deployment.
 
 ## 🪪 License & Attribution
 
