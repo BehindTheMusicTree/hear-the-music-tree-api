@@ -822,6 +822,7 @@ Quick release process:
    The script updates `VERSION`, both JSON/TOML version mirrors, the schema and the dated
    changelog section. It edits files only: no commit, push, tag or prerelease-tag deletion.
    The initial clean-tree check precedes its internal temporary changelog marker.
+
 3. Review and commit the prepared files, push the branch and open a PR into `main`.
 4. After merge, CI validates the canonical version, mirrors, changelog and exact main commit,
    creates its annotated tag and publishes the matching GitHub Release. Do not create or push
