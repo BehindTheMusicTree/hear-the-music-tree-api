@@ -1,5 +1,6 @@
 # Allow repository/organization variables used in workflows (actionlint has no runtime context)
 config-variables:
+  - RELEASE_APP_ID
   - API_DIR_NAME
   - APP_TITLE
   - HTMT_API_APP_NAME

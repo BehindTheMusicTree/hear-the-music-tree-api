@@ -5,7 +5,9 @@
    ``## [Unreleased]  <!-- release -->`` for the version bump tool.
 2. Runs **bump-my-version** (``bump patch|minor|major``).
 3. Runs ``fix_changelog_after_bump.py`` (release date, indent cleanup).
-4. Inserts an empty ``## [Unreleased]`` above the new ``## [vX.Y.Z] - …`` heading.
+4. Inserts an empty ``## [Unreleased]`` above the new version heading.
+
+Preparation edits files only; CI owns release tags and publication.
 
 Requires the ``bump-my-version`` CLI on ``PATH`` (same pin as dev deps in ``pyproject.toml``,
 currently ``bump-my-version==1.3.0``). Supported workflow: run inside the Compose ``api`` dev
@@ -28,6 +30,8 @@ import re
 import shutil
 import subprocess
 import sys
+import json
+import tomllib
 from pathlib import Path
 from typing import NoReturn
 
@@ -37,7 +41,7 @@ CHANGELOG_PATH = REPO_ROOT / "CHANGELOG.md"
 NOTE_PREFIX = "**Note:** During releases, maintainers will move entries from"
 FIRST_RELEASE_HEADING = re.compile(r"\n\n(## \[[^\]]+\][^\n]*)")
 RELEASE_VERSION_HEADING = re.compile(
-    r"^## \[v\d+\.\d+\.\d+\] - (\d{4}-\d{2}-\d{2}|YYYY-MM-DD)\s*$",
+    r"^## \[v?\d+\.\d+\.\d+\] - (\d{4}-\d{2}-\d{2}|YYYY-MM-DD)\s*$",
     re.MULTILINE,
 )
 MARKER_HEADING = "## [Unreleased]  <!-- release -->"
@@ -68,7 +72,7 @@ def _first_h2_after_note(text: str) -> tuple[int, str]:
 
 def ensure_bump_marker(text: str) -> tuple[str, bool]:
     abs_start, heading = _first_h2_after_note(text)
-    if re.match(r"^## \[v\d+\.\d+\.\d+\] - ", heading):
+    if re.match(r"^## \[v?\d+\.\d+\.\d+\] - ", heading):
         _fail(
             "CHANGELOG.md: first heading after the Note is already a released version. "
             "Restore an ## [Unreleased] section with pending notes first."
@@ -136,29 +140,24 @@ def _run_fix_changelog() -> None:
         sys.exit(proc.returncode)
 
 
-def _run_remove_prerelease_tags() -> None:
-    script = REPO_ROOT / "scripts" / "remove_prerelease_tags.sh"
-    proc = subprocess.run(["bash", str(script)], cwd=REPO_ROOT, check=False)
-    if proc.returncode != 0:
-        sys.exit(proc.returncode)
-
-
-def _warn_branch() -> None:
-    proc = subprocess.run(
-        ["git", "branch", "--show-current"],
-        cwd=REPO_ROOT,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if proc.returncode != 0:
-        return
-    branch = (proc.stdout or "").strip()
-    if branch and not branch.startswith("release/"):
-        print(
-            f"Warning: current branch is {branch!r}; expected release/v* for Git Flow.\n",
-            file=sys.stderr,
-        )
+def _require_preparation_state() -> None:
+    branch = subprocess.check_output(["git", "branch", "--show-current"], cwd=REPO_ROOT, text=True).strip()
+    if not branch.startswith(("release/", "hotfix/")):
+        _fail("Prepare on a release/* or hotfix/* branch.")
+    if subprocess.check_output(["git", "status", "--porcelain"], cwd=REPO_ROOT, text=True).strip():
+        _fail("Working tree must be clean before release preparation.")
+    config = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text())
+    version = (REPO_ROOT / "VERSION").read_text().strip()
+    package = json.loads((REPO_ROOT / "package.json").read_text())
+    bump = config["tool"]["bumpversion"]
+    if not re.fullmatch(r"(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)", version):
+        _fail("VERSION must contain stable SemVer.")
+    if {config["project"]["version"], package["version"], bump["current_version"]} != {version}:
+        _fail("Release version mirrors must match VERSION.")
+    if bump["commit"] is not False or bump["tag"] is not False:
+        _fail("bump-my-version must not commit or tag.")
+    if not shutil.which("bump-my-version"):
+        _fail("bump-my-version is required; use the documented Compose dev image.")
 
 
 def main() -> None:
@@ -174,10 +173,39 @@ def main() -> None:
         help="Omit --allow-dirty (bump-my-version refuses if the working tree is dirty).",
     )
     args = parser.parse_args()
-    allow_dirty = not args.no_allow_dirty
+    if args.no_allow_dirty:
+        _fail("Preparation requires its internal changelog marker; the initial tree must be clean.")
+    allow_dirty = True
 
-    _warn_branch()
+    _require_preparation_state()
     raw = CHANGELOG_PATH.read_text()
+    start, heading = _first_h2_after_note(raw)
+    body_lines = []
+    fence = None
+    for line in raw[start + len(heading) :].splitlines():
+        marker = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line)
+        if marker:
+            run, tail = marker.groups()
+            if fence is None:
+                fence = run
+            elif run[0] == fence[0] and len(run) >= len(fence) and not tail.strip():
+                fence = None
+        elif fence is None and line.startswith("## "):
+            break
+        body_lines.append(line)
+    body = "\n".join(body_lines)
+    body = re.sub(r"<!--.*?-->", "", body, flags=re.DOTALL)
+    if not any(line.strip() and not line.lstrip().startswith("#") for line in body.splitlines()):
+        _fail("Unreleased must contain non-empty release notes.")
+    version = (REPO_ROOT / "VERSION").read_text().strip()
+    parts = list(map(int, version.split(".")))
+    segment = {"major": 0, "minor": 1, "patch": 2}[args.kind]
+    parts[segment] += 1
+    for index in range(segment + 1, 3):
+        parts[index] = 0
+    target = ".".join(map(str, parts))
+    if re.search(r"^## \[v?" + re.escape(target) + r"\]", raw, re.MULTILINE):
+        _fail("Target version already exists in the changelog.")
     updated, changed = ensure_bump_marker(raw)
     if changed:
         CHANGELOG_PATH.write_text(updated)
@@ -189,8 +217,6 @@ def main() -> None:
     updated, changed = ensure_empty_unreleased_section(raw)
     if changed:
         CHANGELOG_PATH.write_text(updated)
-
-    _run_remove_prerelease_tags()
 
     print(
         "prepare_release_bump: done. Review git diff and CHANGELOG.md, then commit "

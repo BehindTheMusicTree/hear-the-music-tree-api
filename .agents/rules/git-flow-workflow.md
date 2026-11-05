@@ -31,8 +31,8 @@ Do **not** use other top-level prefixes (e.g. `docs/`, `fix/`, `refactor/`) for 
 - Feature branches **must** target `develop`
 - Hotfix branches **must** target `main`
 - Release branches merge into both `main` and `develop`
-- Before creating any `release/*` branch, maintainers **must** run `python3 scripts/prepare_release_bump.py` with `patch`, `minor`, or `major`
-- Create the `release/*` branch only after the bump script updates release artifacts (`CHANGELOG.md`, `VERSION`, and related versioned files)
+- Create the `release/*` branch from current `develop` before running `python3 scripts/prepare_release_bump.py` with `patch`, `minor`, or `major`
+- Preparation requires a clean release/hotfix branch and edits files only; CI owns stable tags and publication after a PR into `main`
 
 ## Examples
 
@@ -50,6 +50,6 @@ git checkout -b hotfix/critical-security-patch
 # Release branch (maintainers only)
 git checkout develop
 git pull origin develop
-python3 scripts/prepare_release_bump.py patch
 git checkout -b release/v0.2.1
+python3 scripts/prepare_release_bump.py patch
 ```

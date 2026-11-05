@@ -106,6 +106,9 @@ def main() -> None:
         print("Would run:", " ".join(cmd).replace("<tmp>", "(changelog body)"))
         return
 
+    if (root / ".github/release-policy.json").is_file():
+        sys.exit("CI owns GitHub Release publication; use --dry-run to preview notes.")
+
     if not _gh_token_from_actions():
         gh_check = subprocess.run(
             ["gh", "auth", "status"],

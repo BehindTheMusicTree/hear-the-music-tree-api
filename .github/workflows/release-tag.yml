@@ -1,0 +1,16 @@
+name: Release tag
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  release-tag:
+    uses: BehindTheMusicTree/github-workflows/.github/workflows/release-tag.yml@84a73457403e20021217fe52ee650bd8de3cdca5
+    with:
+      app-id: ${{ vars.RELEASE_APP_ID }}
+    secrets:
+      release-app-private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
