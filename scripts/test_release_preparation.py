@@ -88,13 +88,21 @@ class PreparationTests(unittest.TestCase):
 
     def test_preparation_edits_only_files_without_tag_cleanup(self):
         self.git("switch", "-qc", "release/fixture")
+        current = (self.root / "VERSION").read_text().strip()
+        major, minor, patch_version = map(int, current.split("."))
+        target = f"{major}.{minor}.{patch_version + 1}"
+        (self.root / "CHANGELOG.md").write_text(
+            "**Note:** During releases, maintainers will move entries from Unreleased.\n\n"
+            "## [Unreleased]\n\n### Changed\n\n- Prepare a fixture release.\n"
+        )
+        self.commit()
         head = self.git("rev-parse", "HEAD")
 
         def bump(kind, allow_dirty):
             assert (kind, allow_dirty) == ("patch", True)
             p = self.root / "CHANGELOG.md"
-            p.write_text(p.read_text().replace(prep.MARKER_HEADING, "## [8.1.1] - 2026-11-05"))
-            (self.root / "VERSION").write_text("8.1.1\n")
+            p.write_text(p.read_text().replace(prep.MARKER_HEADING, f"## [{target}] - 2026-11-05"))
+            (self.root / "VERSION").write_text(f"{target}\n")
 
         with (
             patch.object(sys, "argv", ["prepare", "patch"]),
@@ -104,7 +112,7 @@ class PreparationTests(unittest.TestCase):
             prep.main()
         assert self.git("rev-parse", "HEAD") == head
         assert self.git("tag") == ""
-        assert "## [Unreleased]\n\n## [8.1.1]" in (self.root / "CHANGELOG.md").read_text()
+        assert f"## [Unreleased]\n\n## [{target}]" in (self.root / "CHANGELOG.md").read_text()
 
     def test_local_publication_refused_and_preview_succeeds(self):
         for dry in (False, True):

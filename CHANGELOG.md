@@ -100,7 +100,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ### CI
 
-- CI owns validated annotated release tags and GitHub Releases; preparation requires a clean release branch and never deletes prerelease tags.
+- CI owns validated annotated release tags and GitHub Releases; preparation requires a clean release branch and never deletes prerelease tags. Release-preparation fixtures use their own pending notes and next version so they remain repeatable after a bump.
 
 ### Documentation
 
