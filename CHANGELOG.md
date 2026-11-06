@@ -96,6 +96,8 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 
 ## [Unreleased]
 
+## [8.1.1] - 2026-11-06
+
 ### CI
 
 - CI owns validated annotated release tags and GitHub Releases; preparation requires a clean release branch and never deletes prerelease tags.
