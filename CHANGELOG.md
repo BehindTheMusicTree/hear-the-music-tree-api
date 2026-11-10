@@ -36,6 +36,7 @@ All contributors (including maintainers) should update `CHANGELOG.md` when creat
 ### Changed
 
 - Repinned `the-music-tree-api-kit` v0.11.0 and `the-music-tree-genre-kit` v0.51.1; migration `0031` adds the `description`, `is_umbrella` and `summary_source_url` genre fields.
+- Removed the per-repo graphify `hook-guard` in `.claude/settings.json`; the global agent-config freshness hook replaces it.
 
 ### Fixed
 
