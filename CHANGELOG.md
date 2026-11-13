@@ -5,98 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Changelog Best Practices
-
-### General Principles
-
-- Changelogs are for humans, not machines.
-- Include an entry for every version, with the latest first.
-- Group similar changes under: Added, Changed, Improved, Deprecated, Removed, Fixed, Documentation, Performance, CI.
-- **"Test" is NOT a valid changelog category** - tests should be mentioned within the related feature or fix entry, not as standalone entries.
-- Use an "Unreleased" section for upcoming changes.
-- Follow Semantic Versioning where possible.
-- Use ISO 8601 date format: 2026-03-14.
-- Avoid dumping raw git logs; summarize notable changes clearly.
-
-### Guidelines for Contributors
-
-All contributors (including maintainers) should update `CHANGELOG.md` when creating PRs:
-
-1. **Add entries to the `[Unreleased]` section** - Add your changes under the appropriate category (Added, Changed, Improved, Deprecated, Removed, Fixed, Documentation, Performance, CI)
-2. **Follow the changelog format** - See examples below and `.claude/rules/changelog-best-practices.md` for detailed guidelines
-3. **Group related changes** - Similar changes should be grouped together
-4. **Be descriptive** - Write clear, user-focused descriptions of what changed
-5. **Mention tests when relevant** - Tests should be mentioned within the related feature or fix entry, not as standalone entries
-
-**Example:**
-
-```markdown
 ## [Unreleased]
-
-### Changed
-
-- Removed the graphify `merge=graphify` git attribute, which pointed at a machine-specific merge driver; the global agent-config freshness hook keeps the graph fresh.
-- Repinned `the-music-tree-api-kit` v0.11.0 and `the-music-tree-genre-kit` v0.51.1; migration `0031` adds the `description`, `is_umbrella` and `summary_source_url` genre fields.
-- Removed the per-repo graphify `hook-guard` in `.claude/settings.json`; the global agent-config freshness hook replaces it.
-
-### Fixed
-
-- Spotify library `full_sync` now persists `last_synced_at` and `is_removed` on unchanged existing tracks (covered by a regression test), following the api-kit fix to full-field saves.
 
 ### Documentation
 
-- `CLAUDE.md` points to the shared track / song / recording glossary.
-
-### Security
-
-- Bumped `Django` to 5.2.18 and `djangorestframework` to 3.18.3, enabled by the kits relaxing their exact pins; repinned `the-music-tree-api-kit` v0.10.3 and `the-music-tree-genre-kit` v0.46.2.
-
-### Security
-
-- Bumped `PyJWT` 2.15.0, `djangorestframework-simplejwt` 5.5.1, `Markdown` 3.8.1, `werkzeug` 3.1.9, `certifi`, `gunicorn` 23.0.0, `httplib2` 0.32.0, `oauthlib` 4.0.0, `pyOpenSSL` 26.4.0, `requests` 2.33.0, `setuptools` 83.0.0, `spotipy` 2.25.2, `tinytag` 2.2.1, `python-dotenv` 1.2.2, `pytest` 9.0.3 and the locked `cryptography`, `urllib3`, `sqlparse`, `virtualenv`, `picomatch` to clear Dependabot alerts. `Django` and `djangorestframework` stay pinned by `the-music-tree-api-kit` (exact pins).
-- Added `.github/dependabot.yml` targeting `develop`.
-
-### Improved
-
-- Bumped `the-music-tree-genre-kit` to v0.43.2: playlist track counts use an index-only `Count("*")`.
-
-### CI
-
-- Deploys: bumped `trigger-coolify-deploy` to v4.4.0 — a Coolify deployment stuck past an hour is cancelled (its build container force-stopped over SSH) instead of blocking every later deploy, and a failed or cancelled deploy posts an alert to the env's Discord status-alerts channel
-- **python-project-standards v5.1.0 (Copier)**: Adopted via [`.copier-answers.yml`](.copier-answers.yml); `copier update` now merges shared pre-commit/ruff baselines while keeping repo hooks. Removed **`STANDARDS_VERSION`**, `scripts/verify-standards.sh`, `scripts/check_lint_baseline.py`, `baselines/DIGESTS`, `baselines/expected-mypy.json` and the `verify-python-project-standards` hook. [`scripts/publish_github_release.py`](scripts/publish_github_release.py) now requires the version argument (it no longer falls back to `STANDARDS_VERSION`).
-- **python-project-standards v4.1.0 layout**: Vendored [**`baselines/`**](baselines/) (`ruff.toml`, **`DIGESTS`**, **`expected-mypy.json`**), thin **`[tool.ruff] extend`** in [`pyproject.toml`](pyproject.toml), [**`STANDARDS_VERSION`**](STANDARDS_VERSION) **`4.1.0`**, and [**`scripts/check_lint_baseline.py`**](scripts/check_lint_baseline.py) (with [**`verify-standards.sh`**](scripts/verify-standards.sh) invoking it). [**`pre-commit-hooks`**](.pre-commit-config.yaml) **`rev`** bumped to **`v6.0.0`**. Pre-commit still runs **inline** in [`.github/workflows/test.yml`](.github/workflows/test.yml) (no org **`reusable-pre-commit`** job).
-
-### Changed
-
-- **Filtering**: shared filters and filtersets now come from `the-music-tree-api-kit` v0.10.1 (generic char/foreign-key filters, `PrivateUniqueResourceFilterSet`) and `the-music-tree-genre-kit` v0.43.1 (criteria and playlist filtersets); `hear/filtering` keeps only album, artist, play, search, spotify and uploaded-track. Query params unchanged.
-
-### Added
-
-- **Track API**: Added batch upload endpoint for multiple tracks
-
-  - Includes comprehensive unit tests covering various file formats and error scenarios
-  - Supports parallel upload processing for improved performance
-
-- **Genre Hierarchy**: Added support for custom genre tree import via JSON
-  - Includes validation tests for tree structure and circular reference detection
-
-### Fixed
-
-- **Track Upload**: Fixed issue with handling large audio files exceeding size limits
-  - Includes regression tests to prevent future occurrences
-  - Improved error messages for better user feedback
-- **Spotify library sync**: Fixed Spotify library sync
-- **Genre tree**: Genre playlists' parent and root are now derived from their genre instead of stored, so a genre moved by a tree import no longer shows under its old parent (genre-kit 0.42.0; migration `0030` drops `criteriaplaylist.parent`/`root`). `TRACK_TITLE_LEN_MAX` raised to 2048 as genre-kit 0.39 requires
-
-### CI
-
-- **Branch Protection**: Added automated enforcement of Git Flow branching rules
-  - Blocks invalid PRs to main and develop branches
-```
-
-**Note:** During releases, maintainers will move entries from `[Unreleased]` to a versioned section (e.g., `## [0.2.8] - 2025-01-XX`).
-
-## [Unreleased]
+- Removed the contributor guidelines and example entry from `CHANGELOG.md`: the example duplicated the `[Unreleased]` heading and led agents to write entries in the wrong place, and the conventions now live in the shared `create-pr` skill.
 
 ### CI
 
