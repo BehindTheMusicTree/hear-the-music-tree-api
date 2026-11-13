@@ -38,7 +38,7 @@ dependencies = [
     "gunicorn==23.0.0",
     "httplib2==0.32.0",
     "Markdown==3.8.1",
-    "oauthlib==4.0.0",
+    "oauthlib==4.0.1",
     "pathlib==1.0.1",
     "dj-database-url>=2.1.0",
     "psycopg2-binary==2.9.11",
