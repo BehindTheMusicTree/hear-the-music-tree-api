@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### CI
 
+- Pin the pre-commit Node version to 26.13.0 (`default_language_version`): the prettier hook no longer installs the latest Node release, whose prerelease version `nodeenv` cannot parse.
 - Pin the shared release workflows to the lag-tolerant github-workflows commit 79c1362, so tag creation tolerates GitHub read-after-write delays.
 
 ## [8.1.1] - 2026-11-06
