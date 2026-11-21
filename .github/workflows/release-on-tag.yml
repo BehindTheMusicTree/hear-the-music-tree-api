@@ -7,6 +7,11 @@ on:
 permissions:
   contents: write
 
+# One run per pushed tag commit, never cancelled or replaced, so a later run cannot drop a release.
+concurrency:
+  group: release-on-tag-${{ github.sha }}
+  cancel-in-progress: false
+
 jobs:
   github-release:
     uses: BehindTheMusicTree/github-workflows/.github/workflows/release-github.yml@79c136234b5d487bb99e0cd2050f38f6b3e06747
