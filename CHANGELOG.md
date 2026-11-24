@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### CI
 
 - Add the canonical workflow `concurrency` groups to `agent-drift`, `branch-protection`, `labeler`, `test`, `release-tag` and `release-on-tag`.
+- Group `agent-drift`, `branch-protection`, `labeler` and `test` runs by pull request number instead of head branch name, so same-named fork branches no longer collide.
+- Pushes and pull requests run the `org-conformance` check (github-workflows v6.5.0), which `required-checks.json` in github-config declares as an optional job; `build-and-deploy` is exempted as queue-form concurrency.
 
 ### Fixed
 
