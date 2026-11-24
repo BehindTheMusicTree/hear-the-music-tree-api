@@ -3,6 +3,9 @@
 #   - Host hook wiring: bash scripts/setup-host-dev-tools.sh
 #   - Docker toolchain:  bash scripts/setup-docker-dev-tools.sh
 # Hooks use language: system — tools must be on PATH (same pins as CI).
+default_language_version:
+  node: 26.13.0
+
 fail_fast: true
 
 repos:

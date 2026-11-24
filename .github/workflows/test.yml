@@ -33,6 +33,10 @@ env:
   DEMO_PASSWORD: ci_demo_test
   DEMO_EMAIL: ci_demo@example.com
 
+concurrency:
+  group: test-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   pre-commit:
     name: Pre-commit
