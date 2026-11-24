@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.1.2] - 2026-11-24
+
 ### CI
 
 - Add the canonical workflow `concurrency` groups to `agent-drift`, `branch-protection`, `labeler`, `test`, `release-tag` and `release-on-tag`.
@@ -20,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 
 - Drop the tracked `.agent-plans/.gitignore`: plans now live in the common git directory.
+- Use the global Graphify freshness hook and remove the repository-specific Git merge driver.
 
 ### Documentation
 
