@@ -89,6 +89,7 @@ filterwarnings = ["ignore:unclosed file:ResourceWarning"]
 
 [tool.coverage.run]
 source = ["hear"]
+relative_files = true
 omit = ["hear/test/*", "hear/migrations/*", "hear/manage.py"]
 
 [tool.coverage.report]
