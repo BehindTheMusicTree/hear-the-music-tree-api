@@ -15,7 +15,7 @@ dependencies = [
     "audiometa-python==1.1.0",
     "bcrypt==3.1.7",
     "blinker==1.4",
-    "certifi==2026.7.22",
+    "certifi==2026.10.18",
     "chardet==3.0.4",
     "Click==8.3.3",
     "colorama==0.4.3",
