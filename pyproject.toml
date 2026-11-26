@@ -2,7 +2,7 @@
 # Dev deps: Compose api image uses pip install -e ".[dev]" (INSTALL_DEV=true). CI pre-commit uses the same. Production/minimal: pip install .
 
 [build-system]
-requires = ["setuptools==83.0.0", "wheel==0.45.1"]
+requires = ["setuptools==84.1.0", "wheel==0.45.1"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -50,7 +50,7 @@ dependencies = [
     "python-dotenv==1.2.2",
     "python-magic==0.4.27",
     "requests==2.33.0",
-    "setuptools==83.0.0",
+    "setuptools==84.1.0",
     "shortuuid==1.0.9",
     "simplejson==3.16.0",
     "spotipy==2.25.2",
