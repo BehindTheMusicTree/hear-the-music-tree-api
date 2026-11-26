@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### CI
 
+- Add the `Tests success` gate job, which requires `Pytest` and the shared `coverage` check to succeed, so one required check enforces the tests and their coverage.
 - Add the `coverage` job (github-workflows v6.6.0), which applies the organization coverage standard (lines 80 %, branches 70 %, patch 90 %) to the Cobertura report that `Pytest` now uploads as the `coverage-report` artifact; pytest measures branch coverage and no longer enforces its own `--cov-fail-under`.
 - Set coverage `relative_files` so the report no longer embeds the container's absolute `/home/app` path and file names resolve against the checkout.
 
