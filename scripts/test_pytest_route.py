@@ -5,7 +5,7 @@ import unittest
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-import pytest_route  # noqa: E402
+import pytest_route
 
 
 class ClassifyTests(unittest.TestCase):
