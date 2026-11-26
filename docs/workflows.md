@@ -106,17 +106,7 @@ Enforces Git Flow: only allows certain source branches for PRs to `main` and `de
 
 Required checks are set by repository rulesets (**Settings → Rules → Rulesets**), managed from the organization's `github-config` repository. A ruleset matches the check name GitHub reports, which is the job name (or `<caller job> / <job>` for a reusable workflow), not the workflow name.
 
-| Check | `develop` | `main` |
-| --- | --- | --- |
-| `Pytest` | required | required |
-| `Test Results` | – | required |
-| `Check vars` | required | required |
-| `Pre-commit` | required | required |
-| `Actionlint` | required | required |
-| `Verify PR source branch` | required | required |
-| `agent-drift / agent-drift` | required | required |
-
-`Pytest route`, `coverage / coverage` and the `Tests success` gate are not required. A skipped required job counts as passing, so `Pytest` skipped by `Pytest route` does not block a PR (see #265).
+The required checks per branch are declared in `required-checks.json` in `github-config`; this document does not list them, so it cannot drift. To see what blocks a pull request, read the checks on the PR or the ruleset itself. A skipped required job counts as passing (see #265), which is why the test gate is a single always-run `Tests success` job rather than the skippable `Pytest`.
 
 Checks appear in the dropdown only after they have run **successfully at least once in the past 7 days**. See [GitHub: Troubleshooting required status checks](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/collaborating-on-repositories-with-code-quality-features/troubleshooting-required-status-checks).
 
