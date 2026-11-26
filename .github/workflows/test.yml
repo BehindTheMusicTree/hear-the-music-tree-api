@@ -82,8 +82,8 @@ jobs:
       - name: Install actionlint
         run: bash scripts/install-actionlint.sh
 
-      - name: Release preparation fixtures
-        run: python3 -m unittest discover -s scripts -p "test_release_preparation.py"
+      - name: Script fixtures
+        run: python3 -m unittest discover -s scripts -p "test_*.py"
 
       - name: Run pre-commit
         run: pre-commit run --all-files --verbose --show-diff-on-failure
@@ -108,9 +108,38 @@ jobs:
           AFP_VERSION: ${{ vars.AFP_VERSION }}
         run: bash scripts/check-workflow-env.sh API_DIR_NAME APP_TITLE APP_NAME GHCR_IMAGE_NAMESPACE AFP_IMAGE_REPO AFP_VERSION
 
+  # Scope job of the Tests success gate (github-config check-required-gates.sh "scoped gate").
+  route:
+    name: Pytest route
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      applicable: ${{ steps.route.outputs.applicable }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5.0.1
+        with:
+          fetch-depth: 2
+
+      - name: Classify changed files
+        id: route
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" != pull_request ]]; then echo applicable=true >>"$GITHUB_OUTPUT"; exit 0; fi
+          # --no-renames lists both names of a rename; HEAD^1 is the base tip the PR was merged onto.
+          diff_file="$RUNNER_TEMP/changed-files"
+          if git diff --no-renames -z --name-only HEAD^1 HEAD >"$diff_file" && [[ -s $diff_file ]]; then
+            python3 scripts/pytest_route.py <"$diff_file" >>"$GITHUB_OUTPUT" || echo applicable=true >>"$GITHUB_OUTPUT"
+          else
+            echo applicable=true >>"$GITHUB_OUTPUT"
+          fi
+
+      - name: Summary
+        run: echo "Pytest applicable is ${{ steps.route.outputs.applicable }}" >>"$GITHUB_STEP_SUMMARY"
+
   pytest:
     name: Pytest
-    needs: [check-vars-and-secrets]
+    needs: [check-vars-and-secrets, route]
+    if: needs.route.outputs.applicable == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -298,10 +327,13 @@ jobs:
 
   tests-success:
     name: Tests success
-    needs: [pytest, coverage]
+    needs: [route, pytest, coverage]
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - env:
+      # Scoped gate recognized by github-config check-required-gates.sh: route must succeed, then pytest and
+      # coverage all succeed when it reports applicable=true and are all skipped when it reports false.
+      - name: All test jobs succeeded
+        env:
           NEEDS: ${{ toJSON(needs) }}
-        run: jq -e 'all(.[]; .result == "success")' <<<"$NEEDS"
+        run: jq -e --arg scope route '.[$scope] as $s | del(.[$scope]) as $rest | $s.result == "success" and ($rest | length) > 0 and (if $s.outputs.applicable == "true" then all($rest[]; .result == "success") elif $s.outputs.applicable == "false" then all($rest[]; .result == "skipped") else false end)' <<<"$NEEDS"
