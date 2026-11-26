@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### CI
 
 - Skip `Pytest` and `coverage` when a pull request only changes files the suite never reads (documentation, organization workflows, agent configuration); the new `Pytest route` job classifies the diff and the `Tests success` gate accepts both jobs skipped only when it reports the change as not applicable.
-- Add the `Tests success` gate job, which requires `Pytest` and the shared `coverage` check to succeed, so one required check enforces the tests and their coverage.
+- Add the `Tests success` gate job, which requires `Pytest` and the shared `coverage` check to succeed, so that, once required, this single check can enforce the tests and their coverage; it is not a required check yet.
 - Add the `coverage` job (github-workflows v6.6.0), which applies the organization coverage standard (lines 80 %, branches 70 %, patch 90 %) to the Cobertura report that `Pytest` now uploads as the `coverage-report` artifact; pytest measures branch coverage and no longer enforces its own `--cov-fail-under`.
 - Set coverage `relative_files` so the report no longer embeds the container's absolute `/home/app` path and file names resolve against the checkout.
 
