@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation
+
+- List the checks the `develop` and `main` rulesets actually require in `docs/workflows.md`.
+
 ## [8.1.3] - 2026-11-26
 
 ### CI

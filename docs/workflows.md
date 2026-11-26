@@ -104,14 +104,19 @@ Enforces Git Flow: only allows certain source branches for PRs to `main` and `de
 
 ### Required status checks (branch protection)
 
-Configure branch protection to require the **exact check names** that GitHub Actions reports (workflow name + job name). In **Settings → Branches → Branch protection rule** (for `main` and/or `develop`), under "Require status checks to pass before merging", enable **Require status checks to pass before merging** and in the search box add these four checks (type or select each):
+Required checks are set by repository rulesets (**Settings → Rules → Rulesets**), managed from the organization's `github-config` repository. A ruleset matches the check name GitHub reports, which is the job name (or `<caller job> / <job>` for a reusable workflow), not the workflow name.
 
-1. **Test / Pytest**
-2. **Test / Check vars and secrets**
-3. **Branch Protection Check / Actionlint**
-4. **Branch Protection Check / Verify PR source branch**
+| Check | `develop` | `main` |
+| --- | --- | --- |
+| `Pytest` | required | required |
+| `Test Results` | – | required |
+| `Check vars` | required | required |
+| `Pre-commit` | required | required |
+| `Actionlint` | required | required |
+| `Verify PR source branch` | required | required |
+| `agent-drift / agent-drift` | required | required |
 
-`Test / Pytest route` is an optional job: it is not required itself, but the `Tests success` gate depends on it.
+`Pytest route`, `coverage / coverage` and the `Tests success` gate are not required. A skipped required job counts as passing, so `Pytest` skipped by `Pytest route` does not block a PR (see #265).
 
 Checks appear in the dropdown only after they have run **successfully at least once in the past 7 days**. See [GitHub: Troubleshooting required status checks](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/collaborating-on-repositories-with-code-quality-features/troubleshooting-required-status-checks).
 
