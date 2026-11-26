@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation
+
+- Replace the stale required-checks table in `docs/workflows.md` with a pointer to `required-checks.json` in `github-config`, the source of truth.
+
 ## [8.1.3] - 2026-11-26
 
 ### CI
