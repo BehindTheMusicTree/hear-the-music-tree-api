@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.1.3] - 2026-11-26
+
 ### CI
 
 - Skip `Pytest` and `coverage` when a pull request only changes files the suite never reads (documentation, organization workflows, agent configuration); the new `Pytest route` job classifies the diff and the `Tests success` gate accepts both jobs skipped only when it reports the change as not applicable.
