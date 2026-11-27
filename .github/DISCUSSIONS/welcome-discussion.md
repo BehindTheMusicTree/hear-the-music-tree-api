@@ -56,8 +56,8 @@ Discuss music-related topics, genre classification, playlist organization, and m
 
 **Use Issues for:**
 
-- Bug reports (use [Bug Report template](.github/ISSUE_TEMPLATE/bug_report.yml))
-- Feature requests (use [Feature Request template](.github/ISSUE_TEMPLATE/feature_request.yml))
+- Bug reports (use the [Bug report form](https://github.com/BehindTheMusicTree/hear-the-music-tree-api/issues/new/choose))
+- Feature requests (use the [Feature request form](https://github.com/BehindTheMusicTree/hear-the-music-tree-api/issues/new/choose))
 - Actionable items that need tracking
 
 ## Getting Started
@@ -79,7 +79,7 @@ Discuss music-related topics, genre classification, playlist organization, and m
 
 - 📖 [Documentation](README.md)
 - 🤝 [Contributing Guide](CONTRIBUTING.md)
-- 📝 [Issue Templates](.github/ISSUE_TEMPLATE/)
+- 📝 [Issue Forms](https://github.com/BehindTheMusicTree/hear-the-music-tree-api/issues/new/choose)
 - 📜 [Code of Conduct](CODE_OF_CONDUCT.md)
 - 📄 [License](LICENSE)
 

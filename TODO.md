@@ -303,7 +303,7 @@ This file tracks future work, improvements, and testing tasks for HearTheMusicTr
 If you'd like to work on any of these items:
 
 1. Check if there's already an open issue for the task
-2. Create a new issue using the [Feature Request template](.github/ISSUE_TEMPLATE/feature_request.yml) if needed
+2. Create a new issue using the [shared issue forms](https://github.com/BehindTheMusicTree/hear-the-music-tree-api/issues/new/choose) if needed
 3. Fork the repository and create a feature branch following our [Git Flow workflow](CONTRIBUTING.md#2-branching)
 4. Implement your changes with appropriate tests following our [testing guidelines](CONTRIBUTING.md#4-testing)
 5. Submit a pull request using our [PR template](.github/pull_request_template.md)
