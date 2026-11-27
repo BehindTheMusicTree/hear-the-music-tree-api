@@ -1,19 +1,8 @@
 # Issue Template Usage
 
-When creating issues, always use the appropriate template from `.github/ISSUE_TEMPLATE/`.
+Issue forms are shared across the org (BehindTheMusicTree/.github) and enforced by org conformance. Do not add `.github/ISSUE_TEMPLATE/` files or a local `config.yml` in this repository.
 
-## Available Templates
-
-1. **Bug Report** (`.github/ISSUE_TEMPLATE/bug_report.yml`)
-
-   - Use for reporting bugs or unexpected behavior
-   - Automatically adds `bug` label
-   - Includes fields for: component, description, steps to reproduce, error response, request details, severity
-
-2. **Feature Request** (`.github/ISSUE_TEMPLATE/feature_request.yml`)
-   - Use for suggesting new features or enhancements
-   - Automatically adds `enhancement` and `feature` labels
-   - Includes fields for: component, problem statement, proposed solution, API design, priority, use cases
+When creating issues, use the matching shared form: Bug report, Feature request, Tracking issue or Follow-up action.
 
 ## Component Labels
 
@@ -49,4 +38,4 @@ For feature requests, include:
 
 ## Blank Issues
 
-Blank issues are disabled - users must use a template. This ensures all issues have the necessary information for proper triage and resolution.
+Blank-issue behaviour is set by the shared org configuration, not by this repository.

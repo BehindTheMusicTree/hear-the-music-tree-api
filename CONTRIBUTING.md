@@ -36,7 +36,7 @@ This project is currently maintained by a solo developer, but contributions, sug
 
 Anyone can be a contributor by:
 
-- Submitting bug reports or feature requests via GitHub Issues (use the issue templates: [Bug Report](.github/ISSUE_TEMPLATE/bug_report.yml) and [Feature Request](.github/ISSUE_TEMPLATE/feature_request.yml))
+- Submitting bug reports or feature requests via GitHub Issues (use the [shared org issue forms](https://github.com/BehindTheMusicTree/hear-the-music-tree-api/issues/new/choose))
 - Proposing code changes through Pull Requests (the PR template will guide you through the process)
 - Improving documentation
 - Participating in discussions
@@ -869,8 +869,8 @@ This project maintains a [TODO list](TODO.md) that tracks future work, improveme
 You can open:
 
 - **Issues** → bug reports or new ideas
-  - Use the [Bug Report template](.github/ISSUE_TEMPLATE/bug_report.yml) for reporting bugs
-  - Use the [Feature Request template](.github/ISSUE_TEMPLATE/feature_request.yml) for suggesting new features
+  - Use the "Bug report" [shared issue form](https://github.com/BehindTheMusicTree/hear-the-music-tree-api/issues/new/choose) for reporting bugs
+  - Use the "Feature request" [shared issue form](https://github.com/BehindTheMusicTree/hear-the-music-tree-api/issues/new/choose) for suggesting new features
 - **Discussions** → suggestions, architecture, or music-related topics
 
 Let's make this API grow together 🌱

@@ -14,8 +14,8 @@ Create issue description files with descriptive names using kebab-case:
 
 Each issue description file should follow the appropriate issue template structure:
 
-- For bug reports: Follow the structure from `.github/ISSUE_TEMPLATE/bug_report.yml`
-- For feature requests: Follow the structure from `.github/ISSUE_TEMPLATE/feature_request.yml`
+- For bug reports: Follow the structure of the shared org "Bug report" issue form
+- For feature requests: Follow the structure of the shared org "Feature request" issue form
 
 ## Usage
 
