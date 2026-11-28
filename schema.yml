@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
   title: TheMusicTreeAPI
-  version: 8.1.3
+  version: 8.1.4
   description: 'API to handle genre oriented music libraries '
 paths:
   /auth/token/:
