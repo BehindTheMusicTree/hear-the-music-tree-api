@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.1.4] - 2026-11-28
+
+### Changed
+
+- Remove local issue templates and `config.yml` in favour of the shared org issue forms, and update links to them.
+
+### Documentation
+
+- Replace the stale required-checks table in `docs/workflows.md` with a pointer to `required-checks.json` in `github-config`, the source of truth.
+
+### CI
+
+- Align deployment concurrency with the shared workflow policy, canceling superseded pull request runs while preserving serialized deployments.
+
 ## [8.1.3] - 2026-11-26
 
 ### CI
